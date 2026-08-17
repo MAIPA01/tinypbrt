@@ -1,0 +1,47 @@
+#pragma once
+#ifndef _TINYPBRT_ERROR_H_
+#define _TINYPBRT_ERROR_H_
+
+#include <tinypbrt/detail/fwd.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	typedef enum : uint8_t {
+		TPBRT_ERROR_NONE					   = 0,
+		TPBRT_ERROR_END_OF_FILE				   = 1,
+		TPBRT_ERROR_NO_TOKEN				   = 2,
+		TPBRT_ERROR_IO						   = 3,
+		TPBRT_ERROR_INVALID_TOKEN			   = 4,
+		TPBRT_ERROR_PARSE_FLOAT				   = 5,
+		TPBRT_ERROR_PARSE_INT				   = 6,
+		TPBRT_ERROR_PARSE_BOOL				   = 7,
+		TPBRT_ERROR_SLICE					   = 8,
+		TPBRT_ERROR_UNKNOWN_DIRECTIVE		   = 9,
+		TPBRT_ERROR_INVALID_STRING			   = 10,
+		TPBRT_ERROR_INVALID_OPTION_VALUE	   = 11,
+		TPBRT_ERROR_UNKNOWN_COORDINATE_SYSTEM  = 12,
+		TPBRT_ERROR_INVALID_PARAM_NAME		   = 13,
+		TPBRT_ERROR_INVALID_PARAM_TYPE		   = 14,
+		TPBRT_ERROR_DUPLICATE_PARAM_NAME	   = 15,
+		TPBRT_ERROR_WORLD_ALREADY_STARTED	   = 16,
+		TPBRT_ERROR_ELEMENT_NOT_ALLOWED		   = 17,
+		TPBRT_ERROR_TOO_MANY_END_ATTRIBUTES	   = 18,
+		TPBRT_ERROR_INVALID_MATRIX_NAME		   = 19,
+		TPBRT_ERROR_INVALID_CAMERA_TYPE		   = 20,
+		TPBRT_ERROR_INVALID_OBJECT_TYPE		   = 21,
+		TPBRT_ERROR_UNEXPECTED_TOKEN		   = 22,
+		TPBRT_ERROR_MISSING_REQUIRED_PARAMETER = 23,
+		TPBRT_ERROR_NESTED_OBJECTS			   = 24,
+		TPBRT_ERROR_NOT_FOUND				   = 25,
+		TPBRT_ERROR_MAX_NUM					   = 26,
+	} tpbrt_error_t;
+
+	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // _TINYPBRT_ERROR_H_
