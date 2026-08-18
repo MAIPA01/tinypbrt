@@ -21,7 +21,7 @@ extern "C" {
 		tpbrt_bool_t force_diffuse;
 		tpbrt_bool_t pixel_stats;
 		tpbrt_bool_t wavefront;
-	} tpbrt_general_options_t;
+	} tpbrt_options_t;
 
 #ifdef __cplusplus
 }

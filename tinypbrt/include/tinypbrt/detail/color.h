@@ -16,7 +16,7 @@ extern "C" {
 	} tpbrt_color_space_t;
 
 	typedef enum {
-		TPBRT_SPECTRUM_TYPE_WAVELENGHT = 0,
+		TPBRT_SPECTRUM_TYPE_WAVELENGTH = 0,
 		TPBRT_SPECTRUM_TYPE_RGB		   = 1,
 		TPBRT_SPECTRUM_TYPE_BLACKBODY  = 2,
 		TPBRT_SPECTRUM_TYPE_FILE	   = 3,
@@ -36,11 +36,6 @@ extern "C" {
 	typedef struct {
 		tpbrt_float_t r, g, b;
 	} tpbrt_rgb_t;
-
-	typedef struct {
-		tpbrt_rgb_t* values;
-		tpbrt_size_t count;
-	} tpbrt_rgb_array_t;
 
 	typedef enum : uint8_t {
 		TPBRT_SPECTRUM_GLASS_BK7	   = 0,
@@ -80,7 +75,7 @@ extern "C" {
 		TPBRT_SPECTRUM_STD_ILLUM_F11   = 27,
 		TPBRT_SPECTRUM_STD_ILLUM_F12   = 28,
 		TPBRT_SPECTRUM_ILLUM_ACES_D60  = 29,
-	} tpbrt_spectrum_builtins_t;
+	} tpbrt_spectrum_builtin_t;
 
 	typedef struct {
 		tpbrt_spectrum_type_t type;
@@ -90,7 +85,7 @@ extern "C" {
 			tpbrt_rgb_t rgb;
 			tpbrt_blackbody_t blackbody;
 			tpbrt_string_t file_name;
-			tpbrt_spectrum_builtins_t builtin;
+			tpbrt_spectrum_builtin_t builtin;
 		};
 	} tpbrt_spectrum_t;
 

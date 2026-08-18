@@ -10,9 +10,9 @@ extern "C" {
 #endif
 
 	typedef enum : uint8_t {
-		TPBRT_FILM_RGB		= 0,
-		TPBRT_FILM_GBUFFER	= 1,
-		TPBRT_FILM_SPECTRAL = 2,
+		TPBRT_FILM_TYPE_RGB		 = 0,
+		TPBRT_FILM_TYPE_GBUFFER	 = 1,
+		TPBRT_FILM_TYPE_SPECTRAL = 2,
 	} tpbrt_film_type_t;
 
 	typedef struct {
@@ -49,13 +49,13 @@ extern "C" {
 	typedef struct {
 		tpbrt_float_t crop_window[4];
 		tpbrt_uint_t pixel_bounds[4];
-		tpbrt_string_t filename;
+		tpbrt_string_t file_name;
 		tpbrt_film_sensor_t sensor;
 		tpbrt_uint_t x_resolution;
 		tpbrt_uint_t y_resolution;
 		tpbrt_float_t diagonal;
 		tpbrt_bool_t save_fp16;
-		tpbrt_float_t ios;
+		tpbrt_float_t iso;
 		tpbrt_float_t white_balance;
 		tpbrt_float_t max_component_value;
 		tpbrt_film_type_t type;

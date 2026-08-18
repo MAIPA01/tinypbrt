@@ -37,7 +37,12 @@ extern "C" {
 		TPBRT_ERROR_NOT_FOUND				   = 25,
 		TPBRT_ERROR_OUT_OF_MEMORY			   = 26,
 		TPBRT_ERROR_INVALID_POINTER			   = 27,
-		TPBRT_ERROR_MAX_NUM					   = 28,
+		TPBRT_ERROR_INVALID_FILM_TYPE		   = 28,
+		TPBRT_ERROR_PARSE_UINT				   = 29,
+		TPBRT_ERROR_UNKNOWN_COLOR_SPACE		   = 30,
+		TPBRT_ERROR_UNKNOWN_SPECTRUM_BUILTIN   = 31,
+		TPBRT_ERROR_TOO_MANY_VALUES			   = 32,
+		TPBRT_ERROR_MAX_NUM					   = 33,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);
