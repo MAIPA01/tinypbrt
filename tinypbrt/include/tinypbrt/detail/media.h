@@ -2,7 +2,9 @@
 #ifndef _TINYPBRT_MEDIA_H_
 #define _TINYPBRT_MEDIA_H_
 
-#include "../param.h"
+#include <tinypbrt/detail/color.h>
+#include <tinypbrt/detail/fwd.h>
+#include <tinypbrt/detail/math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,60 +19,60 @@ extern "C" {
 	} tpbrt_media_type_t;
 
 	typedef struct {
-		float g;
+		tpbrt_float_t g;
 		tpbrt_spectrum_t Le;
-		float Le_scale;
+		tpbrt_float_t Le_scale;
 		tpbrt_string_t preset;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
-		float scale;
+		tpbrt_float_t scale;
 	} tpbrt_media_homogeneous_params_t;
 
 	typedef struct {
 		tpbrt_float_array_t density;
-		float g;
+		tpbrt_float_t g;
 		tpbrt_spectrum_t Le;
-		float Le_scale;
-		tpbrt_vec3_t p0, p1;
-		uint32_t nx, ny, nz;
+		tpbrt_float_t Le_scale;
+		tpbrt_point3_t p0, p1;
+		tpbrt_uint_t nx, ny, nz;
 		tpbrt_string_t preset;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
-		float scale;
+		tpbrt_float_t scale;
 		tpbrt_float_array_t temperature;
-		float temperature_offset;
-		float temperature_scale;
+		tpbrt_float_t temperature_offset;
+		tpbrt_float_t temperature_scale;
 	} tpbrt_media_uniform_grid_params_t;
 
 	typedef struct {
-		float g;
+		tpbrt_float_t g;
 		tpbrt_rgb_array_t Le;
-		float Le_scale;
-		tpbrt_vec3_t p0, p1;
+		tpbrt_float_t Le_scale;
+		tpbrt_point3_t p0, p1;
 		tpbrt_rgb_array_t sigma_a;
 		tpbrt_rgb_array_t sigma_s;
-		float scale;
+		tpbrt_float_t scale;
 	} tpbrt_media_rgb_grid_params_t;
 
 	typedef struct {
-		float density;
-		float frequency;
-		float g;
-		tpbrt_vec3_t p0, p1;
+		tpbrt_float_t density;
+		tpbrt_float_t frequency;
+		tpbrt_float_t g;
+		tpbrt_point3_t p0, p1;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
-		float wispiness;
+		tpbrt_float_t wispiness;
 	} tpbrt_media_cloud_params_t;
 
 	typedef struct {
-		float g;
-		float Le_scale;
+		tpbrt_float_t g;
+		tpbrt_float_t Le_scale;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
-		float scale;
+		tpbrt_float_t scale;
 		tpbrt_string_t file_name;
-		float temperature_offset;
-		float temperature_scale;
+		tpbrt_float_t temperature_offset;
+		tpbrt_float_t temperature_scale;
 	} tpbrt_media_nano_vdb_params_t;
 
 	typedef struct {

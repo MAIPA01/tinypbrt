@@ -54,6 +54,20 @@ extern "C" {
 		tpbrt_mat4_t start, end;
 	} tpbrt_mat4_animated_t;
 
+	typedef tpbrt_vec2_t tpbrt_point2_t;
+	typedef tpbrt_vec3_t tpbrt_vec_t;
+	typedef tpbrt_vec3_t tpbrt_point3_t;
+	typedef tpbrt_point3_t tpbrt_point_t;
+	typedef tpbrt_vec3_t tpbrt_normal3_t;
+	typedef tpbrt_normal3_t tpbrt_normal_t;
+
+	typedef tpbrt_vec2_array_t tpbrt_point2_array_t;
+	typedef tpbrt_vec3_array_t tpbrt_vec_array_t;
+	typedef tpbrt_vec3_array_t tpbrt_point3_array_t;
+	typedef tpbrt_point3_array_t tpbrt_point_array_t;
+	typedef tpbrt_vec3_array_t tpbrt_normal3_array_t;
+	typedef tpbrt_normal3_array_t tpbrt_normal_array_t;
+
 #ifdef __cplusplus
 }
 #endif

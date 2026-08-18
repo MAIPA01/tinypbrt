@@ -2,7 +2,7 @@
 #ifndef _TINYPBRT_SAMPLERS_H_
 #define _TINYPBRT_SAMPLERS_H_
 
-#include "param.h"
+#include <tinypbrt/detail/common.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,14 +17,21 @@ extern "C" {
 		TPBRT_SAMPLER_Z_SOBOL	   = 5,
 	} tpbrt_sampler_type_t;
 
+	typedef enum : uint8_t {
+		TPBRT_SAMPLER_RANDOM_NONE = 0,
+		TPBRT_SAMPLER_RANDOM_PERMUTE_DIGITS = 1,
+		TPBRT_SAMPLER_RANDOM_OWEN = 2,
+		TPBRT_SAMPLER_RANDOM_FAST_OWEN = 3,
+	} tpbrt_sampler_random_t;
+
 	typedef struct {
 		tpbrt_sampler_type_t type;
-		int32_t seed;
-		uint32_t pixel_samples;
-		tpbrt_string_t randomization;
+		tpbrt_int_t seed;
+		tpbrt_uint_t pixel_samples;
+		tpbrt_sampler_random_t randomization;
 		tpbrt_bool_t jitter;
-		uint32_t x_samples;
-		uint32_t y_samples;
+		tpbrt_uint_t x_samples;
+		tpbrt_uint_t y_samples;
 	} tpbrt_sampler_t;
 
 #ifdef __cplusplus

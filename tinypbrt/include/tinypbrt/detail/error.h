@@ -35,7 +35,9 @@ extern "C" {
 		TPBRT_ERROR_MISSING_REQUIRED_PARAMETER = 23,
 		TPBRT_ERROR_NESTED_OBJECTS			   = 24,
 		TPBRT_ERROR_NOT_FOUND				   = 25,
-		TPBRT_ERROR_MAX_NUM					   = 26,
+		TPBRT_ERROR_OUT_OF_MEMORY			   = 26,
+		TPBRT_ERROR_INVALID_POINTER			   = 27,
+		TPBRT_ERROR_MAX_NUM					   = 28,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);

@@ -2,7 +2,7 @@
 #ifndef _TINYPBRT_ACCELERATOR_H_
 #define _TINYPBRT_ACCELERATOR_H_
 
-#include "../param.h"
+#include <tinypbrt/detail/fwd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,16 +21,16 @@ extern "C" {
 	} tpbrt_accelerator_bvh_split_method_t;
 
 	typedef struct {
-		uint32_t max_node_prims;
+		tpbrt_uint_t max_node_prims;
 		tpbrt_accelerator_bvh_split_method_t split_method;
 	} tpbrt_accelerator_bvh_params_t;
 
 	typedef struct {
-		uint32_t intersect_cost;
-		uint32_t traversal_cost;
-		float empty_bonus;
-		uint32_t max_prims;
-		int32_t max_depth;
+		tpbrt_uint_t intersect_cost;
+		tpbrt_uint_t traversal_cost;
+		tpbrt_float_t empty_bonus;
+		tpbrt_uint_t max_prims;
+		tpbrt_int_t max_depth;
 	} tpbrt_accelerator_kd_tree_params_t;
 
 	typedef struct {

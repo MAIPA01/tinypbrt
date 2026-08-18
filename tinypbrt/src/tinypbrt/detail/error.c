@@ -35,10 +35,14 @@ extern "C" {
 		{ .chars = "Required param is missing",										.size = 25 }, // TPBRT_ERROR_MISSING_REQUIRED_PARAMETER
 		{ .chars = "Nested object attributes are not allowed",					   .size = 40 }, // TPBRT_ERROR_NESTED_OBJECTS
 		{ .chars = "Not found",													  .size = 9  }, // TPBRT_ERROR_NOT_FOUND
+		{ .chars = "Out of memory",												  .size = 13 }, // TPBRT_ERROR_OUT_OF_MEMORY
+		{ .chars = "Invalid pointer",												.size = 15 }, // TPBRT_ERROR_INVALID_POINTER
 		{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 	};
 
-	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, const tpbrt_size_t buffer_size) {
+	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* const buffer, const tpbrt_size_t buffer_size) {
+			if (buffer == TPBRT_NULL || buffer_size == 0) { return 0; }
+
 		error					= min(error, TPBRT_ERROR_MAX_NUM);
 		const tpbrt_size_t size = min(TPBRT_ERROR_MSGS[error].size, buffer_size - 1u);
 		memcpy(buffer, TPBRT_ERROR_MSGS[error].chars, size);

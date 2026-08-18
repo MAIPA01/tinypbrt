@@ -18,6 +18,11 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_string_array_t;
 
+	typedef struct {
+		tpbrt_float_t value;
+		tpbrt_bool_t has_value;
+	} tpbrt_opt_float_t;
+
 #ifdef __cplusplus
 }
 #endif

@@ -2,7 +2,7 @@
 #ifndef _TINYPBRT_INTEGRATOR_H_
 #define _TINYPBRT_INTEGRATOR_H_
 
-#include "../param.h"
+#include <tinypbrt/detail/fwd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,9 +21,15 @@ extern "C" {
 		TPBRT_INTEGRATOR_VOL_PATH		   = 9,
 	} tpbrt_integrator_type_t;
 
+	typedef enum {
+		TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH	   = 0,
+		TPBRT_INTEGRATOR_LIGHT_SAMPLER_UNIFORM = 1,
+		TPBRT_INTEGRATOR_LIGHT_SAMPLER_POWER   = 2,
+	} tpbrt_integrator_light_sampler_t;
+
 	typedef struct {
 		tpbrt_bool_t cos_sample;
-		float max_distance;
+		tpbrt_float_t max_distance;
 	} tpbrt_integrator_ambient_occlusion_params_t;
 
 	typedef struct {
@@ -32,11 +38,11 @@ extern "C" {
 	} tpbrt_integrator_bdpt_params_t;
 
 	typedef struct {
-		uint32_t bootstrap_samples;
-		uint32_t chains;
-		uint32_t mutations_per_pixel;
-		float large_step_probability;
-		float sigma;
+		tpbrt_uint_t bootstrap_samples;
+		tpbrt_uint_t chains;
+		tpbrt_uint_t mutations_per_pixel;
+		tpbrt_float_t large_step_probability;
+		tpbrt_float_t sigma;
 	} tpbrt_integrator_mlt_params_t;
 
 	typedef struct {
@@ -45,16 +51,17 @@ extern "C" {
 	} tpbrt_integrator_simple_path_params_t;
 
 	typedef struct {
-		int32_t photons_per_iteration;
-		float radius;
-		uint32_t seed;
+		tpbrt_int_t photons_per_iteration;
+		tpbrt_float_t radius;
+		tpbrt_uint_t seed;
 	} tpbrt_integrator_sppm_params_t;
 
 	typedef struct {
 		tpbrt_integrator_type_t type;
-		uint32_t max_depth;
-		tpbrt_string_t light_sampler;
+		tpbrt_uint_t max_depth;
+		tpbrt_integrator_light_sampler_t light_sampler;
 		tpbrt_bool_t regularize;
+
 		union {
 			tpbrt_integrator_ambient_occlusion_params_t ambient_occlusion_params;
 			tpbrt_integrator_bdpt_params_t bdpt_params;

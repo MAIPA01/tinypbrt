@@ -2,7 +2,8 @@
 #ifndef _TINYPBRT_LIGHT_H_
 #define _TINYPBRT_LIGHT_H_
 
-#include "../param.h"
+#include <tinypbrt/detail/color.h>
+#include <tinypbrt/detail/math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,8 +20,8 @@ extern "C" {
 
 	typedef struct {
 		tpbrt_spectrum_t L;
-		tpbrt_vec3_t from;
-		tpbrt_vec3_t to;
+		tpbrt_point_t from;
+		tpbrt_point_t to;
 	} tpbrt_light_source_distant_params_t;
 
 	typedef struct {
@@ -30,35 +31,33 @@ extern "C" {
 
 	typedef struct {
 		tpbrt_string_t file_name;
-		tpbrt_vec3_t portal[4];
+		tpbrt_point3_t portal[4];
 		tpbrt_spectrum_t L;
 	} tpbrt_light_source_infinite_params_t;
 
 	typedef struct {
 		tpbrt_spectrum_t I;
-		tpbrt_vec3_t point;
+		tpbrt_point_t from;
 	} tpbrt_light_source_point_params_t;
 
 	typedef struct {
 		tpbrt_spectrum_t I;
-		float fov;
+		tpbrt_float_t fov;
 		tpbrt_string_t file_name;
 	} tpbrt_light_source_projection_params_t;
 
 	typedef struct {
 		tpbrt_spectrum_t I;
-		tpbrt_vec3_t from;
-		tpbrt_vec3_t to;
-		float cone_angle;
-		float cone_delta_angle;
+		tpbrt_point_t from, to;
+		tpbrt_float_t cone_angle;
+		tpbrt_float_t cone_delta_angle;
 	} tpbrt_light_source_spot_params_t;
 
 	typedef struct {
 		tpbrt_mat4_t transform;
 		tpbrt_light_source_type_t type;
-		float power;
-		float illuminance;
-		float scale;
+		tpbrt_opt_float_t power_illuminance;
+		tpbrt_float_t scale;
 
 		union {
 			tpbrt_light_source_distant_params_t distant_params;

@@ -27,16 +27,8 @@ struct tpbrt_float_array_t;
 struct tpbrt_vec2_t;
 struct tpbrt_vec3_t;
 
-typedef struct tpbrt_vec2_t tpbrt_point2_t;
-typedef struct tpbrt_vec3_t tpbrt_point3_t;
-typedef struct tpbrt_vec3_t tpbrt_normal3_t;
-
 struct tpbrt_vec2_array_t;
 struct tpbrt_vec3_array_t;
-
-typedef struct tpbrt_vec2_array_t tpbrt_point2_array_t;
-typedef struct tpbrt_vec3_array_t tpbrt_point3_array_t;
-typedef struct tpbrt_vec3_array_t tpbrt_normal3_array_t;
 
 struct tpbrt_mat4_t;
 struct tpbrt_mat4_animated_t;
