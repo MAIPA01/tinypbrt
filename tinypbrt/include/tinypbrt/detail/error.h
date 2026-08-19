@@ -42,7 +42,8 @@ extern "C" {
 		TPBRT_ERROR_UNKNOWN_COLOR_SPACE		   = 30,
 		TPBRT_ERROR_UNKNOWN_SPECTRUM_BUILTIN   = 31,
 		TPBRT_ERROR_TOO_MANY_VALUES			   = 32,
-		TPBRT_ERROR_MAX_NUM					   = 33,
+		TPBRT_ERROR_UNKNOWN_FILM_SENSOR		   = 33,
+		TPBRT_ERROR_MAX_NUM					   = 34,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);
