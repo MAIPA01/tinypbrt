@@ -49,6 +49,8 @@ extern "C" {
 				.size = 41																			 }, // TPBRT_ERROR_UNKNOWN_CAMERA_REALISTIC_APERTURE_BUILTIN
 			{ .chars = "Unknown integrator type",										  .size = 23 }, // TPBRT_ERROR_UNKNOWN_INTEGRATOR_TYPE
 			{ .chars = "Unknown integrator light sampler",							   .size = 32 }, // TPBRT_ERROR_UNKNOWN_INTEGRATOR_LIGHT_SAMPLER
+			{ .chars = "Unknown accelerator type",									   .size = 24 }, // TPBRT_ERROR_UNKNOWN_ACCELERATOR_TYPE
+			{ .chars = "Unknown bvh accelerator split method",						   .size = 36 }, // TPBRT_ERROR_UNKNOWN_ACCELERATOR_BVH_SPLIT_METHOD
 			{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 		};
 

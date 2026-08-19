@@ -48,7 +48,9 @@ extern "C" {
 		TPBRT_ERROR_UNKNOWN_CAMERA_REALISTIC_APERTURE_BUILTIN = 36,
 		TPBRT_ERROR_UNKNOWN_INTEGRATOR_TYPE					  = 37,
 		TPBRT_ERROR_UNKNOWN_INTEGRATOR_LIGHT_SAMPLER		  = 38,
-		TPBRT_ERROR_MAX_NUM									  = 39,
+		TPBRT_ERROR_UNKNOWN_ACCELERATOR_TYPE				  = 39,
+		TPBRT_ERROR_UNKNOWN_ACCELERATOR_BVH_SPLIT_METHOD	  = 40,
+		TPBRT_ERROR_MAX_NUM									  = 41,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);
