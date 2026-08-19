@@ -52,7 +52,9 @@ extern "C" {
 		TPBRT_ERROR_UNKNOWN_ACCELERATOR_BVH_SPLIT_METHOD	  = 40,
 		TPBRT_ERROR_UNKNOWN_SAMPLER_TYPE					  = 41,
 		TPBRT_ERROR_UNKNOWN_SAMPLER_RANDOM					  = 42,
-		TPBRT_ERROR_MAX_NUM									  = 43,
+		TPBRT_ERROR_UNKNOWN_LIGHT_SOURCE_TYPE				  = 43,
+		TPBRT_ERROR_UNKNOWN_AREA_LIGHT_TYPE					  = 44,
+		TPBRT_ERROR_MAX_NUM									  = 45,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);

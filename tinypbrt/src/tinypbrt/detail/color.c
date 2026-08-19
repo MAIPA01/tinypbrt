@@ -2,6 +2,8 @@
 
 #include <tinypbrt/detail/color_internal.h>
 
+#include <tinypbrt/detail/common_internal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -247,6 +249,63 @@ extern "C" {
 			}
 
 		return TPBRT_ERROR_UNKNOWN_SPECTRUM_BUILTIN;
+	}
+
+	tpbrt_error_t tpbrt_copy_wavelengths_array(tpbrt_wavelength_array_t* const dst, const tpbrt_wavelength_array_t* const src) {
+			if (dst == TPBRT_NULL || src == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (src->values == TPBRT_NULL || src->count == 0) {
+				dst->values = TPBRT_NULL;
+				dst->count	= 0;
+				return TPBRT_ERROR_NONE;
+			}
+
+		dst->values = malloc(sizeof(tpbrt_wavelength_t) * src->count);
+			if (dst->values == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+		memcpy(dst->values, src->values, sizeof(tpbrt_wavelength_t) * src->count);
+		dst->count = src->count;
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_copy_spectrum(tpbrt_spectrum_t* const dst, const tpbrt_spectrum_t* const src) {
+			if (dst == TPBRT_NULL || src == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		dst->type = src->type;
+
+			if (src->type == TPBRT_SPECTRUM_TYPE_WAVELENGTH) {
+				const tpbrt_error_t err = tpbrt_copy_wavelengths_array(&dst->wavelengths, &src->wavelengths);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+			}
+			else if (src->type == TPBRT_SPECTRUM_TYPE_RGB) {
+				dst->rgb.r = src->rgb.r;
+				dst->rgb.g = src->rgb.g;
+				dst->rgb.b = src->rgb.b;
+			}
+			else if (src->type == TPBRT_SPECTRUM_TYPE_BLACKBODY) { dst->blackbody = src->blackbody; }
+			else if (src->type == TPBRT_SPECTRUM_TYPE_FILE) {
+				const tpbrt_error_t err = tpbrt_copy_string(&dst->file_name, &src->file_name);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+			}
+			else if (src->type == TPBRT_SPECTRUM_TYPE_BUILTIN) { dst->builtin = src->builtin; }
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_free_spectrum(tpbrt_spectrum_t* const spectrum) {
+			if (spectrum == TPBRT_NULL) { return; }
+
+			if (spectrum->type == TPBRT_SPECTRUM_TYPE_FILE && spectrum->file_name.chars != TPBRT_NULL) {
+				free(spectrum->file_name.chars);
+				spectrum->file_name.chars = TPBRT_NULL;
+				spectrum->file_name.size  = 0;
+			}
+
+			if (spectrum->type == TPBRT_SPECTRUM_TYPE_WAVELENGTH && spectrum->wavelengths.values != TPBRT_NULL) {
+				free(spectrum->wavelengths.values);
+				spectrum->wavelengths.values = TPBRT_NULL;
+				spectrum->wavelengths.count	 = 0;
+			}
 	}
 
 #ifdef __cplusplus
