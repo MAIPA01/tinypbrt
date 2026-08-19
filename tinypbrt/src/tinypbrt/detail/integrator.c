@@ -314,7 +314,7 @@ extern "C" {
 							return err;
 						}
 
-					err = tpbrt_params_list_get_uint(params, &SEED_STR, 0u, &(*integrator)->sppm_params.seed);
+					err = tpbrt_params_list_get_int(params, &SEED_STR, 0, &(*integrator)->sppm_params.seed);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;

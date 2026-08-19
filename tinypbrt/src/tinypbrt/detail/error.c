@@ -51,6 +51,8 @@ extern "C" {
 			{ .chars = "Unknown integrator light sampler",							   .size = 32 }, // TPBRT_ERROR_UNKNOWN_INTEGRATOR_LIGHT_SAMPLER
 			{ .chars = "Unknown accelerator type",									   .size = 24 }, // TPBRT_ERROR_UNKNOWN_ACCELERATOR_TYPE
 			{ .chars = "Unknown bvh accelerator split method",						   .size = 36 }, // TPBRT_ERROR_UNKNOWN_ACCELERATOR_BVH_SPLIT_METHOD
+			{ .chars = "Unknown sampler type",										   .size = 20 }, // TPBRT_ERROR_UNKNOWN_SAMPLER_TYPE
+			{ .chars = "Unknown sampler random",										 .size = 22 }, // TPBRT_ERROR_UNKNOWN_SAMPLER_RANDOM
 			{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 		};
 

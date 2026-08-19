@@ -80,7 +80,7 @@ extern "C" {
 		tpbrt_uint_t max_depth;
 		tpbrt_int_t photons_per_iteration;
 		tpbrt_float_t radius;
-		tpbrt_uint_t seed;
+		tpbrt_int_t seed;
 	} tpbrt_integrator_sppm_params_t;
 
 	typedef struct {
