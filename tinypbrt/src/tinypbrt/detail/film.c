@@ -227,17 +227,17 @@ extern "C" {
 	  tpbrt_film_t** const film) {
 			if (params == TPBRT_NULL || film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_error_t err;
-		tpbrt_film_type_t type = TPBRT_FILM_TYPE_RGB;
-			if (type_str != TPBRT_NULL && type_str->chars != TPBRT_NULL) {
-				err = tpbrt_film_type_from_string(type_str, &type);
-					if (err != TPBRT_ERROR_NONE) { return err; }
-			}
-
 		*film = malloc(sizeof(tpbrt_film_t));
 			if (*film == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			switch (type) {
+		tpbrt_error_t err;
+		(*film)->type = TPBRT_FILM_TYPE_RGB;
+			if (type_str != TPBRT_NULL && type_str->chars != TPBRT_NULL) {
+				err = tpbrt_film_type_from_string(type_str, &(*film)->type);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+			}
+
+			switch ((*film)->type) {
 			default:
 				case TPBRT_FILM_TYPE_RGB: {
 					break;
@@ -251,11 +251,13 @@ extern "C" {
 						}
 
 						if (err != TPBRT_ERROR_NONE) {
+							free(coordinate_system_str.chars);
 							tpbrt_free_film(film);
 							return err;
 						}
 
 					err = tpbrt_coordinate_system_from_string(&coordinate_system_str, &(*film)->gbuffer_params.coordinate_system);
+					free(coordinate_system_str.chars);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_film(film);
 							return err;
@@ -405,12 +407,14 @@ extern "C" {
 		tpbrt_string_t sensor_str;
 		err = tpbrt_params_list_get_string(params, &TPBRT_FILM_SENSOR_STR, &sensor_str);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
+					if (sensor_str.chars != TPBRT_NULL) { free(sensor_str.chars); }
 				tpbrt_free_film(film);
 				return err;
 			}
 			if (err == TPBRT_ERROR_NOT_FOUND) { (*film)->sensor = TPBRT_FILM_SENSOR_DEFAULT; }
 			else {
 				err = tpbrt_film_sensor_from_string(&sensor_str, &(*film)->sensor);
+				free(sensor_str.chars);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_free_film(film);
 						return err;

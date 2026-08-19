@@ -43,6 +43,10 @@ extern "C" {
 			{ .chars = "Unknown color space",											  .size = 19 }, // TPBRT_ERROR_UNKNOWN_COLOR_SPACE
 			{ .chars = "Unknown spectrum builtin",									   .size = 25 }, // TPBRT_ERROR_UNKNOWN_SPECTRUM_BUILTIN
 			{ .chars = "Too many values provided",									   .size = 24 }, // TPBRT_ERROR_TOO_MANY_VALUES
+			{ .chars = "Unknown camera type",											  .size = 19 }, // TPBRT_ERROR_UNKNOWN_CAMERA_TYPE
+			{ .chars = "Unknown spherical camera mapping",							   .size = 32 }, // TPBRT_ERROR_UNKNOWN_CAMERA_SPHERICAL_MAPPING
+			{ .chars  = "Unknown realistic camera aperture builtin",
+				.size = 41																			 }, // TPBRT_ERROR_UNKNOWN_CAMERA_REALISTIC_APERTURE_BUILTIN
 			{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 		};
 
