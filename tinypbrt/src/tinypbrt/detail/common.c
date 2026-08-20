@@ -22,13 +22,24 @@ extern "C" {
 		return start;
 	}
 
+	tpbrt_bool_t tpbrt_parse_string_token(const tpbrt_char_t* const token, const tpbrt_size_t len,
+	  tpbrt_string_t* const out_val) {
+			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+
+		if (*token != '\"' || *(token + len) != '\"') { return TPBRT_FALSE; }
+
+		out_val->chars = (tpbrt_char_t*)(token + 1);
+		out_val->size = len - 2;
+		return TPBRT_TRUE;
+	}
+
 	tpbrt_bool_t tpbrt_parse_float_token(const tpbrt_char_t* const token, const tpbrt_size_t len, tpbrt_float_t* const out_val) {
 		static const tpbrt_size_t MAX_BUFFER_SIZE = 64;
 
 			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
-		const tpbrt_size_t n = len < MAX_BUFFER_SIZE - 1 ? len : MAX_BUFFER_SIZE - 1;
+		const tpbrt_size_t n = min(len, MAX_BUFFER_SIZE - 1);
 		strncpy_s(buf, sizeof(tpbrt_size_t) * MAX_BUFFER_SIZE, token, n);
 		buf[n] = '\0';
 		tpbrt_char_t* end;

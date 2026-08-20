@@ -17,6 +17,10 @@ extern "C" {
 	  const tpbrt_string_t* value_str, tpbrt_param_t** param);
 	void tpbrt_free_param(tpbrt_param_t** param);
 
+	tpbrt_error_t tpbrt_param_as_strings(const tpbrt_param_t* param, tpbrt_string_array_t* out_strings);
+
+	tpbrt_error_t tpbrt_param_as_string(const tpbrt_param_t* param, tpbrt_string_t* out_string);
+
 	tpbrt_error_t tpbrt_param_as_floats(const tpbrt_param_t* param, tpbrt_float_array_t* out_floats);
 	tpbrt_error_t tpbrt_param_as_ints(const tpbrt_param_t* param, tpbrt_int_array_t* out_ints);
 	tpbrt_error_t tpbrt_param_as_uints(const tpbrt_param_t* param, tpbrt_uint_array_t* out_uints);
@@ -64,6 +68,12 @@ extern "C" {
 	tpbrt_size_t tpbrt_params_list_size(const tpbrt_params_list_t* params_list);
 	tpbrt_bool_t tpbrt_params_list_is_empty(const tpbrt_params_list_t* params_list);
 
+tpbrt_error_t tpbrt_params_list_get_strings(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	  tpbrt_string_array_t* out_vals);
+
+tpbrt_error_t tpbrt_params_list_get_string(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	  tpbrt_string_t* out_val);
+
 	tpbrt_error_t tpbrt_params_list_get_floats(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_float_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_ints(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
@@ -81,8 +91,6 @@ extern "C" {
 	  tpbrt_uint_t default_val, tpbrt_uint_t* out_val);
 	tpbrt_error_t tpbrt_params_list_get_bool(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_bool_t default_val, tpbrt_bool_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_string(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_string_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_rgb(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_rgb_t* out_val);

@@ -1,6 +1,6 @@
 #include <tinypbrt/pch.h>
 
-#include <tinypbrt/detail/common.h>
+#include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/error.h>
 
 #ifdef __cplusplus
@@ -61,6 +61,9 @@ extern "C" {
 			{ .chars = "Unknown texture mapping",										  .size = 23 }, // TPBRT_ERROR_UNKNOWN_TEXTURE_MAPPING
 			{ .chars = "Found duplicated texture",									   .size = 24 }, // TPBRT_ERROR_DUPLICATE_TEXTURE_NAME
 			{ .chars = "Invalid texture type",										   .size = 20 }, // TPBRT_ERROR_INVALID_TEXTURE_TYPE
+			{ .chars = "Provided handle is invalid",									 .size = 26 }, // TPBRT_ERROR_INVALID_HANDLE
+			{ .chars = "Unknown material type",											.size = 21 }, // TPBRT_ERROR_UNKNOWN_MATERIAL_TYPE
+			TPBRT_STRING("Unable to parse string"), // TPBRT_ERROR_PARSE_STRING
 			{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 		};
 

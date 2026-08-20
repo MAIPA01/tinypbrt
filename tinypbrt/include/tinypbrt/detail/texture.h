@@ -3,6 +3,7 @@
 #define _TINYPBRT_TEXTURE_H_
 
 #include <tinypbrt/detail/color.h>
+#include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/fwd.h>
 #include <tinypbrt/detail/math.h>
 
@@ -34,8 +35,10 @@ extern "C" {
 	} tpbrt_texture_class_t;
 
 	typedef enum : uint8_t {
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SINGLE	= 0,
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE = 1,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE	 = 0,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT	 = 1,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM = 2,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE	 = 3,
 	} tpbrt_texture_handle_value_type_t;
 
 	typedef struct {
@@ -43,7 +46,8 @@ extern "C" {
 
 		union {
 			tpbrt_size_t tex_idx;
-			tpbrt_float_t single_value;
+			tpbrt_float_t f32;
+			tpbrt_spectrum_t spectrum;
 		};
 	} tpbrt_texture_handle_t;
 
@@ -197,6 +201,11 @@ extern "C" {
 		tpbrt_texture_t* textures;
 		tpbrt_size_t count;
 	} tpbrt_textures_list_t;
+
+	tpbrt_error_t tpbrt_get_texture_by_name(const tpbrt_textures_list_t* textures, const tpbrt_string_t* name,
+	  const tpbrt_texture_t** texture);
+	tpbrt_error_t tpbrt_get_texture_by_handle(const tpbrt_textures_list_t* textures, const tpbrt_texture_handle_t* handle,
+	  const tpbrt_texture_t** texture);
 
 #ifdef __cplusplus
 }

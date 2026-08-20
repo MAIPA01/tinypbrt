@@ -13,6 +13,7 @@ extern "C" {
 		TPBRT_COLOR_SPACE_REC_2020	  = 1,
 		TPBRT_COLOR_SPACE_DCI_P3	  = 2,
 		TPBRT_COLOR_SPACE_SRGB		  = 3,
+		TPBRT_COLOR_SPACE_MAX_NUM	  = 4,
 	} tpbrt_color_space_t;
 
 	typedef enum {
@@ -75,6 +76,7 @@ extern "C" {
 		TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_F11   = 27,
 		TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_F12   = 28,
 		TPBRT_SPECTRUM_BUILTIN_ILLUM_ACES_D60  = 29,
+		TPBRT_SPECTRUM_BUILTIN_MAX_NUM		   = 30,
 	} tpbrt_spectrum_builtin_t;
 
 	typedef struct {
