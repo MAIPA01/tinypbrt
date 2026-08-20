@@ -54,7 +54,15 @@ extern "C" {
 		TPBRT_ERROR_UNKNOWN_SAMPLER_RANDOM					  = 42,
 		TPBRT_ERROR_UNKNOWN_LIGHT_SOURCE_TYPE				  = 43,
 		TPBRT_ERROR_UNKNOWN_AREA_LIGHT_TYPE					  = 44,
-		TPBRT_ERROR_MAX_NUM									  = 45,
+		TPBRT_ERROR_UNKNOWN_TEXTURE_TYPE					  = 45,
+		TPBRT_ERROR_UNKNOWN_TEXTURE_CLASS					  = 46,
+		TPBRT_ERROR_UNKNOWN_TEXTURE_WRAP					  = 47,
+		TPBRT_ERROR_UNKNOWN_TEXTURE_FILTER					  = 48,
+		TPBRT_ERROR_UNKNOWN_TEXTURE_ENCODING				  = 49,
+		TPBRT_ERROR_UNKNOWN_TEXTURE_MAPPING					  = 50,
+		TPBRT_ERROR_DUPLICATE_TEXTURE_NAME					  = 51,
+		TPBRT_ERROR_INVALID_TEXTURE_TYPE					  = 52,
+		TPBRT_ERROR_MAX_NUM									  = 53,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);

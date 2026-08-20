@@ -53,6 +53,14 @@ extern "C" {
 			{ .chars = "Unknown bvh accelerator split method",						   .size = 36 }, // TPBRT_ERROR_UNKNOWN_ACCELERATOR_BVH_SPLIT_METHOD
 			{ .chars = "Unknown sampler type",										   .size = 20 }, // TPBRT_ERROR_UNKNOWN_SAMPLER_TYPE
 			{ .chars = "Unknown sampler random",										 .size = 22 }, // TPBRT_ERROR_UNKNOWN_SAMPLER_RANDOM
+			{ .chars = "Unknown texture type",										   .size = 20 }, // TPBRT_ERROR_UNKNOWN_TEXTURE_TYPE
+			{ .chars = "Unknown texture class",											.size = 21 }, // TPBRT_ERROR_UNKNOWN_TEXTURE_CLASS
+			{ .chars = "Unknown texture wrap",										   .size = 20 }, // TPBRT_ERROR_UNKNOWN_TEXTURE_WRAP
+			{ .chars = "Unknown texture filter",										 .size = 22 }, // TPBRT_ERROR_UNKNOWN_TEXTURE_FILTER
+			{ .chars = "Unknown texture encoding",									   .size = 24 }, // TPBRT_ERROR_UNKNOWN_TEXTURE_ENCODING
+			{ .chars = "Unknown texture mapping",										  .size = 23 }, // TPBRT_ERROR_UNKNOWN_TEXTURE_MAPPING
+			{ .chars = "Found duplicated texture",									   .size = 24 }, // TPBRT_ERROR_DUPLICATE_TEXTURE_NAME
+			{ .chars = "Invalid texture type",										   .size = 20 }, // TPBRT_ERROR_INVALID_TEXTURE_TYPE
 			{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 		};
 
