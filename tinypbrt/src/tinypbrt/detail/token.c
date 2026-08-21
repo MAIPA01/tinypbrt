@@ -73,23 +73,17 @@ extern "C" {
 		return TPBRT_ERROR_UNKNOWN_DIRECTIVE;
 	}
 
-	tpbrt_error_t tpbrt_create_token(const tpbrt_string_t* const value, tpbrt_token_t** const token) {
+	tpbrt_error_t tpbrt_create_token(const tpbrt_string_t* const value, tpbrt_token_t* const token) {
 			if (value == TPBRT_NULL || value->chars == TPBRT_NULL || token == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		*token = malloc(sizeof(tpbrt_token_t));
-			if (*token == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
-
-		(*token)->value			= *value;
-		const tpbrt_error_t err = tpbrt_directive_from_string(value, &(*token)->directive);
-			if (err == TPBRT_ERROR_NONE) {
-				(*token)->type = TPBRT_TOKEN_TYPE_DIRECTIVE;
-				return TPBRT_ERROR_NONE;
+		token->value = *value;
+			if (tpbrt_directive_from_string(value, &token->directive) == TPBRT_ERROR_NONE) {
+				token->type = TPBRT_TOKEN_TYPE_DIRECTIVE;
 			}
-
-			if (value->size >= 2 && value->chars[0] == '\"' && value->chars[value->size - 1] == '\"') {
-				(*token)->type = TPBRT_TOKEN_TYPE_QUOTED_STRING;
+			else if (value->size >= 2 && value->chars[0] == '\"' && value->chars[value->size - 1] == '\"') {
+				token->type = TPBRT_TOKEN_TYPE_QUOTED_STRING;
 			}
-			else { (*token)->type = TPBRT_TOKEN_TYPE_SINGLE; }
+			else { token->type = TPBRT_TOKEN_TYPE_SINGLE; }
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -105,12 +99,12 @@ extern "C" {
 
 	tpbrt_bool_t tpbrt_token_is_open_brace(const tpbrt_token_t* const token) {
 			if (token == TPBRT_NULL || token->type != TPBRT_TOKEN_TYPE_SINGLE) { return TPBRT_FALSE; }
-		return token->value.size == 1u && token->value.chars[0] == '{';
+		return token->value.size == 1u && token->value.chars[0] == '[';
 	}
 
 	tpbrt_bool_t tpbrt_token_is_close_brace(const tpbrt_token_t* const token) {
 			if (token == TPBRT_NULL || token->type != TPBRT_TOKEN_TYPE_SINGLE) { return TPBRT_FALSE; }
-		return token->value.size == 1u && token->value.chars[0] == '}';
+		return token->value.size == 1u && token->value.chars[0] == ']';
 	}
 
 	tpbrt_bool_t tpbrt_token_is_valid(const tpbrt_token_t* const token) {
@@ -134,13 +128,6 @@ extern "C" {
 			}
 
 		return TPBRT_TRUE;
-	}
-
-	void tpbrt_free_token(tpbrt_token_t** const token) {
-			if (token == TPBRT_NULL || *token == TPBRT_NULL) { return; }
-
-		free(*token);
-		*token = TPBRT_NULL;
 	}
 
 #ifdef __cplusplus
