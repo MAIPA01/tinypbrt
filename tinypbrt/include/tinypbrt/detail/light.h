@@ -89,6 +89,13 @@ extern "C" {
 		};
 	} tpbrt_area_light_t;
 
+	typedef struct {
+		tpbrt_light_source_t* lights;
+		tpbrt_size_t lights_count;
+		tpbrt_area_light_t* area_lights;
+		tpbrt_size_t area_lights_count;
+	} tpbrt_lights_list_t;
+
 #ifdef __cplusplus
 }
 #endif

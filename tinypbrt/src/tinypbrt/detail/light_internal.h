@@ -21,6 +21,16 @@ extern "C" {
 	void tpbrt_free_area_light(tpbrt_area_light_t** area_light);
 #pragma endregion
 
+#pragma region LIGHTS_LIST
+	tpbrt_error_t tpbrt_create_empty_lights_list(tpbrt_lights_list_t** lights_list);
+	tpbrt_error_t tpbrt_lights_list_add_light_source(tpbrt_lights_list_t* lights_list, const tpbrt_light_source_t* light_source);
+	tpbrt_error_t tpbrt_lights_list_add_area_light(tpbrt_lights_list_t* lights_list, const tpbrt_area_light_t* area_light);
+	void tpbrt_free_lights_list(tpbrt_lights_list_t** lights_list);
+
+	tpbrt_size_t tpbrt_lights_list_size(const tpbrt_lights_list_t* lights_list);
+	tpbrt_bool_t tpbrt_lights_list_is_empty(const tpbrt_lights_list_t* lights_list);
+#pragma endregion
+
 #ifdef __cplusplus
 }
 #endif

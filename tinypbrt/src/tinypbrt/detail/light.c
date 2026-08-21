@@ -482,6 +482,103 @@ extern "C" {
 
 #pragma endregion
 
+#pragma region LIGHTS_LIST
+
+	tpbrt_error_t tpbrt_create_empty_lights_list(tpbrt_lights_list_t** const lights_list) {
+			if (lights_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		*lights_list = malloc(sizeof(tpbrt_lights_list_t));
+			if (*lights_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+		(*lights_list)->lights			  = TPBRT_NULL;
+		(*lights_list)->lights_count	  = 0;
+		(*lights_list)->area_lights		  = TPBRT_NULL;
+		(*lights_list)->area_lights_count = 0;
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_lights_list_add_light_source(tpbrt_lights_list_t* const lights_list,
+	  const tpbrt_light_source_t* const light_source) {
+			if (light_source == TPBRT_NULL || lights_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (lights_list->lights == TPBRT_NULL) {
+				lights_list->lights = malloc(sizeof(tpbrt_light_source_t));
+					if (lights_list->lights == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+				lights_list->lights[0]	  = *light_source;
+				lights_list->lights_count = 1;
+				return TPBRT_ERROR_NONE;
+			}
+
+		tpbrt_light_source_t* new_list = malloc(sizeof(tpbrt_light_source_t) * (lights_list->lights_count + 1));
+			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+			for (tpbrt_size_t i = 0; i < lights_list->lights_count; i++) { new_list[i] = lights_list->lights[i]; }
+		new_list[lights_list->lights_count++] = *light_source;
+		free(lights_list->lights);
+		lights_list->lights = new_list;
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_lights_list_add_area_light(tpbrt_lights_list_t* const lights_list,
+	  const tpbrt_area_light_t* const area_light) {
+			if (area_light == TPBRT_NULL || lights_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (lights_list->area_lights == TPBRT_NULL) {
+				lights_list->area_lights = malloc(sizeof(tpbrt_area_light_t));
+					if (lights_list->area_lights == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+				lights_list->area_lights[0]	   = *area_light;
+				lights_list->area_lights_count = 1;
+				return TPBRT_ERROR_NONE;
+			}
+
+		tpbrt_area_light_t* new_list = malloc(sizeof(tpbrt_area_light_t) * (lights_list->area_lights_count + 1));
+			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+			for (tpbrt_size_t i = 0; i < lights_list->area_lights_count; i++) { new_list[i] = lights_list->area_lights[i]; }
+		new_list[lights_list->area_lights_count++] = *area_light;
+		free(lights_list->area_lights);
+		lights_list->area_lights = new_list;
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_free_lights_list(tpbrt_lights_list_t** const lights_list) {
+			if (lights_list == TPBRT_NULL || *lights_list == TPBRT_NULL) { return; }
+
+			if ((*lights_list)->lights != TPBRT_NULL) {
+					for (tpbrt_size_t i = 0; i < (*lights_list)->lights_count; ++i) {
+						tpbrt_light_source_t* light_source = &(*lights_list)->lights[i];
+						tpbrt_free_light_source(&light_source);
+					}
+
+				free((*lights_list)->lights);
+			}
+
+			if ((*lights_list)->area_lights != TPBRT_NULL) {
+					for (tpbrt_size_t i = 0; i < (*lights_list)->area_lights_count; ++i) {
+						tpbrt_area_light_t* area_light = &(*lights_list)->area_lights[i];
+						tpbrt_free_area_light(&area_light);
+					}
+
+				free((*lights_list)->area_lights);
+			}
+
+
+		free(*lights_list);
+		*lights_list = TPBRT_NULL;
+	}
+
+	tpbrt_size_t tpbrt_lights_list_size(const tpbrt_lights_list_t* const lights_list) {
+		return lights_list != TPBRT_NULL ? lights_list->lights_count + lights_list->area_lights_count : 0;
+	}
+
+	tpbrt_bool_t tpbrt_lights_list_is_empty(const tpbrt_lights_list_t* const lights_list) {
+		return tpbrt_lights_list_size(lights_list) == 0;
+	}
+
+#pragma endregion
+
 #ifdef __cplusplus
 }
 #endif

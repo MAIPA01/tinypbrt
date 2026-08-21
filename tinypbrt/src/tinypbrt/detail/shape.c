@@ -589,7 +589,7 @@ extern "C" {
 			if (object == TPBRT_NULL || objects_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (objects_list->objects == TPBRT_NULL) {
-				objects_list->objects = malloc(sizeof(tpbrt_material_t));
+				objects_list->objects = malloc(sizeof(tpbrt_object_t));
 					if (objects_list->objects == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
 				objects_list->objects[0]	 = *object;
