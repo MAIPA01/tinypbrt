@@ -11,6 +11,8 @@
 extern "C" {
 #endif
 
+#pragma region MATERIAL
+
 	static tpbrt_error_t tpbrt_material_type_from_string(const tpbrt_string_t* const type_str,
 	  tpbrt_material_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_MATERIAL_TYPE_MAX_NUM] = {
@@ -42,8 +44,6 @@ extern "C" {
 
 		return TPBRT_ERROR_UNKNOWN_MATERIAL_TYPE;
 	}
-
-#pragma region MATERIAL
 
 	tpbrt_error_t tpbrt_create_material(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
 	  const tpbrt_textures_list_t* const textures, const tpbrt_materials_list_t* const materials,
@@ -1760,8 +1760,10 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_materials_list_add_material(tpbrt_materials_list_t* const materials_list,
-	  const tpbrt_material_t* const material) {
-			if (material == TPBRT_NULL || materials_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	  const tpbrt_material_t* const material, tpbrt_material_handle_t* const handle) {
+			if (material == TPBRT_NULL || materials_list == TPBRT_NULL || handle == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
 
 			if (materials_list->materials == TPBRT_NULL) {
 				materials_list->materials = malloc(sizeof(tpbrt_material_t));
@@ -1770,22 +1772,32 @@ extern "C" {
 				materials_list->materials[0]	 = *material;
 				materials_list->materials[0].idx = 0;
 				materials_list->count			 = 1;
+
+				*handle							 = 0;
 				return TPBRT_ERROR_NONE;
 			}
 
-			for (tpbrt_size_t i = 0; i < materials_list->count; i++) {
-					if (materials_list->materials[i].name.size == material->name.size &&
-						strncmp(materials_list->materials[i].name.chars, material->name.chars, material->name.size) == 0) {
-						return TPBRT_ERROR_DUPLICATE_TEXTURE_NAME;
+			if (material->name.size != 0 && material->name.chars != TPBRT_NULL) {
+					for (tpbrt_size_t i = 0; i < materials_list->count; i++) {
+							if (materials_list->materials[i].name.size == material->name.size &&
+								strncmp(materials_list->materials[i].name.chars, material->name.chars, material->name.size) ==
+								  0) {
+								*handle = ~(tpbrt_material_handle_t)0;
+								return TPBRT_ERROR_DUPLICATE_TEXTURE_NAME;
+							}
 					}
 			}
 
 		tpbrt_material_t* new_list = malloc(sizeof(tpbrt_material_t) * (materials_list->count + 1));
-			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+			if (new_list == TPBRT_NULL) {
+				*handle = ~(tpbrt_material_handle_t)0;
+				return TPBRT_ERROR_OUT_OF_MEMORY;
+			}
 
 			for (tpbrt_size_t i = 0; i < materials_list->count; i++) { new_list[i] = materials_list->materials[i]; }
 		new_list[materials_list->count]		= *material;
 		new_list[materials_list->count].idx = materials_list->count;
+		*handle								= materials_list->count;
 		++materials_list->count;
 		free(materials_list->materials);
 		materials_list->materials = new_list;

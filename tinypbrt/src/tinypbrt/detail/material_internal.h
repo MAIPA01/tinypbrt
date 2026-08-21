@@ -20,7 +20,8 @@ extern "C" {
 
 #pragma region MATERIALS_LIST
 	tpbrt_error_t tpbrt_create_empty_materials_list(tpbrt_materials_list_t** materials_list);
-	tpbrt_error_t tpbrt_materials_list_add_material(tpbrt_materials_list_t* materials_list, const tpbrt_material_t* material);
+	tpbrt_error_t tpbrt_materials_list_add_material(tpbrt_materials_list_t* materials_list, const tpbrt_material_t* material,
+	  tpbrt_material_handle_t* handle);
 	tpbrt_error_t tpbrt_materials_list_get_material_by_name(const tpbrt_materials_list_t* materials_list,
 	  const tpbrt_string_t* material_name, const tpbrt_material_t** material);
 	tpbrt_error_t tpbrt_materials_list_get_material_handle(const tpbrt_materials_list_t* materials_list,

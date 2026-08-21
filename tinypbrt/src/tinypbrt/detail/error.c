@@ -64,6 +64,10 @@ extern "C" {
 			{ .chars = "Provided handle is invalid",									 .size = 26 }, // TPBRT_ERROR_INVALID_HANDLE
 			{ .chars = "Unknown material type",											.size = 21 }, // TPBRT_ERROR_UNKNOWN_MATERIAL_TYPE
 			TPBRT_STRING("Unable to parse string"), // TPBRT_ERROR_PARSE_STRING
+			TPBRT_STRING("Unknown shape type"), // TPBRT_ERROR_UNKNOWN_SHAPE_TYPE
+			TPBRT_STRING("Unknown shape curve basis"), // TPBRT_ERROR_UNKNOWN_SHAPE_CURVE_BASIS
+			TPBRT_STRING("Unknown shape curve type"), // TPBRT_ERROR_UNKNOWN_SHAPE_CURVE_TYPE
+			TPBRT_STRING("Invalid parameter value"), // TPBRT_ERROR_INVALID_PARAM_VALUE
 			{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 		};
 
