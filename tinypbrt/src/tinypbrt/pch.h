@@ -9,6 +9,7 @@ extern "C" {
 #include <ctype.h>
 #include <math.h>
 #include <memory.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
