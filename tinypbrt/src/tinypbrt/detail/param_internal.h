@@ -30,6 +30,8 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_uint(const tpbrt_param_t* param, tpbrt_uint_t* out_uint);
 	tpbrt_error_t tpbrt_param_as_bool(const tpbrt_param_t* param, tpbrt_bool_t* out_bool);
 
+	tpbrt_error_t tpbrt_param_as_rgbs(const tpbrt_param_t* param, tpbrt_rgb_array_t* out_rgbs);
+
 	tpbrt_error_t tpbrt_param_as_rgb(const tpbrt_param_t* param, tpbrt_rgb_t* out_rgb);
 	tpbrt_error_t tpbrt_param_as_wavelengths(const tpbrt_param_t* param, tpbrt_wavelength_array_t* out_wavelengths);
 	tpbrt_error_t tpbrt_param_as_spectrum(const tpbrt_param_t* param, tpbrt_spectrum_t* out_spectrum);
@@ -68,10 +70,10 @@ extern "C" {
 	tpbrt_size_t tpbrt_params_list_size(const tpbrt_params_list_t* params_list);
 	tpbrt_bool_t tpbrt_params_list_is_empty(const tpbrt_params_list_t* params_list);
 
-tpbrt_error_t tpbrt_params_list_get_strings(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_strings(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_string_array_t* out_vals);
 
-tpbrt_error_t tpbrt_params_list_get_string(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_string(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_string_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_floats(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
@@ -91,6 +93,9 @@ tpbrt_error_t tpbrt_params_list_get_string(const tpbrt_params_list_t* params_lis
 	  tpbrt_uint_t default_val, tpbrt_uint_t* out_val);
 	tpbrt_error_t tpbrt_params_list_get_bool(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_bool_t default_val, tpbrt_bool_t* out_val);
+
+	tpbrt_error_t tpbrt_params_list_get_rgbs(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	  tpbrt_rgb_array_t* out_vals);
 
 	tpbrt_error_t tpbrt_params_list_get_rgb(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_rgb_t* out_val);

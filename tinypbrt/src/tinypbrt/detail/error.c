@@ -68,6 +68,7 @@ extern "C" {
 			TPBRT_STRING("Unknown shape curve basis"), // TPBRT_ERROR_UNKNOWN_SHAPE_CURVE_BASIS
 			TPBRT_STRING("Unknown shape curve type"), // TPBRT_ERROR_UNKNOWN_SHAPE_CURVE_TYPE
 			TPBRT_STRING("Invalid parameter value"), // TPBRT_ERROR_INVALID_PARAM_VALUE
+			TPBRT_STRING("Unknown media type"), // TPBRT_ERROR_UNKNOWN_MEDIA_TYPE
 			{ .chars = "Undefined error",												.size = 15 }, // DEFAULT
 		};
 

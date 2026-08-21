@@ -38,6 +38,11 @@ extern "C" {
 		tpbrt_float_t r, g, b;
 	} tpbrt_rgb_t;
 
+	typedef struct {
+		tpbrt_rgb_t* values;
+		tpbrt_size_t count;
+	} tpbrt_rgb_array_t;
+
 	typedef enum : uint8_t {
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BK7	   = 0,
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BAF10	   = 1,
