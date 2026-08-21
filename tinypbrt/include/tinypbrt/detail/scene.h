@@ -2,8 +2,19 @@
 #ifndef _TINYPBRT_SCENE_H_
 #define _TINYPBRT_SCENE_H_
 
+#include <tinypbrt/detail/accelerator.h>
+#include <tinypbrt/detail/camera.h>
 #include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/coord.h>
+#include <tinypbrt/detail/error.h>
+#include <tinypbrt/detail/film.h>
+#include <tinypbrt/detail/integrator.h>
+#include <tinypbrt/detail/light.h>
+#include <tinypbrt/detail/material.h>
+#include <tinypbrt/detail/media.h>
+#include <tinypbrt/detail/sampler.h>
+#include <tinypbrt/detail/shape.h>
+#include <tinypbrt/detail/texture.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,78 +34,35 @@ extern "C" {
 		tpbrt_bool_t wavefront;
 	} tpbrt_options_t;
 
-    #define TPBRT_INVALID_INDEX ((tpbrt_size_t)-1)
+	typedef struct {
+		tpbrt_float_t start_time;
+		tpbrt_float_t end_time;
 
-    // Opcje (Możesz podmienić te deklaracje na własne #include)
-    typedef struct { tpbrt_size_t dummy; } tpbrt_options_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_camera_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_film_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_integrator_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_accelerator_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_sampler_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_texture_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_material_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_light_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_area_light_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_medium_t;
-    typedef struct { tpbrt_size_t dummy; } tpbrt_shape_t;
+		tpbrt_options_t* options;
 
-    typedef struct {
-        tpbrt_camera_t params;
-        float transform[16];
-    } tpbrt_camera_entity_t;
+		tpbrt_camera_t* camera;
+		tpbrt_film_t* film;
+		tpbrt_integrator_t* integrator;
+		tpbrt_accelerator_t* accelerator;
+		tpbrt_sampler_t* sampler;
 
-    typedef struct {
-        tpbrt_shape_t params;
-        float transform[16];
-        tpbrt_bool_t reverse_orientation;
-        tpbrt_size_t material_index;      // TPBRT_INVALID_INDEX jeśli brak
-        tpbrt_size_t area_light_index;    // TPBRT_INVALID_INDEX jeśli brak
-    } tpbrt_shape_entity_t;
+		tpbrt_textures_list_t* textures;
+		tpbrt_materials_list_t* materials;
+		tpbrt_medias_list_t* medias;
+		tpbrt_lights_list_t* lights;
+		tpbrt_objects_list_t* objects;
 
-    typedef struct {
-        tpbrt_string_t name;
-        tpbrt_size_t shape_start;         // TPBRT_INVALID_INDEX jeśli brak
-        tpbrt_size_t shape_count;
-        float object_to_instance[16];
-    } tpbrt_object_t;
+		tpbrt_shape_array_t world_shapes;
 
-    typedef struct {
-        float instance_to_world[16];
-        tpbrt_size_t object_index;
-        tpbrt_size_t area_light_index;    // TPBRT_INVALID_INDEX jeśli brak
-        tpbrt_bool_t reverse_orientation;
-    } tpbrt_instance_t;
+		tpbrt_object_instance_array_t instances;
 
-    typedef struct {
-        float start_time;
-        float end_time;
-        tpbrt_options_t options;
+		tpbrt_string_t* include_buffers;
+		tpbrt_size_t include_buffers_count;
+	} tpbrt_scene_t;
 
-        tpbrt_camera_entity_t* camera;        // NULL jeśli brak
-        tpbrt_film_t* film;                   // NULL jeśli brak
-        tpbrt_integrator_t* integrator;       // NULL jeśli brak
-        tpbrt_accelerator_t* accelerator;     // NULL jeśli brak
-        tpbrt_sampler_t* sampler;             // NULL jeśli brak
-
-        tpbrt_texture_t* textures;            tpbrt_size_t textures_count;
-        tpbrt_material_t* materials;          tpbrt_size_t materials_count;
-        tpbrt_light_t* lights;                tpbrt_size_t lights_count;
-        tpbrt_area_light_t* area_lights;      tpbrt_size_t area_lights_count;
-        tpbrt_medium_t* mediums;              tpbrt_size_t mediums_count;
-
-        tpbrt_shape_entity_t* shapes;         tpbrt_size_t shapes_count;
-        tpbrt_object_t* objects;              tpbrt_size_t objects_count;
-        tpbrt_instance_t* instances;          tpbrt_size_t instances_count;
-
-        // Bufory pamięci z załadowanych plików Include (zwalniane na końcu)
-        char** include_buffers;               tpbrt_size_t include_buffers_count;
-    } tpbrt_scene_t;
-
-    // Główne API
-    tpbrt_error_t tpbrt_scene_load_from_file(const char* filepath, tpbrt_scene_t* out_scene);
-    tpbrt_error_t tpbrt_scene_load_from_memory(const char* data, const char* working_directory, tpbrt_scene_t* out_scene);
-    void tpbrt_free_scene(tpbrt_scene_t* scene);
+	tpbrt_error_t tpbrt_scene_load_from_file(const char* filepath, tpbrt_scene_t* out_scene);
+	tpbrt_error_t tpbrt_scene_load_from_memory(const char* data, const char* working_directory, tpbrt_scene_t* out_scene);
+	void tpbrt_free_scene(tpbrt_scene_t* scene);
 
 #ifdef __cplusplus
 }

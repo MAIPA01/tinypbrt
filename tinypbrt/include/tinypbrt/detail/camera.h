@@ -2,6 +2,7 @@
 #ifndef _TINYPBRT_CAMERA_H_
 #define _TINYPBRT_CAMERA_H_
 
+#include <tinypbrt/detail/math.h>
 #include "tinypbrt/detail/common.h"
 
 #ifdef __cplusplus
@@ -75,6 +76,7 @@ extern "C" {
 		tpbrt_camera_type_t type;
 		tpbrt_float_t shutter_open;
 		tpbrt_float_t shutter_close;
+		tpbrt_mat4_t transform;
 
 		union {
 			tpbrt_camera_orthographic_params_t orthographic_params;

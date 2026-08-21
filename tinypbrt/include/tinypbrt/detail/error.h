@@ -70,7 +70,8 @@ extern "C" {
 		TPBRT_ERROR_UNKNOWN_SHAPE_CURVE_TYPE				  = 58,
 		TPBRT_ERROR_INVALID_PARAM_VALUE						  = 59,
 		TPBRT_ERROR_UNKNOWN_MEDIA_TYPE						  = 60,
-		TPBRT_ERROR_MAX_NUM									  = 61,
+		TPBRT_ERROR_FILE_NOT_FOUND							  = 61,
+		TPBRT_ERROR_MAX_NUM									  = 62,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);

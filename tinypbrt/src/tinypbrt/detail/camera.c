@@ -79,13 +79,15 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_create_camera(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
-	  const tpbrt_film_t* film, tpbrt_camera_t** const camera) {
+	  const tpbrt_film_t* film, const tpbrt_mat4_t* const ctm, tpbrt_camera_t** const camera) {
 			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || params == TPBRT_NULL || camera == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 		*camera = malloc(sizeof(tpbrt_camera_t));
 			if (*camera == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+		(*camera)->transform						 = *ctm;
 
 		static const tpbrt_string_t SHUTTER_OPEN_STR = { .chars = "shutteropen", .size = 11 };
 		tpbrt_error_t err = tpbrt_params_list_get_float(params, &SHUTTER_OPEN_STR, 0.0f, &(*camera)->shutter_open);
