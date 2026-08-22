@@ -781,14 +781,11 @@ extern "C" {
 
 #pragma region PARAMS_LIST
 
-	tpbrt_error_t tpbrt_create_empty_params_list(tpbrt_params_list_t** const params_list) {
+	tpbrt_error_t tpbrt_init_params_list(tpbrt_params_list_t* const params_list) {
 			if (params_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		*params_list = malloc(sizeof(tpbrt_params_list_t));
-			if (*params_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
-
-		(*params_list)->params = TPBRT_NULL;
-		(*params_list)->count  = 0;
+		params_list->params = TPBRT_NULL;
+		params_list->count	= 0;
 		return TPBRT_ERROR_NONE;
 	}
 

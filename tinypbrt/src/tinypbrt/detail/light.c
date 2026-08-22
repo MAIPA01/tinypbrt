@@ -491,16 +491,13 @@ extern "C" {
 
 #pragma region LIGHTS_LIST
 
-	tpbrt_error_t tpbrt_create_empty_lights_list(tpbrt_lights_list_t** const lights_list) {
+	tpbrt_error_t tpbrt_init_lights_list(tpbrt_lights_list_t* const lights_list) {
 			if (lights_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		*lights_list = malloc(sizeof(tpbrt_lights_list_t));
-			if (*lights_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
-
-		(*lights_list)->lights			  = TPBRT_NULL;
-		(*lights_list)->lights_count	  = 0;
-		(*lights_list)->area_lights		  = TPBRT_NULL;
-		(*lights_list)->area_lights_count = 0;
+		lights_list->lights			   = TPBRT_NULL;
+		lights_list->lights_count	   = 0;
+		lights_list->area_lights	   = TPBRT_NULL;
+		lights_list->area_lights_count = 0;
 		return TPBRT_ERROR_NONE;
 	}
 

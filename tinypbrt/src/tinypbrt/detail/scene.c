@@ -108,11 +108,35 @@ extern "C" {
 		state->material_handle	   = ~(tpbrt_material_handle_t)0;
 		state->active_object	   = TPBRT_NULL;
 
-		tpbrt_init_params_list(&state->shape_params);
-		tpbrt_init_params_list(&state->light_params);
-		tpbrt_init_params_list(&state->material_params);
-		tpbrt_init_params_list(&state->medium_params);
-		tpbrt_init_params_list(&state->texture_params);
+		tpbrt_error_t err		   = tpbrt_init_params_list(&state->shape_params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_state(state);
+				return err;
+			}
+
+		err = tpbrt_init_params_list(&state->light_params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_state(state);
+				return err;
+			}
+
+		err = tpbrt_init_params_list(&state->material_params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_state(state);
+				return err;
+			}
+
+		err = tpbrt_init_params_list(&state->medium_params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_state(state);
+				return err;
+			}
+
+		err = tpbrt_init_params_list(&state->texture_params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_state(state);
+				return err;
+			}
 		return TPBRT_ERROR_NONE;
 	}
 
