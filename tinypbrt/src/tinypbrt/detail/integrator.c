@@ -2,6 +2,8 @@
 
 #include <tinypbrt/detail/integrator_internal.h>
 
+#include <tinypbrt/detail/common_internal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -9,25 +11,25 @@ extern "C" {
 	static tpbrt_error_t tpbrt_integrator_type_from_string(const tpbrt_string_t* const type_str,
 	  tpbrt_integrator_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_INTEGRATOR_TYPE_MAX_NUM] = {
-			{ .chars = "ambientocclusion", .size = 16 },
-			{ .chars = "bdpt",			   .size = 4	 },
-			{ .chars = "lightpath",		.size = 9  },
-			{ .chars = "mlt",			  .size = 3	},
-			{ .chars = "path",			   .size = 4	 },
-			{ .chars = "randomwalk",		 .size = 10 },
-			{ .chars = "simplepath",		 .size = 10 },
-			{ .chars = "simplevolpath",	.size = 13 },
-			{ .chars = "sppm",			   .size = 4	 },
-			{ .chars = "volpath",		  .size = 7	},
+			TPBRT_STRING("ambientocclusion"),
+			TPBRT_STRING("bdpt"),
+			TPBRT_STRING("lightpath"),
+			TPBRT_STRING("mlt"),
+			TPBRT_STRING("path"),
+			TPBRT_STRING("randomwalk"),
+			TPBRT_STRING("simplepath"),
+			TPBRT_STRING("simplevolpath"),
+			TPBRT_STRING("sppm"),
+			TPBRT_STRING("volpath"),
 		};
 
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || type == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_integrator_type_t t = 0; t < TPBRT_INTEGRATOR_TYPE_MAX_NUM; ++t) {
 					if (type_str->size == TYPES_STRS[t].size &&
-						strncmp(type_str->chars, TYPES_STRS[t].chars, TYPES_STRS[t].size) == 0) {
+						strncmp(type_str->data, TYPES_STRS[t].data, TYPES_STRS[t].size) == 0) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -39,18 +41,18 @@ extern "C" {
 	static tpbrt_error_t tpbrt_integrator_light_sampler_from_string(const tpbrt_string_t* const sampler_str,
 	  tpbrt_integrator_light_sampler_t* const sampler) {
 		static const tpbrt_string_t SAMPLERS_STRS[TPBRT_INTEGRATOR_LIGHT_SAMPLER_MAX_NUM] = {
-			{ .chars = "bvh",	  .size = 3 },
-			{ .chars = "uniform", .size = 7 },
-			{ .chars = "power",	.size = 5 },
+			TPBRT_STRING("bvh"),
+			TPBRT_STRING("uniform"),
+			TPBRT_STRING("power"),
 		};
 
-			if (sampler_str == TPBRT_NULL || sampler_str->chars == TPBRT_NULL || sampler == TPBRT_NULL) {
+			if (sampler_str == TPBRT_NULL || sampler_str->data == TPBRT_NULL || sampler == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_integrator_light_sampler_t s = 0; s < TPBRT_INTEGRATOR_LIGHT_SAMPLER_MAX_NUM; ++s) {
 					if (sampler_str->size == SAMPLERS_STRS[s].size &&
-						strncmp(sampler_str->chars, SAMPLERS_STRS[s].chars, SAMPLERS_STRS[s].size) == 0) {
+						strncmp(sampler_str->data, SAMPLERS_STRS[s].data, SAMPLERS_STRS[s].size) == 0) {
 						*sampler = s;
 						return TPBRT_ERROR_NONE;
 					}
@@ -61,7 +63,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_create_integrator(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
 	  tpbrt_integrator_t** integrator) {
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || params == TPBRT_NULL || integrator == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || integrator == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
@@ -74,27 +76,27 @@ extern "C" {
 				return err;
 			}
 
-		static const tpbrt_string_t MAX_DEPTH_STR	  = { .chars = "maxdepth", .size = 8 };
+		static const tpbrt_string_t MAX_DEPTH_STR	  = TPBRT_STRING("maxdepth");
 		static const tpbrt_uint_t MAX_DEPTH_DEFAULT	  = 5u;
 
-		static const tpbrt_string_t LIGHT_SAMPLER_STR = { .chars = "lightsampler", .size = 12 };
-		static const tpbrt_string_t REGULARIZE_STR	  = { .chars = "regularize", .size = 10 };
+		static const tpbrt_string_t LIGHT_SAMPLER_STR = TPBRT_STRING("lightsampler");
+		static const tpbrt_string_t REGULARIZE_STR	  = TPBRT_STRING("regularize");
 
 			switch ((*integrator)->type) {
 			default:
 				case TPBRT_INTEGRATOR_TYPE_AMBIENT_OCCLUSION: {
-					static const tpbrt_string_t COS_SAMPLE_STR	 = { .chars = "cossample", .size = 9 };
-					static const tpbrt_string_t MAX_DISTANCE_STR = { .chars = "maxdistance", .size = 11 };
+					static const tpbrt_string_t COS_SAMPLE_STR	 = TPBRT_STRING("cossample");
+					static const tpbrt_string_t MAX_DISTANCE_STR = TPBRT_STRING("maxdistance");
 
 					err											 = tpbrt_params_list_get_bool(params, &COS_SAMPLE_STR, TPBRT_TRUE,
-					  &(*integrator)->ambient_occlusion_params.cos_sample);
+					  &(*integrator)->as.ambient_occlusion.cos_sample);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					err = tpbrt_params_list_get_float(params, &MAX_DISTANCE_STR, INFINITY,
-					  &(*integrator)->ambient_occlusion_params.max_distance);
+					  &(*integrator)->as.ambient_occlusion.max_distance);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -102,32 +104,31 @@ extern "C" {
 					break;
 				}
 				case TPBRT_INTEGRATOR_TYPE_BDPT: {
-					static const tpbrt_string_t VISUALIZE_STRATEGIES_STR = { .chars = "visualizestrategies", .size = 19 };
-					static const tpbrt_string_t VISUALIZE_WEIGHTS_STR	 = { .chars = "visualizeweights", .size = 16 };
+					static const tpbrt_string_t VISUALIZE_STRATEGIES_STR = TPBRT_STRING("visualizestrategies");
+					static const tpbrt_string_t VISUALIZE_WEIGHTS_STR	 = TPBRT_STRING("visualizeweights");
 
-					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->bdpt_params.max_depth);
+					err =
+					  tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &(*integrator)->as.bdpt.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
-					err =
-					  tpbrt_params_list_get_bool(params, &REGULARIZE_STR, TPBRT_FALSE, &(*integrator)->bdpt_params.regularize);
+					err = tpbrt_params_list_get_bool(params, &REGULARIZE_STR, TPBRT_FALSE, &(*integrator)->as.bdpt.regularize);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					err = tpbrt_params_list_get_bool(params, &VISUALIZE_STRATEGIES_STR, TPBRT_FALSE,
-					  &(*integrator)->bdpt_params.visualize_strategies);
+					  &(*integrator)->as.bdpt.visualize_strategies);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					err = tpbrt_params_list_get_bool(params, &VISUALIZE_WEIGHTS_STR, TPBRT_FALSE,
-					  &(*integrator)->bdpt_params.visualize_weights);
+					  &(*integrator)->as.bdpt.visualize_weights);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -136,7 +137,7 @@ extern "C" {
 				}
 				case TPBRT_INTEGRATOR_TYPE_LIGHT_PATH: {
 					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->light_path_params.max_depth);
+					  &(*integrator)->as.light_path.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -144,20 +145,19 @@ extern "C" {
 					break;
 				}
 				case TPBRT_INTEGRATOR_TYPE_MLT: {
-					static const tpbrt_string_t BOOTSTRAP_SAMPLES_STR	   = { .chars = "bootstrapsamples", .size = 16 };
-					static const tpbrt_string_t CHAINS_STR				   = { .chars = "chains", .size = 6 };
-					static const tpbrt_string_t MUTATIONS_PER_PIXEL_STR	   = { .chars = "mutationsperpixel", .size = 17 };
-					static const tpbrt_string_t LARGE_STEP_PROBABILITY_STR = { .chars = "largestepprobability", .size = 20 };
-					static const tpbrt_string_t SIGMA_STR				   = { .chars = "sigma", .size = 5 };
+					static const tpbrt_string_t BOOTSTRAP_SAMPLES_STR	   = TPBRT_STRING("bootstrapsamples");
+					static const tpbrt_string_t CHAINS_STR				   = TPBRT_STRING("chains");
+					static const tpbrt_string_t MUTATIONS_PER_PIXEL_STR	   = TPBRT_STRING("mutationsperpixel");
+					static const tpbrt_string_t LARGE_STEP_PROBABILITY_STR = TPBRT_STRING("largestepprobability");
+					static const tpbrt_string_t SIGMA_STR				   = TPBRT_STRING("sigma");
 
-					err =
-					  tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &(*integrator)->mlt_params.max_depth);
+					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &(*integrator)->as.mlt.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_bool(params, &REGULARIZE_STR, TPBRT_FALSE, &(*integrator)->mlt_params.regularize);
+					err = tpbrt_params_list_get_bool(params, &REGULARIZE_STR, TPBRT_FALSE, &(*integrator)->as.mlt.regularize);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -165,14 +165,14 @@ extern "C" {
 
 					static const tpbrt_uint_t BOOTSTRAP_SAMPLES_DEFAULT = 100u * 1000u;
 					err = tpbrt_params_list_get_uint(params, &BOOTSTRAP_SAMPLES_STR, BOOTSTRAP_SAMPLES_DEFAULT,
-					  &(*integrator)->mlt_params.bootstrap_samples);
+					  &(*integrator)->as.mlt.bootstrap_samples);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					static const tpbrt_uint_t CHAINS_DEFAULT = 1000u;
-					err = tpbrt_params_list_get_uint(params, &CHAINS_STR, CHAINS_DEFAULT, &(*integrator)->mlt_params.chains);
+					err = tpbrt_params_list_get_uint(params, &CHAINS_STR, CHAINS_DEFAULT, &(*integrator)->as.mlt.chains);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -180,7 +180,7 @@ extern "C" {
 
 					static const tpbrt_uint_t MUTATIONS_PER_PIXEL_DEFAULT = 100u;
 					err = tpbrt_params_list_get_uint(params, &MUTATIONS_PER_PIXEL_STR, MUTATIONS_PER_PIXEL_DEFAULT,
-					  &(*integrator)->mlt_params.mutations_per_pixel);
+					  &(*integrator)->as.mlt.mutations_per_pixel);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -188,14 +188,14 @@ extern "C" {
 
 					static const tpbrt_float_t LARGE_STEP_PROBABILITY_DEFAULT = 0.03f;
 					err = tpbrt_params_list_get_float(params, &LARGE_STEP_PROBABILITY_STR, LARGE_STEP_PROBABILITY_DEFAULT,
-					  &(*integrator)->mlt_params.large_step_probability);
+					  &(*integrator)->as.mlt.large_step_probability);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					static const tpbrt_float_t SIGMA_DEFAULT = 0.01f;
-					err = tpbrt_params_list_get_float(params, &SIGMA_STR, SIGMA_DEFAULT, &(*integrator)->mlt_params.sigma);
+					err = tpbrt_params_list_get_float(params, &SIGMA_STR, SIGMA_DEFAULT, &(*integrator)->as.mlt.sigma);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -203,8 +203,8 @@ extern "C" {
 					break;
 				}
 				case TPBRT_INTEGRATOR_TYPE_PATH: {
-					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->path_params.max_depth);
+					err =
+					  tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &(*integrator)->as.path.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -218,20 +218,18 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*integrator)->path_params.light_sampler = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
+							(*integrator)->as.path.light_sampler = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
 						}
 						else {
-							err =
-							  tpbrt_integrator_light_sampler_from_string(&sampler_str, &(*integrator)->path_params.light_sampler);
-							free(sampler_str.chars);
+							err = tpbrt_integrator_light_sampler_from_string(&sampler_str, &(*integrator)->as.path.light_sampler);
+							free(sampler_str.data);
 								if (err != TPBRT_ERROR_NONE) {
 									tpbrt_free_integrator(integrator);
 									return err;
 								}
 						}
 
-					err =
-					  tpbrt_params_list_get_bool(params, &REGULARIZE_STR, TPBRT_FALSE, &(*integrator)->path_params.regularize);
+					err = tpbrt_params_list_get_bool(params, &REGULARIZE_STR, TPBRT_FALSE, &(*integrator)->as.path.regularize);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -240,7 +238,7 @@ extern "C" {
 				}
 				case TPBRT_INTEGRATOR_TYPE_RANDOM_WALK: {
 					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->random_walk_params.max_depth);
+					  &(*integrator)->as.random_walk.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -248,25 +246,25 @@ extern "C" {
 					break;
 				}
 				case TPBRT_INTEGRATOR_TYPE_SIMPLE_PATH: {
-					static const tpbrt_string_t SAMPLE_BSDF_STR	  = { .chars = "samplebsdf", .size = 10 };
-					static const tpbrt_string_t SAMPLE_LIGHTS_STR = { .chars = "samplelights", .size = 12 };
+					static const tpbrt_string_t SAMPLE_BSDF_STR	  = TPBRT_STRING("samplebsdf");
+					static const tpbrt_string_t SAMPLE_LIGHTS_STR = TPBRT_STRING("samplelights");
 
 					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->simple_path_params.max_depth);
+					  &(*integrator)->as.simple_path.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					err = tpbrt_params_list_get_bool(params, &SAMPLE_BSDF_STR, TPBRT_TRUE,
-					  &(*integrator)->simple_path_params.sample_bsdf);
+					  &(*integrator)->as.simple_path.sample_bsdf);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					err = tpbrt_params_list_get_bool(params, &SAMPLE_LIGHTS_STR, TPBRT_TRUE,
-					  &(*integrator)->simple_path_params.sample_lights);
+					  &(*integrator)->as.simple_path.sample_lights);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -275,14 +273,14 @@ extern "C" {
 				}
 				case TPBRT_INTEGRATOR_TYPE_SIMPLE_VOL_PATH: {
 					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->simple_vol_path_params.max_depth);
+					  &(*integrator)->as.simple_vol_path.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					err = tpbrt_params_list_get_bool(params, &REGULARIZE_STR, TPBRT_FALSE,
-					  &(*integrator)->simple_vol_path_params.regularize);
+					  &(*integrator)->as.simple_vol_path.regularize);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -290,31 +288,31 @@ extern "C" {
 					break;
 				}
 				case TPBRT_INTEGRATOR_TYPE_SPPM: {
-					static const tpbrt_string_t PHOTONS_PER_ITERATION_STR = { .chars = "photonsperiteration", .size = 19 };
-					static const tpbrt_string_t RADIUS_STR				  = { .chars = "radius", .size = 6 };
-					static const tpbrt_string_t SEED_STR				  = { .chars = "seed", .size = 4 };
+					static const tpbrt_string_t PHOTONS_PER_ITERATION_STR = TPBRT_STRING("photonsperiteration");
+					static const tpbrt_string_t RADIUS_STR				  = TPBRT_STRING("radius");
+					static const tpbrt_string_t SEED_STR				  = TPBRT_STRING("seed");
 
-					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->sppm_params.max_depth);
+					err =
+					  tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &(*integrator)->as.sppm.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
 					err = tpbrt_params_list_get_int(params, &PHOTONS_PER_ITERATION_STR, -1,
-					  &(*integrator)->sppm_params.photons_per_iteration);
+					  &(*integrator)->as.sppm.photons_per_iteration);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_float(params, &RADIUS_STR, 1.0f, &(*integrator)->sppm_params.radius);
+					err = tpbrt_params_list_get_float(params, &RADIUS_STR, 1.0f, &(*integrator)->as.sppm.radius);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_int(params, &SEED_STR, 0, &(*integrator)->sppm_params.seed);
+					err = tpbrt_params_list_get_int(params, &SEED_STR, 0, &(*integrator)->as.sppm.seed);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -323,7 +321,7 @@ extern "C" {
 				}
 				case TPBRT_INTEGRATOR_TYPE_VOL_PATH: {
 					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT,
-					  &(*integrator)->vol_path_params.max_depth);
+					  &(*integrator)->as.vol_path.max_depth);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_integrator(integrator);
 							return err;
@@ -337,12 +335,12 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*integrator)->vol_path_params.light_sampler = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
+							(*integrator)->as.vol_path.light_sampler = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
 						}
 						else {
-							err = tpbrt_integrator_light_sampler_from_string(&sampler_str,
-							  &(*integrator)->vol_path_params.light_sampler);
-							free(sampler_str.chars);
+							err =
+							  tpbrt_integrator_light_sampler_from_string(&sampler_str, &(*integrator)->as.vol_path.light_sampler);
+							free(sampler_str.data);
 								if (err != TPBRT_ERROR_NONE) {
 									tpbrt_free_integrator(integrator);
 									return err;

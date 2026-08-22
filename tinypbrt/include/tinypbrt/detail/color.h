@@ -30,7 +30,7 @@ extern "C" {
 	} tpbrt_wavelength_t;
 
 	typedef struct {
-		tpbrt_wavelength_t* values;
+		tpbrt_wavelength_t* data;
 		tpbrt_size_t count;
 	} tpbrt_wavelength_array_t;
 
@@ -39,7 +39,7 @@ extern "C" {
 	} tpbrt_rgb_t;
 
 	typedef struct {
-		tpbrt_rgb_t* values;
+		tpbrt_rgb_t* data;
 		tpbrt_size_t count;
 	} tpbrt_rgb_array_t;
 
@@ -93,7 +93,7 @@ extern "C" {
 			tpbrt_blackbody_t blackbody;
 			tpbrt_string_t file_name;
 			tpbrt_spectrum_builtin_t builtin;
-		};
+		} as;
 	} tpbrt_spectrum_t;
 
 #ifdef __cplusplus

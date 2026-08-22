@@ -35,10 +35,10 @@ extern "C" {
 		tpbrt_float_t y_radius;
 
 		union {
-			tpbrt_filter_gaussian_params_t gaussian_params;
-			tpbrt_filter_mitchell_params_t mitchell_params;
-			tpbrt_filter_sinc_params_t sinc_params;
-		};
+			tpbrt_filter_gaussian_params_t gaussian;
+			tpbrt_filter_mitchell_params_t mitchell;
+			tpbrt_filter_sinc_params_t sinc;
+		} as;
 	} tpbrt_filter_t;
 
 #ifdef __cplusplus

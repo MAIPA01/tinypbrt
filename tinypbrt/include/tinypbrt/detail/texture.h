@@ -3,6 +3,7 @@
 #define _TINYPBRT_TEXTURE_H_
 
 #include <tinypbrt/detail/color.h>
+#include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/fwd.h>
 #include <tinypbrt/detail/math.h>
@@ -48,7 +49,7 @@ extern "C" {
 			tpbrt_size_t tex_idx;
 			tpbrt_float_t f32;
 			tpbrt_spectrum_t spectrum;
-		};
+		} as;
 	} tpbrt_texture_handle_t;
 
 	typedef struct {
@@ -176,25 +177,25 @@ extern "C" {
 		tpbrt_texture_mapping_t mapping;
 
 		union {
-			tpbrt_texture_mapping_uv_params_t uv_params;
-			tpbrt_texture_mapping_spherical_params_t spherical_params;
-			tpbrt_texture_mapping_cylindrical_params_t cylindrical_params;
-			tpbrt_texture_mapping_planar_params_t planar_params;
-		};
+			tpbrt_texture_mapping_uv_params_t uv;
+			tpbrt_texture_mapping_spherical_params_t spherical;
+			tpbrt_texture_mapping_cylindrical_params_t cylindrical;
+			tpbrt_texture_mapping_planar_params_t planar;
+		} mapping_as;
 
 		union {
-			tpbrt_texture_bilinear_params_t bilinear_params;
-			tpbrt_texture_checkboard_params_t checkboard_params;
-			tpbrt_texture_constant_params_t constant_params;
-			tpbrt_texture_direction_mix_params_t direction_mix_params;
-			tpbrt_texture_dots_params_t dot_params;
-			tpbrt_texture_fbm_wrinkled_windy_params_t fbm_wrinkled_windy_params;
-			tpbrt_texture_image_map_params_t image_map_params;
-			tpbrt_texture_marble_params_t marble_params;
-			tpbrt_texture_mix_params_t mix_params;
-			tpbrt_texture_ptex_params_t ptex_params;
-			tpbrt_texture_scale_params_t scale_params;
-		};
+			tpbrt_texture_bilinear_params_t bilinear;
+			tpbrt_texture_checkboard_params_t checkboard;
+			tpbrt_texture_constant_params_t constant;
+			tpbrt_texture_direction_mix_params_t direction_mix;
+			tpbrt_texture_dots_params_t dot;
+			tpbrt_texture_fbm_wrinkled_windy_params_t fbm_wrinkled_windy;
+			tpbrt_texture_image_map_params_t image_map;
+			tpbrt_texture_marble_params_t marble;
+			tpbrt_texture_mix_params_t mix;
+			tpbrt_texture_ptex_params_t ptex;
+			tpbrt_texture_scale_params_t scale;
+		} as;
 	} tpbrt_texture_t;
 
 	typedef struct {

@@ -39,9 +39,9 @@ extern "C" {
 		tpbrt_accelerator_type_t type;
 
 		union {
-			tpbrt_accelerator_bvh_params_t bvh_params;
-			tpbrt_accelerator_kd_tree_params_t kd_tree_params;
-		};
+			tpbrt_accelerator_bvh_params_t bvh;
+			tpbrt_accelerator_kd_tree_params_t kd_tree;
+		} as;
 	} tpbrt_accelerator_t;
 
 #ifdef __cplusplus

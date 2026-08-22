@@ -40,7 +40,7 @@ extern "C" {
 		union {
 			tpbrt_texture_handle_t displacement;
 			tpbrt_string_t normal_map;
-		};
+		} as;
 	} tpbrt_material_bump_map_params_t;
 
 	typedef struct {
@@ -77,12 +77,12 @@ extern "C" {
 
 		union {
 			struct {
-				tpbrt_spectrum_t conductor_eta;
-				tpbrt_spectrum_t conductor_k;
-			};
+				tpbrt_spectrum_t eta;
+				tpbrt_spectrum_t k;
+			} conductor;
 
 			tpbrt_spectrum_t reflectance;
-		};
+		} as;
 
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_coated_conductor_params_t;
@@ -95,10 +95,10 @@ extern "C" {
 			struct {
 				tpbrt_texture_handle_t eta;
 				tpbrt_texture_handle_t k;
-			};
+			} conductor;
 
 			tpbrt_texture_handle_t reflectance;
-		};
+		} as;
 
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_conductor_params_t;
@@ -113,9 +113,9 @@ extern "C" {
 		tpbrt_material_dielectric_eta_type_t eta_type;
 
 		union {
-			tpbrt_texture_handle_t eta_single;
-			tpbrt_texture_handle_t eta_wavelength;
-		};
+			tpbrt_texture_handle_t single;
+			tpbrt_texture_handle_t wavelength;
+		} eta_as;
 
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_dielectric_params_t;
@@ -177,18 +177,18 @@ extern "C" {
 		tpbrt_material_type_t type;
 
 		union {
-			tpbrt_material_coated_diffuse_params_t coated_diffuse_params;
-			tpbrt_material_coated_conductor_params_t coated_conductor_params;
-			tpbrt_material_conductor_params_t conductor_params;
-			tpbrt_material_dielectric_params_t dielectric_params;
-			tpbrt_material_diffuse_params_t diffuse_params;
-			tpbrt_material_diffuse_transmission_params_t diffuse_transmission_params;
-			tpbrt_material_hair_params_t hair_params;
-			tpbrt_material_measured_params_t measured_params;
-			tpbrt_material_mix_params_t mix_params;
-			tpbrt_material_subsurface_params_t subsurface_params;
-			tpbrt_material_thin_dielectric_params_t thin_dielectric_params;
-		};
+			tpbrt_material_coated_diffuse_params_t coated_diffuse;
+			tpbrt_material_coated_conductor_params_t coated_conductor;
+			tpbrt_material_conductor_params_t conductor;
+			tpbrt_material_dielectric_params_t dielectric;
+			tpbrt_material_diffuse_params_t diffuse;
+			tpbrt_material_diffuse_transmission_params_t diffuse_transmission;
+			tpbrt_material_hair_params_t hair;
+			tpbrt_material_measured_params_t measured;
+			tpbrt_material_mix_params_t mix;
+			tpbrt_material_subsurface_params_t subsurface;
+			tpbrt_material_thin_dielectric_params_t thin_dielectric;
+		} as;
 	} tpbrt_material_t;
 
 	typedef struct {

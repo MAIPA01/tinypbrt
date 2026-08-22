@@ -3,6 +3,7 @@
 #define _TINYPBRT_LIGHT_H_
 
 #include <tinypbrt/detail/color.h>
+#include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/math.h>
 
 #ifdef __cplusplus
@@ -61,13 +62,13 @@ extern "C" {
 		tpbrt_float_t scale;
 
 		union {
-			tpbrt_light_source_distant_params_t distant_params;
-			tpbrt_light_source_goniometric_params_t goniometric_params;
-			tpbrt_light_source_infinite_params_t infinite_params;
-			tpbrt_light_source_point_params_t point_params;
-			tpbrt_light_source_projection_params_t projection_params;
-			tpbrt_light_source_spot_params_t spot_params;
-		};
+			tpbrt_light_source_distant_params_t distant;
+			tpbrt_light_source_goniometric_params_t goniometric;
+			tpbrt_light_source_infinite_params_t infinite;
+			tpbrt_light_source_point_params_t point;
+			tpbrt_light_source_projection_params_t projection;
+			tpbrt_light_source_spot_params_t spot;
+		} as;
 	} tpbrt_light_source_t;
 
 	typedef enum : uint8_t {
@@ -85,8 +86,8 @@ extern "C" {
 		tpbrt_area_light_type_t type;
 
 		union {
-			tpbrt_area_light_diffuse_params_t diffuse_params;
-		};
+			tpbrt_area_light_diffuse_params_t diffuse;
+		} as;
 	} tpbrt_area_light_t;
 
 	typedef struct {

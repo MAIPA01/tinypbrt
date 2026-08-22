@@ -6,6 +6,7 @@
 #include <tinypbrt/detail/light_internal.h>
 
 #include <tinypbrt/detail/color_internal.h>
+#include <tinypbrt/detail/common_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,21 +17,21 @@ extern "C" {
 	static tpbrt_error_t tpbrt_light_source_type_from_string(const tpbrt_string_t* const type_str,
 	  tpbrt_light_source_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_LIGHT_SOURCE_TYPE_MAX_NUM] = {
-			{ .chars = "distant",	  .size = 7	},
-			{ .chars = "goniometric", .size = 11 },
-			{ .chars = "infinite",	   .size = 8	 },
-			{ .chars = "point",		.size = 5  },
-			{ .chars = "projection",	 .size = 10 },
-			{ .chars = "spot",		   .size = 4	 },
+			TPBRT_STRING("distant"),
+			TPBRT_STRING("goniometric"),
+			TPBRT_STRING("infinite"),
+			TPBRT_STRING("point"),
+			TPBRT_STRING("projection"),
+			TPBRT_STRING("spot"),
 		};
 
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || type == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_light_source_type_t t = 0; t < TPBRT_LIGHT_SOURCE_TYPE_MAX_NUM; ++t) {
 					if (type_str->size == TYPES_STRS[t].size &&
-						strncmp(type_str->chars, TYPES_STRS[t].chars, TYPES_STRS[t].size) == 0) {
+						strncmp(type_str->data, TYPES_STRS[t].data, TYPES_STRS[t].size) == 0) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -41,7 +42,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_create_light_source(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
 	  const tpbrt_color_space_t color_space, tpbrt_light_source_t** const light_source) {
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || params == TPBRT_NULL || light_source == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || light_source == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
@@ -54,9 +55,9 @@ extern "C" {
 				return err;
 			}
 
-		static const tpbrt_string_t POWER_STR		= { .chars = "power", .size = 5 };
-		static const tpbrt_string_t ILLUMINANCE_STR = { .chars = "illuminance", .size = 11 };
-		static const tpbrt_string_t SCALE_STR		= { .chars = "scale", .size = 5 };
+		static const tpbrt_string_t POWER_STR		= TPBRT_STRING("power");
+		static const tpbrt_string_t ILLUMINANCE_STR = TPBRT_STRING("illuminance");
+		static const tpbrt_string_t SCALE_STR		= TPBRT_STRING("scale");
 
 		err = tpbrt_params_list_get_opt_float(params, &POWER_STR, &(*light_source)->power_illuminance);
 			if (err != TPBRT_ERROR_NONE) {
@@ -98,74 +99,74 @@ extern "C" {
 			switch ((*light_source)->type) {
 			default:
 				case TPBRT_LIGHT_SOURCE_TYPE_DISTANT: {
-					static const tpbrt_string_t L_STR	 = { .chars = "L", .size = 1 };
-					static const tpbrt_string_t FROM_STR = { .chars = "from", .size = 4 };
-					static const tpbrt_string_t TO_STR	 = { .chars = "to", .size = 2 };
+					static const tpbrt_string_t L_STR	 = TPBRT_STRING("L");
+					static const tpbrt_string_t FROM_STR = TPBRT_STRING("from");
+					static const tpbrt_string_t TO_STR	 = TPBRT_STRING("to");
 
-					err = tpbrt_params_list_get_spectrum(params, &L_STR, &(*light_source)->distant_params.l);
+					err = tpbrt_params_list_get_spectrum(params, &L_STR, &(*light_source)->as.distant.l);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->distant_params.l.type	  = TPBRT_SPECTRUM_TYPE_BUILTIN;
-							(*light_source)->distant_params.l.builtin = current_color_space_illuminant;
+							(*light_source)->as.distant.l.type		 = TPBRT_SPECTRUM_TYPE_BUILTIN;
+							(*light_source)->as.distant.l.as.builtin = current_color_space_illuminant;
 						}
 
-					err = tpbrt_params_list_get_point(params, &FROM_STR, &(*light_source)->distant_params.from);
+					err = tpbrt_params_list_get_point(params, &FROM_STR, &(*light_source)->as.distant.from);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->distant_params.from.x = 0.0f;
-							(*light_source)->distant_params.from.y = 0.0f;
-							(*light_source)->distant_params.from.z = 0.0f;
+							(*light_source)->as.distant.from.x = 0.0f;
+							(*light_source)->as.distant.from.y = 0.0f;
+							(*light_source)->as.distant.from.z = 0.0f;
 						}
 
-					err = tpbrt_params_list_get_point(params, &TO_STR, &(*light_source)->distant_params.to);
+					err = tpbrt_params_list_get_point(params, &TO_STR, &(*light_source)->as.distant.to);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->distant_params.to.x = 0.0f;
-							(*light_source)->distant_params.to.y = 0.0f;
-							(*light_source)->distant_params.to.z = 1.0f;
+							(*light_source)->as.distant.to.x = 0.0f;
+							(*light_source)->as.distant.to.y = 0.0f;
+							(*light_source)->as.distant.to.z = 1.0f;
 						}
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_GONIOMETRIC: {
-					static const tpbrt_string_t FILE_NAME_STR = { .chars = "filename", .size = 8 };
-					static const tpbrt_string_t I_STR		  = { .chars = "I", .size = 1 };
+					static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
+					static const tpbrt_string_t I_STR		  = TPBRT_STRING("I");
 
-					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*light_source)->goniometric_params.file_name);
+					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*light_source)->as.goniometric.file_name);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->goniometric_params.i);
+					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->as.goniometric.i);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->distant_params.l.type	  = TPBRT_SPECTRUM_TYPE_BUILTIN;
-							(*light_source)->distant_params.l.builtin = current_color_space_illuminant;
+							(*light_source)->as.goniometric.i.type		 = TPBRT_SPECTRUM_TYPE_BUILTIN;
+							(*light_source)->as.goniometric.i.as.builtin = current_color_space_illuminant;
 						}
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_INFINITE: {
-					static const tpbrt_string_t FILE_NAME_STR = { .chars = "filename", .size = 8 };
-					static const tpbrt_string_t PORTAL_STR	  = { .chars = "portal", .size = 6 };
-					static const tpbrt_string_t L_STR		  = { .chars = "L", .size = 1 };
+					static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
+					static const tpbrt_string_t PORTAL_STR	  = TPBRT_STRING("portal");
+					static const tpbrt_string_t L_STR		  = TPBRT_STRING("L");
 
-					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*light_source)->infinite_params.file_name);
+					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*light_source)->as.infinite.file_name);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
@@ -180,88 +181,88 @@ extern "C" {
 
 						if (err == TPBRT_ERROR_NONE) {
 								if (points.count < 4) {
-										if (points.values != TPBRT_NULL) { free(points.values); }
+										if (points.data != TPBRT_NULL) { free(points.data); }
 									tpbrt_free_light_source(light_source);
 									return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 								}
 
 								if (points.count > 4) {
-									free(points.values);
+									free(points.data);
 									tpbrt_free_light_source(light_source);
 									return TPBRT_ERROR_TOO_MANY_VALUES;
 								}
 
-							(*light_source)->infinite_params.portal[0] = points.values[0];
-							(*light_source)->infinite_params.portal[1] = points.values[1];
-							(*light_source)->infinite_params.portal[2] = points.values[2];
-							(*light_source)->infinite_params.portal[3] = points.values[3];
-							free(points.values);
+							(*light_source)->as.infinite.portal[0] = points.data[0];
+							(*light_source)->as.infinite.portal[1] = points.data[1];
+							(*light_source)->as.infinite.portal[2] = points.data[2];
+							(*light_source)->as.infinite.portal[3] = points.data[3];
+							free(points.data);
 						}
 
-					err = tpbrt_params_list_get_spectrum(params, &L_STR, &(*light_source)->infinite_params.l);
+					err = tpbrt_params_list_get_spectrum(params, &L_STR, &(*light_source)->as.infinite.l);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->infinite_params.l.type	   = TPBRT_SPECTRUM_TYPE_BUILTIN;
-							(*light_source)->infinite_params.l.builtin = current_color_space_illuminant;
+							(*light_source)->as.infinite.l.type		  = TPBRT_SPECTRUM_TYPE_BUILTIN;
+							(*light_source)->as.infinite.l.as.builtin = current_color_space_illuminant;
 						}
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_POINT: {
-					static const tpbrt_string_t I_STR	 = { .chars = "I", .size = 1 };
-					static const tpbrt_string_t FROM_STR = { .chars = "from", .size = 4 };
+					static const tpbrt_string_t I_STR	 = TPBRT_STRING("I");
+					static const tpbrt_string_t FROM_STR = TPBRT_STRING("from");
 
-					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->point_params.i);
+					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->as.point.i);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->point_params.i.type	= TPBRT_SPECTRUM_TYPE_BUILTIN;
-							(*light_source)->point_params.i.builtin = current_color_space_illuminant;
+							(*light_source)->as.point.i.type	   = TPBRT_SPECTRUM_TYPE_BUILTIN;
+							(*light_source)->as.point.i.as.builtin = current_color_space_illuminant;
 						}
 
-					err = tpbrt_params_list_get_point(params, &FROM_STR, &(*light_source)->point_params.from);
+					err = tpbrt_params_list_get_point(params, &FROM_STR, &(*light_source)->as.point.from);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->point_params.from.x = 0.0f;
-							(*light_source)->point_params.from.y = 0.0f;
-							(*light_source)->point_params.from.z = 0.0f;
+							(*light_source)->as.point.from.x = 0.0f;
+							(*light_source)->as.point.from.y = 0.0f;
+							(*light_source)->as.point.from.z = 0.0f;
 						}
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_PROJECTION: {
-					static const tpbrt_string_t I_STR		  = { .chars = "I", .size = 1 };
-					static const tpbrt_string_t FOV_STR		  = { .chars = "fov", .size = 3 };
-					static const tpbrt_string_t FILE_NAME_STR = { .chars = "filename", .size = 8 };
+					static const tpbrt_string_t I_STR		  = TPBRT_STRING("I");
+					static const tpbrt_string_t FOV_STR		  = TPBRT_STRING("fov");
+					static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
 
-					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->projection_params.i);
+					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->as.projection.i);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->projection_params.i.type	 = TPBRT_SPECTRUM_TYPE_BUILTIN;
-							(*light_source)->projection_params.i.builtin = current_color_space_illuminant;
+							(*light_source)->as.projection.i.type		= TPBRT_SPECTRUM_TYPE_BUILTIN;
+							(*light_source)->as.projection.i.as.builtin = current_color_space_illuminant;
 						}
 
 					static const tpbrt_float_t FOV_DEFAULT = 90.0f;
-					err = tpbrt_params_list_get_float(params, &FOV_STR, FOV_DEFAULT, &(*light_source)->projection_params.fov);
+					err = tpbrt_params_list_get_float(params, &FOV_STR, FOV_DEFAULT, &(*light_source)->as.projection.fov);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*light_source)->projection_params.file_name);
+					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*light_source)->as.projection.file_name);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_light_source(light_source);
 							return err;
@@ -269,50 +270,50 @@ extern "C" {
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_SPOT: {
-					static const tpbrt_string_t I_STR				 = { .chars = "I", .size = 1 };
-					static const tpbrt_string_t FROM_STR			 = { .chars = "from", .size = 4 };
-					static const tpbrt_string_t TO_STR				 = { .chars = "to", .size = 2 };
-					static const tpbrt_string_t CONE_ANGLE_STR		 = { .chars = "coneangle", .size = 9 };
-					static const tpbrt_string_t CONE_DELTA_ANGLE_STR = { .chars = "conedeltaangle", .size = 14 };
+					static const tpbrt_string_t I_STR				 = TPBRT_STRING("I");
+					static const tpbrt_string_t FROM_STR			 = TPBRT_STRING("from");
+					static const tpbrt_string_t TO_STR				 = TPBRT_STRING("to");
+					static const tpbrt_string_t CONE_ANGLE_STR		 = TPBRT_STRING("coneangle");
+					static const tpbrt_string_t CONE_DELTA_ANGLE_STR = TPBRT_STRING("conedeltaangle");
 
-					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->spot_params.i);
+					err = tpbrt_params_list_get_spectrum(params, &I_STR, &(*light_source)->as.spot.i);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->spot_params.i.type	   = TPBRT_SPECTRUM_TYPE_BUILTIN;
-							(*light_source)->spot_params.i.builtin = current_color_space_illuminant;
+							(*light_source)->as.spot.i.type		  = TPBRT_SPECTRUM_TYPE_BUILTIN;
+							(*light_source)->as.spot.i.as.builtin = current_color_space_illuminant;
 						}
 
-					err = tpbrt_params_list_get_point(params, &FROM_STR, &(*light_source)->spot_params.from);
+					err = tpbrt_params_list_get_point(params, &FROM_STR, &(*light_source)->as.spot.from);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->spot_params.from.x = 0.0f;
-							(*light_source)->spot_params.from.y = 0.0f;
-							(*light_source)->spot_params.from.z = 0.0f;
+							(*light_source)->as.spot.from.x = 0.0f;
+							(*light_source)->as.spot.from.y = 0.0f;
+							(*light_source)->as.spot.from.z = 0.0f;
 						}
 
-					err = tpbrt_params_list_get_point(params, &TO_STR, &(*light_source)->spot_params.to);
+					err = tpbrt_params_list_get_point(params, &TO_STR, &(*light_source)->as.spot.to);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_light_source(light_source);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*light_source)->spot_params.to.x = 0.0f;
-							(*light_source)->spot_params.to.y = 0.0f;
-							(*light_source)->spot_params.to.z = 1.0f;
+							(*light_source)->as.spot.to.x = 0.0f;
+							(*light_source)->as.spot.to.y = 0.0f;
+							(*light_source)->as.spot.to.z = 1.0f;
 						}
 
 					static const tpbrt_float_t CONE_ANGLE_DEFAULT = 30.0f;
 					err = tpbrt_params_list_get_float(params, &CONE_ANGLE_STR, CONE_ANGLE_DEFAULT,
-					  &(*light_source)->spot_params.cone_angle);
+					  &(*light_source)->as.spot.cone_angle);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_light_source(light_source);
 							return err;
@@ -320,7 +321,7 @@ extern "C" {
 
 					static const tpbrt_float_t CONE_DELTA_ANGLE_DEFAULT = 5.0f;
 					err = tpbrt_params_list_get_float(params, &CONE_DELTA_ANGLE_STR, CONE_DELTA_ANGLE_DEFAULT,
-					  &(*light_source)->spot_params.cone_delta_angle);
+					  &(*light_source)->as.spot.cone_delta_angle);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_light_source(light_source);
 							return err;
@@ -337,30 +338,30 @@ extern "C" {
 
 			switch ((*light_source)->type) {
 				case TPBRT_LIGHT_SOURCE_TYPE_DISTANT: {
-					tpbrt_free_spectrum(&(*light_source)->distant_params.l);
+					tpbrt_free_spectrum(&(*light_source)->as.distant.l);
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_GONIOMETRIC: {
-					free((*light_source)->goniometric_params.file_name.chars);
-					tpbrt_free_spectrum(&(*light_source)->goniometric_params.i);
+					free((*light_source)->as.goniometric.file_name.data);
+					tpbrt_free_spectrum(&(*light_source)->as.goniometric.i);
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_INFINITE: {
-					free((*light_source)->infinite_params.file_name.chars);
-					tpbrt_free_spectrum(&(*light_source)->infinite_params.l);
+					free((*light_source)->as.infinite.file_name.data);
+					tpbrt_free_spectrum(&(*light_source)->as.infinite.l);
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_POINT: {
-					tpbrt_free_spectrum(&(*light_source)->point_params.i);
+					tpbrt_free_spectrum(&(*light_source)->as.point.i);
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_PROJECTION: {
-					free((*light_source)->projection_params.file_name.chars);
-					tpbrt_free_spectrum(&(*light_source)->projection_params.i);
+					free((*light_source)->as.projection.file_name.data);
+					tpbrt_free_spectrum(&(*light_source)->as.projection.i);
 					break;
 				}
 				case TPBRT_LIGHT_SOURCE_TYPE_SPOT: {
-					tpbrt_free_spectrum(&(*light_source)->spot_params.i);
+					tpbrt_free_spectrum(&(*light_source)->as.spot.i);
 					break;
 				}
 			default: break;
@@ -377,16 +378,16 @@ extern "C" {
 	static tpbrt_error_t tpbrt_area_light_type_from_string(const tpbrt_string_t* const type_str,
 	  tpbrt_area_light_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_AREA_LIGHT_TYPE_MAX_NUM] = {
-			{ .chars = "diffuse", .size = 7 },
+			{ .data = "diffuse", .size = 7 },
 		};
 
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || type == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_area_light_type_t t = 0; t < TPBRT_AREA_LIGHT_TYPE_MAX_NUM; ++t) {
 					if (type_str->size == TYPES_STRS[t].size &&
-						strncmp(type_str->chars, TYPES_STRS[t].chars, TYPES_STRS[t].size) == 0) {
+						strncmp(type_str->data, TYPES_STRS[t].data, TYPES_STRS[t].size) == 0) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -397,7 +398,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_create_area_light(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
 	  const tpbrt_color_space_t color_space, tpbrt_area_light_t** const area_light) {
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || params == TPBRT_NULL || area_light == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || area_light == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
@@ -430,29 +431,28 @@ extern "C" {
 			switch ((*area_light)->type) {
 			default:
 				case TPBRT_AREA_LIGHT_TYPE_DIFFUSE: {
-					static const tpbrt_string_t FILE_NAME_STR = { .chars = "filename", .size = 8 };
-					static const tpbrt_string_t L_STR		  = { .chars = "L", .size = 1 };
-					static const tpbrt_string_t TWO_SIDED_STR = { .chars = "twosided", .size = 8 };
+					static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
+					static const tpbrt_string_t L_STR		  = TPBRT_STRING("L");
+					static const tpbrt_string_t TWO_SIDED_STR = TPBRT_STRING("twosided");
 
-					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*area_light)->diffuse_params.file_name);
+					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &(*area_light)->as.diffuse.file_name);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_area_light(area_light);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_spectrum(params, &L_STR, &(*area_light)->diffuse_params.l);
+					err = tpbrt_params_list_get_spectrum(params, &L_STR, &(*area_light)->as.diffuse.l);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 							tpbrt_free_area_light(area_light);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*area_light)->diffuse_params.l.type	= TPBRT_SPECTRUM_TYPE_BUILTIN;
-							(*area_light)->diffuse_params.l.builtin = current_color_space_illuminant;
+							(*area_light)->as.diffuse.l.type	   = TPBRT_SPECTRUM_TYPE_BUILTIN;
+							(*area_light)->as.diffuse.l.as.builtin = current_color_space_illuminant;
 						}
 
-					err =
-					  tpbrt_params_list_get_bool(params, &TWO_SIDED_STR, TPBRT_FALSE, &(*area_light)->diffuse_params.two_sided);
+					err = tpbrt_params_list_get_bool(params, &TWO_SIDED_STR, TPBRT_FALSE, &(*area_light)->as.diffuse.two_sided);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_area_light(area_light);
 							return err;
@@ -468,12 +468,12 @@ extern "C" {
 			if (area_light == TPBRT_NULL || *area_light == TPBRT_NULL) { return; }
 
 			if ((*area_light)->type == TPBRT_AREA_LIGHT_TYPE_DIFFUSE) {
-					if ((*area_light)->diffuse_params.file_name.chars != TPBRT_NULL) {
-						free((*area_light)->diffuse_params.file_name.chars);
+					if ((*area_light)->as.diffuse.file_name.data != TPBRT_NULL) {
+						free((*area_light)->as.diffuse.file_name.data);
 					}
 
 
-				tpbrt_free_spectrum(&(*area_light)->diffuse_params.l);
+				tpbrt_free_spectrum(&(*area_light)->as.diffuse.l);
 			}
 
 		free(*area_light);

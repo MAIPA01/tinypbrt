@@ -9,22 +9,22 @@ extern "C" {
 #endif
 
 	typedef struct {
-		tpbrt_bool_t* values;
+		tpbrt_bool_t* data;
 		tpbrt_size_t count;
 	} tpbrt_bool_array_t;
 
 	typedef struct {
-		tpbrt_int_t* values;
+		tpbrt_int_t* data;
 		tpbrt_size_t count;
 	} tpbrt_int_array_t;
 
 	typedef struct {
-		tpbrt_uint_t* values;
+		tpbrt_uint_t* data;
 		tpbrt_size_t count;
 	} tpbrt_uint_array_t;
 
 	typedef struct {
-		tpbrt_float_t* values;
+		tpbrt_float_t* data;
 		tpbrt_size_t count;
 	} tpbrt_float_array_t;
 
@@ -37,12 +37,12 @@ extern "C" {
 	} tpbrt_vec3_t;
 
 	typedef struct {
-		tpbrt_vec2_t* values;
+		tpbrt_vec2_t* data;
 		tpbrt_size_t count;
 	} tpbrt_vec2_array_t;
 
 	typedef struct {
-		tpbrt_vec3_t* values;
+		tpbrt_vec3_t* data;
 		tpbrt_size_t count;
 	} tpbrt_vec3_array_t;
 

@@ -92,17 +92,17 @@ extern "C" {
 		tpbrt_integrator_type_t type;
 
 		union {
-			tpbrt_integrator_ambient_occlusion_params_t ambient_occlusion_params;
-			tpbrt_integrator_bdpt_params_t bdpt_params;
-			tpbrt_integrator_light_path_params_t light_path_params;
-			tpbrt_integrator_mlt_params_t mlt_params;
-			tpbrt_integrator_path_params_t path_params;
-			tpbrt_integrator_random_walk_params_t random_walk_params;
-			tpbrt_integrator_simple_path_params_t simple_path_params;
-			tpbrt_integrator_simple_vol_path_params_t simple_vol_path_params;
-			tpbrt_integrator_sppm_params_t sppm_params;
-			tpbrt_integrator_vol_path_params_t vol_path_params;
-		};
+			tpbrt_integrator_ambient_occlusion_params_t ambient_occlusion;
+			tpbrt_integrator_bdpt_params_t bdpt;
+			tpbrt_integrator_light_path_params_t light_path;
+			tpbrt_integrator_mlt_params_t mlt;
+			tpbrt_integrator_path_params_t path;
+			tpbrt_integrator_random_walk_params_t random_walk;
+			tpbrt_integrator_simple_path_params_t simple_path;
+			tpbrt_integrator_simple_vol_path_params_t simple_vol_path;
+			tpbrt_integrator_sppm_params_t sppm;
+			tpbrt_integrator_vol_path_params_t vol_path;
+		} as;
 	} tpbrt_integrator_t;
 
 #ifdef __cplusplus

@@ -2,8 +2,8 @@
 #ifndef _TINYPBRT_CAMERA_H_
 #define _TINYPBRT_CAMERA_H_
 
+#include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/math.h>
-#include "tinypbrt/detail/common.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,7 +62,7 @@ extern "C" {
 		union {
 			tpbrt_camera_realistic_aperture_builtin_t builtin;
 			tpbrt_string_t file_name;
-		};
+		} as;
 	} tpbrt_camera_realistic_aperture_t;
 
 	typedef struct {
@@ -79,11 +79,11 @@ extern "C" {
 		tpbrt_mat4_t transform;
 
 		union {
-			tpbrt_camera_orthographic_params_t orthographic_params;
-			tpbrt_camera_perspective_params_t perspective_params;
-			tpbrt_camera_spherical_params_t spherical_params;
-			tpbrt_camera_realistic_params_t realistic_params;
-		};
+			tpbrt_camera_orthographic_params_t orthographic;
+			tpbrt_camera_perspective_params_t perspective;
+			tpbrt_camera_spherical_params_t spherical;
+			tpbrt_camera_realistic_params_t realistic;
+		} as;
 	} tpbrt_camera_t;
 
 #ifdef __cplusplus

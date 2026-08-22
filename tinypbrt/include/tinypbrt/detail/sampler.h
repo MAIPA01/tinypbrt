@@ -61,13 +61,13 @@ extern "C" {
 		tpbrt_int_t seed;
 
 		union {
-			tpbrt_sampler_halton_params_t halton_params;
-			tpbrt_sampler_independent_params_t independent_params;
-			tpbrt_sampler_padded_sobol_params_t padded_sobol_params;
-			tpbrt_sampler_sobol_params_t sobol_params;
-			tpbrt_sampler_stratified_params_t stratified_params;
-			tpbrt_sampler_z_sobol_params_t z_sobol_params;
-		};
+			tpbrt_sampler_halton_params_t halton;
+			tpbrt_sampler_independent_params_t independent;
+			tpbrt_sampler_padded_sobol_params_t padded_sobol;
+			tpbrt_sampler_sobol_params_t sobol;
+			tpbrt_sampler_stratified_params_t stratified;
+			tpbrt_sampler_z_sobol_params_t z_sobol;
+		} as;
 	} tpbrt_sampler_t;
 
 #ifdef __cplusplus

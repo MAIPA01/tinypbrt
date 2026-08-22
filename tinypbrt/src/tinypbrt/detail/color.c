@@ -17,13 +17,13 @@ extern "C" {
 			TPBRT_STRING("srgb"),
 		};
 
-			if (color_space_str == TPBRT_NULL || color_space_str->chars == TPBRT_NULL || color_space_out == NULL) {
+			if (color_space_str == TPBRT_NULL || color_space_str->data == TPBRT_NULL || color_space_out == NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_color_space_t cs = 0; cs < TPBRT_COLOR_SPACE_MAX_NUM; ++cs) {
 					if (color_space_str->size == COLOR_SPACES_STRS[cs].size &&
-						strncmp(color_space_str->chars, COLOR_SPACES_STRS[cs].chars, color_space_str->size) == 0) {
+						strncmp(color_space_str->data, COLOR_SPACES_STRS[cs].data, color_space_str->size) == 0) {
 						*color_space_out = cs;
 						return TPBRT_ERROR_NONE;
 					}
@@ -78,13 +78,13 @@ extern "C" {
 			  TPBRT_STRING("metal-TiO2-k"),
 		  };
 
-			if (builtin_str == TPBRT_NULL || builtin_str->chars == TPBRT_NULL || builtin_out == NULL) {
+			if (builtin_str == TPBRT_NULL || builtin_str->data == TPBRT_NULL || builtin_out == NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_spectrum_builtin_t b = 0; b < TPBRT_SPECTRUM_BUILTIN_MAX_NUM; ++b) {
 					if (builtin_str->size == BUILTINS_STRS[b].size &&
-						strncmp(builtin_str->chars, BUILTINS_STRS[b].chars, builtin_str->size) == 0) {
+						strncmp(builtin_str->data, BUILTINS_STRS[b].data, builtin_str->size) == 0) {
 						*builtin_out = b;
 						return TPBRT_ERROR_NONE;
 					}
@@ -92,7 +92,7 @@ extern "C" {
 
 			for (tpbrt_spectrum_builtin_t b = TPBRT_SPECTRUM_BUILTIN_METAL_AG_K; b <= TPBRT_SPECTRUM_BUILTIN_METAL_TI_O2_K; ++b) {
 					if (builtin_str->size == METALS_KS_BUILTINS_STRS[b].size &&
-						strncmp(builtin_str->chars, METALS_KS_BUILTINS_STRS[b].chars, builtin_str->size) == 0) {
+						strncmp(builtin_str->data, METALS_KS_BUILTINS_STRS[b].data, builtin_str->size) == 0) {
 						*builtin_out = b;
 						return TPBRT_ERROR_NONE;
 					}
@@ -104,16 +104,16 @@ extern "C" {
 	tpbrt_error_t tpbrt_copy_wavelengths_array(tpbrt_wavelength_array_t* const dst, const tpbrt_wavelength_array_t* const src) {
 			if (dst == TPBRT_NULL || src == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (src->values == TPBRT_NULL || src->count == 0) {
-				dst->values = TPBRT_NULL;
-				dst->count	= 0;
+			if (src->data == TPBRT_NULL || src->count == 0) {
+				dst->data  = TPBRT_NULL;
+				dst->count = 0;
 				return TPBRT_ERROR_NONE;
 			}
 
-		dst->values = malloc(sizeof(tpbrt_wavelength_t) * src->count);
-			if (dst->values == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		dst->data = malloc(sizeof(tpbrt_wavelength_t) * src->count);
+			if (dst->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-		memcpy(dst->values, src->values, sizeof(tpbrt_wavelength_t) * src->count);
+		memcpy(dst->data, src->data, sizeof(tpbrt_wavelength_t) * src->count);
 		dst->count = src->count;
 		return TPBRT_ERROR_NONE;
 	}
@@ -124,20 +124,20 @@ extern "C" {
 		dst->type = src->type;
 
 			if (src->type == TPBRT_SPECTRUM_TYPE_WAVELENGTH) {
-				const tpbrt_error_t err = tpbrt_copy_wavelengths_array(&dst->wavelengths, &src->wavelengths);
+				const tpbrt_error_t err = tpbrt_copy_wavelengths_array(&dst->as.wavelengths, &src->as.wavelengths);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 			}
 			else if (src->type == TPBRT_SPECTRUM_TYPE_RGB) {
-				dst->rgb.r = src->rgb.r;
-				dst->rgb.g = src->rgb.g;
-				dst->rgb.b = src->rgb.b;
+				dst->as.rgb.r = src->as.rgb.r;
+				dst->as.rgb.g = src->as.rgb.g;
+				dst->as.rgb.b = src->as.rgb.b;
 			}
-			else if (src->type == TPBRT_SPECTRUM_TYPE_BLACKBODY) { dst->blackbody = src->blackbody; }
+			else if (src->type == TPBRT_SPECTRUM_TYPE_BLACKBODY) { dst->as.blackbody = src->as.blackbody; }
 			else if (src->type == TPBRT_SPECTRUM_TYPE_FILE) {
-				const tpbrt_error_t err = tpbrt_copy_string(&dst->file_name, &src->file_name);
+				const tpbrt_error_t err = tpbrt_copy_string(&dst->as.file_name, &src->as.file_name);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 			}
-			else if (src->type == TPBRT_SPECTRUM_TYPE_BUILTIN) { dst->builtin = src->builtin; }
+			else if (src->type == TPBRT_SPECTRUM_TYPE_BUILTIN) { dst->as.builtin = src->as.builtin; }
 
 		return TPBRT_ERROR_NONE;
 	}
@@ -145,16 +145,16 @@ extern "C" {
 	void tpbrt_free_spectrum(tpbrt_spectrum_t* const spectrum) {
 			if (spectrum == TPBRT_NULL) { return; }
 
-			if (spectrum->type == TPBRT_SPECTRUM_TYPE_FILE && spectrum->file_name.chars != TPBRT_NULL) {
-				free(spectrum->file_name.chars);
-				spectrum->file_name.chars = TPBRT_NULL;
-				spectrum->file_name.size  = 0;
+			if (spectrum->type == TPBRT_SPECTRUM_TYPE_FILE && spectrum->as.file_name.data != TPBRT_NULL) {
+				free(spectrum->as.file_name.data);
+				spectrum->as.file_name.data = TPBRT_NULL;
+				spectrum->as.file_name.size = 0;
 			}
 
-			if (spectrum->type == TPBRT_SPECTRUM_TYPE_WAVELENGTH && spectrum->wavelengths.values != TPBRT_NULL) {
-				free(spectrum->wavelengths.values);
-				spectrum->wavelengths.values = TPBRT_NULL;
-				spectrum->wavelengths.count	 = 0;
+			if (spectrum->type == TPBRT_SPECTRUM_TYPE_WAVELENGTH && spectrum->as.wavelengths.data != TPBRT_NULL) {
+				free(spectrum->as.wavelengths.data);
+				spectrum->as.wavelengths.data  = TPBRT_NULL;
+				spectrum->as.wavelengths.count = 0;
 			}
 	}
 

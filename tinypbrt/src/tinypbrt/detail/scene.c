@@ -20,7 +20,7 @@ extern "C" {
 
 	static tpbrt_bool_t str_equal(const tpbrt_string_t* s, const tpbrt_string_t literal) {
 			if (s->size != literal.size) { return TPBRT_FALSE; }
-		return strncmp(s->chars, literal.chars, literal.size) == 0 ? TPBRT_TRUE : TPBRT_FALSE;
+		return strncmp(s->data, literal.data, literal.size) == 0 ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
 	tpbrt_error_t tpbrt_create_options(tpbrt_options_t** options) {
@@ -33,9 +33,9 @@ extern "C" {
 		(*options)->disable_texture_filtering  = TPBRT_FALSE;
 		(*options)->disable_wave_length_jitter = TPBRT_FALSE;
 		(*options)->displacement_edge_scale	   = 1;
-		(*options)->mse_reference_image.chars  = TPBRT_NULL;
+		(*options)->mse_reference_image.data   = TPBRT_NULL;
 		(*options)->mse_reference_image.size   = 0;
-		(*options)->mse_reference_out.chars	   = TPBRT_NULL;
+		(*options)->mse_reference_out.data	   = TPBRT_NULL;
 		(*options)->mse_reference_out.size	   = 0;
 		(*options)->render_coord_sys		   = TPBRT_COORDINATE_SYSTEM_CAMERA_WORLD;
 		(*options)->seed					   = 0;
@@ -86,9 +86,9 @@ extern "C" {
 	void tpbrt_free_options(tpbrt_options_t** options) {
 			if (options == TPBRT_NULL || *options == TPBRT_NULL) { return; }
 
-			if ((*options)->mse_reference_image.chars != TPBRT_NULL) { free((*options)->mse_reference_image.chars); }
+			if ((*options)->mse_reference_image.data != TPBRT_NULL) { free((*options)->mse_reference_image.data); }
 
-			if ((*options)->mse_reference_out.chars != TPBRT_NULL) { free((*options)->mse_reference_out.chars); }
+			if ((*options)->mse_reference_out.data != TPBRT_NULL) { free((*options)->mse_reference_out.data); }
 
 		free(*options);
 		*options = TPBRT_NULL;
@@ -231,7 +231,7 @@ extern "C" {
 	  tpbrt_mat4_t* const out_transform) {
 			for (tpbrt_size_t i = 0; i < map->count; i++) {
 					if (map->entries[i].name.size == name->size &&
-						strncmp(map->entries[i].name.chars, name->chars, name->size) == 0) {
+						strncmp(map->entries[i].name.data, name->data, name->size) == 0) {
 						memcpy(out_transform, map->entries[i].transform, 16 * sizeof(float));
 						return TPBRT_TRUE;
 					}
@@ -284,7 +284,7 @@ extern "C" {
 			if (err == TPBRT_ERROR_NONE) {
 				const tpbrt_size_t cap	   = out_scene->include_buffers_count == 0 ? 8 : out_scene->include_buffers_count * 2;
 				out_scene->include_buffers = (tpbrt_string_t*)realloc(out_scene->include_buffers, cap * sizeof(tpbrt_string_t));
-				out_scene->include_buffers[out_scene->include_buffers_count++].chars = file_data;
+				out_scene->include_buffers[out_scene->include_buffers_count++].data = file_data;
 			}
 			else { free(file_data); }
 
@@ -303,7 +303,7 @@ extern "C" {
 		tpbrt_create_empty_objects_list(&out_scene->objects);
 
 		tpbrt_size_t cap_world_shapes  = 0;
-		out_scene->world_shapes.values = NULL;
+		out_scene->world_shapes.data   = NULL;
 		out_scene->world_shapes.count  = 0;
 		tpbrt_size_t cap_instances	   = 0;
 		out_scene->instances.instances = NULL;
@@ -361,19 +361,19 @@ extern "C" {
 							break;
 						}
 						case TPBRT_DIRECTIVE_ATTRIBUTE: {
-								if (strncmp(element.as.attribute.target.chars, "shape", 5) == 0) {
+								if (strncmp(element.as.attribute.target.data, "shape", 5) == 0) {
 									tpbrt_params_list_extend(current_state.shape_params, element.as.attribute.params);
 								}
-								else if (strncmp(element.as.attribute.target.chars, "light", 5) == 0) {
+								else if (strncmp(element.as.attribute.target.data, "light", 5) == 0) {
 									tpbrt_params_list_extend(current_state.light_params, element.as.attribute.params);
 								}
-								else if (strncmp(element.as.attribute.target.chars, "material", 8) == 0) {
+								else if (strncmp(element.as.attribute.target.data, "material", 8) == 0) {
 									tpbrt_params_list_extend(current_state.material_params, element.as.attribute.params);
 								}
-								else if (strncmp(element.as.attribute.target.chars, "texture", 7) == 0) {
+								else if (strncmp(element.as.attribute.target.data, "texture", 7) == 0) {
 									tpbrt_params_list_extend(current_state.texture_params, element.as.attribute.params);
 								}
-								else if (strncmp(element.as.attribute.target.chars, "medium", 6) == 0) {
+								else if (strncmp(element.as.attribute.target.data, "medium", 6) == 0) {
 									tpbrt_params_list_extend(current_state.medium_params, element.as.attribute.params);
 								}
 							break;
@@ -525,8 +525,8 @@ extern "C" {
 									tpbrt_object_add_shape(current_state.active_object, shape);
 								}
 								else {
-									DYN_ARRAY_PUSH(out_scene->world_shapes.values, out_scene->world_shapes.count,
-									  cap_world_shapes, *shape, tpbrt_shape_t);
+									DYN_ARRAY_PUSH(out_scene->world_shapes.data, out_scene->world_shapes.count, cap_world_shapes,
+									  *shape, tpbrt_shape_t);
 								}
 
 							free(shape);
@@ -604,12 +604,12 @@ extern "C" {
 		tpbrt_free_medias_list(&scene->medias);
 		tpbrt_free_objects_list(&scene->objects);
 
-			if (scene->world_shapes.values != TPBRT_NULL) { free(scene->world_shapes.values); }
+			if (scene->world_shapes.data != TPBRT_NULL) { free(scene->world_shapes.data); }
 
 			if (scene->instances.instances != TPBRT_NULL) { free(scene->instances.instances); }
 
 			if (scene->include_buffers != TPBRT_NULL) {
-					for (tpbrt_size_t i = 0; i < scene->include_buffers_count; ++i) { free(scene->include_buffers[i].chars); }
+					for (tpbrt_size_t i = 0; i < scene->include_buffers_count; ++i) { free(scene->include_buffers[i].data); }
 				free(scene->include_buffers);
 			}
 	}

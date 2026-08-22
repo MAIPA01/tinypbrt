@@ -98,18 +98,18 @@ extern "C" {
 		tpbrt_material_handle_t material;
 
 		union {
-			tpbrt_shape_curve_params_t curve_params;
-			tpbrt_shape_cylinder_params_t cylinder_params;
-			tpbrt_shape_disk_params_t disk_params;
-			tpbrt_shape_sphere_params_t sphere_params;
-			tpbrt_shape_triangle_mesh_params_t triangle_mesh_params;
-			tpbrt_shape_ply_mesh_params_t ply_mesh_params;
-			tpbrt_shape_loop_subdiv_params_t loop_subdiv_params;
-		};
+			tpbrt_shape_curve_params_t curve;
+			tpbrt_shape_cylinder_params_t cylinder;
+			tpbrt_shape_disk_params_t disk;
+			tpbrt_shape_sphere_params_t sphere;
+			tpbrt_shape_triangle_mesh_params_t triangle_mesh;
+			tpbrt_shape_ply_mesh_params_t ply_mesh;
+			tpbrt_shape_loop_subdiv_params_t loop_subdiv;
+		} as;
 	} tpbrt_shape_t;
 
 	typedef struct {
-		tpbrt_shape_t* values;
+		tpbrt_shape_t* data;
 		tpbrt_size_t count;
 	} tpbrt_shape_array_t;
 

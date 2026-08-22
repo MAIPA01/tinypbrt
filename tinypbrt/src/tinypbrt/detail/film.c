@@ -2,6 +2,7 @@
 
 #include <tinypbrt/detail/film_internal.h>
 
+#include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/coord_internal.h>
 
 #ifdef __cplusplus
@@ -15,28 +16,28 @@ extern "C" {
 	static const tpbrt_uint_t TPBRT_FILM_X_RES_DEFAULT							= 1280;
 	static const tpbrt_uint_t TPBRT_FILM_Y_RES_DEFAULT							= 720;
 	static const tpbrt_float_t TPBRT_FILM_DIAGONAL_DEFAULT						= 35.0f;
-	static const tpbrt_string_t TPBRT_FILM_FILE_NAME_DEFAULT					= { .chars = "pbrt.exr", .size = 8 };
+	static const tpbrt_string_t TPBRT_FILM_FILE_NAME_DEFAULT					= TPBRT_STRING("pbrt.exr");
 	static const tpbrt_bool_t TPBRT_FILM_SAVE_FP16_DEFAULT						= TPBRT_TRUE;
 	static const tpbrt_float_t TPBRT_FILM_ISO_DEFAULT							= 100.0f;
 	static const tpbrt_float_t TPBRT_FILM_WHITE_BALANCE_DEFAULT					= 0.0f;
 	static const tpbrt_film_sensor_t TPBRT_FILM_SENSOR_DEFAULT					= TPBRT_FILM_SENSOR_CIE_1931;
 	static const tpbrt_float_t TPBRT_FILM_MAX_COMPONENT_VALUE_DEFAULT			= INFINITY;
 
-	static const tpbrt_string_t TPBRT_FILM_GBUFFER_COORD_SYS_STR				= { .chars = "coordinatesystem", .size = 16 };
-	static const tpbrt_string_t TPBRT_FILM_SPECTRAL_N_BUCKETS_STR				= { .chars = "nbuckets", .size = 8 };
-	static const tpbrt_string_t TPBRT_FILM_SPECTRAL_LAMBDA_MIN_STR				= { .chars = "lambdamin", .size = 9 };
-	static const tpbrt_string_t TPBRT_FILM_SPECTRAL_LAMBDA_MAX_STR				= { .chars = "lambdamax", .size = 9 };
-	static const tpbrt_string_t TPBRT_FILM_X_RESOULUTION_STR					= { .chars = "xresolution", .size = 11 };
-	static const tpbrt_string_t TPBRT_FILM_Y_RESOULUTION_STR					= { .chars = "yresolution", .size = 11 };
-	static const tpbrt_string_t TPBRT_FILM_CROP_WINDOW_STR						= { .chars = "cropwindow", .size = 10 };
-	static const tpbrt_string_t TPBRT_FILM_PIXEL_BOUNDS_STR						= { .chars = "pixelbounds", .size = 11 };
-	static const tpbrt_string_t TPBRT_FILM_DIAGONAL_STR							= { .chars = "diagonal", .size = 8 };
-	static const tpbrt_string_t TPBRT_FILM_FILE_NAME_STR						= { .chars = "filename", .size = 8 };
-	static const tpbrt_string_t TPBRT_FILM_SAVE_FP16_STR						= { .chars = "savefp16", .size = 8 };
-	static const tpbrt_string_t TPBRT_FILM_ISO_STR								= { .chars = "iso", .size = 3 };
-	static const tpbrt_string_t TPBRT_FILM_WHITE_BALANCE_STR					= { .chars = "whitebalance", .size = 12 };
-	static const tpbrt_string_t TPBRT_FILM_SENSOR_STR							= { .chars = "sensor", .size = 6 };
-	static const tpbrt_string_t TPBRT_FILM_MAX_COMPONENT_VALUE_STR				= { .chars = "maxcomponentvalue", .size = 17 };
+	static const tpbrt_string_t TPBRT_FILM_GBUFFER_COORD_SYS_STR				= TPBRT_STRING("coordinatesystem");
+	static const tpbrt_string_t TPBRT_FILM_SPECTRAL_N_BUCKETS_STR				= TPBRT_STRING("nbuckets");
+	static const tpbrt_string_t TPBRT_FILM_SPECTRAL_LAMBDA_MIN_STR				= TPBRT_STRING("lambdamin");
+	static const tpbrt_string_t TPBRT_FILM_SPECTRAL_LAMBDA_MAX_STR				= TPBRT_STRING("lambdamax");
+	static const tpbrt_string_t TPBRT_FILM_X_RESOULUTION_STR					= TPBRT_STRING("xresolution");
+	static const tpbrt_string_t TPBRT_FILM_Y_RESOULUTION_STR					= TPBRT_STRING("yresolution");
+	static const tpbrt_string_t TPBRT_FILM_CROP_WINDOW_STR						= TPBRT_STRING("cropwindow");
+	static const tpbrt_string_t TPBRT_FILM_PIXEL_BOUNDS_STR						= TPBRT_STRING("pixelbounds");
+	static const tpbrt_string_t TPBRT_FILM_DIAGONAL_STR							= TPBRT_STRING("diagonal");
+	static const tpbrt_string_t TPBRT_FILM_FILE_NAME_STR						= TPBRT_STRING("filename");
+	static const tpbrt_string_t TPBRT_FILM_SAVE_FP16_STR						= TPBRT_STRING("savefp16");
+	static const tpbrt_string_t TPBRT_FILM_ISO_STR								= TPBRT_STRING("iso");
+	static const tpbrt_string_t TPBRT_FILM_WHITE_BALANCE_STR					= TPBRT_STRING("whitebalance");
+	static const tpbrt_string_t TPBRT_FILM_SENSOR_STR							= TPBRT_STRING("sensor");
+	static const tpbrt_string_t TPBRT_FILM_MAX_COMPONENT_VALUE_STR				= TPBRT_STRING("maxcomponentvalue");
 
 	tpbrt_error_t tpbrt_create_default_film(tpbrt_film_t** film) {
 			if (film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -56,7 +57,7 @@ extern "C" {
 		(*film)->pixel_bounds[2]	 = 0;
 		(*film)->pixel_bounds[3]	 = (*film)->y_resolution;
 		(*film)->diagonal			 = TPBRT_FILM_DIAGONAL_DEFAULT;
-		(*film)->file_name.chars	 = TPBRT_FILM_FILE_NAME_DEFAULT.chars;
+		(*film)->file_name.data		 = TPBRT_FILM_FILE_NAME_DEFAULT.data;
 		(*film)->file_name.size		 = TPBRT_FILM_FILE_NAME_DEFAULT.size;
 		(*film)->save_fp16			 = TPBRT_FILM_SAVE_FP16_DEFAULT;
 		(*film)->iso				 = TPBRT_FILM_ISO_DEFAULT;
@@ -67,157 +68,59 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_film_type_from_string(const tpbrt_string_t* const type_str, tpbrt_film_type_t* const type) {
-		static const tpbrt_string_t RGB_STR		 = { .chars = "rgb", .size = 3 };
-		static const tpbrt_string_t GBUFFER_STR	 = { .chars = "gbuffer", .size = 7 };
-		static const tpbrt_string_t SPECTRAL_STR = { .chars = "spectral", .size = 8 };
+		static const tpbrt_string_t TYPES_STRS[TPBRT_FILM_TYPE_MAX_NUM] = {
+			TPBRT_STRING("rgb"),
+			TPBRT_STRING("gbuffer"),
+			TPBRT_STRING("spectral"),
+		};
 
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || type == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-			if (type_str->size == RGB_STR.size && strncmp(type_str->chars, RGB_STR.chars, RGB_STR.size) == 0) {
-				*type = TPBRT_FILM_TYPE_RGB;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == GBUFFER_STR.size && strncmp(type_str->chars, GBUFFER_STR.chars, GBUFFER_STR.size) == 0) {
-				*type = TPBRT_FILM_TYPE_GBUFFER;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == SPECTRAL_STR.size && strncmp(type_str->chars, SPECTRAL_STR.chars, SPECTRAL_STR.size) == 0) {
-				*type = TPBRT_FILM_TYPE_SPECTRAL;
-				return TPBRT_ERROR_NONE;
+			for (tpbrt_film_type_t t = 0; t < TPBRT_FILM_TYPE_MAX_NUM; ++t) {
+					if (type_str->size == TYPES_STRS[t].size &&
+						strncmp(type_str->data, TYPES_STRS[t].data, TYPES_STRS[t].size) == 0) {
+						*type = t;
+						return TPBRT_ERROR_NONE;
+					}
 			}
 
 		return TPBRT_ERROR_INVALID_FILM_TYPE;
 	}
 
 	static tpbrt_error_t tpbrt_film_sensor_from_string(const tpbrt_string_t* const type_str, tpbrt_film_sensor_t* const sensor) {
-		static const tpbrt_string_t CIE_1931_STR			= { .chars = "cie1931", .size = 7 };
-		static const tpbrt_string_t CANON_EOS_100D_STR		= { .chars = "canon_eos_100d", .size = 14 };
-		static const tpbrt_string_t CANON_EOS_1DX_MKII_STR	= { .chars = "canon_eos_1dx_mkii", .size = 18 };
-		static const tpbrt_string_t CANON_EOS_200D_STR		= { .chars = "canon_eos_200d", .size = 14 };
-		static const tpbrt_string_t CANON_EOS_200D_MKII_STR = { .chars = "canon_eos_200d_mkii", .size = 19 };
-		static const tpbrt_string_t CANON_EOS_5D_STR		= { .chars = "canon_eos_5d", .size = 12 };
-		static const tpbrt_string_t CANON_EOS_5D_MKII_STR	= { .chars = "canon_eos_5d_mkii", .size = 17 };
-		static const tpbrt_string_t CANON_EOS_5D_MKIII_STR	= { .chars = "canon_eos_5d_mkiii", .size = 18 };
-		static const tpbrt_string_t CANON_EOS_5D_MKIV_STR	= { .chars = "canon_eos_5d_mkiv", .size = 17 };
-		static const tpbrt_string_t CANON_EOS_5DS_STR		= { .chars = "canon_eos_5ds", .size = 13 };
-		static const tpbrt_string_t CANON_EOS_M_STR			= { .chars = "canon_eos_m", .size = 11 };
-		static const tpbrt_string_t HASSELBLAD_L1D_20C_STR	= { .chars = "hasselblad_l1d_20c", .size = 18 };
-		static const tpbrt_string_t NIKON_D810_STR			= { .chars = "nikon_d810", .size = 10 };
-		static const tpbrt_string_t NIKON_D850_STR			= { .chars = "nikon_d850", .size = 10 };
-		static const tpbrt_string_t SONY_ILCE_6400_STR		= { .chars = "sony_ilce_6400", .size = 14 };
-		static const tpbrt_string_t SONY_ILCE_7M3_STR		= { .chars = "sony_ilce_7m3", .size = 13 };
-		static const tpbrt_string_t SONY_ILCE_7RM3_STR		= { .chars = "sony_ilce_7rm3", .size = 14 };
-		static const tpbrt_string_t SONY_ILCE_9_STR			= { .chars = "sony_ilce_9", .size = 11 };
+		static const tpbrt_string_t SENSORS_STRS[TPBRT_FILM_SENSOR_MAX_NUM] = {
+			TPBRT_STRING("cie1931"),
+			TPBRT_STRING("canon_eos_100d"),
+			TPBRT_STRING("canon_eos_1dx_mkii"),
+			TPBRT_STRING("canon_eos_200d"),
+			TPBRT_STRING("canon_eos_200d_mkii"),
+			TPBRT_STRING("canon_eos_5d"),
+			TPBRT_STRING("canon_eos_5d_mkii"),
+			TPBRT_STRING("canon_eos_5d_mkiii"),
+			TPBRT_STRING("canon_eos_5d_mkiv"),
+			TPBRT_STRING("canon_eos_5ds"),
+			TPBRT_STRING("canon_eos_m"),
+			TPBRT_STRING("hasselblad_l1d_20c"),
+			TPBRT_STRING("nikon_d810"),
+			TPBRT_STRING("nikon_d850"),
+			TPBRT_STRING("sony_ilce_6400"),
+			TPBRT_STRING("sony_ilce_7m3"),
+			TPBRT_STRING("sony_ilce_7rm3"),
+			TPBRT_STRING("sony_ilce_9"),
+		};
 
-			if (type_str->size == CIE_1931_STR.size && strncmp(type_str->chars, CIE_1931_STR.chars, CIE_1931_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CIE_1931;
-				return TPBRT_ERROR_NONE;
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || sensor == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-			if (type_str->size == CANON_EOS_100D_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_100D_STR.chars, CANON_EOS_100D_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_100D;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_1DX_MKII_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_1DX_MKII_STR.chars, CANON_EOS_1DX_MKII_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_1DX_MKII;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_200D_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_200D_STR.chars, CANON_EOS_200D_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_200D;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_200D_MKII_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_200D_MKII_STR.chars, CANON_EOS_200D_MKII_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_200D_MKII;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_5D_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_5D_STR.chars, CANON_EOS_5D_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_5D;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_5D_MKII_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_5D_MKII_STR.chars, CANON_EOS_5D_MKII_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_5D_MKII;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_5D_MKIII_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_5D_MKIII_STR.chars, CANON_EOS_5D_MKIII_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIII;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_5D_MKIV_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_5D_MKIV_STR.chars, CANON_EOS_5D_MKIV_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIV;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_5DS_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_5DS_STR.chars, CANON_EOS_5DS_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_5DS;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == CANON_EOS_M_STR.size &&
-				strncmp(type_str->chars, CANON_EOS_M_STR.chars, CANON_EOS_M_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_CANON_EOS_M;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == HASSELBLAD_L1D_20C_STR.size &&
-				strncmp(type_str->chars, HASSELBLAD_L1D_20C_STR.chars, HASSELBLAD_L1D_20C_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_HASSELBLAD_L1D_20C;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == NIKON_D810_STR.size &&
-				strncmp(type_str->chars, NIKON_D810_STR.chars, NIKON_D810_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_NIKON_D810;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == NIKON_D850_STR.size &&
-				strncmp(type_str->chars, NIKON_D850_STR.chars, NIKON_D850_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_NIKON_D850;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == SONY_ILCE_6400_STR.size &&
-				strncmp(type_str->chars, SONY_ILCE_6400_STR.chars, SONY_ILCE_6400_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_SONY_ILCE_6400;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == SONY_ILCE_7M3_STR.size &&
-				strncmp(type_str->chars, SONY_ILCE_7M3_STR.chars, SONY_ILCE_7M3_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_SONY_ILCE_7M3;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == SONY_ILCE_7RM3_STR.size &&
-				strncmp(type_str->chars, SONY_ILCE_7RM3_STR.chars, SONY_ILCE_7RM3_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_SONY_ILCE_7RM3;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (type_str->size == SONY_ILCE_9_STR.size &&
-				strncmp(type_str->chars, SONY_ILCE_9_STR.chars, SONY_ILCE_9_STR.size) == 0) {
-				*sensor = TPBRT_FILM_SENSOR_SONY_ILCE_9;
-				return TPBRT_ERROR_NONE;
+			for (tpbrt_film_sensor_t s = 0; s < TPBRT_FILM_SENSOR_MAX_NUM; ++s) {
+					if (type_str->size == SENSORS_STRS[s].size &&
+						strncmp(type_str->data, SENSORS_STRS[s].data, SENSORS_STRS[s].size) == 0) {
+						*sensor = s;
+						return TPBRT_ERROR_NONE;
+					}
 			}
 
 		return TPBRT_ERROR_UNKNOWN_FILM_SENSOR;
@@ -232,7 +135,7 @@ extern "C" {
 
 		tpbrt_error_t err;
 		(*film)->type = TPBRT_FILM_TYPE_RGB;
-			if (type_str != TPBRT_NULL && type_str->chars != TPBRT_NULL) {
+			if (type_str != TPBRT_NULL && type_str->data != TPBRT_NULL) {
 				err = tpbrt_film_type_from_string(type_str, &(*film)->type);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 			}
@@ -246,18 +149,18 @@ extern "C" {
 					tpbrt_string_t coordinate_system_str;
 					err = tpbrt_params_list_get_string(params, &TPBRT_FILM_GBUFFER_COORD_SYS_STR, &coordinate_system_str);
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							(*film)->gbuffer_params.coordinate_system = TPBRT_FILM_GBUFFER_COORD_SYS_DEFAULT;
+							(*film)->as.gbuffer.coordinate_system = TPBRT_FILM_GBUFFER_COORD_SYS_DEFAULT;
 							break;
 						}
 
 						if (err != TPBRT_ERROR_NONE) {
-							free(coordinate_system_str.chars);
+							free(coordinate_system_str.data);
 							tpbrt_free_film(film);
 							return err;
 						}
 
-					err = tpbrt_coordinate_system_from_string(&coordinate_system_str, &(*film)->gbuffer_params.coordinate_system);
-					free(coordinate_system_str.chars);
+					err = tpbrt_coordinate_system_from_string(&coordinate_system_str, &(*film)->as.gbuffer.coordinate_system);
+					free(coordinate_system_str.data);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_film(film);
 							return err;
@@ -266,7 +169,7 @@ extern "C" {
 				}
 				case TPBRT_FILM_TYPE_SPECTRAL: {
 					err = tpbrt_params_list_get_uint(params, &TPBRT_FILM_SPECTRAL_N_BUCKETS_STR,
-					  TPBRT_FILM_SPECTRAL_N_BUCKETS_DEFAULT, &(*film)->spectral_params.nbuckets);
+					  TPBRT_FILM_SPECTRAL_N_BUCKETS_DEFAULT, &(*film)->as.spectral.nbuckets);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_film(film);
 							return err;
@@ -274,7 +177,7 @@ extern "C" {
 
 
 					err = tpbrt_params_list_get_float(params, &TPBRT_FILM_SPECTRAL_LAMBDA_MIN_STR,
-					  TPBRT_FILM_SPECTRAL_LAMBDA_MIN_DEFAULT, &(*film)->spectral_params.lambda_min);
+					  TPBRT_FILM_SPECTRAL_LAMBDA_MIN_DEFAULT, &(*film)->as.spectral.lambda_min);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_film(film);
 							return err;
@@ -282,7 +185,7 @@ extern "C" {
 
 
 					err = tpbrt_params_list_get_float(params, &TPBRT_FILM_SPECTRAL_LAMBDA_MAX_STR,
-					  TPBRT_FILM_SPECTRAL_LAMBDA_MAX_DEFAULT, &(*film)->spectral_params.lambda_max);
+					  TPBRT_FILM_SPECTRAL_LAMBDA_MAX_DEFAULT, &(*film)->as.spectral.lambda_max);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_film(film);
 							return err;
@@ -308,28 +211,28 @@ extern "C" {
 		err = tpbrt_params_list_get_floats(params, &TPBRT_FILM_CROP_WINDOW_STR, &crop_window);
 			if (err != TPBRT_ERROR_NOT_FOUND) {
 					if (err != TPBRT_ERROR_NONE) {
-							if (crop_window.values != TPBRT_NULL) { free(crop_window.values); }
+							if (crop_window.data != TPBRT_NULL) { free(crop_window.data); }
 						tpbrt_free_film(film);
 						return err;
 					}
 
 					if (crop_window.count < 4) {
-							if (crop_window.values != TPBRT_NULL) { free(crop_window.values); }
+							if (crop_window.data != TPBRT_NULL) { free(crop_window.data); }
 						tpbrt_free_film(film);
 						return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 					}
 
 					if (crop_window.count > 4) {
-						free(crop_window.values);
+						free(crop_window.data);
 						tpbrt_free_film(film);
 						return TPBRT_ERROR_TOO_MANY_VALUES;
 					}
 
-				(*film)->crop_window[0] = crop_window.values[0];
-				(*film)->crop_window[1] = crop_window.values[1];
-				(*film)->crop_window[2] = crop_window.values[2];
-				(*film)->crop_window[3] = crop_window.values[3];
-				free(crop_window.values);
+				(*film)->crop_window[0] = crop_window.data[0];
+				(*film)->crop_window[1] = crop_window.data[1];
+				(*film)->crop_window[2] = crop_window.data[2];
+				(*film)->crop_window[3] = crop_window.data[3];
+				free(crop_window.data);
 			}
 			else {
 				(*film)->crop_window[0] = 0.0f;
@@ -342,28 +245,28 @@ extern "C" {
 		err = tpbrt_params_list_get_uints(params, &TPBRT_FILM_PIXEL_BOUNDS_STR, &pixel_bounds);
 			if (err != TPBRT_ERROR_NOT_FOUND) {
 					if (err != TPBRT_ERROR_NONE) {
-							if (pixel_bounds.values != TPBRT_NULL) { free(pixel_bounds.values); }
+							if (pixel_bounds.data != TPBRT_NULL) { free(pixel_bounds.data); }
 						tpbrt_free_film(film);
 						return err;
 					}
 
 					if (pixel_bounds.count < 4) {
-							if (pixel_bounds.values != TPBRT_NULL) { free(pixel_bounds.values); }
+							if (pixel_bounds.data != TPBRT_NULL) { free(pixel_bounds.data); }
 						tpbrt_free_film(film);
 						return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 					}
 
 					if (pixel_bounds.count > 4) {
-						free(pixel_bounds.values);
+						free(pixel_bounds.data);
 						tpbrt_free_film(film);
 						return TPBRT_ERROR_TOO_MANY_VALUES;
 					}
 
-				(*film)->pixel_bounds[0] = pixel_bounds.values[0];
-				(*film)->pixel_bounds[1] = pixel_bounds.values[1];
-				(*film)->pixel_bounds[2] = pixel_bounds.values[2];
-				(*film)->pixel_bounds[3] = pixel_bounds.values[3];
-				free(pixel_bounds.values);
+				(*film)->pixel_bounds[0] = pixel_bounds.data[0];
+				(*film)->pixel_bounds[1] = pixel_bounds.data[1];
+				(*film)->pixel_bounds[2] = pixel_bounds.data[2];
+				(*film)->pixel_bounds[3] = pixel_bounds.data[3];
+				free(pixel_bounds.data);
 			}
 			else {
 				(*film)->pixel_bounds[0] = 0.0f;
@@ -407,14 +310,14 @@ extern "C" {
 		tpbrt_string_t sensor_str;
 		err = tpbrt_params_list_get_string(params, &TPBRT_FILM_SENSOR_STR, &sensor_str);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-					if (sensor_str.chars != TPBRT_NULL) { free(sensor_str.chars); }
+					if (sensor_str.data != TPBRT_NULL) { free(sensor_str.data); }
 				tpbrt_free_film(film);
 				return err;
 			}
 			if (err == TPBRT_ERROR_NOT_FOUND) { (*film)->sensor = TPBRT_FILM_SENSOR_DEFAULT; }
 			else {
 				err = tpbrt_film_sensor_from_string(&sensor_str, &(*film)->sensor);
-				free(sensor_str.chars);
+				free(sensor_str.data);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_free_film(film);
 						return err;
@@ -433,8 +336,8 @@ extern "C" {
 	void tpbrt_free_film(tpbrt_film_t** film) {
 			if (film == TPBRT_NULL || *film == TPBRT_NULL) { return; }
 
-			if ((*film)->file_name.chars != TPBRT_FILM_FILE_NAME_DEFAULT.chars && (*film)->file_name.chars != TPBRT_NULL) {
-				free((*film)->file_name.chars);
+			if ((*film)->file_name.data != TPBRT_FILM_FILE_NAME_DEFAULT.data && (*film)->file_name.data != TPBRT_NULL) {
+				free((*film)->file_name.data);
 			}
 
 		free(*film);

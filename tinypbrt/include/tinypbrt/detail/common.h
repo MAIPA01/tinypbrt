@@ -9,12 +9,12 @@ extern "C" {
 #endif
 
 	typedef struct {
-		tpbrt_char_t* chars;
+		tpbrt_char_t* data;
 		tpbrt_size_t size;
 	} tpbrt_string_t;
 
 	typedef struct {
-		tpbrt_string_t* values;
+		tpbrt_string_t* data;
 		tpbrt_size_t count;
 	} tpbrt_string_array_t;
 

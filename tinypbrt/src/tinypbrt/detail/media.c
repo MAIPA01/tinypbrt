@@ -20,13 +20,13 @@ extern "C" {
 			TPBRT_STRING("uniformgrid"),
 		};
 
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL || type == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_media_type_t t = 0; t < TPBRT_MEDIA_TYPE_MAX_NUM; ++t) {
 					if (type_str->size == TYPES_STRS[t].size &&
-						strncmp(type_str->chars, TYPES_STRS[t].chars, TYPES_STRS[t].size) == 0) {
+						strncmp(type_str->data, TYPES_STRS[t].data, TYPES_STRS[t].size) == 0) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -37,7 +37,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_create_media(const tpbrt_string_t* const name, const tpbrt_string_t* const type_str,
 	  const tpbrt_params_list_t* const params, tpbrt_media_t** const media) {
-			if (name == TPBRT_NULL || name->chars == TPBRT_NULL || params == TPBRT_NULL || media == TPBRT_NULL) {
+			if (name == TPBRT_NULL || name->data == TPBRT_NULL || params == TPBRT_NULL || media == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
@@ -51,7 +51,7 @@ extern "C" {
 			}
 
 		tpbrt_string_t temp_string = *type_str;
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL) {
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL) {
 				static const tpbrt_string_t TYPE_STR = TPBRT_STRING("type");
 				err									 = tpbrt_params_list_get_string(params, &TYPE_STR, &temp_string);
 					if (err != TPBRT_ERROR_NONE) {
@@ -61,7 +61,7 @@ extern "C" {
 			}
 
 		err = tpbrt_media_type_from_string(&temp_string, &(*media)->type);
-			if (type_str == TPBRT_NULL || type_str->chars == TPBRT_NULL) { free(temp_string.chars); }
+			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL) { free(temp_string.data); }
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_free_media(media);
 				return err;
@@ -79,7 +79,7 @@ extern "C" {
 					static const tpbrt_string_t SIGMA_S_STR	  = TPBRT_STRING("sigma_s");
 					static const tpbrt_string_t WISPINESS_STR = TPBRT_STRING("wispiness");
 
-					tpbrt_media_cloud_params_t* media_params  = &(*media)->cloud_params;
+					tpbrt_media_cloud_params_t* media_params  = &(*media)->as.cloud;
 
 					err = tpbrt_params_list_get_float(params, &DENSITY_STR, 1.0f, &media_params->density);
 						if (err != TPBRT_ERROR_NONE) {
@@ -130,8 +130,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_a.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_a.blackbody = 1u;
+							media_params->sigma_a.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_a.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_spectrum(params, &SIGMA_S_STR, &media_params->sigma_s);
@@ -141,8 +141,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_s.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_s.blackbody = 1u;
+							media_params->sigma_s.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_s.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_float(params, &WISPINESS_STR, 1.0f, &media_params->wispiness);
@@ -162,7 +162,7 @@ extern "C" {
 					static const tpbrt_string_t SIGMA_S_STR		   = TPBRT_STRING("sigma_s");
 					static const tpbrt_string_t SCALE_STR		   = TPBRT_STRING("scale");
 
-					tpbrt_media_homogeneous_params_t* media_params = &(*media)->homogeneous_params;
+					tpbrt_media_homogeneous_params_t* media_params = &(*media)->as.homogeneous;
 
 					err = tpbrt_params_list_get_float(params, &G_STR, 0.0f, &media_params->g);
 						if (err != TPBRT_ERROR_NONE) {
@@ -177,8 +177,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->Le.type	   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->Le.blackbody = 0u;
+							media_params->Le.type		  = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->Le.as.blackbody = 0u;
 						}
 
 					err = tpbrt_params_list_get_float(params, &LE_SCALE_STR, 1.0f, &media_params->Le_scale);
@@ -200,8 +200,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_a.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_a.blackbody = 1u;
+							media_params->sigma_a.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_a.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_spectrum(params, &SIGMA_S_STR, &media_params->sigma_s);
@@ -211,8 +211,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_s.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_s.blackbody = 1u;
+							media_params->sigma_s.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_s.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_float(params, &SCALE_STR, 1.0f, &media_params->scale);
@@ -233,7 +233,7 @@ extern "C" {
 					static const tpbrt_string_t TEMPERATURE_OFFSET_STR = TPBRT_STRING("temepratureoffset");
 					static const tpbrt_string_t TEMPERATURE_SCALE_STR  = TPBRT_STRING("temperaturescale");
 
-					tpbrt_media_nano_vdb_params_t* media_params		   = &(*media)->nano_vdb_params;
+					tpbrt_media_nano_vdb_params_t* media_params		   = &(*media)->as.nano_vdb;
 
 					err = tpbrt_params_list_get_float(params, &G_STR, 0.0f, &media_params->g);
 						if (err != TPBRT_ERROR_NONE) {
@@ -254,8 +254,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_a.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_a.blackbody = 1u;
+							media_params->sigma_a.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_a.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_spectrum(params, &SIGMA_S_STR, &media_params->sigma_s);
@@ -265,8 +265,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_s.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_s.blackbody = 1u;
+							media_params->sigma_s.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_s.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_float(params, &SCALE_STR, 1.0f, &media_params->scale);
@@ -305,7 +305,7 @@ extern "C" {
 					static const tpbrt_string_t SIGMA_S_STR		= TPBRT_STRING("sigma_s");
 					static const tpbrt_string_t SCALE_STR		= TPBRT_STRING("scale");
 
-					tpbrt_media_rgb_grid_params_t* media_params = &(*media)->rgb_grid_params;
+					tpbrt_media_rgb_grid_params_t* media_params = &(*media)->as.rgb_grid;
 
 					err = tpbrt_params_list_get_float(params, &G_STR, 0.0f, &media_params->g);
 						if (err != TPBRT_ERROR_NONE) {
@@ -387,7 +387,7 @@ extern "C" {
 					static const tpbrt_string_t TEMPERATURE_OFFSET_STR = TPBRT_STRING("temepratureoffset");
 					static const tpbrt_string_t TEMPERATURE_SCALE_STR  = TPBRT_STRING("temperaturescale");
 
-					tpbrt_media_uniform_grid_params_t* media_params	   = &(*media)->uniform_grid_params;
+					tpbrt_media_uniform_grid_params_t* media_params	   = &(*media)->as.uniform_grid;
 
 					err = tpbrt_params_list_get_floats(params, &DENSITY_STR, &media_params->density);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
@@ -408,8 +408,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->Le.type	   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->Le.blackbody = 0u;
+							media_params->Le.type		  = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->Le.as.blackbody = 0u;
 						}
 
 					err = tpbrt_params_list_get_float(params, &LE_SCALE_STR, 1.0f, &media_params->Le_scale);
@@ -473,8 +473,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_a.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_a.blackbody = 1u;
+							media_params->sigma_a.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_a.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_spectrum(params, &SIGMA_S_STR, &media_params->sigma_s);
@@ -484,8 +484,8 @@ extern "C" {
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							media_params->sigma_s.type		= TPBRT_SPECTRUM_TYPE_BLACKBODY;
-							media_params->sigma_s.blackbody = 1u;
+							media_params->sigma_s.type		   = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+							media_params->sigma_s.as.blackbody = 1u;
 						}
 
 					err = tpbrt_params_list_get_float(params, &SCALE_STR, 1.0f, &media_params->scale);
@@ -522,52 +522,52 @@ extern "C" {
 	void tpbrt_free_media(tpbrt_media_t** const media) {
 			if (media == TPBRT_NULL || *media == TPBRT_NULL) { return; }
 
-			if ((*media)->name.chars != TPBRT_NULL) { free((*media)->name.chars); }
+			if ((*media)->name.data != TPBRT_NULL) { free((*media)->name.data); }
 
 			switch ((*media)->type) {
 				case TPBRT_MEDIA_TYPE_CLOUD: {
-					tpbrt_media_cloud_params_t* const params = &(*media)->cloud_params;
+					tpbrt_media_cloud_params_t* const params = &(*media)->as.cloud;
 
 					tpbrt_free_spectrum(&params->sigma_a);
 					tpbrt_free_spectrum(&params->sigma_s);
 				}
 				case TPBRT_MEDIA_TYPE_HOMOGENEOUS: {
-					tpbrt_media_homogeneous_params_t* const params = &(*media)->homogeneous_params;
+					tpbrt_media_homogeneous_params_t* const params = &(*media)->as.homogeneous;
 
 					tpbrt_free_spectrum(&params->Le);
 					tpbrt_free_spectrum(&params->sigma_a);
 					tpbrt_free_spectrum(&params->sigma_s);
 
-						if (params->preset.chars != TPBRT_NULL) { free(params->preset.chars); }
+						if (params->preset.data != TPBRT_NULL) { free(params->preset.data); }
 				}
 				case TPBRT_MEDIA_TYPE_NANO_VDB: {
-					tpbrt_media_nano_vdb_params_t* const params = &(*media)->nano_vdb_params;
+					tpbrt_media_nano_vdb_params_t* const params = &(*media)->as.nano_vdb;
 
 					tpbrt_free_spectrum(&params->sigma_a);
 					tpbrt_free_spectrum(&params->sigma_s);
 
-						if (params->file_name.chars != TPBRT_NULL) { free(params->file_name.chars); }
+						if (params->file_name.data != TPBRT_NULL) { free(params->file_name.data); }
 				}
 				case TPBRT_MEDIA_TYPE_RGB_GRID: {
-					const tpbrt_media_rgb_grid_params_t* const params = &(*media)->rgb_grid_params;
+					const tpbrt_media_rgb_grid_params_t* const params = &(*media)->as.rgb_grid;
 
-						if (params->Le.values != TPBRT_NULL) { free(params->Le.values); }
-						if (params->sigma_a.values != TPBRT_NULL) { free(params->sigma_a.values); }
-						if (params->sigma_s.values != TPBRT_NULL) { free(params->sigma_s.values); }
+						if (params->Le.data != TPBRT_NULL) { free(params->Le.data); }
+						if (params->sigma_a.data != TPBRT_NULL) { free(params->sigma_a.data); }
+						if (params->sigma_s.data != TPBRT_NULL) { free(params->sigma_s.data); }
 				}
 				case TPBRT_MEDIA_TYPE_UNIFORM_GRID: {
-					tpbrt_media_uniform_grid_params_t* const params = &(*media)->uniform_grid_params;
+					tpbrt_media_uniform_grid_params_t* const params = &(*media)->as.uniform_grid;
 
-						if (params->density.values != TPBRT_NULL) { free(params->density.values); }
+						if (params->density.data != TPBRT_NULL) { free(params->density.data); }
 
 					tpbrt_free_spectrum(&params->Le);
 
-						if (params->preset.chars != TPBRT_NULL) { free(params->preset.chars); }
+						if (params->preset.data != TPBRT_NULL) { free(params->preset.data); }
 
 					tpbrt_free_spectrum(&params->sigma_a);
 					tpbrt_free_spectrum(&params->sigma_s);
 
-						if (params->temperature.values != TPBRT_NULL) { free(params->temperature.values); }
+						if (params->temperature.data != TPBRT_NULL) { free(params->temperature.data); }
 				}
 			default: break;
 			}
@@ -604,10 +604,10 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (media->name.size != 0 && media->name.chars != TPBRT_NULL) {
+			if (media->name.size != 0 && media->name.data != TPBRT_NULL) {
 					for (tpbrt_size_t i = 0; i < medias_list->count; i++) {
 							if (medias_list->medias[i].name.size == media->name.size &&
-								strncmp(medias_list->medias[i].name.chars, media->name.chars, media->name.size) == 0) {
+								strncmp(medias_list->medias[i].name.data, media->name.data, media->name.size) == 0) {
 								return TPBRT_ERROR_DUPLICATE_TEXTURE_NAME;
 							}
 					}
@@ -627,14 +627,14 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_medias_list_get_media(const tpbrt_medias_list_t* const medias_list,
 	  const tpbrt_string_t* const media_name, const tpbrt_media_t** const media) {
-			if (medias_list == TPBRT_NULL || media_name == TPBRT_NULL || media_name->chars == TPBRT_NULL || media == TPBRT_NULL) {
+			if (medias_list == TPBRT_NULL || media_name == TPBRT_NULL || media_name->data == TPBRT_NULL || media == TPBRT_NULL) {
 				*media = TPBRT_NULL;
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 			for (tpbrt_size_t i = 0; i < medias_list->count; i++) {
 					if (medias_list->medias[i].name.size == media_name->size &&
-						strncmp(medias_list->medias[i].name.chars, media_name->chars, media_name->size) == 0) {
+						strncmp(medias_list->medias[i].name.data, media_name->data, media_name->size) == 0) {
 						*media = &medias_list->medias[i];
 						return TPBRT_ERROR_NONE;
 					}
@@ -645,7 +645,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_medias_list_get_media_handle(const tpbrt_medias_list_t* const medias_list,
 	  const tpbrt_string_t* const media_name, tpbrt_media_handle_t* const media_handle) {
-			if (medias_list == TPBRT_NULL || media_name == TPBRT_NULL || media_name->chars == TPBRT_NULL ||
+			if (medias_list == TPBRT_NULL || media_name == TPBRT_NULL || media_name->data == TPBRT_NULL ||
 				media_handle == TPBRT_NULL) {
 				*media_handle = ~(tpbrt_media_handle_t)0;
 				return TPBRT_ERROR_INVALID_POINTER;

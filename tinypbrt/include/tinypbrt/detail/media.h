@@ -7,6 +7,7 @@
 #include <tinypbrt/detail/color.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/math.h>
+#include <tinypbrt/detail/common.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -84,12 +85,12 @@ extern "C" {
 		tpbrt_string_t name;
 
 		union {
-			tpbrt_media_cloud_params_t cloud_params;
-			tpbrt_media_homogeneous_params_t homogeneous_params;
-			tpbrt_media_uniform_grid_params_t uniform_grid_params;
-			tpbrt_media_rgb_grid_params_t rgb_grid_params;
-			tpbrt_media_nano_vdb_params_t nano_vdb_params;
-		};
+			tpbrt_media_cloud_params_t cloud;
+			tpbrt_media_homogeneous_params_t homogeneous;
+			tpbrt_media_uniform_grid_params_t uniform_grid;
+			tpbrt_media_rgb_grid_params_t rgb_grid;
+			tpbrt_media_nano_vdb_params_t nano_vdb;
+		} as;
 	} tpbrt_media_t;
 
 	typedef tpbrt_size_t tpbrt_media_handle_t;

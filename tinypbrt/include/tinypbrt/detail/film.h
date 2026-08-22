@@ -13,6 +13,7 @@ extern "C" {
 		TPBRT_FILM_TYPE_RGB		 = 0,
 		TPBRT_FILM_TYPE_GBUFFER	 = 1,
 		TPBRT_FILM_TYPE_SPECTRAL = 2,
+		TPBRT_FILM_TYPE_MAX_NUM	 = 3,
 	} tpbrt_film_type_t;
 
 	typedef struct {
@@ -44,6 +45,7 @@ extern "C" {
 		TPBRT_FILM_SENSOR_SONY_ILCE_7M3		  = 15,
 		TPBRT_FILM_SENSOR_SONY_ILCE_7RM3	  = 16,
 		TPBRT_FILM_SENSOR_SONY_ILCE_9		  = 17,
+		TPBRT_FILM_SENSOR_MAX_NUM			  = 18,
 	} tpbrt_film_sensor_t;
 
 	typedef struct {
@@ -61,9 +63,9 @@ extern "C" {
 		tpbrt_film_type_t type;
 
 		union {
-			tpbrt_film_gbuffer_params_t gbuffer_params;
-			tpbrt_film_spectral_params_t spectral_params;
-		};
+			tpbrt_film_gbuffer_params_t gbuffer;
+			tpbrt_film_spectral_params_t spectral;
+		} as;
 	} tpbrt_film_t;
 
 #ifdef __cplusplus

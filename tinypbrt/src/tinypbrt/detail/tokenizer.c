@@ -9,9 +9,9 @@ extern "C" {
 	void tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_char_t* const str, const tpbrt_size_t length) {
 			if (tokenizer == TPBRT_NULL) { return; }
 
-		tokenizer->str.chars = (tpbrt_char_t*)str;
-		tokenizer->str.size	 = length;
-		tokenizer->offset	 = 0u;
+		tokenizer->str.data = (tpbrt_char_t*)str;
+		tokenizer->str.size = length;
+		tokenizer->offset	= 0u;
 	}
 
 	tpbrt_size_t tpbrt_tokenizer_offset(const tpbrt_tokenizer_t* const tokenizer) {
@@ -33,14 +33,14 @@ extern "C" {
 
 			while (tokenizer->offset < tokenizer->str.size) {
 				const tpbrt_size_t start = tokenizer->offset;
-				const tpbrt_char_t ch	 = tokenizer->str.chars[tokenizer->offset];
+				const tpbrt_char_t ch	 = tokenizer->str.data[tokenizer->offset];
 
 				tokenizer->offset++;
 
 					switch (ch) {
 					case '[':
 						case ']': {
-							const tpbrt_string_t view = { .chars = tokenizer->str.chars + start, .size = 1u };
+							const tpbrt_string_t view = { .data = tokenizer->str.data + start, .size = 1u };
 							tpbrt_create_token(&view, out_token);
 							return TPBRT_TRUE;
 						}
@@ -50,17 +50,17 @@ extern "C" {
 					case '\r':	  continue;
 						case '"': {
 								while (tokenizer->offset < tokenizer->str.size) {
-									const tpbrt_char_t c = tokenizer->str.chars[tokenizer->offset++];
+									const tpbrt_char_t c = tokenizer->str.data[tokenizer->offset++];
 										if (c == '"') { break; }
 								}
-							const tpbrt_string_t view = { .chars = tokenizer->str.chars + start,
-								.size							 = tokenizer->offset - start };
+							const tpbrt_string_t view = { .data = tokenizer->str.data + start,
+								.size							= tokenizer->offset - start };
 							tpbrt_create_token(&view, out_token);
 							return TPBRT_TRUE;
 						}
 						case '#': {
 								while (tokenizer->offset < tokenizer->str.size) {
-									const char c = tokenizer->str.chars[tokenizer->offset];
+									const char c = tokenizer->str.data[tokenizer->offset];
 										if (c == '\r' || c == '\n') { break; }
 									tokenizer->offset++;
 								}
@@ -68,14 +68,14 @@ extern "C" {
 						}
 						default: {
 								while (tokenizer->offset < tokenizer->str.size) {
-									const char c = tokenizer->str.chars[tokenizer->offset];
+									const char c = tokenizer->str.data[tokenizer->offset];
 										if (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '"' || c == '[' || c == ']') {
 											break;
 										}
 									tokenizer->offset++;
 								}
-							const tpbrt_string_t view = { .chars = tokenizer->str.chars + start,
-								.size							 = tokenizer->offset - start };
+							const tpbrt_string_t view = { .data = tokenizer->str.data + start,
+								.size							= tokenizer->offset - start };
 							tpbrt_create_token(&view, out_token);
 							return TPBRT_TRUE;
 						}

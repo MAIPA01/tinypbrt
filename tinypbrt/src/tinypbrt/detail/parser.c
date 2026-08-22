@@ -25,8 +25,8 @@ extern "C" {
 
 			if (!tpbrt_token_is_quoted_string(&token)) { return TPBRT_ERROR_INVALID_STRING; }
 
-		out_str->chars = token.value.chars + 1;
-		out_str->size  = token.value.size - 2;
+		out_str->data = token.value.data + 1;
+		out_str->size = token.value.size - 2;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -37,7 +37,7 @@ extern "C" {
 
 		tpbrt_char_t buf[64];
 		const tpbrt_size_t n = token.value.size < 63 ? token.value.size : 63;
-		strncpy_s(buf, sizeof(tpbrt_char_t) * 64, token.value.chars, n);
+		strncpy_s(buf, sizeof(tpbrt_char_t) * 64, token.value.data, n);
 		buf[n] = '\0';
 
 		tpbrt_char_t* end;
@@ -95,7 +95,7 @@ extern "C" {
 							if (err != TPBRT_ERROR_NONE) { return err; }
 
 							if (tpbrt_token_is_close_brace(&inner)) {
-								end_offset = (tpbrt_size_t)(inner.value.chars - parser->tokenizer.str.chars);
+								end_offset = (tpbrt_size_t)(inner.value.data - parser->tokenizer.str.data);
 								value_type = TPBRT_PARAM_VALUE_TYPE_ARRAY;
 								break;
 							}
@@ -103,12 +103,12 @@ extern "C" {
 					}
 			}
 			else {
-				start_offset = (tpbrt_size_t)(value_tok.value.chars - parser->tokenizer.str.chars);
+				start_offset = (tpbrt_size_t)(value_tok.value.data - parser->tokenizer.str.data);
 				end_offset	 = start_offset + value_tok.value.size;
 			}
 
-		tpbrt_string_t value_str = { .chars = parser->tokenizer.str.chars + start_offset, .size = end_offset - start_offset };
-			if (value_str.size >= 2u && value_str.chars[0] == '\"' && value_str.chars[value_str.size - 1] == '\"') {
+		const tpbrt_string_t value_str = { .data = parser->tokenizer.str.data + start_offset, .size = end_offset - start_offset };
+			if (value_str.size >= 2u && value_str.data[0] == '\"' && value_str.data[value_str.size - 1] == '\"') {
 				value_type = TPBRT_PARAM_VALUE_TYPE_STRING;
 			}
 

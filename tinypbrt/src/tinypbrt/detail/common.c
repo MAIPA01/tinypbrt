@@ -26,9 +26,9 @@ extern "C" {
 	  tpbrt_string_t* const out_val) {
 			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
 
-		if (*token != '\"' || *(token + len) != '\"') { return TPBRT_FALSE; }
+			if (*token != '\"' || *(token + len) != '\"') { return TPBRT_FALSE; }
 
-		out_val->chars = (tpbrt_char_t*)(token + 1);
+		out_val->data = (tpbrt_char_t*)(token + 1);
 		out_val->size = len - 2;
 		return TPBRT_TRUE;
 	}
@@ -82,18 +82,18 @@ extern "C" {
 	tpbrt_error_t tpbrt_copy_string(tpbrt_string_t* const dst, const tpbrt_string_t* const src) {
 			if (dst == TPBRT_NULL || src == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (src->size == 0 || src->chars == TPBRT_NULL) {
-				dst->chars = TPBRT_NULL;
-				dst->size  = 0;
+			if (src->size == 0 || src->data == TPBRT_NULL) {
+				dst->data = TPBRT_NULL;
+				dst->size = 0;
 				return TPBRT_ERROR_NONE;
 			}
 
-		dst->chars = malloc(sizeof(tpbrt_char_t) * (src->size + 1));
-			if (dst->chars == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		dst->data = malloc(sizeof(tpbrt_char_t) * (src->size + 1));
+			if (dst->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-		memcpy(dst->chars, src->chars, sizeof(tpbrt_char_t) * src->size);
-		dst->chars[src->size] = '\0';
-		dst->size			  = src->size;
+		memcpy(dst->data, src->data, sizeof(tpbrt_char_t) * src->size);
+		dst->data[src->size] = '\0';
+		dst->size			 = src->size;
 
 		return TPBRT_ERROR_NONE;
 	}
