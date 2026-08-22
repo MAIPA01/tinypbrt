@@ -685,9 +685,35 @@ extern "C" {
 #pragma endregion
 
 #pragma region OBJECT_INSTANCE
-	tpbrt_error_t tpbrt_create_object_instance(const tpbrt_string_t* object_name, const tpbrt_objects_list_t* objects,
-	  const tpbrt_mat4_t* ctm, tpbrt_object_instance_t** instance);
-	void tpbrt_free_object_instance(tpbrt_object_instance_t** instance);
+
+	tpbrt_error_t tpbrt_create_object_instance(const tpbrt_string_t* const object_name, const tpbrt_objects_list_t* const objects,
+	  const tpbrt_mat4_t* const ctm, tpbrt_object_instance_t** const instance) {
+			if (object_name == TPBRT_NULL || object_name->data == TPBRT_NULL || objects == TPBRT_NULL || ctm == TPBRT_NULL ||
+				instance == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+
+		*instance = malloc(sizeof(tpbrt_object_instance_t));
+			if (*instance == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+		(*instance)->transform = *ctm;
+
+		tpbrt_error_t err	   = tpbrt_objects_list_get_object_handle(objects, object_name, &(*instance)->object);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_object_instance(instance);
+				return err;
+			}
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_free_object_instance(tpbrt_object_instance_t** const instance) {
+			if (instance == TPBRT_NULL || *instance == TPBRT_NULL) { return; }
+
+		free(*instance);
+		*instance = TPBRT_NULL;
+	}
+
 #pragma endregion
 
 #pragma region API
