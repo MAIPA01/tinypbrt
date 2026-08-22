@@ -173,7 +173,7 @@ extern "C" {
 		tpbrt_size_t idx;
 		tpbrt_string_t name;
 		tpbrt_texture_type_t type;
-		tpbrt_texture_class_t class;
+		tpbrt_texture_class_t tex_class;
 		tpbrt_texture_mapping_t mapping;
 
 		union {

@@ -212,7 +212,7 @@ extern "C" {
 				return err;
 			}
 
-		err = tpbrt_texture_class_from_string(class_str, &(*texture)->class);
+		err = tpbrt_texture_class_from_string(class_str, &(*texture)->tex_class);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_free_texture(texture);
 				return err;
@@ -323,7 +323,7 @@ extern "C" {
 			}
 
 			// class
-			switch ((*texture)->class) {
+			switch ((*texture)->tex_class) {
 			default:
 				case TPBRT_TEXTURE_CLASS_BILERP: {
 					static const tpbrt_string_t V00_STR = TPBRT_STRING("v00");
@@ -903,7 +903,7 @@ extern "C" {
 	void tpbrt_free_texture(tpbrt_texture_t** const texture) {
 			if (texture == TPBRT_NULL || *texture == TPBRT_NULL) { return; }
 
-			switch ((*texture)->class) {
+			switch ((*texture)->tex_class) {
 				case TPBRT_TEXTURE_CLASS_IMAGE_MAP: {
 						if ((*texture)->as.image_map.file_name.data != TPBRT_NULL) {
 							free((*texture)->as.image_map.file_name.data);
