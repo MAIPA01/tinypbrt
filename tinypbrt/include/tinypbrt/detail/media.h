@@ -5,15 +5,15 @@
 #include <tinypbrt/detail/fwd.h>
 
 #include <tinypbrt/detail/color.h>
+#include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/math.h>
-#include <tinypbrt/detail/common.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	typedef enum : uint8_t {
+	typedef enum tpbrt_media_type_t : uint8_t {
 		TPBRT_MEDIA_TYPE_CLOUD		  = 0,
 		TPBRT_MEDIA_TYPE_HOMOGENEOUS  = 1,
 		TPBRT_MEDIA_TYPE_NANO_VDB	  = 2,
@@ -22,7 +22,7 @@ extern "C" {
 		TPBRT_MEDIA_TYPE_MAX_NUM	  = 5,
 	} tpbrt_media_type_t;
 
-	typedef struct {
+	typedef struct tpbrt_media_cloud_params_t {
 		tpbrt_float_t density;
 		tpbrt_float_t frequency;
 		tpbrt_float_t g;
@@ -32,7 +32,7 @@ extern "C" {
 		tpbrt_float_t wispiness;
 	} tpbrt_media_cloud_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_media_homogeneous_params_t {
 		tpbrt_float_t g;
 		tpbrt_spectrum_t Le;
 		tpbrt_float_t Le_scale;
@@ -42,7 +42,7 @@ extern "C" {
 		tpbrt_float_t scale;
 	} tpbrt_media_homogeneous_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_media_nano_vdb_params_t {
 		tpbrt_float_t g;
 		tpbrt_float_t Le_scale;
 		tpbrt_spectrum_t sigma_a;
@@ -53,7 +53,7 @@ extern "C" {
 		tpbrt_float_t temperature_scale;
 	} tpbrt_media_nano_vdb_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_media_rgb_grid_params_t {
 		tpbrt_float_t g;
 		tpbrt_rgb_array_t Le;
 		tpbrt_float_t Le_scale;
@@ -63,7 +63,7 @@ extern "C" {
 		tpbrt_float_t scale;
 	} tpbrt_media_rgb_grid_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_media_uniform_grid_params_t {
 		tpbrt_float_array_t density;
 		tpbrt_float_t g;
 		tpbrt_spectrum_t Le;
@@ -79,7 +79,7 @@ extern "C" {
 		tpbrt_float_t temperature_scale;
 	} tpbrt_media_uniform_grid_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_media_t {
 		tpbrt_size_t idx;
 		tpbrt_media_type_t type;
 		tpbrt_string_t name;
@@ -95,7 +95,7 @@ extern "C" {
 
 	typedef tpbrt_size_t tpbrt_media_handle_t;
 
-	typedef struct {
+	typedef struct tpbrt_medias_list_t {
 		tpbrt_media_t* medias;
 		tpbrt_size_t count;
 	} tpbrt_medias_list_t;

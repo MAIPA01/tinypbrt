@@ -8,49 +8,49 @@
 extern "C" {
 #endif
 
-	typedef struct {
+	typedef struct tpbrt_bool_array_t {
 		tpbrt_bool_t* data;
 		tpbrt_size_t count;
 	} tpbrt_bool_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_int_array_t {
 		tpbrt_int_t* data;
 		tpbrt_size_t count;
 	} tpbrt_int_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_uint_array_t {
 		tpbrt_uint_t* data;
 		tpbrt_size_t count;
 	} tpbrt_uint_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_float_array_t {
 		tpbrt_float_t* data;
 		tpbrt_size_t count;
 	} tpbrt_float_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_vec2_t {
 		tpbrt_float_t x, y;
 	} tpbrt_vec2_t;
 
-	typedef struct {
+	typedef struct tpbrt_vec3_t {
 		tpbrt_float_t x, y, z;
 	} tpbrt_vec3_t;
 
-	typedef struct {
+	typedef struct tpbrt_vec2_array_t {
 		tpbrt_vec2_t* data;
 		tpbrt_size_t count;
 	} tpbrt_vec2_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_vec3_array_t {
 		tpbrt_vec3_t* data;
 		tpbrt_size_t count;
 	} tpbrt_vec3_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_mat4_t {
 		tpbrt_float_t m[16];
 	} tpbrt_mat4_t;
 
-	typedef struct {
+	typedef struct tpbrt_mat4_animated_t {
 		tpbrt_mat4_t start, end;
 	} tpbrt_mat4_animated_t;
 

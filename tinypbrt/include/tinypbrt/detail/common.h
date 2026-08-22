@@ -8,17 +8,17 @@
 extern "C" {
 #endif
 
-	typedef struct {
+	typedef struct tpbrt_string_t {
 		tpbrt_char_t* data;
 		tpbrt_size_t size;
 	} tpbrt_string_t;
 
-	typedef struct {
+	typedef struct tpbrt_string_array_t {
 		tpbrt_string_t* data;
 		tpbrt_size_t count;
 	} tpbrt_string_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_opt_float_t {
 		tpbrt_float_t value;
 		tpbrt_bool_t has_value;
 	} tpbrt_opt_float_t;

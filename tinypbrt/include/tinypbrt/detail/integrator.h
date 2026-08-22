@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	typedef enum : uint8_t {
+	typedef enum tpbrt_integrator_type_t : uint8_t {
 		TPBRT_INTEGRATOR_TYPE_AMBIENT_OCCLUSION = 0,
 		TPBRT_INTEGRATOR_TYPE_BDPT				= 1,
 		TPBRT_INTEGRATOR_TYPE_LIGHT_PATH		= 2,
@@ -22,30 +22,30 @@ extern "C" {
 		TPBRT_INTEGRATOR_TYPE_MAX_NUM			= 10,
 	} tpbrt_integrator_type_t;
 
-	typedef enum {
+	typedef enum tpbrt_integrator_light_sampler_t : uint8_t {
 		TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH	   = 0,
 		TPBRT_INTEGRATOR_LIGHT_SAMPLER_UNIFORM = 1,
 		TPBRT_INTEGRATOR_LIGHT_SAMPLER_POWER   = 2,
 		TPBRT_INTEGRATOR_LIGHT_SAMPLER_MAX_NUM = 3,
 	} tpbrt_integrator_light_sampler_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_ambient_occlusion_params_t {
 		tpbrt_bool_t cos_sample;
 		tpbrt_float_t max_distance;
 	} tpbrt_integrator_ambient_occlusion_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_bdpt_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_bool_t regularize;
 		tpbrt_bool_t visualize_strategies;
 		tpbrt_bool_t visualize_weights;
 	} tpbrt_integrator_bdpt_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_light_path_params_t {
 		tpbrt_uint_t max_depth;
 	} tpbrt_integrator_light_path_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_mlt_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_bool_t regularize;
 		tpbrt_uint_t bootstrap_samples;
@@ -55,40 +55,40 @@ extern "C" {
 		tpbrt_float_t sigma;
 	} tpbrt_integrator_mlt_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_path_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_integrator_light_sampler_t light_sampler;
 		tpbrt_bool_t regularize;
 	} tpbrt_integrator_path_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_random_walk_params_t {
 		tpbrt_uint_t max_depth;
 	} tpbrt_integrator_random_walk_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_simple_path_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_bool_t sample_bsdf;
 		tpbrt_bool_t sample_lights;
 	} tpbrt_integrator_simple_path_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_simple_vol_path_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_bool_t regularize;
 	} tpbrt_integrator_simple_vol_path_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_sppm_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_int_t photons_per_iteration;
 		tpbrt_float_t radius;
 		tpbrt_int_t seed;
 	} tpbrt_integrator_sppm_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_vol_path_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_integrator_light_sampler_t light_sampler;
 	} tpbrt_integrator_vol_path_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_integrator_t {
 		tpbrt_integrator_type_t type;
 
 		union {

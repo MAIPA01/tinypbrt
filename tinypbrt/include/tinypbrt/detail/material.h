@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-	typedef enum : uint8_t {
+	typedef enum tpbrt_material_type_t : uint8_t {
 		TPBRT_MATERIAL_TYPE_COATED_DIFFUSE		 = 0,
 		TPBRT_MATERIAL_TYPE_COATED_CONDUCTOR	 = 1,
 		TPBRT_MATERIAL_TYPE_CONDUCTOR			 = 2,
@@ -28,13 +28,13 @@ extern "C" {
 
 	typedef tpbrt_size_t tpbrt_material_handle_t;
 
-	typedef enum {
+	typedef enum tpbrt_material_bump_map_type_t : uint8_t {
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE		  = 0,
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT = 1,
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP	  = 2,
 	} tpbrt_material_bump_map_type_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_bump_map_params_t {
 		tpbrt_material_bump_map_type_t type;
 
 		union {
@@ -43,14 +43,14 @@ extern "C" {
 		} as;
 	} tpbrt_material_bump_map_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_roughness_params_t {
 		tpbrt_texture_handle_t roughness;
 		tpbrt_texture_handle_t u_roughness;
 		tpbrt_texture_handle_t v_roughness;
 		tpbrt_bool_t remap_roughness;
 	} tpbrt_material_roughness_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_coated_diffuse_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_texture_handle_t albedo;
 		tpbrt_texture_handle_t g;
@@ -61,12 +61,12 @@ extern "C" {
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_coated_diffuse_params_t;
 
-	typedef enum {
+	typedef enum tpbrt_material_conductor_value_type_t : uint8_t {
 		TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_ETA_K		= 0,
 		TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_REFLECTANCE = 1,
 	} tpbrt_material_conductor_value_type_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_coated_conductor_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_texture_handle_t albedo;
 		tpbrt_texture_handle_t g;
@@ -87,7 +87,7 @@ extern "C" {
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_coated_conductor_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_conductor_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_material_conductor_value_type_t value_type;
 
@@ -103,12 +103,12 @@ extern "C" {
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_conductor_params_t;
 
-	typedef enum {
+	typedef enum tpbrt_material_dielectric_eta_type_t : uint8_t {
 		TPBRT_MATERIAL_DIELECTRIC_ETA_TYPE_SINGLE_INDEX		= 0,
 		TPBRT_MATERIAL_DIELECTRIC_ETA_TYPE_WAVELENGTH_INDEX = 1,
 	} tpbrt_material_dielectric_eta_type_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_dielectric_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_material_dielectric_eta_type_t eta_type;
 
@@ -120,19 +120,19 @@ extern "C" {
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_dielectric_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_diffuse_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_texture_handle_t reflectance;
 	} tpbrt_material_diffuse_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_diffuse_transmission_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_texture_handle_t reflectance;
 		tpbrt_texture_handle_t transmittance;
 		tpbrt_texture_handle_t scale;
 	} tpbrt_material_diffuse_transmission_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_hair_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_texture_handle_t sigma_a;
 		tpbrt_texture_handle_t reflectance;
@@ -144,17 +144,17 @@ extern "C" {
 		tpbrt_texture_handle_t alpha;
 	} tpbrt_material_hair_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_measured_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_string_t file_name;
 	} tpbrt_material_measured_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_mix_params_t {
 		tpbrt_material_handle_t materials[2];
 		tpbrt_texture_handle_t amount;
 	} tpbrt_material_mix_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_subsurface_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_texture_handle_t eta;
 		tpbrt_texture_handle_t g;
@@ -167,11 +167,11 @@ extern "C" {
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_subsurface_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_thin_dielectric_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
 	} tpbrt_material_thin_dielectric_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_material_t {
 		tpbrt_size_t idx;
 		tpbrt_string_t name;
 		tpbrt_material_type_t type;
@@ -191,7 +191,7 @@ extern "C" {
 		} as;
 	} tpbrt_material_t;
 
-	typedef struct {
+	typedef struct tpbrt_materials_list_t {
 		tpbrt_material_t* materials;
 		tpbrt_size_t count;
 	} tpbrt_materials_list_t;

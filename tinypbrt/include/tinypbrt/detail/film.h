@@ -9,24 +9,24 @@
 extern "C" {
 #endif
 
-	typedef enum : uint8_t {
+	typedef enum tpbrt_film_type_t : uint8_t {
 		TPBRT_FILM_TYPE_RGB		 = 0,
 		TPBRT_FILM_TYPE_GBUFFER	 = 1,
 		TPBRT_FILM_TYPE_SPECTRAL = 2,
 		TPBRT_FILM_TYPE_MAX_NUM	 = 3,
 	} tpbrt_film_type_t;
 
-	typedef struct {
+	typedef struct tpbrt_film_gbuffer_params_t {
 		tpbrt_coordinate_system_t coordinate_system;
 	} tpbrt_film_gbuffer_params_t;
 
-	typedef struct {
+	typedef struct tpbrt_film_spectral_params_t {
 		tpbrt_uint_t nbuckets;
 		tpbrt_float_t lambda_min;
 		tpbrt_float_t lambda_max;
 	} tpbrt_film_spectral_params_t;
 
-	typedef enum {
+	typedef enum tpbrt_film_sensor_t : uint8_t {
 		TPBRT_FILM_SENSOR_CIE_1931			  = 0,
 		TPBRT_FILM_SENSOR_CANON_EOS_100D	  = 1,
 		TPBRT_FILM_SENSOR_CANON_EOS_1DX_MKII  = 2,
@@ -48,7 +48,7 @@ extern "C" {
 		TPBRT_FILM_SENSOR_MAX_NUM			  = 18,
 	} tpbrt_film_sensor_t;
 
-	typedef struct {
+	typedef struct tpbrt_film_t {
 		tpbrt_float_t crop_window[4];
 		tpbrt_uint_t pixel_bounds[4];
 		tpbrt_string_t file_name;

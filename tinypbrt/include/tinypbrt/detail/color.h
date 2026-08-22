@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	typedef enum {
+	typedef enum tpbrt_color_space_t : uint8_t {
 		TPBRT_COLOR_SPACE_ACES_2065_1 = 0,
 		TPBRT_COLOR_SPACE_REC_2020	  = 1,
 		TPBRT_COLOR_SPACE_DCI_P3	  = 2,
@@ -16,7 +16,7 @@ extern "C" {
 		TPBRT_COLOR_SPACE_MAX_NUM	  = 4,
 	} tpbrt_color_space_t;
 
-	typedef enum {
+	typedef enum tpbrt_spectrum_type_t : uint8_t {
 		TPBRT_SPECTRUM_TYPE_WAVELENGTH = 0,
 		TPBRT_SPECTRUM_TYPE_RGB		   = 1,
 		TPBRT_SPECTRUM_TYPE_BLACKBODY  = 2,
@@ -24,26 +24,26 @@ extern "C" {
 		TPBRT_SPECTRUM_TYPE_BUILTIN	   = 4,
 	} tpbrt_spectrum_type_t;
 
-	typedef struct {
+	typedef struct tpbrt_wavelength_t {
 		tpbrt_uint_t wavelength;
 		tpbrt_float_t value;
 	} tpbrt_wavelength_t;
 
-	typedef struct {
+	typedef struct tpbrt_wavelength_array_t {
 		tpbrt_wavelength_t* data;
 		tpbrt_size_t count;
 	} tpbrt_wavelength_array_t;
 
-	typedef struct {
+	typedef struct tpbrt_rgb_t {
 		tpbrt_float_t r, g, b;
 	} tpbrt_rgb_t;
 
-	typedef struct {
+	typedef struct tpbrt_rgb_array_t {
 		tpbrt_rgb_t* data;
 		tpbrt_size_t count;
 	} tpbrt_rgb_array_t;
 
-	typedef enum : uint8_t {
+	typedef enum tpbrt_spectrum_builtin_t : uint8_t {
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BK7	   = 0,
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BAF10	   = 1,
 		TPBRT_SPECTRUM_BUILTIN_GLASS_FK51A	   = 2,
@@ -84,7 +84,7 @@ extern "C" {
 		TPBRT_SPECTRUM_BUILTIN_MAX_NUM		   = 30,
 	} tpbrt_spectrum_builtin_t;
 
-	typedef struct {
+	typedef struct tpbrt_spectrum_t {
 		tpbrt_spectrum_type_t type;
 
 		union {

@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-	typedef struct {
+	typedef struct tpbrt_options_t {
 		tpbrt_bool_t disable_pixel_jitter;
 		tpbrt_bool_t disable_texture_filtering;
 		tpbrt_bool_t disable_wave_length_jitter;
@@ -35,7 +35,7 @@ extern "C" {
 		tpbrt_bool_t wavefront;
 	} tpbrt_options_t;
 
-	typedef struct {
+	typedef struct tpbrt_scene_t {
 		tpbrt_float_t start_time;
 		tpbrt_float_t end_time;
 
