@@ -12,8 +12,7 @@ extern "C" {
 #endif
 
 	tpbrt_error_t tpbrt_create_sampler(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
-	  tpbrt_sampler_t** sampler);
-	void tpbrt_free_sampler(tpbrt_sampler_t** sampler);
+	  tpbrt_sampler_t* sampler);
 
 #ifdef __cplusplus
 }

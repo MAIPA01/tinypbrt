@@ -16,7 +16,13 @@ extern "C" {
 	tpbrt_bool_t tpbrt_parse_float_token(const tpbrt_char_t* token, tpbrt_size_t len, tpbrt_float_t* out_val);
 	tpbrt_bool_t tpbrt_parse_int_token(const tpbrt_char_t* token, tpbrt_size_t len, tpbrt_int_t* out_val);
 	tpbrt_bool_t tpbrt_parse_uint_token(const tpbrt_char_t* token, tpbrt_size_t len, tpbrt_uint_t* out_val);
+
 	tpbrt_error_t tpbrt_copy_string(tpbrt_string_t* dst, const tpbrt_string_t* src);
+	tpbrt_bool_t tpbrt_string_equals_literal(const tpbrt_string_t* a, tpbrt_string_t literal);
+	tpbrt_bool_t tpbrt_string_equals(const tpbrt_string_t* a, const tpbrt_string_t* b);
+	void tpbrt_free_string(tpbrt_string_t* str);
+
+	void tpbrt_free_string_array(tpbrt_string_array_t* array);
 
 #ifdef __cplusplus
 }

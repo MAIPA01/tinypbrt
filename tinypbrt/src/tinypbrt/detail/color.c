@@ -22,8 +22,7 @@ extern "C" {
 			}
 
 			for (tpbrt_color_space_t cs = 0; cs < TPBRT_COLOR_SPACE_MAX_NUM; ++cs) {
-					if (color_space_str->size == COLOR_SPACES_STRS[cs].size &&
-						strncmp(color_space_str->data, COLOR_SPACES_STRS[cs].data, color_space_str->size) == 0) {
+					if (tpbrt_string_equals(color_space_str, COLOR_SPACES_STRS + cs)) {
 						*color_space_out = cs;
 						return TPBRT_ERROR_NONE;
 					}
@@ -83,22 +82,28 @@ extern "C" {
 			}
 
 			for (tpbrt_spectrum_builtin_t b = 0; b < TPBRT_SPECTRUM_BUILTIN_MAX_NUM; ++b) {
-					if (builtin_str->size == BUILTINS_STRS[b].size &&
-						strncmp(builtin_str->data, BUILTINS_STRS[b].data, builtin_str->size) == 0) {
+					if (tpbrt_string_equals(builtin_str, BUILTINS_STRS + b)) {
 						*builtin_out = b;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
 			for (tpbrt_spectrum_builtin_t b = TPBRT_SPECTRUM_BUILTIN_METAL_AG_K; b <= TPBRT_SPECTRUM_BUILTIN_METAL_TI_O2_K; ++b) {
-					if (builtin_str->size == METALS_KS_BUILTINS_STRS[b].size &&
-						strncmp(builtin_str->data, METALS_KS_BUILTINS_STRS[b].data, builtin_str->size) == 0) {
+					if (tpbrt_string_equals(builtin_str, METALS_KS_BUILTINS_STRS + b)) {
 						*builtin_out = b;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
 		return TPBRT_ERROR_UNKNOWN_SPECTRUM_BUILTIN;
+	}
+
+	void tpbrt_free_rgb_array(tpbrt_rgb_array_t* const array) {
+			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
+		free(array->data);
+		array->data	 = TPBRT_NULL;
+		array->count = 0;
 	}
 
 	tpbrt_error_t tpbrt_copy_wavelengths_array(tpbrt_wavelength_array_t* const dst, const tpbrt_wavelength_array_t* const src) {
@@ -116,6 +121,14 @@ extern "C" {
 		memcpy(dst->data, src->data, sizeof(tpbrt_wavelength_t) * src->count);
 		dst->count = src->count;
 		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_free_wavelength_array(tpbrt_wavelength_array_t* const wavelength_array) {
+			if (wavelength_array == TPBRT_NULL || wavelength_array->data == TPBRT_NULL) { return; }
+
+		free(wavelength_array->data);
+		wavelength_array->data	= TPBRT_NULL;
+		wavelength_array->count = 0;
 	}
 
 	tpbrt_error_t tpbrt_copy_spectrum(tpbrt_spectrum_t* const dst, const tpbrt_spectrum_t* const src) {
@@ -145,16 +158,16 @@ extern "C" {
 	void tpbrt_free_spectrum(tpbrt_spectrum_t* const spectrum) {
 			if (spectrum == TPBRT_NULL) { return; }
 
-			if (spectrum->type == TPBRT_SPECTRUM_TYPE_FILE && spectrum->as.file_name.data != TPBRT_NULL) {
-				free(spectrum->as.file_name.data);
-				spectrum->as.file_name.data = TPBRT_NULL;
-				spectrum->as.file_name.size = 0;
-			}
-
-			if (spectrum->type == TPBRT_SPECTRUM_TYPE_WAVELENGTH && spectrum->as.wavelengths.data != TPBRT_NULL) {
-				free(spectrum->as.wavelengths.data);
-				spectrum->as.wavelengths.data  = TPBRT_NULL;
-				spectrum->as.wavelengths.count = 0;
+			switch (spectrum->type) {
+				case TPBRT_SPECTRUM_TYPE_WAVELENGTH: {
+					tpbrt_free_wavelength_array(&spectrum->as.wavelengths);
+				}
+				case TPBRT_SPECTRUM_TYPE_FILE: {
+					tpbrt_free_string(&spectrum->as.file_name);
+				}
+				default: {
+					break;
+				}
 			}
 	}
 

@@ -98,6 +98,33 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
+	tpbrt_bool_t tpbrt_string_equals_literal(const tpbrt_string_t* a, tpbrt_string_t literal) {
+		return tpbrt_string_equals(a, &literal);
+	}
+
+	tpbrt_bool_t tpbrt_string_equals(const tpbrt_string_t* a, const tpbrt_string_t* b) {
+			if (a == TPBRT_NULL || b == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (a->size != b->size) { return TPBRT_FALSE; }
+		return strncmp(a->data, b->data, a->size) == 0;
+	}
+
+	void tpbrt_free_string(tpbrt_string_t* str) {
+			if (str == TPBRT_NULL || str->data == TPBRT_NULL) { return; }
+		free(str->data);
+		str->data = TPBRT_NULL;
+		str->size = 0;
+	}
+
+	void tpbrt_free_string_array(tpbrt_string_array_t* const array) {
+			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
+			for (tpbrt_size_t i = 0; i < array->count; ++i) { tpbrt_free_string(&array->data[i]); }
+
+		free(array->data);
+		array->data	 = TPBRT_NULL;
+		array->count = 0;
+	}
+
 #ifdef __cplusplus
 }
 #endif

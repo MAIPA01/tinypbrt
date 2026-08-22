@@ -8,12 +8,12 @@
 extern "C" {
 #endif
 
-	typedef struct {
+	typedef struct tpbrt_tokenizer_t {
 		tpbrt_string_t str;
 		tpbrt_size_t offset;
 	} tpbrt_tokenizer_t;
 
-	void tpbrt_tokenizer_init(tpbrt_tokenizer_t* tokenizer, const tpbrt_char_t* str, tpbrt_size_t length);
+	void tpbrt_tokenizer_init(tpbrt_tokenizer_t* tokenizer, const tpbrt_string_t* str);
 
 	tpbrt_size_t tpbrt_tokenizer_offset(const tpbrt_tokenizer_t* tokenizer);
 

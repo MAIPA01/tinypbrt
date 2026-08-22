@@ -63,8 +63,7 @@ extern "C" {
 			}
 
 			for (tpbrt_directive_t d = 0; d < TPBRT_DIRECTIVE_MAX_NUM; ++d) {
-					if (directive_str->size == TYPES_STRS[d].size &&
-						strncmp(directive_str->data, TYPES_STRS[d].data, TYPES_STRS[d].size) == 0) {
+					if (tpbrt_string_equals(directive_str, TYPES_STRS + d)) {
 						*directive = d;
 						return TPBRT_ERROR_NONE;
 					}

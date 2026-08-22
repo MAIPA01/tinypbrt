@@ -6,12 +6,11 @@
 extern "C" {
 #endif
 
-	void tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_char_t* const str, const tpbrt_size_t length) {
-			if (tokenizer == TPBRT_NULL) { return; }
+	void tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_string_t* const str) {
+			if (tokenizer == TPBRT_NULL || str == TPBRT_NULL) { return; }
 
-		tokenizer->str.data = (tpbrt_char_t*)str;
-		tokenizer->str.size = length;
-		tokenizer->offset	= 0u;
+		tokenizer->str	  = *str;
+		tokenizer->offset = 0u;
 	}
 
 	tpbrt_size_t tpbrt_tokenizer_offset(const tpbrt_tokenizer_t* const tokenizer) {

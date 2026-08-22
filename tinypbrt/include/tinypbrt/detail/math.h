@@ -8,11 +8,6 @@
 extern "C" {
 #endif
 
-	typedef struct tpbrt_bool_array_t {
-		tpbrt_bool_t* data;
-		tpbrt_size_t count;
-	} tpbrt_bool_array_t;
-
 	typedef struct tpbrt_int_array_t {
 		tpbrt_int_t* data;
 		tpbrt_size_t count;

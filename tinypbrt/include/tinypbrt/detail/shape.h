@@ -129,15 +129,15 @@ extern "C" {
 
 	typedef tpbrt_uint_t tpbrt_object_handle_t;
 
-	typedef struct tpbrt_object_instance_t {
+	typedef struct tpbrt_instance_t {
 		tpbrt_object_handle_t object;
 		tpbrt_mat4_t transform;
-	} tpbrt_object_instance_t;
+	} tpbrt_instance_t;
 
-	typedef struct tpbrt_object_instance_array_t {
-		tpbrt_object_instance_t* instances;
+	typedef struct tpbrt_instances_list_t {
+		tpbrt_instance_t* instances;
 		tpbrt_size_t count;
-	} tpbrt_object_instance_array_t;
+	} tpbrt_instances_list_t;
 
 	tpbrt_error_t tpbrt_get_object_by_name(const tpbrt_objects_list_t* objects, const tpbrt_string_t* name,
 	  const tpbrt_object_t** object);

@@ -1,11 +1,10 @@
-#include "texture_internal.h"
-
-
 #include <tinypbrt/pch.h>
 
 #include <tinypbrt/detail/shape_internal.h>
 
 #include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/math_internal.h>
+#include <tinypbrt/detail/texture_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,8 +29,7 @@ extern "C" {
 			}
 
 			for (tpbrt_shape_type_t t = 0; t < TPBRT_SHAPE_TYPE_MAX_NUM; ++t) {
-					if (type_str->size == TYPES_STRS[t].size &&
-						strncmp(type_str->data, TYPES_STRS[t].data, TYPES_STRS[t].size) == 0) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS + t)) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -52,8 +50,7 @@ extern "C" {
 			}
 
 			for (tpbrt_shape_curve_basis_t b = 0; b < TPBRT_SHAPE_CURVE_BASIS_MAX_NUM; ++b) {
-					if (basis_str->size == BASIS_STRS[b].size &&
-						strncmp(basis_str->data, BASIS_STRS[b].data, BASIS_STRS[b].size) == 0) {
+					if (tpbrt_string_equals(basis_str, BASIS_STRS + b)) {
 						*basis = b;
 						return TPBRT_ERROR_NONE;
 					}
@@ -75,8 +72,7 @@ extern "C" {
 			}
 
 			for (tpbrt_shape_curve_type_t t = 0; t < TPBRT_SHAPE_CURVE_TYPE_MAX_NUM; ++t) {
-					if (type_str->size == TYPES_STRS[t].size &&
-						strncmp(type_str->data, TYPES_STRS[t].data, TYPES_STRS[t].size) == 0) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS + t)) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -87,21 +83,18 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_create_shape(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
 	  const tpbrt_textures_list_t* const textures, const tpbrt_mat4_t* const ctm, const tpbrt_material_handle_t* const material,
-	  tpbrt_shape_t** const shape) {
+	  tpbrt_shape_t* const shape) {
 			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || textures == TPBRT_NULL ||
 				shape == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-		*shape = malloc(sizeof(tpbrt_shape_t));
-			if (*shape == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
-
-		(*shape)->transform					  = *ctm;
-		(*shape)->material					  = *material;
+		shape->transform					  = *ctm;
+		shape->material						  = *material;
 
 		static const tpbrt_string_t ALPHA_STR = TPBRT_STRING("alpha");
 
-		tpbrt_error_t err					  = tpbrt_params_list_get_float(params, &ALPHA_STR, 1.0f, &(*shape)->alpha.as.f32);
+		tpbrt_error_t err					  = tpbrt_params_list_get_float(params, &ALPHA_STR, 1.0f, &shape->alpha.as.f32);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_INVALID_OBJECT_TYPE) {
 				tpbrt_free_shape(shape);
 				return err;
@@ -116,22 +109,22 @@ extern "C" {
 					}
 
 				err = tpbrt_textures_list_get_opt_texture_handle_of_type(textures, &temp_string, TPBRT_TEXTURE_TYPE_FLOAT,
-				  &(*shape)->alpha);
-				free(temp_string.data);
+				  &shape->alpha);
+				tpbrt_free_string(&temp_string);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_free_shape(shape);
 						return err;
 					}
 			}
-			else { (*shape)->alpha.value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT; }
+			else { shape->alpha.value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT; }
 
-		err = tpbrt_shape_type_from_string(type_str, &(*shape)->type);
+		err = tpbrt_shape_type_from_string(type_str, &shape->type);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_free_shape(shape);
 				return err;
 			}
 
-			switch ((*shape)->type) {
+			switch (shape->type) {
 			default:
 				case TPBRT_SHAPE_TYPE_BILINEAR_MESH: {
 					break;
@@ -147,7 +140,7 @@ extern "C" {
 					static const tpbrt_string_t WIDTH_1_STR		= TPBRT_STRING("width1");
 					static const tpbrt_string_t SPLIT_DEPTH_STR = TPBRT_STRING("splitdepth");
 
-					tpbrt_shape_curve_params_t* shape_params	= &(*shape)->as.curve;
+					tpbrt_shape_curve_params_t* shape_params	= &shape->as.curve;
 
 					tpbrt_point3_array_t temp_P;
 					err = tpbrt_params_list_get_point3s(params, &P_STR, &temp_P);
@@ -157,13 +150,13 @@ extern "C" {
 						}
 
 						if (temp_P.count < 4) {
-								if (temp_P.data != TPBRT_NULL) { free(temp_P.data); }
+							tpbrt_free_vec3_array(&temp_P);
 							tpbrt_free_shape(shape);
 							return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 						}
 
 						if (temp_P.count > 4) {
-							free(temp_P.data);
+							tpbrt_free_vec3_array(&temp_P);
 							tpbrt_free_shape(shape);
 							return TPBRT_ERROR_TOO_MANY_VALUES;
 						}
@@ -172,7 +165,7 @@ extern "C" {
 					shape_params->P[1] = temp_P.data[1];
 					shape_params->P[2] = temp_P.data[2];
 					shape_params->P[3] = temp_P.data[3];
-					free(temp_P.data);
+					tpbrt_free_vec3_array(&temp_P);
 
 					err = tpbrt_params_list_get_string(params, &BASIS_STR, &temp_string);
 						if (err != TPBRT_ERROR_NONE) {
@@ -181,7 +174,7 @@ extern "C" {
 						}
 
 					err = tpbrt_shape_curve_basis_from_string(&temp_string, &shape_params->basis);
-					free(temp_string.data);
+					tpbrt_free_string(&temp_string);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_shape(shape);
 							return err;
@@ -208,7 +201,7 @@ extern "C" {
 						}
 
 					err = tpbrt_shape_curve_type_from_string(&temp_string, &shape_params->type);
-					free(temp_string.data);
+					tpbrt_free_string(&temp_string);
 						if (err != TPBRT_ERROR_NONE) {
 							tpbrt_free_shape(shape);
 							return err;
@@ -223,20 +216,20 @@ extern "C" {
 								}
 
 								if (temp_normal.count < 2) {
-										if (temp_normal.data != TPBRT_NULL) { free(temp_normal.data); }
+									tpbrt_free_vec3_array(&temp_normal);
 									tpbrt_free_shape(shape);
 									return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 								}
 
 								if (temp_normal.count > 2) {
-									free(temp_normal.data);
+									tpbrt_free_vec3_array(&temp_normal);
 									tpbrt_free_shape(shape);
 									return TPBRT_ERROR_TOO_MANY_VALUES;
 								}
 
 							shape_params->N[0] = temp_normal.data[0];
 							shape_params->N[1] = temp_normal.data[1];
-							free(temp_normal.data);
+							tpbrt_free_vec3_array(&temp_normal);
 						}
 
 					err = tpbrt_params_list_get_float(params, &WIDTH_STR, 1.0f, &shape_params->width);
@@ -270,7 +263,7 @@ extern "C" {
 					static const tpbrt_string_t Z_MAX_STR		= TPBRT_STRING("zmax");
 					static const tpbrt_string_t PHI_MAX_STR		= TPBRT_STRING("phimax");
 
-					tpbrt_shape_cylinder_params_t* shape_params = &(*shape)->as.cylinder;
+					tpbrt_shape_cylinder_params_t* shape_params = &shape->as.cylinder;
 
 					err = tpbrt_params_list_get_float(params, &RADIUS_STR, 1.0f, &shape_params->radius);
 						if (err != TPBRT_ERROR_NONE) {
@@ -303,7 +296,7 @@ extern "C" {
 					static const tpbrt_string_t INNER_RADIUS_STR = TPBRT_STRING("innerradius");
 					static const tpbrt_string_t PHI_MAX_STR		 = TPBRT_STRING("phimax");
 
-					tpbrt_shape_disk_params_t* shape_params		 = &(*shape)->as.disk;
+					tpbrt_shape_disk_params_t* shape_params		 = &shape->as.disk;
 
 					err = tpbrt_params_list_get_float(params, &HEIGHT_STR, 0.0f, &shape_params->height);
 						if (err != TPBRT_ERROR_NONE) {
@@ -336,7 +329,7 @@ extern "C" {
 					static const tpbrt_string_t Z_MAX_STR	  = TPBRT_STRING("zmax");
 					static const tpbrt_string_t PHI_MAX_STR	  = TPBRT_STRING("phimax");
 
-					tpbrt_shape_sphere_params_t* shape_params = &(*shape)->as.sphere;
+					tpbrt_shape_sphere_params_t* shape_params = &shape->as.sphere;
 
 					err = tpbrt_params_list_get_float(params, &RADIUS_STR, 1.0f, &shape_params->radius);
 						if (err != TPBRT_ERROR_NONE) {
@@ -370,7 +363,7 @@ extern "C" {
 					static const tpbrt_string_t S_STR				 = TPBRT_STRING("S");
 					static const tpbrt_string_t UV_STR				 = TPBRT_STRING("uv");
 
-					tpbrt_shape_triangle_mesh_params_t* shape_params = &(*shape)->as.triangle_mesh;
+					tpbrt_shape_triangle_mesh_params_t* shape_params = &shape->as.triangle_mesh;
 
 					err = tpbrt_params_list_get_point3s(params, &P_STR, &shape_params->P);
 						if (err != TPBRT_ERROR_NONE) {
@@ -408,7 +401,7 @@ extern "C" {
 					static const tpbrt_string_t DISPLACEMENT_STR = TPBRT_STRING("displacement");
 					static const tpbrt_string_t EDGE_LENGTH_STR	 = TPBRT_STRING("edgelength");
 
-					tpbrt_shape_ply_mesh_params_t* shape_params	 = &(*shape)->as.ply_mesh;
+					tpbrt_shape_ply_mesh_params_t* shape_params	 = &shape->as.ply_mesh;
 
 					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &shape_params->file_name);
 						if (err != TPBRT_ERROR_NONE) {
@@ -446,7 +439,7 @@ extern "C" {
 					static const tpbrt_string_t INDICES_STR		   = TPBRT_STRING("indices");
 					static const tpbrt_string_t P_STR			   = TPBRT_STRING("P");
 
-					tpbrt_shape_loop_subdiv_params_t* shape_params = &(*shape)->as.loop_subdiv;
+					tpbrt_shape_loop_subdiv_params_t* shape_params = &shape->as.loop_subdiv;
 
 					err = tpbrt_params_list_get_uint(params, &LEVELS_STR, 3u, &shape_params->levels);
 						if (err != TPBRT_ERROR_NONE) {
@@ -472,57 +465,95 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	void tpbrt_free_shape(tpbrt_shape_t** const shape) {
-			if (shape == TPBRT_NULL || *shape == TPBRT_NULL) { return; }
+	void tpbrt_free_shape(tpbrt_shape_t* const shape) {
+			if (shape == TPBRT_NULL) { return; }
 
-			switch ((*shape)->type) {
+			switch (shape->type) {
 				case TPBRT_SHAPE_TYPE_TRIANGLE_MESH: {
-					const tpbrt_shape_triangle_mesh_params_t* const params = &(*shape)->as.triangle_mesh;
+					tpbrt_shape_triangle_mesh_params_t* const params = &shape->as.triangle_mesh;
 
-						if (params->indices.data != TPBRT_NULL) { free(params->indices.data); }
-
-						if (params->P.data != TPBRT_NULL) { free(params->P.data); }
-
-						if (params->N.data != TPBRT_NULL) { free(params->N.data); }
-
-						if (params->S.data != TPBRT_NULL) { free(params->S.data); }
-
-						if (params->uv.data != TPBRT_NULL) { free(params->uv.data); }
+					tpbrt_free_uint_array(&params->indices);
+					tpbrt_free_vec3_array(&params->P);
+					tpbrt_free_vec3_array(&params->N);
+					tpbrt_free_vec3_array(&params->S);
+					tpbrt_free_vec2_array(&params->uv);
 				}
 				case TPBRT_SHAPE_TYPE_PLY_MESH: {
-					const tpbrt_shape_ply_mesh_params_t* const params = &(*shape)->as.ply_mesh;
+					tpbrt_shape_ply_mesh_params_t* const params = &shape->as.ply_mesh;
 
-						if (params->file_name.data != TPBRT_NULL) { free(params->file_name.data); }
+					tpbrt_free_string(&params->file_name);
 				}
 				case TPBRT_SHAPE_TYPE_LOOP_SUBDIV: {
-					const tpbrt_shape_loop_subdiv_params_t* const params = &(*shape)->as.loop_subdiv;
+					tpbrt_shape_loop_subdiv_params_t* const params = &shape->as.loop_subdiv;
 
-						if (params->indices.data != TPBRT_NULL) { free(params->indices.data); }
-
-						if (params->P.data != TPBRT_NULL) { free(params->P.data); }
+					tpbrt_free_uint_array(&params->indices);
+					tpbrt_free_vec3_array(&params->P);
 				}
 			default: break;
 			}
+	}
 
-		free(*shape);
-		*shape = TPBRT_NULL;
+#pragma endregion
+
+#pragma region SHAPE_ARRAY
+
+	tpbrt_error_t tpbrt_init_shape_array(tpbrt_shape_array_t* const shape_array) {
+			if (shape_array == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		shape_array->data  = TPBRT_NULL;
+		shape_array->count = 0;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_shape_array_add_shape(tpbrt_shape_array_t* const shape_array, const tpbrt_shape_t* const shape) {
+			if (shape_array == TPBRT_NULL || shape == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (shape_array->data == TPBRT_NULL) {
+				shape_array->data = malloc(sizeof(tpbrt_shape_t));
+					if (shape_array->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+				shape_array->data[0] = *shape;
+				shape_array->count	 = 1;
+				return TPBRT_ERROR_NONE;
+			}
+
+		tpbrt_shape_t* new_list = malloc(sizeof(tpbrt_shape_t) * (shape_array->count + 1));
+			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+			for (tpbrt_size_t i = 0; i < shape_array->count; i++) { new_list[i] = shape_array->data[i]; }
+		new_list[shape_array->count++] = *shape;
+		free(shape_array->data);
+		shape_array->data = new_list;
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_free_shape_array(tpbrt_shape_array_t* const shape_array) {
+			if (shape_array == TPBRT_NULL || shape_array->data == TPBRT_NULL) { return; }
+
+			for (tpbrt_size_t i = 0; i < shape_array->count; ++i) { tpbrt_free_shape(shape_array->data + i); }
+
+		free(shape_array->data);
+		shape_array->data  = TPBRT_NULL;
+		shape_array->count = 0;
 	}
 
 #pragma endregion
 
 #pragma region OBJECT
 
-	tpbrt_error_t tpbrt_create_object(const tpbrt_string_t* const name, tpbrt_object_t** const object) {
+	tpbrt_error_t tpbrt_create_object(const tpbrt_string_t* const name, tpbrt_object_t* const object) {
 			if (name == TPBRT_NULL || object == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		*object = malloc(sizeof(tpbrt_object_t));
-			if (*object == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		object->idx		  = ~(tpbrt_size_t)0;
 
-		(*object)->idx			= ~(tpbrt_size_t)0;
-		(*object)->shapes.data	= TPBRT_NULL;
-		(*object)->shapes.count = 0;
+		tpbrt_error_t err = tpbrt_init_shape_array(&object->shapes);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_object(object);
+				return err;
+			}
 
-		const tpbrt_error_t err = tpbrt_copy_string(&(*object)->name, name);
+		err = tpbrt_copy_string(&object->name, name);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_free_object(object);
 				return err;
@@ -534,54 +565,25 @@ extern "C" {
 	tpbrt_error_t tpbrt_object_add_shape(tpbrt_object_t* const object, const tpbrt_shape_t* const shape) {
 			if (object == TPBRT_NULL || shape == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (object->shapes.data == TPBRT_NULL) {
-				object->shapes.data = malloc(sizeof(tpbrt_shape_t));
-					if (object->shapes.data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
-
-				object->shapes.data[0] = *shape;
-				object->shapes.count   = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-		tpbrt_shape_t* new_list = malloc(sizeof(tpbrt_shape_t) * (object->shapes.count + 1));
-			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
-
-			for (tpbrt_size_t i = 0; i < object->shapes.count; i++) { new_list[i] = object->shapes.data[i]; }
-		new_list[object->shapes.count] = *shape;
-		++object->shapes.count;
-		free(object->shapes.data);
-		object->shapes.data = new_list;
-		return TPBRT_ERROR_NONE;
+		return tpbrt_shape_array_add_shape(&object->shapes, shape);
 	}
 
-	void tpbrt_free_object(tpbrt_object_t** const object) {
-			if (object == TPBRT_NULL || *object == TPBRT_NULL) { return; }
+	void tpbrt_free_object(tpbrt_object_t* const object) {
+			if (object == TPBRT_NULL) { return; }
 
-			if ((*object)->name.data != TPBRT_NULL) { free((*object)->name.data); }
-
-			if ((*object)->shapes.data != TPBRT_NULL) {
-					for (tpbrt_size_t i = 0; i < (*object)->shapes.count; ++i) {
-						tpbrt_shape_t* shape = &(*object)->shapes.data[i];
-						free(shape);
-					}
-			}
-
-		free(*object);
-		*object = TPBRT_NULL;
+		tpbrt_free_string(&object->name);
+		tpbrt_free_shape_array(&object->shapes);
 	}
 
 #pragma endregion
 
 #pragma region OBJECTS_LIST
 
-	tpbrt_error_t tpbrt_create_empty_objects_list(tpbrt_objects_list_t** const objects_list) {
+	tpbrt_error_t tpbrt_init_objects_list(tpbrt_objects_list_t* const objects_list) {
 			if (objects_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		*objects_list = malloc(sizeof(tpbrt_objects_list_t));
-			if (*objects_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
-
-		(*objects_list)->objects = TPBRT_NULL;
-		(*objects_list)->count	 = 0;
+		objects_list->objects = TPBRT_NULL;
+		objects_list->count	  = 0;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -600,9 +602,8 @@ extern "C" {
 
 			if (object->name.size != 0) {
 					for (tpbrt_size_t i = 0; i < objects_list->count; i++) {
-							if (objects_list->objects[i].name.size == object->name.size &&
-								strncmp(objects_list->objects[i].name.data, object->name.data, object->name.size) == 0) {
-								return TPBRT_ERROR_DUPLICATE_TEXTURE_NAME;
+							if (tpbrt_string_equals(&objects_list->objects[i].name, &object->name)) {
+								return TPBRT_ERROR_DUPLICATE_OBJECT_NAME;
 							}
 					}
 			}
@@ -628,8 +629,7 @@ extern "C" {
 			}
 
 			for (tpbrt_size_t i = 0; i < objects_list->count; i++) {
-					if (objects_list->objects[i].name.size == object_name->size &&
-						strncmp(objects_list->objects[i].name.data, object_name->data, object_name->size) == 0) {
+					if (tpbrt_string_equals(&objects_list->objects[i].name, object_name)) {
 						*object = &objects_list->objects[i];
 						return TPBRT_ERROR_NONE;
 					}
@@ -658,20 +658,14 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	void tpbrt_free_objects_list(tpbrt_objects_list_t** const objects_list) {
-			if (objects_list == TPBRT_NULL || *objects_list == TPBRT_NULL) { return; }
+	void tpbrt_free_objects_list(tpbrt_objects_list_t* const objects_list) {
+			if (objects_list == TPBRT_NULL || objects_list->objects == TPBRT_NULL) { return; }
 
-			if ((*objects_list)->objects != TPBRT_NULL) {
-					for (tpbrt_size_t i = 0; i < (*objects_list)->count; ++i) {
-						tpbrt_object_t* object = &(*objects_list)->objects[i];
-						tpbrt_free_object(&object);
-					}
+			for (tpbrt_size_t i = 0; i < objects_list->count; ++i) { tpbrt_free_object(objects_list->objects + i); }
 
-				free((*objects_list)->objects);
-			}
-
-		free(*objects_list);
-		*objects_list = TPBRT_NULL;
+		free(objects_list->objects);
+		objects_list->objects = TPBRT_NULL;
+		objects_list->count	  = 0;
 	}
 
 	tpbrt_size_t tpbrt_objects_list_size(const tpbrt_objects_list_t* const objects_list) {
@@ -686,32 +680,72 @@ extern "C" {
 
 #pragma region OBJECT_INSTANCE
 
-	tpbrt_error_t tpbrt_create_object_instance(const tpbrt_string_t* const object_name, const tpbrt_objects_list_t* const objects,
-	  const tpbrt_mat4_t* const ctm, tpbrt_object_instance_t** const instance) {
+	tpbrt_error_t tpbrt_create_instance(const tpbrt_string_t* const object_name, const tpbrt_objects_list_t* const objects,
+	  const tpbrt_mat4_t* const ctm, tpbrt_instance_t* const instance) {
 			if (object_name == TPBRT_NULL || object_name->data == TPBRT_NULL || objects == TPBRT_NULL || ctm == TPBRT_NULL ||
 				instance == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-		*instance = malloc(sizeof(tpbrt_object_instance_t));
-			if (*instance == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		instance->transform		= *ctm;
 
-		(*instance)->transform = *ctm;
-
-		tpbrt_error_t err	   = tpbrt_objects_list_get_object_handle(objects, object_name, &(*instance)->object);
+		const tpbrt_error_t err = tpbrt_objects_list_get_object_handle(objects, object_name, &instance->object);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_object_instance(instance);
+				tpbrt_free_instance(instance);
 				return err;
 			}
 
 		return TPBRT_ERROR_NONE;
 	}
 
-	void tpbrt_free_object_instance(tpbrt_object_instance_t** const instance) {
-			if (instance == TPBRT_NULL || *instance == TPBRT_NULL) { return; }
+	void tpbrt_free_instance(tpbrt_instance_t* const instance) {
+			if (instance == TPBRT_NULL) { return; }
+		instance->object = ~(tpbrt_object_handle_t)0;
+	}
 
-		free(*instance);
-		*instance = TPBRT_NULL;
+#pragma endregion
+
+#pragma region OBJECT_INSTANCES_LIST
+
+	tpbrt_error_t tpbrt_init_instances_list(tpbrt_instances_list_t* const instances_list) {
+			if (instances_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		instances_list->instances = TPBRT_NULL;
+		instances_list->count	  = 0;
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_instances_list_add_instance(tpbrt_instances_list_t* const instances_list,
+	  const tpbrt_instance_t* const instance) {
+			if (instances_list == TPBRT_NULL || instance == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (instances_list->instances == TPBRT_NULL) {
+				instances_list->instances = malloc(sizeof(tpbrt_instance_t));
+					if (instances_list->instances == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+				instances_list->instances[0] = *instance;
+				instances_list->count		 = 1;
+				return TPBRT_ERROR_NONE;
+			}
+
+		tpbrt_instance_t* new_list = malloc(sizeof(tpbrt_object_t) * (instances_list->count + 1));
+			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+			for (tpbrt_size_t i = 0; i < instances_list->count; i++) { new_list[i] = instances_list->instances[i]; }
+		new_list[instances_list->count++] = *instance;
+		free(instances_list->instances);
+		instances_list->instances = new_list;
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_free_instances_list(tpbrt_instances_list_t* const instances_list) {
+			if (instances_list == TPBRT_NULL || instances_list->instances == TPBRT_NULL) { return; }
+
+			for (tpbrt_size_t i = 0; i < instances_list->count; ++i) { tpbrt_free_instance(instances_list->instances + i); }
+
+		free(instances_list->instances);
+		instances_list->instances = TPBRT_NULL;
+		instances_list->count	  = 0;
 	}
 
 #pragma endregion

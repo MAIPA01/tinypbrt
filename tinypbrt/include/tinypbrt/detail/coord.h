@@ -10,6 +10,7 @@ extern "C" {
 		TPBRT_COORDINATE_SYSTEM_CAMERA_WORLD = 0,
 		TPBRT_COORDINATE_SYSTEM_CAMERA		 = 1,
 		TPBRT_COORDINATE_SYSTEM_WORLD		 = 2,
+		TPBRT_COORDINATE_SYSTEM_MAX_NUM		 = 3,
 	} tpbrt_coordinate_system_t;
 
 #ifdef __cplusplus

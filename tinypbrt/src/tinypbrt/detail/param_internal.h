@@ -12,7 +12,7 @@ extern "C" {
 
 #pragma region PARAM
 
-	typedef enum : uint8_t {
+	typedef enum tpbrt_param_type_t : uint8_t {
 		TPBRT_PARAM_TYPE_INTEGER   = 0,
 		TPBRT_PARAM_TYPE_FLOAT	   = 1,
 		TPBRT_PARAM_TYPE_POINT2	   = 2,
@@ -32,13 +32,13 @@ extern "C" {
 		TPBRT_PARAM_TYPE_MAX_NUM   = 16,
 	} tpbrt_param_type_t;
 
-	typedef enum : uint8_t {
+	typedef enum tpbrt_param_value_type_t : uint8_t {
 		TPBRT_PARAM_VALUE_TYPE_SINGLE = 0,
 		TPBRT_PARAM_VALUE_TYPE_ARRAY  = 1,
 		TPBRT_PARAM_VALUE_TYPE_STRING = 2,
 	} tpbrt_param_value_type_t;
 
-	typedef struct {
+	typedef struct tpbrt_param_t {
 		tpbrt_string_t name;
 		tpbrt_param_type_t type;
 		tpbrt_param_value_type_t value_type;
@@ -46,8 +46,7 @@ extern "C" {
 	} tpbrt_param_t;
 
 	tpbrt_error_t tpbrt_create_param(const tpbrt_string_t* declaration, tpbrt_param_value_type_t value_type,
-	  const tpbrt_string_t* value_str, tpbrt_param_t** param);
-	void tpbrt_free_param(tpbrt_param_t** param);
+	  const tpbrt_string_t* value_str, tpbrt_param_t* param);
 
 	tpbrt_error_t tpbrt_param_as_strings(const tpbrt_param_t* param, tpbrt_string_array_t* out_strings);
 
@@ -91,19 +90,19 @@ extern "C" {
 
 #pragma region PARAMS_LIST
 
-	typedef struct {
+	typedef struct tpbrt_params_list_t {
 		tpbrt_param_t* params;
 		tpbrt_size_t count;
 	} tpbrt_params_list_t;
 
-	tpbrt_error_t tpbrt_create_empty_params_list(tpbrt_params_list_t** params_list);
+	tpbrt_error_t tpbrt_init_params_list(tpbrt_params_list_t* params_list);
 	tpbrt_error_t tpbrt_params_list_add_param(tpbrt_params_list_t* params_list, const tpbrt_param_t* param);
 	tpbrt_error_t tpbrt_params_list_extend(tpbrt_params_list_t* dest_params_list, const tpbrt_params_list_t* src_params_list);
 	tpbrt_error_t tpbrt_params_list_get_param(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_param_t** param);
 	tpbrt_error_t tpbrt_params_list_get_param_const(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  const tpbrt_param_t** param);
-	void tpbrt_free_params_list(tpbrt_params_list_t** params_list);
+	void tpbrt_free_params_list(tpbrt_params_list_t* params_list);
 
 	tpbrt_size_t tpbrt_params_list_size(const tpbrt_params_list_t* params_list);
 	tpbrt_bool_t tpbrt_params_list_is_empty(const tpbrt_params_list_t* params_list);

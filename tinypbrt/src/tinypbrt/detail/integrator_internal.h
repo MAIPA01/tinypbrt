@@ -13,9 +13,7 @@ extern "C" {
 #endif
 
 	tpbrt_error_t tpbrt_create_integrator(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
-	  tpbrt_integrator_t** integrator);
-
-	void tpbrt_free_integrator(tpbrt_integrator_t** integrator);
+	  tpbrt_integrator_t* integrator);
 
 #ifdef __cplusplus
 }

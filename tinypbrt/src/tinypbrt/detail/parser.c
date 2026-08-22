@@ -6,10 +6,10 @@
 extern "C" {
 #endif
 
-	void tpbrt_parser_init(tpbrt_parser_t* const parser, const tpbrt_char_t* const str, const tpbrt_size_t length) {
+	void tpbrt_parser_init(tpbrt_parser_t* const parser, const tpbrt_string_t* str) {
 			if (parser == TPBRT_NULL) { return; }
 
-		tpbrt_tokenizer_init(&parser->tokenizer, str, length);
+		tpbrt_tokenizer_init(&parser->tokenizer, str);
 	}
 
 	static tpbrt_error_t read_token(tpbrt_parser_t* const parser, tpbrt_token_t* const out_token) {
@@ -72,7 +72,7 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	static tpbrt_error_t read_param(tpbrt_parser_t* const parser, tpbrt_param_t** const out_param) {
+	static tpbrt_error_t read_param(tpbrt_parser_t* const parser, tpbrt_param_t* const out_param) {
 		tpbrt_string_t type_and_name;
 		tpbrt_error_t err = read_str(parser, &type_and_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -115,8 +115,8 @@ extern "C" {
 		return tpbrt_create_param(&type_and_name, value_type, &value_str, out_param);
 	}
 
-	static tpbrt_error_t read_param_list(tpbrt_parser_t* const parser, tpbrt_params_list_t** const out_list) {
-		tpbrt_error_t err = tpbrt_create_empty_params_list(out_list);
+	static tpbrt_error_t read_param_list(tpbrt_parser_t* const parser, tpbrt_params_list_t* const out_list) {
+		tpbrt_error_t err = tpbrt_init_params_list(out_list);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 			while (TPBRT_TRUE) {
@@ -125,15 +125,14 @@ extern "C" {
 
 					if (!tpbrt_token_is_quoted_string(&next_tok)) { break; }
 
-				tpbrt_param_t* param = TPBRT_NULL;
-				err					 = read_param(parser, &param);
+				tpbrt_param_t param;
+				err = read_param(parser, &param);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_free_params_list(out_list);
 						return err;
 					}
 
-				err = tpbrt_params_list_add_param(*out_list, param);
-				tpbrt_free_param(&param);
+				err = tpbrt_params_list_add_param(out_list, &param);
 
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_free_params_list(out_list);
@@ -159,12 +158,9 @@ extern "C" {
 			case TPBRT_DIRECTIVE_IMPORT:	 return read_str(parser, &out_element->as.include_import.path);
 
 				case TPBRT_DIRECTIVE_OPTION: {
-					tpbrt_param_t* p;
+					tpbrt_param_t p;
 					err = read_param(parser, &p);
-						if (err == TPBRT_ERROR_NONE) {
-							out_element->as.option.param = *p;
-							tpbrt_free_param(&p);
-						}
+						if (err == TPBRT_ERROR_NONE) { out_element->as.option.param = p; }
 					return err;
 				}
 
@@ -268,21 +264,11 @@ extern "C" {
 			case TPBRT_DIRECTIVE_AREA_LIGHT_SOURCE:
 			case TPBRT_DIRECTIVE_MATERIAL:
 			case TPBRT_DIRECTIVE_SHAPE:
-			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:
-					if (element->as.generic_with_params.params) {
-						tpbrt_free_params_list(&element->as.generic_with_params.params);
-					}
-				break;
-			case TPBRT_DIRECTIVE_ATTRIBUTE:
-					if (element->as.attribute.params) { tpbrt_free_params_list(&element->as.attribute.params); }
-				break;
-			case TPBRT_DIRECTIVE_MAKE_NAMED_MATERIAL:
-					if (element->as.named_with_params.params) { tpbrt_free_params_list(&element->as.named_with_params.params); }
-				break;
-			case TPBRT_DIRECTIVE_TEXTURE:
-					if (element->as.texture.params) { tpbrt_free_params_list(&element->as.texture.params); }
-				break;
-			default: break;
+			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:	  tpbrt_free_params_list(&element->as.generic_with_params.params); break;
+			case TPBRT_DIRECTIVE_ATTRIBUTE:			  tpbrt_free_params_list(&element->as.attribute.params); break;
+			case TPBRT_DIRECTIVE_MAKE_NAMED_MATERIAL: tpbrt_free_params_list(&element->as.named_with_params.params); break;
+			case TPBRT_DIRECTIVE_TEXTURE:			  tpbrt_free_params_list(&element->as.texture.params); break;
+			default:								  break;
 			}
 	}
 
