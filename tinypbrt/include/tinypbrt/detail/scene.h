@@ -8,6 +8,7 @@
 #include <tinypbrt/detail/coord.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/film.h>
+#include <tinypbrt/detail/fwd.h>
 #include <tinypbrt/detail/integrator.h>
 #include <tinypbrt/detail/light.h>
 #include <tinypbrt/detail/material.h>

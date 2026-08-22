@@ -5,7 +5,7 @@
 #include <tinypbrt/detail/camera.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/film_internal.h>
-#include <tinypbrt/detail/param.h>
+#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
