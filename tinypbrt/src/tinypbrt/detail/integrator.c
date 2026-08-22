@@ -157,7 +157,7 @@ extern "C" {
 
 					tpbrt_string_t sampler_str;
 					err = tpbrt_params_list_get_string(params, &LIGHT_SAMPLER_STR, &sampler_str);
-						if (err != TPBRT_ERROR_NONE || err != TPBRT_ERROR_NOT_FOUND) { return err; }
+						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
 							integrator->as.path.light_sampler = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
