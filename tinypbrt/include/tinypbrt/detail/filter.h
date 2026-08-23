@@ -9,11 +9,12 @@ extern "C" {
 #endif
 
 	typedef enum tpbrt_filter_type_t : uint8_t {
-		TPBRT_FILTER_BOX	  = 0,
-		TPBRT_FILTER_GAUSSIAN = 1,
-		TPBRT_FILTER_MITCHELL = 2,
-		TPBRT_FILTER_SINC	  = 3,
-		TPBRT_FILTER_TRIANGLE = 4,
+		TPBRT_FILTER_TYPE_BOX	   = 0,
+		TPBRT_FILTER_TYPE_GAUSSIAN = 1,
+		TPBRT_FILTER_TYPE_MITCHELL = 2,
+		TPBRT_FILTER_TYPE_SINC	   = 3,
+		TPBRT_FILTER_TYPE_TRIANGLE = 4,
+		TPBRT_FILTER_TYPE_MAX_NUM  = 5,
 	} tpbrt_filter_type_t;
 
 	typedef struct tpbrt_filter_gaussian_params_t {

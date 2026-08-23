@@ -1834,12 +1834,15 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_get_material_by_handle(const tpbrt_materials_list_t* const materials,
-	  const tpbrt_material_handle_t* const handle, const tpbrt_material_t** const material) {
-			if (materials == TPBRT_NULL || handle == TPBRT_NULL || material == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	  const tpbrt_material_handle_t handle, const tpbrt_material_t** const material) {
+			if (materials == TPBRT_NULL || material == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (*handle >= materials->count) { return TPBRT_ERROR_INVALID_HANDLE; }
+			if (handle == TPBRT_MATERIAL_HANDLE_INVALID || handle >= materials->count) {
+				*material = TPBRT_NULL;
+				return TPBRT_ERROR_INVALID_HANDLE;
+			}
 
-		*material = &materials->materials[*handle];
+		*material = &materials->materials[handle];
 		return TPBRT_ERROR_NONE;
 	}
 

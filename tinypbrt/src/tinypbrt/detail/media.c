@@ -636,7 +636,7 @@ extern "C" {
 	  const tpbrt_string_t* const media_name, tpbrt_media_handle_t* const media_handle) {
 			if (medias_list == TPBRT_NULL || media_name == TPBRT_NULL || media_name->data == TPBRT_NULL ||
 				media_handle == TPBRT_NULL) {
-				*media_handle = ~(tpbrt_media_handle_t)0;
+				*media_handle = TPBRT_MEDIA_HANDLE_INVALID;
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
@@ -644,7 +644,7 @@ extern "C" {
 		const tpbrt_error_t err = tpbrt_medias_list_get_media(medias_list, media_name, &object);
 
 			if (err != TPBRT_ERROR_NONE) {
-				*media_handle = ~(tpbrt_media_handle_t)0;
+				*media_handle = TPBRT_MEDIA_HANDLE_INVALID;
 				return err;
 			}
 
@@ -679,16 +679,16 @@ extern "C" {
 		return tpbrt_medias_list_get_media(medias, name, media);
 	}
 
-	tpbrt_error_t tpbrt_get_media_by_handle(const tpbrt_medias_list_t* const medias, const tpbrt_media_handle_t* const handle,
+	tpbrt_error_t tpbrt_get_media_by_handle(const tpbrt_medias_list_t* const medias, const tpbrt_media_handle_t handle,
 	  const tpbrt_media_t** const media) {
-			if (medias == TPBRT_NULL || handle == TPBRT_NULL || media == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+			if (medias == TPBRT_NULL || media == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (*handle >= medias->count) {
+			if (handle == TPBRT_MEDIA_HANDLE_INVALID || handle >= medias->count) {
 				*media = TPBRT_NULL;
 				return TPBRT_ERROR_INVALID_HANDLE;
 			}
 
-		*media = &medias->medias[*handle];
+		*media = &medias->medias[handle];
 		return TPBRT_ERROR_NONE;
 	}
 

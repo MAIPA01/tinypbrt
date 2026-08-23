@@ -28,6 +28,8 @@ extern "C" {
 
 	typedef tpbrt_size_t tpbrt_material_handle_t;
 
+#define TPBRT_MATERIAL_HANDLE_INVALID ~(tpbrt_material_handle_t)0
+
 	typedef enum tpbrt_material_bump_map_type_t : uint8_t {
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE		  = 0,
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT = 1,
@@ -198,7 +200,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_get_material_by_name(const tpbrt_materials_list_t* materials, const tpbrt_string_t* name,
 	  const tpbrt_material_t** material);
-	tpbrt_error_t tpbrt_get_material_by_handle(const tpbrt_materials_list_t* materials, const tpbrt_material_handle_t* handle,
+	tpbrt_error_t tpbrt_get_material_by_handle(const tpbrt_materials_list_t* materials, tpbrt_material_handle_t handle,
 	  const tpbrt_material_t** material);
 
 #ifdef __cplusplus

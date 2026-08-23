@@ -12,8 +12,9 @@ extern "C" {
 
 #pragma region SHAPE
 	tpbrt_error_t tpbrt_create_shape(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
-	  const tpbrt_textures_list_t* textures, const tpbrt_mat4_t* ctm, const tpbrt_material_handle_t* material,
-	  tpbrt_shape_t* shape);
+	  const tpbrt_textures_list_t* textures, const tpbrt_mat4_animated_t* ctm, tpbrt_material_handle_t material_handle,
+	  tpbrt_area_light_handle_t area_light_handle, tpbrt_media_handle_t interior_media_handle,
+	  tpbrt_media_handle_t exterior_media_handle, tpbrt_bool_t reverse_orientation, tpbrt_shape_t* shape);
 	void tpbrt_free_shape(tpbrt_shape_t* shape);
 #pragma endregion
 
@@ -44,7 +45,7 @@ extern "C" {
 
 #pragma region OBJECT_INSTANCE
 	tpbrt_error_t tpbrt_create_instance(const tpbrt_string_t* object_name, const tpbrt_objects_list_t* objects,
-	  const tpbrt_mat4_t* ctm, tpbrt_instance_t* instance);
+	  const tpbrt_mat4_animated_t* ctm, tpbrt_instance_t* instance);
 	void tpbrt_free_instance(tpbrt_instance_t* instance);
 #pragma endregion
 

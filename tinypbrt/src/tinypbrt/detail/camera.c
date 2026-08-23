@@ -78,12 +78,15 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_create_camera(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
-	  const tpbrt_film_t* film, const tpbrt_mat4_t* const ctm, tpbrt_camera_t* const camera) {
+	  const tpbrt_film_t* film, const tpbrt_mat4_animated_t* const ctm, const tpbrt_media_handle_t interior_media_handle,
+	  const tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_t* const camera) {
 			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || camera == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 		camera->transform							 = *ctm;
+		camera->interior_media_handle				 = interior_media_handle;
+		camera->exterior_media_handle				 = exterior_media_handle;
 
 		static const tpbrt_string_t SHUTTER_OPEN_STR = TPBRT_STRING("shutteropen");
 		tpbrt_error_t err = tpbrt_params_list_get_float(params, &SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);

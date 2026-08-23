@@ -4,7 +4,9 @@
 
 #include <tinypbrt/detail/color.h>
 #include <tinypbrt/detail/common.h>
+#include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/math.h>
+#include <tinypbrt/detail/media.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,10 +58,12 @@ extern "C" {
 	} tpbrt_light_source_spot_params_t;
 
 	typedef struct tpbrt_light_source_t {
-		tpbrt_mat4_t transform;
+		tpbrt_mat4_animated_t transform;
 		tpbrt_light_source_type_t type;
 		tpbrt_opt_float_t power_illuminance;
 		tpbrt_float_t scale;
+		tpbrt_media_handle_t interior_media_handle;
+		tpbrt_media_handle_t exterior_media_handle;
 
 		union {
 			tpbrt_light_source_distant_params_t distant;
@@ -83,6 +87,7 @@ extern "C" {
 	} tpbrt_area_light_diffuse_params_t;
 
 	typedef struct tpbrt_area_light_t {
+		tpbrt_size_t idx;
 		tpbrt_area_light_type_t type;
 
 		union {
@@ -90,12 +95,19 @@ extern "C" {
 		} as;
 	} tpbrt_area_light_t;
 
+	typedef tpbrt_size_t tpbrt_area_light_handle_t;
+
+#define TPBRT_AREA_LIGHT_HANDLE_INVALID ~(tpbrt_area_light_handle_t)0
+
 	typedef struct tpbrt_lights_list_t {
 		tpbrt_light_source_t* lights;
 		tpbrt_size_t lights_count;
 		tpbrt_area_light_t* area_lights;
 		tpbrt_size_t area_lights_count;
 	} tpbrt_lights_list_t;
+
+	tpbrt_error_t tpbrt_get_area_light_by_handle(const tpbrt_lights_list_t* lights_list, tpbrt_area_light_handle_t handle,
+	  const tpbrt_area_light_t** area_light);
 
 #ifdef __cplusplus
 }

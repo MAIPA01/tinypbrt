@@ -82,15 +82,21 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_create_shape(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
-	  const tpbrt_textures_list_t* const textures, const tpbrt_mat4_t* const ctm, const tpbrt_material_handle_t* const material,
-	  tpbrt_shape_t* const shape) {
+	  const tpbrt_textures_list_t* const textures, const tpbrt_mat4_animated_t* const ctm,
+	  const tpbrt_material_handle_t material_handle, const tpbrt_area_light_handle_t area_light_handle,
+	  const tpbrt_media_handle_t interior_media_handle, const tpbrt_media_handle_t exterior_media_handle,
+	  const tpbrt_bool_t reverse_orientation, tpbrt_shape_t* const shape) {
 			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || textures == TPBRT_NULL ||
 				shape == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 		shape->transform					  = *ctm;
-		shape->material						  = *material;
+		shape->material						  = material_handle;
+		shape->area_light					  = area_light_handle;
+		shape->interior_media_handle		  = interior_media_handle;
+		shape->exterior_media_handle		  = exterior_media_handle;
+		shape->reverse_orientation			  = reverse_orientation;
 
 		static const tpbrt_string_t ALPHA_STR = TPBRT_STRING("alpha");
 
@@ -681,7 +687,7 @@ extern "C" {
 #pragma region OBJECT_INSTANCE
 
 	tpbrt_error_t tpbrt_create_instance(const tpbrt_string_t* const object_name, const tpbrt_objects_list_t* const objects,
-	  const tpbrt_mat4_t* const ctm, tpbrt_instance_t* const instance) {
+	  const tpbrt_mat4_animated_t* const ctm, tpbrt_instance_t* const instance) {
 			if (object_name == TPBRT_NULL || object_name->data == TPBRT_NULL || objects == TPBRT_NULL || ctm == TPBRT_NULL ||
 				instance == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
@@ -757,13 +763,16 @@ extern "C" {
 		return tpbrt_objects_list_get_object(objects, name, object);
 	}
 
-	tpbrt_error_t tpbrt_get_object_by_handle(const tpbrt_objects_list_t* const objects, const tpbrt_object_handle_t* const handle,
+	tpbrt_error_t tpbrt_get_object_by_handle(const tpbrt_objects_list_t* const objects, const tpbrt_object_handle_t handle,
 	  const tpbrt_object_t** const object) {
-			if (objects == TPBRT_NULL || handle == TPBRT_NULL || object == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+			if (objects == TPBRT_NULL || object == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (*handle >= objects->count) { return TPBRT_ERROR_INVALID_HANDLE; }
+			if (handle >= objects->count) {
+				*object = TPBRT_NULL;
+				return TPBRT_ERROR_INVALID_HANDLE;
+			}
 
-		*object = &objects->objects[*handle];
+		*object = &objects->objects[handle];
 		return TPBRT_ERROR_NONE;
 	}
 

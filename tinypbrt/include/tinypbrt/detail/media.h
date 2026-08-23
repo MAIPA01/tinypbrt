@@ -95,6 +95,8 @@ extern "C" {
 
 	typedef tpbrt_size_t tpbrt_media_handle_t;
 
+#define TPBRT_MEDIA_HANDLE_INVALID ~(tpbrt_media_handle_t)0
+
 	typedef struct tpbrt_medias_list_t {
 		tpbrt_media_t* medias;
 		tpbrt_size_t count;
@@ -102,7 +104,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_get_media_by_name(const tpbrt_medias_list_t* medias, const tpbrt_string_t* name,
 	  const tpbrt_media_t** media);
-	tpbrt_error_t tpbrt_get_media_by_handle(const tpbrt_medias_list_t* medias, const tpbrt_media_handle_t* handle,
+	tpbrt_error_t tpbrt_get_media_by_handle(const tpbrt_medias_list_t* medias, tpbrt_media_handle_t handle,
 	  const tpbrt_media_t** media);
 
 #ifdef __cplusplus

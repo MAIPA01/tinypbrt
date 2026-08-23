@@ -69,6 +69,7 @@ extern "C" {
 			TPBRT_STRING("Unknown media type"),						   // TPBRT_ERROR_UNKNOWN_MEDIA_TYPE
 			TPBRT_STRING("File could not be opened or found"),		   // TPBRT_ERROR_FILE_NOT_FOUND
 			TPBRT_STRING("Found duplicated object"),				   // TPBRT_ERROR_DUPLICATE_OBJECT_NAME
+			TPBRT_STRING("Unknown filter type"),					   // TPBRT_ERROR_UNKNOWN_FILTER_TYPE
 			TPBRT_STRING("Undefined error"),						   // DEFAULT
 		};
 

@@ -4,6 +4,7 @@
 
 #include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/math.h>
+#include <tinypbrt/detail/media.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,7 +77,9 @@ extern "C" {
 		tpbrt_camera_type_t type;
 		tpbrt_float_t shutter_open;
 		tpbrt_float_t shutter_close;
-		tpbrt_mat4_t transform;
+		tpbrt_mat4_animated_t transform;
+		tpbrt_media_handle_t interior_media_handle;
+		tpbrt_media_handle_t exterior_media_handle;
 
 		union {
 			tpbrt_camera_orthographic_params_t orthographic;

@@ -83,6 +83,7 @@ extern "C" {
 	typedef struct tpbrt_texture_fbm_wrinkled_windy_params_t {
 		tpbrt_uint_t octaves;
 		tpbrt_float_t roughness;
+		tpbrt_mat4_animated_t transform;
 	} tpbrt_texture_fbm_wrinkled_windy_params_t;
 
 	typedef enum tpbrt_texture_wrap_t : uint8_t {
@@ -157,11 +158,11 @@ extern "C" {
 	} tpbrt_texture_mapping_uv_params_t;
 
 	typedef struct tpbrt_texture_mapping_spherical_params_t {
-		tpbrt_mat4_t transform;
+		tpbrt_mat4_animated_t transform;
 	} tpbrt_texture_mapping_spherical_params_t;
 
 	typedef struct tpbrt_texture_mapping_cylindrical_params_t {
-		tpbrt_mat4_t transform;
+		tpbrt_mat4_animated_t transform;
 	} tpbrt_texture_mapping_cylindrical_params_t;
 
 	typedef struct tpbrt_texture_mapping_planar_params_t {

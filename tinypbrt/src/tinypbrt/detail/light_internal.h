@@ -11,7 +11,8 @@ extern "C" {
 
 #pragma region LIGHT_SOURCE
 	tpbrt_error_t tpbrt_create_light_source(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
-	  tpbrt_color_space_t color_space, tpbrt_light_source_t* light_source);
+	  tpbrt_color_space_t color_space, const tpbrt_mat4_animated_t* ctm, tpbrt_media_handle_t interior_media_handle,
+	  tpbrt_media_handle_t exterior_media_handle, tpbrt_light_source_t* light_source);
 	void tpbrt_free_light_source(tpbrt_light_source_t* light_source);
 #pragma endregion
 
@@ -24,7 +25,8 @@ extern "C" {
 #pragma region LIGHTS_LIST
 	tpbrt_error_t tpbrt_init_lights_list(tpbrt_lights_list_t* lights_list);
 	tpbrt_error_t tpbrt_lights_list_add_light_source(tpbrt_lights_list_t* lights_list, const tpbrt_light_source_t* light_source);
-	tpbrt_error_t tpbrt_lights_list_add_area_light(tpbrt_lights_list_t* lights_list, const tpbrt_area_light_t* area_light);
+	tpbrt_error_t tpbrt_lights_list_add_area_light(tpbrt_lights_list_t* lights_list, tpbrt_area_light_handle_t* handle,
+	  const tpbrt_area_light_t* area_light);
 	void tpbrt_free_lights_list(tpbrt_lights_list_t* lights_list);
 
 	tpbrt_size_t tpbrt_lights_list_size(const tpbrt_lights_list_t* lights_list);

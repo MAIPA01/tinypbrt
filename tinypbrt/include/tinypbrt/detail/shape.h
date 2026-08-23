@@ -3,8 +3,10 @@
 #define _TINYPBRT_SHAPE_H_
 
 #include <tinypbrt/detail/common.h>
+#include <tinypbrt/detail/light.h>
 #include <tinypbrt/detail/material.h>
 #include <tinypbrt/detail/math.h>
+#include <tinypbrt/detail/media.h>
 #include <tinypbrt/detail/texture.h>
 
 #ifdef __cplusplus
@@ -97,8 +99,12 @@ extern "C" {
 	typedef struct tpbrt_shape_t {
 		tpbrt_shape_type_t type;
 		tpbrt_texture_handle_t alpha;
-		tpbrt_mat4_t transform;
+		tpbrt_mat4_animated_t transform;
 		tpbrt_material_handle_t material;
+		tpbrt_area_light_handle_t area_light;
+		tpbrt_media_handle_t interior_media_handle;
+		tpbrt_media_handle_t exterior_media_handle;
+		tpbrt_bool_t reverse_orientation;
 
 		union {
 			tpbrt_shape_curve_params_t curve;
@@ -129,9 +135,11 @@ extern "C" {
 
 	typedef tpbrt_uint_t tpbrt_object_handle_t;
 
+#define TPBRT_OBJECT_HANDLE_INVALID ~(tpbrt_object_handle_t)0
+
 	typedef struct tpbrt_instance_t {
 		tpbrt_object_handle_t object;
-		tpbrt_mat4_t transform;
+		tpbrt_mat4_animated_t transform;
 	} tpbrt_instance_t;
 
 	typedef struct tpbrt_instances_list_t {
@@ -141,7 +149,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_get_object_by_name(const tpbrt_objects_list_t* objects, const tpbrt_string_t* name,
 	  const tpbrt_object_t** object);
-	tpbrt_error_t tpbrt_get_object_by_handle(const tpbrt_objects_list_t* objects, const tpbrt_object_handle_t* handle,
+	tpbrt_error_t tpbrt_get_object_by_handle(const tpbrt_objects_list_t* objects, tpbrt_object_handle_t handle,
 	  const tpbrt_object_t** object);
 
 #ifdef __cplusplus

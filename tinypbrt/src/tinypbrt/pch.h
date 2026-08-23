@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
 #include <ctype.h>
 #include <math.h>
 #include <memory.h>

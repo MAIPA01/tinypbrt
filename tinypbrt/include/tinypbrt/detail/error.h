@@ -72,7 +72,8 @@ extern "C" {
 		TPBRT_ERROR_UNKNOWN_MEDIA_TYPE						  = 60,
 		TPBRT_ERROR_FILE_NOT_FOUND							  = 61,
 		TPBRT_ERROR_DUPLICATE_OBJECT_NAME					  = 62,
-		TPBRT_ERROR_MAX_NUM									  = 63,
+		TPBRT_ERROR_UNKNOWN_FILTER_TYPE						  = 63,
+		TPBRT_ERROR_MAX_NUM									  = 64,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);

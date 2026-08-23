@@ -182,7 +182,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_create_texture(const tpbrt_string_t* const name, const tpbrt_string_t* const type_str,
 	  const tpbrt_string_t* const class_str, const tpbrt_params_list_t* const params, const tpbrt_textures_list_t* const textures,
-	  const tpbrt_mat4_t* ctm, tpbrt_texture_t* const texture) {
+	  const tpbrt_mat4_animated_t* ctm, tpbrt_texture_t* const texture) {
 			if (name == TPBRT_NULL || name->data == TPBRT_NULL || type_str == TPBRT_NULL || type_str->data == TPBRT_NULL ||
 				class_str == TPBRT_NULL || class_str->data == TPBRT_NULL || params == TPBRT_NULL || textures == TPBRT_NULL ||
 				ctm == TPBRT_NULL || texture == TPBRT_NULL) {
@@ -590,6 +590,8 @@ extern "C" {
 				case TPBRT_TEXTURE_CLASS_WRINKLED: {
 					static const tpbrt_string_t OCTAVES_STR	  = TPBRT_STRING("octaves");
 					static const tpbrt_string_t ROUGHNESS_STR = TPBRT_STRING("roughness");
+
+					texture->as.fbm_wrinkled_windy.transform  = *ctm;
 
 					static const tpbrt_uint_t OCTAVES_DEFAULT = 8u;
 					err =
@@ -1042,18 +1044,24 @@ extern "C" {
 
 #pragma region API
 
-	tpbrt_error_t tpbrt_get_texture_by_name(const tpbrt_textures_list_t* textures, const tpbrt_string_t* name,
-	  const tpbrt_texture_t** texture) {
+	tpbrt_error_t tpbrt_get_texture_by_name(const tpbrt_textures_list_t* const textures, const tpbrt_string_t* const name,
+	  const tpbrt_texture_t** const texture) {
 		return tpbrt_textures_list_get_texture_by_name(textures, name, texture);
 	}
 
-	tpbrt_error_t tpbrt_get_texture_by_handle(const tpbrt_textures_list_t* textures, const tpbrt_texture_handle_t* handle,
-	  const tpbrt_texture_t** texture) {
+	tpbrt_error_t tpbrt_get_texture_by_handle(const tpbrt_textures_list_t* const textures,
+	  const tpbrt_texture_handle_t* const handle, const tpbrt_texture_t** const texture) {
 			if (textures == TPBRT_NULL || handle == TPBRT_NULL || texture == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (handle->value_type != TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE) { return TPBRT_ERROR_INVALID_HANDLE; }
+			if (handle->value_type != TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE) {
+				*texture = TPBRT_NULL;
+				return TPBRT_ERROR_INVALID_HANDLE;
+			}
 
-			if (handle->as.tex_idx >= textures->count) { return TPBRT_ERROR_INVALID_HANDLE; }
+			if (handle->as.tex_idx >= textures->count) {
+				*texture = TPBRT_NULL;
+				return TPBRT_ERROR_INVALID_HANDLE;
+			}
 
 		*texture = &textures->textures[handle->as.tex_idx];
 		return TPBRT_ERROR_NONE;

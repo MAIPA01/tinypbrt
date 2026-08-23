@@ -8,6 +8,7 @@
 #include <tinypbrt/detail/coord.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/film.h>
+#include <tinypbrt/detail/filter.h>
 #include <tinypbrt/detail/fwd.h>
 #include <tinypbrt/detail/integrator.h>
 #include <tinypbrt/detail/light.h>
@@ -46,6 +47,7 @@ extern "C" {
 		tpbrt_integrator_t integrator;
 		tpbrt_accelerator_t accelerator;
 		tpbrt_sampler_t sampler;
+		tpbrt_filter_t filter;
 
 		tpbrt_textures_list_t textures;
 		tpbrt_materials_list_t materials;
@@ -57,7 +59,7 @@ extern "C" {
 
 		tpbrt_instances_list_t instances;
 
-		tpbrt_string_array_t include_buffers;
+		tpbrt_string_array_t includes;
 	} tpbrt_scene_t;
 
 	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene);

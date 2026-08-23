@@ -14,7 +14,7 @@ extern "C" {
 #pragma region TEXTURE
 	tpbrt_error_t tpbrt_create_texture(const tpbrt_string_t* name, const tpbrt_string_t* type_str,
 	  const tpbrt_string_t* class_str, const tpbrt_params_list_t* params, const tpbrt_textures_list_t* textures,
-	  const tpbrt_mat4_t* ctm, tpbrt_texture_t* texture);
+	  const tpbrt_mat4_animated_t* ctm, tpbrt_texture_t* texture);
 	void tpbrt_free_texture(tpbrt_texture_t* texture);
 #pragma endregion
 
