@@ -511,56 +511,36 @@ extern "C" {
 	  const tpbrt_light_source_t* const light_source) {
 			if (light_source == TPBRT_NULL || lights_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (lights_list->lights == TPBRT_NULL) {
-				lights_list->lights = malloc(sizeof(tpbrt_light_source_t));
-					if (lights_list->lights == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count   = lights_list->lights_count + 1;
 
-				lights_list->lights[0]	  = *light_source;
-				lights_list->lights_count = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-		tpbrt_light_source_t* new_list = malloc(sizeof(tpbrt_light_source_t) * (lights_list->lights_count + 1));
+		tpbrt_light_source_t* new_list = realloc(lights_list->lights, sizeof(tpbrt_light_source_t) * new_count);
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			for (tpbrt_size_t i = 0; i < lights_list->lights_count; i++) { new_list[i] = lights_list->lights[i]; }
-		new_list[lights_list->lights_count++] = *light_source;
-		free(lights_list->lights);
-		lights_list->lights = new_list;
+		lights_list->lights							   = new_list;
+		lights_list->lights[lights_list->lights_count] = *light_source;
+		lights_list->lights_count					   = new_count;
 		return TPBRT_ERROR_NONE;
 	}
 
 	tpbrt_error_t tpbrt_lights_list_add_area_light(tpbrt_lights_list_t* const lights_list,
 	  tpbrt_area_light_handle_t* const handle, const tpbrt_area_light_t* const area_light) {
-			if (area_light == TPBRT_NULL || lights_list == TPBRT_NULL) {
-				*handle = TPBRT_AREA_LIGHT_HANDLE_INVALID;
+			if (area_light == TPBRT_NULL || lights_list == TPBRT_NULL || handle == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-			if (lights_list->area_lights == TPBRT_NULL) {
-				lights_list->area_lights = malloc(sizeof(tpbrt_area_light_t));
-					if (lights_list->area_lights == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = lights_list->area_lights_count + 1;
 
-				lights_list->area_lights[0]		= *area_light;
-				lights_list->area_lights_count	= 1;
-				lights_list->area_lights[0].idx = 0;
-				*handle							= 0;
-				return TPBRT_ERROR_NONE;
-			}
-
-		tpbrt_area_light_t* new_list = malloc(sizeof(tpbrt_area_light_t) * (lights_list->area_lights_count + 1));
+		tpbrt_area_light_t* new_list = realloc(lights_list->area_lights, sizeof(tpbrt_area_light_t) * new_count);
 			if (new_list == TPBRT_NULL) {
 				*handle = TPBRT_AREA_LIGHT_HANDLE_INVALID;
 				return TPBRT_ERROR_OUT_OF_MEMORY;
 			}
 
-			for (tpbrt_size_t i = 0; i < lights_list->area_lights_count; i++) { new_list[i] = lights_list->area_lights[i]; }
-		new_list[lights_list->area_lights_count]	 = *area_light;
-		new_list[lights_list->area_lights_count].idx = lights_list->area_lights_count;
-		*handle										 = lights_list->area_lights_count;
-		++lights_list->area_lights_count;
-		free(lights_list->area_lights);
-		lights_list->area_lights = new_list;
+		lights_list->area_lights									 = new_list;
+		lights_list->area_lights[lights_list->area_lights_count]	 = *area_light;
+		lights_list->area_lights[lights_list->area_lights_count].idx = lights_list->area_lights_count;
+		*handle														 = lights_list->area_lights_count;
+		lights_list->area_lights_count								 = new_count;
 		return TPBRT_ERROR_NONE;
 	}
 

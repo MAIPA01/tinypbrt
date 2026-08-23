@@ -283,17 +283,59 @@ extern "C" {
 	  tpbrt_scene_t* out_scene) {
 		memset(out_scene, 0, sizeof(tpbrt_scene_t));
 
-		tpbrt_init_options(&out_scene->options);
+		tpbrt_error_t err = tpbrt_init_options(&out_scene->options);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
 
-		tpbrt_init_textures_list(&out_scene->textures);
-		tpbrt_init_materials_list(&out_scene->materials);
-		tpbrt_init_lights_list(&out_scene->lights);
-		tpbrt_init_medias_list(&out_scene->medias);
-		tpbrt_init_objects_list(&out_scene->objects);
-		tpbrt_init_instances_list(&out_scene->instances);
+		err = tpbrt_init_textures_list(&out_scene->textures);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
 
-		tpbrt_create_default_film(&out_scene->film);
-		tpbrt_create_default_filter(&out_scene->filter);
+		err = tpbrt_init_materials_list(&out_scene->materials);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
+
+		err = tpbrt_init_lights_list(&out_scene->lights);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
+
+		err = tpbrt_init_medias_list(&out_scene->medias);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
+
+		err = tpbrt_init_objects_list(&out_scene->objects);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
+
+		err = tpbrt_init_instances_list(&out_scene->instances);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
+
+		err = tpbrt_create_default_film(&out_scene->film);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
+
+		err = tpbrt_create_default_filter(&out_scene->filter);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
 
 		out_scene->shapes.data		 = TPBRT_NULL;
 		out_scene->shapes.count		 = 0;
@@ -308,14 +350,22 @@ extern "C" {
 		DYN_ARRAY_PUSH(parsers, parsers_count, parsers_cap, root_node, tpbrt_parser_node_t);
 
 		tpbrt_state_t current_state;
-		tpbrt_init_state(&current_state);
+		err = tpbrt_init_state(&current_state);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
 
 		tpbrt_state_t* states_stack = TPBRT_NULL;
 		tpbrt_size_t states_count = 0, states_cap = 0;
 		tpbrt_bool_t is_world_block = TPBRT_FALSE;
 
 		tpbrt_coord_sys_map_t named_coord_systems;
-		tpbrt_init_coord_sys_map(&named_coord_systems);
+		err = tpbrt_init_coord_sys_map(&named_coord_systems);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
 
 		tpbrt_error_t last_error = TPBRT_ERROR_NONE;
 
@@ -323,7 +373,7 @@ extern "C" {
 				tpbrt_parser_node_t* current_node = &parsers[parsers_count - 1];
 				tpbrt_element_t element;
 
-				tpbrt_error_t err = tpbrt_parser_parse_next(&current_node->parser, &element);
+				err = tpbrt_parser_parse_next(&current_node->parser, &element);
 
 					if (err == TPBRT_ERROR_END_OF_FILE) {
 						parsers_count--;

@@ -918,31 +918,15 @@ extern "C" {
 	  const tpbrt_texture_t* const texture) {
 			if (texture == TPBRT_NULL || textures_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (textures_list->textures == TPBRT_NULL) {
-				textures_list->textures = malloc(sizeof(tpbrt_texture_t));
-					if (textures_list->textures == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = textures_list->count + 1;
 
-				textures_list->textures[0]	   = *texture;
-				textures_list->textures[0].idx = 0;
-				textures_list->count		   = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-			for (tpbrt_size_t i = 0; i < textures_list->count; i++) {
-					if (tpbrt_string_equals(&textures_list->textures[i].name, &texture->name)) {
-						return TPBRT_ERROR_DUPLICATE_TEXTURE_NAME;
-					}
-			}
-
-		tpbrt_texture_t* new_list = malloc(sizeof(tpbrt_texture_t) * (textures_list->count + 1));
+		tpbrt_texture_t* new_list	 = realloc(textures_list->textures, sizeof(tpbrt_texture_t) * new_count);
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			for (tpbrt_size_t i = 0; i < textures_list->count; i++) { new_list[i] = textures_list->textures[i]; }
-		new_list[textures_list->count]	   = *texture;
-		new_list[textures_list->count].idx = textures_list->count;
-		++textures_list->count;
-		free(textures_list->textures);
-		textures_list->textures = new_list;
+		textures_list->textures							  = new_list;
+		textures_list->textures[textures_list->count]	  = *texture;
+		textures_list->textures[textures_list->count].idx = new_count;
+		textures_list->count							  = new_count;
 		return TPBRT_ERROR_NONE;
 	}
 

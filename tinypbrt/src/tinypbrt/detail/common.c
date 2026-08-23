@@ -40,7 +40,7 @@ extern "C" {
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
 		const tpbrt_size_t n = min(len, MAX_BUFFER_SIZE - 1);
-		strncpy_s(buf, sizeof(tpbrt_size_t) * MAX_BUFFER_SIZE, token, n);
+		strncpy_s(buf, sizeof(tpbrt_char_t) * MAX_BUFFER_SIZE, token, n);
 		buf[n] = '\0';
 		tpbrt_char_t* end;
 		*out_val = strtof(buf, &end);

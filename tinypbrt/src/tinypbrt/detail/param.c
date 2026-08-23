@@ -80,7 +80,11 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_strings(const tpbrt_param_t* const param, tpbrt_string_array_t* const out_strings) {
 			if (param == TPBRT_NULL || out_strings == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_PARAM_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				out_strings->data  = TPBRT_NULL;
+				out_strings->count = 0;
+				return TPBRT_ERROR_INVALID_PARAM_TYPE;
+			}
 
 		tpbrt_size_t count		 = 0;
 		const tpbrt_char_t* curr = param->value.data;
@@ -98,7 +102,7 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-		out_strings->data = malloc(sizeof(tpbrt_string_t) * count);
+		out_strings->data = calloc(count, sizeof(tpbrt_string_t));
 			if (out_strings->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
 		curr			 = param->value.data;
@@ -792,28 +796,14 @@ extern "C" {
 	tpbrt_error_t tpbrt_params_list_add_param(tpbrt_params_list_t* const params_list, const tpbrt_param_t* const param) {
 			if (param == TPBRT_NULL || params_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (params_list->params == TPBRT_NULL) {
-				params_list->params = malloc(sizeof(tpbrt_param_t));
-					if (params_list->params == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = params_list->count + 1;
 
-				params_list->params[0] = *param;
-				params_list->count	   = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-			for (tpbrt_size_t i = 0; i < params_list->count; i++) {
-					if (tpbrt_string_equals(&params_list->params[i].name, &param->name)) {
-						return TPBRT_ERROR_DUPLICATE_PARAM_NAME;
-					}
-			}
-
-		tpbrt_param_t* new_list = malloc(sizeof(tpbrt_param_t) * (params_list->count + 1));
+		tpbrt_param_t* new_list		 = realloc(params_list->params, sizeof(tpbrt_param_t) * new_count);
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			for (tpbrt_size_t i = 0; i < params_list->count; i++) { new_list[i] = params_list->params[i]; }
-		new_list[params_list->count++] = *param;
-		free(params_list->params);
-		params_list->params = new_list;
+		params_list->params						= new_list;
+		params_list->params[params_list->count] = *param;
+		params_list->count						= new_count;
 		return TPBRT_ERROR_NONE;
 	}
 

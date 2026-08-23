@@ -585,33 +585,14 @@ extern "C" {
 	tpbrt_error_t tpbrt_medias_list_add_media(tpbrt_medias_list_t* const medias_list, const tpbrt_media_t* const media) {
 			if (media == TPBRT_NULL || medias_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (medias_list->medias == TPBRT_NULL) {
-				medias_list->medias = malloc(sizeof(tpbrt_media_t));
-					if (medias_list->medias == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = medias_list->count + 1;
 
-				medias_list->medias[0]	   = *media;
-				medias_list->medias[0].idx = 0;
-				medias_list->count		   = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (media->name.size != 0 && media->name.data != TPBRT_NULL) {
-					for (tpbrt_size_t i = 0; i < medias_list->count; i++) {
-							if (tpbrt_string_equals(&medias_list->medias[i].name, &media->name)) {
-								return TPBRT_ERROR_DUPLICATE_TEXTURE_NAME;
-							}
-					}
-			}
-
-		tpbrt_media_t* new_list = malloc(sizeof(tpbrt_media_t) * (medias_list->count + 1));
+		tpbrt_media_t* new_list		 = realloc(medias_list->medias, sizeof(tpbrt_media_t) * new_count);
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			for (tpbrt_size_t i = 0; i < medias_list->count; i++) { new_list[i] = medias_list->medias[i]; }
-		new_list[medias_list->count]	 = *media;
-		new_list[medias_list->count].idx = medias_list->count;
-		++medias_list->count;
-		free(medias_list->medias);
-		medias_list->medias = new_list;
+		medias_list->medias						= new_list;
+		medias_list->medias[medias_list->count] = *media;
+		medias_list->count						= new_count;
 		return TPBRT_ERROR_NONE;
 	}
 

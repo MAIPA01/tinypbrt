@@ -1736,40 +1736,19 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-			if (materials_list->materials == TPBRT_NULL) {
-				materials_list->materials = malloc(sizeof(tpbrt_material_t));
-					if (materials_list->materials == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = materials_list->count + 1;
 
-				materials_list->materials[0]	 = *material;
-				materials_list->materials[0].idx = 0;
-				materials_list->count			 = 1;
-
-				*handle							 = 0;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (material->name.size != 0 && material->name.data != TPBRT_NULL) {
-					for (tpbrt_size_t i = 0; i < materials_list->count; i++) {
-							if (tpbrt_string_equals(&materials_list->materials[i].name, &material->name)) {
-								*handle = ~(tpbrt_material_handle_t)0;
-								return TPBRT_ERROR_DUPLICATE_TEXTURE_NAME;
-							}
-					}
-			}
-
-		tpbrt_material_t* new_list = malloc(sizeof(tpbrt_material_t) * (materials_list->count + 1));
+		tpbrt_material_t* new_list	 = realloc(materials_list->materials, sizeof(tpbrt_material_t) * new_count);
 			if (new_list == TPBRT_NULL) {
-				*handle = ~(tpbrt_material_handle_t)0;
+				*handle = TPBRT_MATERIAL_HANDLE_INVALID;
 				return TPBRT_ERROR_OUT_OF_MEMORY;
 			}
 
-			for (tpbrt_size_t i = 0; i < materials_list->count; i++) { new_list[i] = materials_list->materials[i]; }
-		new_list[materials_list->count]		= *material;
-		new_list[materials_list->count].idx = materials_list->count;
-		*handle								= materials_list->count;
-		++materials_list->count;
-		free(materials_list->materials);
-		materials_list->materials = new_list;
+		materials_list->materials							 = new_list;
+		materials_list->materials[materials_list->count]	 = *material;
+		materials_list->materials[materials_list->count].idx = materials_list->count;
+		*handle												 = materials_list->count;
+		materials_list->count								 = new_count;
 		return TPBRT_ERROR_NONE;
 	}
 

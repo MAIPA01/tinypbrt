@@ -515,22 +515,14 @@ extern "C" {
 	tpbrt_error_t tpbrt_shape_array_add_shape(tpbrt_shape_array_t* const shape_array, const tpbrt_shape_t* const shape) {
 			if (shape_array == TPBRT_NULL || shape == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (shape_array->data == TPBRT_NULL) {
-				shape_array->data = malloc(sizeof(tpbrt_shape_t));
-					if (shape_array->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = shape_array->count + 1;
 
-				shape_array->data[0] = *shape;
-				shape_array->count	 = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-		tpbrt_shape_t* new_list = malloc(sizeof(tpbrt_shape_t) * (shape_array->count + 1));
+		tpbrt_shape_t* new_list		 = realloc(shape_array->data, sizeof(tpbrt_shape_t) * new_count);
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			for (tpbrt_size_t i = 0; i < shape_array->count; i++) { new_list[i] = shape_array->data[i]; }
-		new_list[shape_array->count++] = *shape;
-		free(shape_array->data);
-		shape_array->data = new_list;
+		shape_array->data					  = new_list;
+		shape_array->data[shape_array->count] = *shape;
+		shape_array->count					  = new_count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -596,33 +588,15 @@ extern "C" {
 	tpbrt_error_t tpbrt_objects_list_add_object(tpbrt_objects_list_t* const objects_list, const tpbrt_object_t* const object) {
 			if (object == TPBRT_NULL || objects_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (objects_list->objects == TPBRT_NULL) {
-				objects_list->objects = malloc(sizeof(tpbrt_object_t));
-					if (objects_list->objects == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = objects_list->count + 1;
 
-				objects_list->objects[0]	 = *object;
-				objects_list->objects[0].idx = 0;
-				objects_list->count			 = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-			if (object->name.size != 0) {
-					for (tpbrt_size_t i = 0; i < objects_list->count; i++) {
-							if (tpbrt_string_equals(&objects_list->objects[i].name, &object->name)) {
-								return TPBRT_ERROR_DUPLICATE_OBJECT_NAME;
-							}
-					}
-			}
-
-		tpbrt_object_t* new_list = malloc(sizeof(tpbrt_object_t) * (objects_list->count + 1));
+		tpbrt_object_t* new_list	 = realloc(objects_list->objects, sizeof(tpbrt_object_t) * new_count);
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			for (tpbrt_size_t i = 0; i < objects_list->count; i++) { new_list[i] = objects_list->objects[i]; }
-		new_list[objects_list->count]	  = *object;
-		new_list[objects_list->count].idx = objects_list->count;
-		++objects_list->count;
-		free(objects_list->objects);
-		objects_list->objects = new_list;
+		objects_list->objects						   = new_list;
+		objects_list->objects[objects_list->count]	   = *object;
+		objects_list->objects[objects_list->count].idx = objects_list->count;
+		objects_list->count							   = new_count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -725,22 +699,14 @@ extern "C" {
 	  const tpbrt_instance_t* const instance) {
 			if (instances_list == TPBRT_NULL || instance == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (instances_list->instances == TPBRT_NULL) {
-				instances_list->instances = malloc(sizeof(tpbrt_instance_t));
-					if (instances_list->instances == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		const tpbrt_size_t new_count = instances_list->count + 1;
 
-				instances_list->instances[0] = *instance;
-				instances_list->count		 = 1;
-				return TPBRT_ERROR_NONE;
-			}
-
-		tpbrt_instance_t* new_list = malloc(sizeof(tpbrt_object_t) * (instances_list->count + 1));
+		tpbrt_instance_t* new_list	 = realloc(instances_list->instances, sizeof(tpbrt_instance_t) * new_count);
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-			for (tpbrt_size_t i = 0; i < instances_list->count; i++) { new_list[i] = instances_list->instances[i]; }
-		new_list[instances_list->count++] = *instance;
-		free(instances_list->instances);
-		instances_list->instances = new_list;
+		instances_list->instances						 = new_list;
+		instances_list->instances[instances_list->count] = *instance;
+		instances_list->count							 = new_count;
 		return TPBRT_ERROR_NONE;
 	}
 

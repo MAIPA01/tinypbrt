@@ -172,6 +172,7 @@ extern "C" {
 			case TPBRT_DIRECTIVE_LIGHT_SOURCE:
 			case TPBRT_DIRECTIVE_AREA_LIGHT_SOURCE:
 			case TPBRT_DIRECTIVE_MATERIAL:
+			case TPBRT_DIRECTIVE_PIXEL_FILTER:
 			case TPBRT_DIRECTIVE_SHAPE:
 			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:
 				err = read_str(parser, &out_element->as.generic_with_params.type_name);
@@ -183,7 +184,6 @@ extern "C" {
 
 			case TPBRT_DIRECTIVE_COORDINATE_SYSTEM:
 			case TPBRT_DIRECTIVE_COORD_SYS_TRANSFORM:
-			case TPBRT_DIRECTIVE_PIXEL_FILTER:
 			case TPBRT_DIRECTIVE_NAMED_MATERIAL:
 			case TPBRT_DIRECTIVE_OBJECT_BEGIN:
 			case TPBRT_DIRECTIVE_OBJECT_INSTANCE:	  return read_str(parser, &out_element->as.named_entity.name);
