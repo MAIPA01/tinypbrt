@@ -43,20 +43,25 @@ extern "C" {
 	tpbrt_error_t tpbrt_create_default_film(tpbrt_film_t* film) {
 			if (film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		film->type				  = TPBRT_FILM_TYPE_RGB;
-		film->x_resolution		  = TPBRT_FILM_X_RES_DEFAULT;
-		film->y_resolution		  = TPBRT_FILM_Y_RES_DEFAULT;
-		film->crop_window[0]	  = 0.0f;
-		film->crop_window[1]	  = 1.0f;
-		film->crop_window[2]	  = 0.0f;
-		film->crop_window[3]	  = 1.0f;
-		film->pixel_bounds[0]	  = 0;
-		film->pixel_bounds[1]	  = film->x_resolution;
-		film->pixel_bounds[2]	  = 0;
-		film->pixel_bounds[3]	  = film->y_resolution;
-		film->diagonal			  = TPBRT_FILM_DIAGONAL_DEFAULT;
-		film->file_name.data	  = TPBRT_FILM_FILE_NAME_DEFAULT.data;
-		film->file_name.size	  = TPBRT_FILM_FILE_NAME_DEFAULT.size;
+		film->type				= TPBRT_FILM_TYPE_RGB;
+		film->x_resolution		= TPBRT_FILM_X_RES_DEFAULT;
+		film->y_resolution		= TPBRT_FILM_Y_RES_DEFAULT;
+		film->crop_window[0]	= 0.0f;
+		film->crop_window[1]	= 1.0f;
+		film->crop_window[2]	= 0.0f;
+		film->crop_window[3]	= 1.0f;
+		film->pixel_bounds[0]	= 0;
+		film->pixel_bounds[1]	= film->x_resolution;
+		film->pixel_bounds[2]	= 0;
+		film->pixel_bounds[3]	= film->y_resolution;
+		film->diagonal			= TPBRT_FILM_DIAGONAL_DEFAULT;
+
+		const tpbrt_error_t err = tpbrt_copy_string(&film->file_name, &TPBRT_FILM_FILE_NAME_DEFAULT);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_film(film);
+				return err;
+			}
+
 		film->save_fp16			  = TPBRT_FILM_SAVE_FP16_DEFAULT;
 		film->iso				  = TPBRT_FILM_ISO_DEFAULT;
 		film->white_balance		  = TPBRT_FILM_WHITE_BALANCE_DEFAULT;
@@ -276,7 +281,13 @@ extern "C" {
 				tpbrt_free_film(film);
 				return err;
 			}
-			if (err == TPBRT_ERROR_NOT_FOUND) { tpbrt_copy_string(&film->file_name, &TPBRT_FILM_FILE_NAME_DEFAULT); }
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				err = tpbrt_copy_string(&film->file_name, &TPBRT_FILM_FILE_NAME_DEFAULT);
+					if (err != TPBRT_ERROR_NONE) {
+						tpbrt_free_film(film);
+						return err;
+					}
+			}
 
 		err = tpbrt_params_list_get_bool(params, &TPBRT_FILM_SAVE_FP16_STR, TPBRT_FILM_SAVE_FP16_DEFAULT, &film->save_fp16);
 			if (err != TPBRT_ERROR_NONE) {
