@@ -1,2 +1,2 @@
 # tinypbrt
-Tiny but powerful pbrt loader
+Tiny but powerful pbrt-v4 file loader
