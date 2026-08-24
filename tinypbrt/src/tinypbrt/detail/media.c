@@ -529,6 +529,7 @@ extern "C" {
 
 					tpbrt_free_spectrum(&params->sigma_a);
 					tpbrt_free_spectrum(&params->sigma_s);
+					break;
 				}
 				case TPBRT_MEDIA_TYPE_HOMOGENEOUS: {
 					tpbrt_media_homogeneous_params_t* const params = &media->as.homogeneous;
@@ -538,6 +539,7 @@ extern "C" {
 					tpbrt_free_spectrum(&params->sigma_s);
 
 					tpbrt_free_string(&params->preset);
+					break;
 				}
 				case TPBRT_MEDIA_TYPE_NANO_VDB: {
 					tpbrt_media_nano_vdb_params_t* const params = &media->as.nano_vdb;
@@ -546,6 +548,7 @@ extern "C" {
 					tpbrt_free_spectrum(&params->sigma_s);
 
 					tpbrt_free_string(&params->file_name);
+					break;
 				}
 				case TPBRT_MEDIA_TYPE_RGB_GRID: {
 					tpbrt_media_rgb_grid_params_t* const params = &media->as.rgb_grid;
@@ -553,6 +556,7 @@ extern "C" {
 					tpbrt_free_rgb_array(&params->Le);
 					tpbrt_free_rgb_array(&params->sigma_a);
 					tpbrt_free_rgb_array(&params->sigma_s);
+					break;
 				}
 				case TPBRT_MEDIA_TYPE_UNIFORM_GRID: {
 					tpbrt_media_uniform_grid_params_t* const params = &media->as.uniform_grid;
@@ -567,6 +571,7 @@ extern "C" {
 					tpbrt_free_spectrum(&params->sigma_s);
 
 					tpbrt_free_float_array(&params->temperature);
+					break;
 				}
 			default: break;
 			}

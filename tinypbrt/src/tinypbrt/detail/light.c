@@ -85,16 +85,20 @@ extern "C" {
 			switch (color_space) {
 				case TPBRT_COLOR_SPACE_ACES_2065_1: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_ILLUM_ACES_D60;
+					break;
 				}
 				case TPBRT_COLOR_SPACE_REC_2020: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_D65;
+					break;
 				}
 				case TPBRT_COLOR_SPACE_DCI_P3: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_D65;
+					break;
 				}
 			default:
 				case TPBRT_COLOR_SPACE_SRGB: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_D65;
+					break;
 				}
 			}
 
@@ -435,16 +439,20 @@ extern "C" {
 			switch (color_space) {
 				case TPBRT_COLOR_SPACE_ACES_2065_1: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_ILLUM_ACES_D60;
+					break;
 				}
 				case TPBRT_COLOR_SPACE_REC_2020: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_D65;
+					break;
 				}
 				case TPBRT_COLOR_SPACE_DCI_P3: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_D65;
+					break;
 				}
 			default:
 				case TPBRT_COLOR_SPACE_SRGB: {
 					current_color_space_illuminant = TPBRT_SPECTRUM_BUILTIN_STD_ILLUM_D65;
+					break;
 				}
 			}
 

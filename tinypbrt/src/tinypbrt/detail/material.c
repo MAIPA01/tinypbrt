@@ -1111,42 +1111,49 @@ extern "C" {
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_COATED_CONDUCTOR: {
 					tpbrt_material_coated_conductor_params_t* params = &material->as.coated_conductor;
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_CONDUCTOR: {
 					tpbrt_material_conductor_params_t* params = &material->as.conductor;
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIELECTRIC: {
 					tpbrt_material_dielectric_params_t* params = &material->as.dielectric;
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIFFUSE: {
 					tpbrt_material_diffuse_params_t* params = &material->as.diffuse;
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIFFUSE_TRANSMISSION: {
 					tpbrt_material_diffuse_transmission_params_t* params = &material->as.diffuse_transmission;
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_HAIR: {
 					tpbrt_material_hair_params_t* params = &material->as.hair;
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_MEASURED: {
 					tpbrt_material_measured_params_t* params = &material->as.measured;
@@ -1155,6 +1162,7 @@ extern "C" {
 						}
 
 					tpbrt_free_string(&params->file_name);
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_SUBSURFACE: {
 					tpbrt_material_subsurface_params_t* params = &material->as.subsurface;
@@ -1163,12 +1171,14 @@ extern "C" {
 						}
 
 					tpbrt_free_string(&params->name);
+					break;
 				}
 				case TPBRT_MATERIAL_TYPE_THIN_DIELECTRIC: {
 					tpbrt_material_thin_dielectric_params_t* params = &material->as.thin_dielectric;
 						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
 							tpbrt_free_string(&params->bump_map.as.normal_map);
 						}
+					break;
 				}
 			default: break;
 			}

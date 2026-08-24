@@ -266,9 +266,11 @@ extern "C" {
 				}
 				case TPBRT_TEXTURE_MAPPING_SPHERICAL: {
 					texture->mapping_as.spherical.transform = *ctm;
+					break;
 				}
 				case TPBRT_TEXTURE_MAPPING_CYLINDRICAL: {
 					texture->mapping_as.cylindrical.transform = *ctm;
+					break;
 				}
 				case TPBRT_TEXTURE_MAPPING_PLANAR: {
 					static const tpbrt_string_t U_DELTA_STR = TPBRT_STRING("udelta");
@@ -751,9 +753,11 @@ extern "C" {
 			switch (texture->tex_class) {
 				case TPBRT_TEXTURE_CLASS_IMAGE_MAP: {
 					tpbrt_free_string(&texture->as.image_map.file_name);
+					break;
 				}
 				case TPBRT_TEXTURE_CLASS_PTEX: {
 					tpbrt_free_string(&texture->as.ptex.file_name);
+					break;
 				}
 			default: break;
 			}

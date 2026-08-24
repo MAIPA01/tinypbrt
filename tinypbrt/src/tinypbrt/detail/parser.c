@@ -262,6 +262,7 @@ extern "C" {
 			case TPBRT_DIRECTIVE_ACCELERATOR:
 			case TPBRT_DIRECTIVE_LIGHT_SOURCE:
 			case TPBRT_DIRECTIVE_AREA_LIGHT_SOURCE:
+			case TPBRT_DIRECTIVE_PIXEL_FILTER:
 			case TPBRT_DIRECTIVE_MATERIAL:
 			case TPBRT_DIRECTIVE_SHAPE:
 			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:	  tpbrt_free_params_list(&element->as.generic_with_params.params); break;

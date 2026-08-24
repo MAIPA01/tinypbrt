@@ -161,9 +161,11 @@ extern "C" {
 			switch (spectrum->type) {
 				case TPBRT_SPECTRUM_TYPE_WAVELENGTH: {
 					tpbrt_free_wavelength_array(&spectrum->as.wavelengths);
+					break;
 				}
 				case TPBRT_SPECTRUM_TYPE_FILE: {
 					tpbrt_free_string(&spectrum->as.file_name);
+					break;
 				}
 				default: {
 					break;

@@ -405,12 +405,11 @@ extern "C" {
 							return err;
 						}
 
-					err = tpbrt_params_list_get_texture(params, &DISPLACEMENT_STR, textures,
-										  &shape_params->displacement);
-					if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-						tpbrt_free_shape(shape);
-						return err;
-					}
+					err = tpbrt_params_list_get_texture(params, &DISPLACEMENT_STR, textures, &shape_params->displacement);
+						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
+							tpbrt_free_shape(shape);
+							return err;
+						}
 
 					err = tpbrt_params_list_get_float(params, &EDGE_LENGTH_STR, 1.0f, &shape_params->edge_length);
 						if (err != TPBRT_ERROR_NONE) {
@@ -462,17 +461,20 @@ extern "C" {
 					tpbrt_free_vec3_array(&params->N);
 					tpbrt_free_vec3_array(&params->S);
 					tpbrt_free_vec2_array(&params->uv);
+					break;
 				}
 				case TPBRT_SHAPE_TYPE_PLY_MESH: {
 					tpbrt_shape_ply_mesh_params_t* const params = &shape->as.ply_mesh;
 
 					tpbrt_free_string(&params->file_name);
+					break;
 				}
 				case TPBRT_SHAPE_TYPE_LOOP_SUBDIV: {
 					tpbrt_shape_loop_subdiv_params_t* const params = &shape->as.loop_subdiv;
 
 					tpbrt_free_uint_array(&params->indices);
 					tpbrt_free_vec3_array(&params->P);
+					break;
 				}
 			default: break;
 			}
