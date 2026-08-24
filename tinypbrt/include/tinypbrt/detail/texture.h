@@ -36,19 +36,21 @@ extern "C" {
 	} tpbrt_texture_class_t;
 
 	typedef enum tpbrt_texture_handle_value_type_t : uint8_t {
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE	 = 0,
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT	 = 1,
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM = 2,
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE	 = 3,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE			 = 0,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT			 = 1,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_RGB				 = 2,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM_BUILTIN = 3,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE			 = 4,
 	} tpbrt_texture_handle_value_type_t;
 
 	typedef struct tpbrt_texture_handle_t {
 		tpbrt_texture_handle_value_type_t value_type;
 
 		union {
-			tpbrt_size_t tex_idx;
-			tpbrt_float_t f32;
-			tpbrt_spectrum_t spectrum;
+			tpbrt_float_t float_value;
+			tpbrt_rgb_t rgb;
+			tpbrt_spectrum_builtin_t spectrum_builtin;
+			tpbrt_size_t texture_idx;
 		} as;
 	} tpbrt_texture_handle_t;
 

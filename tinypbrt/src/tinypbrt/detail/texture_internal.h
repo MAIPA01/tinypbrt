@@ -24,12 +24,9 @@ extern "C" {
 	tpbrt_error_t tpbrt_textures_list_get_texture_by_name(const tpbrt_textures_list_t* textures_list,
 	  const tpbrt_string_t* texture_name, const tpbrt_texture_t** texture);
 	tpbrt_error_t tpbrt_textures_list_get_texture_handle(const tpbrt_textures_list_t* textures_list,
-	  const tpbrt_string_t* texture_name, tpbrt_float_t default_val, tpbrt_texture_handle_t* texture_handle);
-	tpbrt_error_t tpbrt_textures_list_get_opt_texture_handle_of_type(const tpbrt_textures_list_t* textures_list,
+	  const tpbrt_string_t* texture_name, tpbrt_texture_handle_t* texture_handle);
+	tpbrt_error_t tpbrt_textures_list_get_texture_of_type_handle(const tpbrt_textures_list_t* textures_list,
 	  const tpbrt_string_t* texture_name, tpbrt_texture_type_t type, tpbrt_texture_handle_t* texture_handle);
-	tpbrt_error_t tpbrt_textures_list_get_texture_handle_of_type(const tpbrt_textures_list_t* textures_list,
-	  const tpbrt_string_t* texture_name, tpbrt_texture_type_t type, tpbrt_float_t default_val,
-	  tpbrt_texture_handle_t* texture_handle);
 	void tpbrt_free_textures_list(tpbrt_textures_list_t* textures_list);
 
 	tpbrt_size_t tpbrt_textures_list_size(const tpbrt_textures_list_t* textures_list);

@@ -105,20 +105,9 @@ extern "C" {
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_conductor_params_t;
 
-	typedef enum tpbrt_material_dielectric_eta_type_t : uint8_t {
-		TPBRT_MATERIAL_DIELECTRIC_ETA_TYPE_SINGLE_INDEX		= 0,
-		TPBRT_MATERIAL_DIELECTRIC_ETA_TYPE_WAVELENGTH_INDEX = 1,
-	} tpbrt_material_dielectric_eta_type_t;
-
 	typedef struct tpbrt_material_dielectric_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
-		tpbrt_material_dielectric_eta_type_t eta_type;
-
-		union {
-			tpbrt_texture_handle_t single;
-			tpbrt_texture_handle_t wavelength;
-		} eta_as;
-
+		tpbrt_texture_handle_t eta;
 		tpbrt_material_roughness_params_t roughness_params;
 	} tpbrt_material_dielectric_params_t;
 

@@ -102,29 +102,16 @@ extern "C" {
 
 		static const tpbrt_string_t ALPHA_STR = TPBRT_STRING("alpha");
 
-		tpbrt_error_t err					  = tpbrt_params_list_get_float(params, &ALPHA_STR, 1.0f, &shape->alpha.as.f32);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_INVALID_OBJECT_TYPE) {
+		tpbrt_error_t err					  = tpbrt_params_list_get_texture(params, &ALPHA_STR, textures, &shape->alpha);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
 				tpbrt_free_shape(shape);
 				return err;
 			}
 
-		tpbrt_string_t temp_string;
-			if (err == TPBRT_ERROR_INVALID_OBJECT_TYPE) {
-				err = tpbrt_params_list_get_string(params, &ALPHA_STR, &temp_string);
-					if (err != TPBRT_ERROR_NONE) {
-						tpbrt_free_shape(shape);
-						return err;
-					}
-
-				err = tpbrt_textures_list_get_opt_texture_handle_of_type(textures, &temp_string, TPBRT_TEXTURE_TYPE_FLOAT,
-				  &shape->alpha);
-				tpbrt_free_string(&temp_string);
-					if (err != TPBRT_ERROR_NONE) {
-						tpbrt_free_shape(shape);
-						return err;
-					}
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				shape->alpha.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
+				shape->alpha.as.float_value = 1.0f;
 			}
-			else { shape->alpha.value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT; }
 
 		err = tpbrt_shape_type_from_string(type_str, &shape->type);
 			if (err != TPBRT_ERROR_NONE) {
@@ -132,6 +119,7 @@ extern "C" {
 				return err;
 			}
 
+		tpbrt_string_t temp_string;
 			switch (shape->type) {
 			default:
 				case TPBRT_SHAPE_TYPE_BILINEAR_MESH: {
@@ -417,23 +405,12 @@ extern "C" {
 							return err;
 						}
 
-					err = tpbrt_params_list_get_string(params, &DISPLACEMENT_STR, &temp_string);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_shape(shape);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							shape_params->displacement.value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
-						}
-						else {
-							err = tpbrt_textures_list_get_opt_texture_handle_of_type(textures, &temp_string,
-							  TPBRT_TEXTURE_TYPE_FLOAT, &shape_params->displacement);
-								if (err != TPBRT_ERROR_NONE) {
-									tpbrt_free_shape(shape);
-									return err;
-								}
-						}
+					err = tpbrt_params_list_get_texture(params, &DISPLACEMENT_STR, textures,
+										  &shape_params->displacement);
+					if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
+						tpbrt_free_shape(shape);
+						return err;
+					}
 
 					err = tpbrt_params_list_get_float(params, &EDGE_LENGTH_STR, 1.0f, &shape_params->edge_length);
 						if (err != TPBRT_ERROR_NONE) {

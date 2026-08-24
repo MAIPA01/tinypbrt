@@ -5,6 +5,7 @@
 #include <tinypbrt/detail/color_internal.h>
 #include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/math_internal.h>
+#include <tinypbrt/detail/texture_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -775,6 +776,106 @@ extern "C" {
 		return tpbrt_param_as_normal3s(param, out_normals);
 	}
 
+	tpbrt_error_t tpbrt_param_as_texture(const tpbrt_param_t* const param, const tpbrt_textures_list_t* const textures_list,
+	  tpbrt_texture_handle_t* const out_texture) {
+			if (param == TPBRT_NULL || textures_list == TPBRT_NULL || out_texture == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+
+		tpbrt_error_t err = TPBRT_ERROR_NONE;
+			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_SINGLE || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				// float
+				err = tpbrt_param_as_float(param, &out_texture->as.float_value);
+					if (err == TPBRT_ERROR_NONE) {
+						out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
+						return TPBRT_ERROR_NONE;
+					}
+			}
+
+			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_STRING || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				// texture | spectrum builtin
+				tpbrt_string_t temp_string;
+				err = tpbrt_param_as_string(param, &temp_string);
+					if (err == TPBRT_ERROR_NONE) {
+						// spectrum builtin
+						err = tpbrt_spectrum_builtin_from_string(&temp_string, &out_texture->as.spectrum_builtin);
+							if (err == TPBRT_ERROR_NONE) {
+								tpbrt_free_string(&temp_string);
+								out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM_BUILTIN;
+								return TPBRT_ERROR_NONE;
+							}
+
+						// texture
+						err = tpbrt_textures_list_get_texture_handle(textures_list, &temp_string, out_texture);
+						tpbrt_free_string(&temp_string);
+						return err;
+					}
+			}
+
+			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				// rgb
+				err = tpbrt_param_as_rgb(param, &out_texture->as.rgb);
+					if (err == TPBRT_ERROR_NONE) {
+						out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_RGB;
+						return TPBRT_ERROR_NONE;
+					}
+			}
+
+		out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
+		return err;
+	}
+
+	tpbrt_error_t tpbrt_param_as_texture_of_type(const tpbrt_param_t* const param,
+	  const tpbrt_textures_list_t* const textures_list, const tpbrt_texture_type_t texture_type,
+	  tpbrt_texture_handle_t* out_texture) {
+			if (param == TPBRT_NULL || textures_list == TPBRT_NULL || out_texture == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+
+		tpbrt_error_t err = TPBRT_ERROR_NONE;
+			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_SINGLE || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				// float
+				err = tpbrt_param_as_float(param, &out_texture->as.float_value);
+					if (err == TPBRT_ERROR_NONE) {
+						out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
+						return TPBRT_ERROR_NONE;
+					}
+			}
+
+			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_STRING || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				// texture | spectrum builtin
+				tpbrt_string_t temp_string;
+				err = tpbrt_param_as_string(param, &temp_string);
+					if (err == TPBRT_ERROR_NONE) {
+						// spectrum builtin
+						err = tpbrt_spectrum_builtin_from_string(&temp_string, &out_texture->as.spectrum_builtin);
+							if (err == TPBRT_ERROR_NONE) {
+								tpbrt_free_string(&temp_string);
+								out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM_BUILTIN;
+								return TPBRT_ERROR_NONE;
+							}
+
+						// texture
+						err =
+						  tpbrt_textures_list_get_texture_of_type_handle(textures_list, &temp_string, texture_type, out_texture);
+						tpbrt_free_string(&temp_string);
+						return err;
+					}
+			}
+
+			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				// rgb
+				err = tpbrt_param_as_rgb(param, &out_texture->as.rgb);
+					if (err == TPBRT_ERROR_NONE) {
+						out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_RGB;
+						return TPBRT_ERROR_NONE;
+					}
+			}
+
+		out_texture->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
+		return err;
+	}
+
 #pragma endregion
 
 #pragma region PARAMS_LIST
@@ -1217,6 +1318,42 @@ extern "C" {
 	tpbrt_error_t tpbrt_params_list_get_normals(const tpbrt_params_list_t* const params_list,
 	  const tpbrt_string_t* const param_name, tpbrt_normal_array_t* const out_vals) {
 		return tpbrt_params_list_get_normal3s(params_list, param_name, out_vals);
+	}
+
+	tpbrt_error_t tpbrt_params_list_get_texture(const tpbrt_params_list_t* const params_list,
+	  const tpbrt_string_t* const param_name, const tpbrt_textures_list_t* const textures_list,
+	  tpbrt_texture_handle_t* const out_val) {
+			if (params_list == TPBRT_NULL || param_name == TPBRT_NULL || out_val == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+
+		const tpbrt_param_t* param;
+		const tpbrt_error_t err = tpbrt_params_list_get_param_const(params_list, param_name, &param);
+
+			if (err != TPBRT_ERROR_NONE) {
+				out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
+				return err;
+			}
+
+		return tpbrt_param_as_texture(param, textures_list, out_val);
+	}
+
+	tpbrt_error_t tpbrt_params_list_get_texture_of_type(const tpbrt_params_list_t* const params_list,
+	  const tpbrt_string_t* const param_name, const tpbrt_textures_list_t* const textures_list,
+	  const tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* const out_val) {
+			if (params_list == TPBRT_NULL || param_name == TPBRT_NULL || out_val == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+
+		const tpbrt_param_t* param;
+		const tpbrt_error_t err = tpbrt_params_list_get_param_const(params_list, param_name, &param);
+
+			if (err != TPBRT_ERROR_NONE) {
+				out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
+				return err;
+			}
+
+		return tpbrt_param_as_texture_of_type(param, textures_list, texture_type, out_val);
 	}
 
 #pragma endregion

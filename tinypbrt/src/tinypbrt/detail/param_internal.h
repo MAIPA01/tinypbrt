@@ -5,6 +5,7 @@
 #include <tinypbrt/detail/color.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/math.h>
+#include <tinypbrt/detail/texture.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,6 +87,11 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_points(const tpbrt_param_t* param, tpbrt_point_array_t* out_points);
 	tpbrt_error_t tpbrt_param_as_normal3s(const tpbrt_param_t* param, tpbrt_normal3_array_t* out_normal3s);
 	tpbrt_error_t tpbrt_param_as_normals(const tpbrt_param_t* param, tpbrt_normal_array_t* out_normals);
+
+	tpbrt_error_t tpbrt_param_as_texture(const tpbrt_param_t* param, const tpbrt_textures_list_t* textures_list,
+	  tpbrt_texture_handle_t* out_texture);
+	tpbrt_error_t tpbrt_param_as_texture_of_type(const tpbrt_param_t* param, const tpbrt_textures_list_t* textures_list,
+	  tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* out_texture);
 #pragma endregion
 
 #pragma region PARAMS_LIST
@@ -174,6 +180,11 @@ extern "C" {
 	  tpbrt_normal3_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_normals(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
 	  tpbrt_normal_array_t* out_vals);
+
+	tpbrt_error_t tpbrt_params_list_get_texture(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	  const tpbrt_textures_list_t* textures_list, tpbrt_texture_handle_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_texture_of_type(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	  const tpbrt_textures_list_t* textures_list, tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* out_val);
 #pragma endregion
 
 #ifdef __cplusplus
