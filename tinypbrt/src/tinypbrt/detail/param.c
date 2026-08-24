@@ -104,9 +104,10 @@ extern "C" {
 
 		out_strings->data = calloc(count, sizeof(tpbrt_string_t));
 			if (out_strings->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_strings->count = count;
 
-		curr			 = param->value.data;
-		tpbrt_size_t idx = 0;
+		curr			   = param->value.data;
+		tpbrt_size_t idx   = 0;
 			while ((curr = tpbrt_next_token(curr, end, &t_len)) != TPBRT_NULL) {
 				tpbrt_string_t temp;
 					if (!tpbrt_parse_string_token(curr, t_len, &temp)) {
@@ -118,8 +119,6 @@ extern "C" {
 				++idx;
 				curr += t_len;
 			}
-
-		out_strings->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -176,9 +175,10 @@ extern "C" {
 
 		out_floats->data = malloc(sizeof(tpbrt_float_t) * count);
 			if (out_floats->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_floats->count = count;
 
-		curr			 = param->value.data;
-		tpbrt_size_t idx = 0;
+		curr			  = param->value.data;
+		tpbrt_size_t idx  = 0;
 			while ((curr = tpbrt_next_token(curr, end, &t_len)) != TPBRT_NULL) {
 					if (!tpbrt_parse_float_token(curr, t_len, &out_floats->data[idx])) {
 						tpbrt_free_float_array(out_floats);
@@ -187,8 +187,6 @@ extern "C" {
 				++idx;
 				curr += t_len;
 			}
-
-		out_floats->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -215,6 +213,7 @@ extern "C" {
 
 		out_ints->data = malloc(sizeof(tpbrt_int_t) * count);
 			if (out_ints->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_ints->count	 = count;
 
 		curr			 = param->value.data;
 		tpbrt_size_t idx = 0;
@@ -226,8 +225,6 @@ extern "C" {
 				++idx;
 				curr += t_len;
 			}
-
-		out_ints->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -254,6 +251,7 @@ extern "C" {
 
 		out_uints->data = malloc(sizeof(tpbrt_int_t) * count);
 			if (out_uints->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_uints->count = count;
 
 		curr			 = param->value.data;
 		tpbrt_size_t idx = 0;
@@ -265,8 +263,6 @@ extern "C" {
 				++idx;
 				curr += t_len;
 			}
-
-		out_uints->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -411,6 +407,7 @@ extern "C" {
 
 		out_rgbs->data = malloc(sizeof(tpbrt_rgb_t) * count);
 			if (out_rgbs->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_rgbs->count	 = count;
 
 		curr			 = param->value.data;
 		tpbrt_size_t idx = 0;
@@ -437,8 +434,6 @@ extern "C" {
 
 				++idx;
 			}
-
-		out_rgbs->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -499,9 +494,10 @@ extern "C" {
 
 		out_wavelengths->data = malloc(sizeof(tpbrt_wavelength_t) * count);
 			if (out_wavelengths->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_wavelengths->count = count;
 
-		curr			 = param->value.data;
-		tpbrt_size_t idx = 0;
+		curr				   = param->value.data;
+		tpbrt_size_t idx	   = 0;
 			while ((curr = tpbrt_next_token(curr, end, &t_len)) != TPBRT_NULL) {
 					if (!tpbrt_parse_uint_token(curr, t_len, &out_wavelengths->data[idx].wavelength)) {
 						tpbrt_free_wavelength_array(out_wavelengths);
@@ -518,8 +514,6 @@ extern "C" {
 
 				++idx;
 			}
-
-		out_wavelengths->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -625,6 +619,7 @@ extern "C" {
 
 		out_vec2s->data = malloc(sizeof(tpbrt_vec2_t) * count);
 			if (out_vec2s->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_vec2s->count = count;
 
 		curr			 = param->value.data;
 		tpbrt_size_t idx = 0;
@@ -644,8 +639,6 @@ extern "C" {
 
 				++idx;
 			}
-
-		out_vec2s->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -730,6 +723,7 @@ extern "C" {
 
 		out_vec3s->data = malloc(sizeof(tpbrt_vec3_t) * count);
 			if (out_vec3s->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		out_vec3s->count = count;
 
 		curr			 = param->value.data;
 		tpbrt_size_t idx = 0;
@@ -756,8 +750,6 @@ extern "C" {
 
 				++idx;
 			}
-
-		out_vec3s->count = count;
 		return TPBRT_ERROR_NONE;
 	}
 
