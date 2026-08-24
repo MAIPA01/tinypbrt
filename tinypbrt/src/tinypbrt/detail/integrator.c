@@ -65,6 +65,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(integrator, 0, sizeof(tpbrt_integrator_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		tpbrt_error_t err = tpbrt_integrator_type_from_string(type_str, &integrator->type);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 

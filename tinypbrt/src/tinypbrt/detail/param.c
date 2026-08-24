@@ -50,6 +50,8 @@ extern "C" {
 	  const tpbrt_string_t* const value_str, tpbrt_param_t* const param) {
 			if (param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
+			if (memset(param, 0, sizeof(tpbrt_param_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 			// declaration -> "type name"
 			if (declaration == TPBRT_NULL || declaration->data == TPBRT_NULL || declaration->size == 0) {
 				return TPBRT_ERROR_INVALID_PARAM_TYPE;

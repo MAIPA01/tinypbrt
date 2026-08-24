@@ -58,6 +58,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(accelerator, 0, sizeof(tpbrt_accelerator_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		tpbrt_error_t err = tpbrt_accelerator_type_from_string(type_str, &accelerator->type);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 

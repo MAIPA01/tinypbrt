@@ -191,6 +191,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_init_coord_sys_map(tpbrt_coord_sys_map_t* const map) {
+			if (map == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		map->entries  = TPBRT_NULL;
 		map->count	  = 0;
 		map->capacity = 0;
@@ -219,6 +221,8 @@ extern "C" {
 	}
 
 	void tpbrt_free_coord_sys_map(const tpbrt_coord_sys_map_t* const map) {
+			if (map == TPBRT_NULL) { return; }
+
 			if (map->entries) { free(map->entries); }
 	}
 
@@ -346,7 +350,11 @@ extern "C" {
 		tpbrt_parser_node_t root_node;
 		root_node.file_data.data	   = TPBRT_NULL;
 		const tpbrt_string_t file_view = { .data = (tpbrt_char_t*)data, .size = strlen(data) };
-		tpbrt_parser_init(&root_node.parser, &file_view);
+		err							   = tpbrt_parser_init(&root_node.parser, &file_view);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_free_scene(out_scene);
+				return err;
+			}
 		DYN_ARRAY_PUSH(parsers, parsers_count, parsers_cap, root_node, tpbrt_parser_node_t);
 
 		tpbrt_state_t current_state;

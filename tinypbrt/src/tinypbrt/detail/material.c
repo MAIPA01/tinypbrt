@@ -52,7 +52,9 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-		material->idx	  = ~(tpbrt_size_t)0;
+			if (memset(material, 0, sizeof(tpbrt_material_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		material->idx	  = TPBRT_MATERIAL_HANDLE_INVALID;
 
 		tpbrt_error_t err = tpbrt_material_type_from_string(type_str, &material->type);
 			if (err != TPBRT_ERROR_NONE) {
@@ -1624,6 +1626,8 @@ extern "C" {
 				materials == TPBRT_NULL || material == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
+
+			if (memset(material, 0, sizeof(tpbrt_material_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t TYPE_STR = TPBRT_STRING("type");
 

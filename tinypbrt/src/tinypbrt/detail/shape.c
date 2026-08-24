@@ -91,6 +91,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(shape, 0, sizeof(tpbrt_shape_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		shape->transform					  = *ctm;
 		shape->material						  = material_handle;
 		shape->area_light					  = area_light_handle;
@@ -543,7 +545,9 @@ extern "C" {
 	tpbrt_error_t tpbrt_create_object(const tpbrt_string_t* const name, tpbrt_object_t* const object) {
 			if (name == TPBRT_NULL || object == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		object->idx		  = ~(tpbrt_size_t)0;
+			if (memset(object, 0, sizeof(tpbrt_object_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		object->idx		  = TPBRT_OBJECT_HANDLE_INVALID;
 
 		tpbrt_error_t err = tpbrt_init_shape_array(&object->shapes);
 			if (err != TPBRT_ERROR_NONE) {
@@ -667,6 +671,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(instance, 0, sizeof(tpbrt_instance_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		instance->transform		= *ctm;
 
 		const tpbrt_error_t err = tpbrt_objects_list_get_object_handle(objects, object_name, &instance->object);
@@ -680,7 +686,7 @@ extern "C" {
 
 	void tpbrt_free_instance(tpbrt_instance_t* const instance) {
 			if (instance == TPBRT_NULL) { return; }
-		instance->object = ~(tpbrt_object_handle_t)0;
+		instance->object = TPBRT_OBJECT_HANDLE_INVALID;
 	}
 
 #pragma endregion

@@ -75,6 +75,8 @@ extern "C" {
 	tpbrt_error_t tpbrt_create_token(const tpbrt_string_t* const value, tpbrt_token_t* const token) {
 			if (value == TPBRT_NULL || value->data == TPBRT_NULL || token == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
+			if (memset(token, 0, sizeof(tpbrt_token_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		token->value = *value;
 			if (tpbrt_directive_from_string(value, &token->directive) == TPBRT_ERROR_NONE) {
 				token->type = TPBRT_TOKEN_TYPE_DIRECTIVE;

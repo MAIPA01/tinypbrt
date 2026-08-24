@@ -189,6 +189,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(texture, 0, sizeof(tpbrt_texture_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		texture->idx	  = ~(tpbrt_size_t)0;
 
 		tpbrt_error_t err = tpbrt_copy_string(&texture->name, name);

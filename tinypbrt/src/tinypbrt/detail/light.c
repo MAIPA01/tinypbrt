@@ -45,6 +45,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(light_source, 0, sizeof(tpbrt_light_source_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		light_source->transform				= *ctm;
 		light_source->interior_media_handle = interior_media_handle;
 		light_source->exterior_media_handle = exterior_media_handle;
@@ -420,6 +422,8 @@ extern "C" {
 			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || area_light == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
+
+			if (memset(area_light, 0, sizeof(tpbrt_area_light_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		tpbrt_error_t err = tpbrt_area_light_type_from_string(type_str, &area_light->type);
 			if (err != TPBRT_ERROR_NONE) {

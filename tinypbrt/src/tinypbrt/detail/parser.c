@@ -6,10 +6,10 @@
 extern "C" {
 #endif
 
-	void tpbrt_parser_init(tpbrt_parser_t* const parser, const tpbrt_string_t* str) {
-			if (parser == TPBRT_NULL) { return; }
+	tpbrt_error_t tpbrt_parser_init(tpbrt_parser_t* const parser, const tpbrt_string_t* str) {
+			if (parser == TPBRT_NULL || str == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_tokenizer_init(&parser->tokenizer, str);
+		return tpbrt_tokenizer_init(&parser->tokenizer, str);
 	}
 
 	static tpbrt_error_t read_token(tpbrt_parser_t* const parser, tpbrt_token_t* const out_token) {

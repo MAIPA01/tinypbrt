@@ -84,6 +84,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		camera->transform							 = *ctm;
 		camera->interior_media_handle				 = interior_media_handle;
 		camera->exterior_media_handle				 = exterior_media_handle;

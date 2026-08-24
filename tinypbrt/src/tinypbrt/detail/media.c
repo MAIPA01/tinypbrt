@@ -41,6 +41,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(media, 0, sizeof(tpbrt_media_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		tpbrt_error_t err = tpbrt_copy_string(&media->name, name);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_free_media(media);

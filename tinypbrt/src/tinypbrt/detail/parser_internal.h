@@ -103,7 +103,7 @@ extern "C" {
 		tpbrt_tokenizer_t tokenizer;
 	} tpbrt_parser_t;
 
-	void tpbrt_parser_init(tpbrt_parser_t* parser, const tpbrt_string_t* str);
+	tpbrt_error_t tpbrt_parser_init(tpbrt_parser_t* parser, const tpbrt_string_t* str);
 
 	tpbrt_error_t tpbrt_parser_parse_next(tpbrt_parser_t* parser, tpbrt_element_t* out_element);
 

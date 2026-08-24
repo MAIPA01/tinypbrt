@@ -6,11 +6,12 @@
 extern "C" {
 #endif
 
-	void tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_string_t* const str) {
-			if (tokenizer == TPBRT_NULL || str == TPBRT_NULL) { return; }
+	tpbrt_error_t tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_string_t* const str) {
+			if (tokenizer == TPBRT_NULL || str == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		tokenizer->str	  = *str;
 		tokenizer->offset = 0u;
+		return TPBRT_ERROR_NONE;
 	}
 
 	tpbrt_size_t tpbrt_tokenizer_offset(const tpbrt_tokenizer_t* const tokenizer) {
@@ -28,7 +29,7 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_tokenizer_next(tpbrt_tokenizer_t* tokenizer, tpbrt_token_t* const out_token) {
-			if (tokenizer == TPBRT_NULL || out_token == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (tokenizer == TPBRT_NULL || out_token == TPBRT_NULL || tokenizer->str.data == TPBRT_NULL) { return TPBRT_FALSE; }
 
 			while (tokenizer->offset < tokenizer->str.size) {
 				const tpbrt_size_t start = tokenizer->offset;

@@ -45,6 +45,8 @@ extern "C" {
 	  tpbrt_filter_t* const filter) {
 			if (params == TPBRT_NULL || filter == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
+			if (memset(filter, 0, sizeof(tpbrt_filter_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		tpbrt_error_t err = tpbrt_filter_type_from_string(type, &filter->type);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 

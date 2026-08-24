@@ -75,6 +75,8 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
+			if (memset(sampler, 0, sizeof(tpbrt_sampler_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		static const tpbrt_string_t SEED_STR = TPBRT_STRING("seed");
 
 		tpbrt_error_t err					 = tpbrt_params_list_get_int(params, &SEED_STR, 0, &sampler->seed);

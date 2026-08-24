@@ -131,6 +131,8 @@ extern "C" {
 	  tpbrt_film_t* const film) {
 			if (params == TPBRT_NULL || film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
+			if (memset(film, 0, sizeof(tpbrt_film_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		tpbrt_error_t err;
 		film->type = TPBRT_FILM_TYPE_RGB;
 			if (type_str != TPBRT_NULL && type_str->data != TPBRT_NULL) {
