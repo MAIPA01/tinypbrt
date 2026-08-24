@@ -980,7 +980,7 @@ extern "C" {
 		const tpbrt_error_t err = tpbrt_textures_list_get_texture_by_name(textures_list, texture_name, &texture);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (texture->type != type) { return TPBRT_ERROR_INVALID_TEXTURE_TYPE; }
+			if (texture->type != type) { return TPBRT_ERROR_UNKNOWN_TEXTURE_TYPE; }
 
 		texture_handle->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE;
 		texture_handle->as.tex_idx = texture->idx;

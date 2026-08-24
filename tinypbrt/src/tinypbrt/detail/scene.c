@@ -95,7 +95,7 @@ extern "C" {
 		static const tpbrt_string_t WAVEFRONT = TPBRT_STRING("wavefront");
 			if (tpbrt_string_equals(&param->name, &WAVEFRONT)) { return tpbrt_param_as_bool(param, &options->wavefront); }
 
-		return TPBRT_ERROR_NONE;
+		return TPBRT_ERROR_UNKNOWN_OPTION;
 	}
 
 	void tpbrt_free_options(tpbrt_options_t* options) {

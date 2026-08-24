@@ -26,7 +26,7 @@ extern "C" {
 	  tpbrt_string_t* const out_val) {
 			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
 
-			if (*token != '\"' || *(token + len) != '\"') { return TPBRT_FALSE; }
+			if (*token != '\"' || *(token + len - 1) != '\"') { return TPBRT_FALSE; }
 
 		out_val->data = (tpbrt_char_t*)(token + 1);
 		out_val->size = len - 2;

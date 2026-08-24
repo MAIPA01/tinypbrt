@@ -724,13 +724,13 @@ extern "C" {
 						else {
 							err = tpbrt_textures_list_get_texture_handle_of_type(textures, &texture_name,
 							  TPBRT_TEXTURE_TYPE_FLOAT, ETA_DEFAULT, &mat_params->eta_as.single);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_INVALID_TEXTURE_TYPE) {
+								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_UNKNOWN_TEXTURE_TYPE) {
 									tpbrt_free_string(&texture_name);
 									tpbrt_free_material(material);
 									return err;
 								}
 
-								if (err == TPBRT_ERROR_INVALID_TEXTURE_TYPE) {
+								if (err == TPBRT_ERROR_UNKNOWN_TEXTURE_TYPE) {
 									err = tpbrt_textures_list_get_opt_texture_handle_of_type(textures, &texture_name,
 									  TPBRT_TEXTURE_TYPE_SPECTRUM, &mat_params->eta_as.wavelength);
 										if (err != TPBRT_ERROR_NONE) {
