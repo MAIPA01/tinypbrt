@@ -180,8 +180,25 @@ extern "C" {
 			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:
 				err = read_str(parser, &out_element->as.named_medium.name);
 					if (err != TPBRT_ERROR_NONE) { return err; }
-				err = read_str(parser, &out_element->as.named_medium.type);
-					if (err != TPBRT_ERROR_NONE) { out_element->as.named_medium.type.data = TPBRT_NULL; }
+
+				out_element->as.named_medium.type.data = TPBRT_NULL;
+				out_element->as.named_medium.type.size = 0;
+
+				tpbrt_token_t peek_token;
+					if (tpbrt_tokenizer_peek(&parser->tokenizer, &peek_token) && tpbrt_token_is_quoted_string(&peek_token)) {
+						tpbrt_bool_t has_space = TPBRT_FALSE;
+							for (tpbrt_size_t i = 0; i < peek_token.value.size; ++i) {
+									if (peek_token.value.data[i] == ' ') {
+										has_space = TPBRT_TRUE;
+										break;
+									}
+							}
+
+							if (!has_space) {
+								err = read_str(parser, &out_element->as.named_medium.type);
+									if (err != TPBRT_ERROR_NONE) { return err; }
+							}
+					}
 				return read_param_list(parser, &out_element->as.named_medium.params);
 
 			case TPBRT_DIRECTIVE_COLOR_SPACE:
