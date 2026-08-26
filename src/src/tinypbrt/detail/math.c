@@ -200,6 +200,13 @@ extern "C" {
 			for (tpbrt_uint_t i = 0; i < 16; ++i) { out[i] = inv[i] * inv_det; }
 	}
 
+	void tpbrt_free_bool_array(tpbrt_bool_array_t* array) {
+			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+		free(array->data);
+		array->data	 = TPBRT_NULL;
+		array->count = 0;
+	}
+
 	void tpbrt_free_int_array(tpbrt_int_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
 		free(array->data);

@@ -125,27 +125,26 @@ extern "C" {
 					}
 			}
 
-		const tpbrt_char_t* curr;
-			if ((curr = strstr(encoding_str->data, GAMMA_STR.data)) == TPBRT_NULL) {
+		tpbrt_string_t token;
+			if ((token.data = strstr(encoding_str->data, GAMMA_STR.data)) == TPBRT_NULL) {
 				gamma_val->has_value = TPBRT_FALSE;
 				return TPBRT_ERROR_UNKNOWN_TEXTURE_ENCODING;
 			}
 
-			if (curr - encoding_str->data >= GAMMA_STR.size) {
+			if (token.data - encoding_str->data >= GAMMA_STR.size) {
 				gamma_val->has_value = TPBRT_FALSE;
 				return TPBRT_ERROR_UNKNOWN_TEXTURE_ENCODING;
 			}
 
-		curr += GAMMA_STR.size;
+		token.data += GAMMA_STR.size;
 
-		tpbrt_size_t len;
-		curr = tpbrt_next_token(curr, encoding_str->data + encoding_str->size, &len);
-			if (len == 0) {
+
+			if ((token = tpbrt_next_token(token.data, encoding_str->data + encoding_str->size)).data == TPBRT_NULL) {
 				gamma_val->has_value = TPBRT_FALSE;
 				return TPBRT_ERROR_PARSE_FLOAT;
 			}
 
-			if (!tpbrt_parse_float_token(curr, len, &gamma_val->value)) {
+			if (!tpbrt_parse_float_token(&token, &gamma_val->value)) {
 				gamma_val->has_value = TPBRT_FALSE;
 				return TPBRT_ERROR_PARSE_FLOAT;
 			}

@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <tinypbrt/pch.h>
 
 #include <tinypbrt/detail/common_internal.h>
@@ -8,72 +9,102 @@ extern "C" {
 
 #pragma region PARSING
 
-	const tpbrt_char_t* tpbrt_next_token(const tpbrt_char_t* current, const tpbrt_char_t* const end,
-	  tpbrt_size_t* const out_len) {
-			if (current == TPBRT_NULL || end == TPBRT_NULL || out_len == TPBRT_NULL) { return TPBRT_NULL; }
+	tpbrt_string_t tpbrt_next_token(const tpbrt_char_t* current, const tpbrt_char_t* const end) {
+		tpbrt_string_t token = { .data = TPBRT_NULL, .size = 0 };
+
+			if (current == TPBRT_NULL || end == TPBRT_NULL) { return token; }
 
 			while (current < end && isspace((tpbrt_uint_t)*current)) { ++current; }
-			if (current >= end) { return TPBRT_NULL; }
+			if (current >= end) { return token; }
 
 		const tpbrt_char_t* start = current;
 			while (current < end && !isspace((tpbrt_uint_t)*current)) { ++current; }
 
-		*out_len = (tpbrt_size_t)(current - start);
-		return start;
+		token.data = (tpbrt_char_t*)start;
+		token.size = (tpbrt_size_t)(current - start);
+		return token;
 	}
 
-	tpbrt_bool_t tpbrt_parse_string_token(const tpbrt_char_t* const token, const tpbrt_size_t len,
-	  tpbrt_string_t* const out_val) {
-			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+	tpbrt_bool_t tpbrt_parse_string_token(const tpbrt_string_t* const token, tpbrt_string_t* const out_val) {
+			if (token == TPBRT_NULL || token->data == TPBRT_NULL || token->size < 2 || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
-			if (*token != '\"' || *(token + len - 1) != '\"') { return TPBRT_FALSE; }
+			if (token->data[0] != '\"' || token->data[token->size - 1] != '\"') { return TPBRT_FALSE; }
 
-		out_val->data = (tpbrt_char_t*)(token + 1);
-		out_val->size = len - 2;
+		out_val->data = token->data + 1;
+		out_val->size = token->size - 2;
 		return TPBRT_TRUE;
 	}
 
-	tpbrt_bool_t tpbrt_parse_float_token(const tpbrt_char_t* const token, const tpbrt_size_t len, tpbrt_float_t* const out_val) {
+	tpbrt_bool_t tpbrt_parse_bool_token(const tpbrt_string_t* const token, tpbrt_bool_t* const out_val) {
+		static const tpbrt_string_t TRUE_STR  = TPBRT_STRING("true");
+		static const tpbrt_string_t FALSE_STR = TPBRT_STRING("false");
+
+			if (token == TPBRT_NULL || token->data == TPBRT_NULL || token->size < 4 || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
+
+			if (tpbrt_string_equals(token, &TRUE_STR)) {
+				*out_val = TPBRT_TRUE;
+				return TPBRT_TRUE;
+			}
+
+			if (tpbrt_string_equals(token, &FALSE_STR)) {
+				*out_val = TPBRT_FALSE;
+				return TPBRT_TRUE;
+			}
+
+		return TPBRT_FALSE;
+	}
+
+	tpbrt_bool_t tpbrt_parse_float_token(const tpbrt_string_t* const token, tpbrt_float_t* const out_val) {
 		static const tpbrt_size_t MAX_BUFFER_SIZE = 64;
 
-			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (token == TPBRT_NULL || token->data == TPBRT_NULL || token->size < 1 || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
-		const tpbrt_size_t n = min(len, MAX_BUFFER_SIZE - 1);
-		strncpy_s(buf, sizeof(tpbrt_char_t) * MAX_BUFFER_SIZE, token, n);
+		const tpbrt_size_t n = min(token->size, MAX_BUFFER_SIZE - 1);
+		strncpy_s(buf, sizeof(tpbrt_char_t) * MAX_BUFFER_SIZE, token->data, n);
 		buf[n] = '\0';
 		tpbrt_char_t* end;
 		*out_val = strtof(buf, &end);
 		return end != buf;
 	}
 
-	tpbrt_bool_t tpbrt_parse_int_token(const tpbrt_char_t* token, const tpbrt_size_t len, tpbrt_int_t* const out_val) {
+	tpbrt_bool_t tpbrt_parse_int_token(const tpbrt_string_t* const token, tpbrt_int_t* const out_val) {
 		static const tpbrt_size_t MAX_BUFFER_SIZE = 64;
 		static const tpbrt_int_t INT_RANIX		  = 10;
 
-			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (token == TPBRT_NULL || token->data == TPBRT_NULL || token->size < 1 || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
-		const tpbrt_size_t n = len < MAX_BUFFER_SIZE - 1 ? len : MAX_BUFFER_SIZE - 1;
-		strncpy_s(buf, sizeof(tpbrt_char_t) * MAX_BUFFER_SIZE, token, n);
+		const tpbrt_size_t n = min(token->size, MAX_BUFFER_SIZE - 1);
+		strncpy_s(buf, sizeof(tpbrt_char_t) * MAX_BUFFER_SIZE, token->data, n);
 		buf[n] = '\0';
 		tpbrt_char_t* end;
 		*out_val = (tpbrt_int_t)strtol(buf, &end, INT_RANIX);
 		return end != buf;
 	}
 
-	tpbrt_bool_t tpbrt_parse_uint_token(const tpbrt_char_t* token, const tpbrt_size_t len, tpbrt_uint_t* const out_val) {
+	tpbrt_bool_t tpbrt_parse_uint_token(const tpbrt_string_t* token, tpbrt_uint_t* const out_val) {
 		static const tpbrt_size_t MAX_BUFFER_SIZE = 64;
 		static const tpbrt_int_t UINT_RANIX		  = 10;
 
-			if (token == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (token == TPBRT_NULL || token->data == TPBRT_NULL || token->size < 1 || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
-		const tpbrt_size_t n = len < MAX_BUFFER_SIZE - 1 ? len : MAX_BUFFER_SIZE - 1;
-		strncpy_s(buf, sizeof(tpbrt_char_t) * MAX_BUFFER_SIZE, token, n);
+		const tpbrt_size_t n = min(token->size, MAX_BUFFER_SIZE - 1);
+		strncpy_s(buf, sizeof(tpbrt_char_t) * MAX_BUFFER_SIZE, token->data, n);
 		buf[n] = '\0';
 		tpbrt_char_t* end;
-		*out_val = (tpbrt_uint_t)strtol(buf, &end, UINT_RANIX);
+		*out_val = (tpbrt_uint_t)strtoul(buf, &end, UINT_RANIX);
 		return end != buf;
 	}
 
@@ -98,7 +129,12 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_bool_t tpbrt_string_equals_literal(const tpbrt_string_t* a, tpbrt_string_t literal) {
+	tpbrt_bool_t tpbrt_string_equals_cstr(const tpbrt_string_t* const a, const tpbrt_char_t* const cstr) {
+		const tpbrt_string_t str = { .data = (tpbrt_char_t*)cstr, .size = strlen(cstr) };
+		return tpbrt_string_equals(a, &str);
+	}
+
+	tpbrt_bool_t tpbrt_string_equals_literal(const tpbrt_string_t* a, const tpbrt_string_t literal) {
 		return tpbrt_string_equals(a, &literal);
 	}
 

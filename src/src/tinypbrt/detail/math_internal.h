@@ -18,6 +18,7 @@ extern "C" {
 	void tpbrt_mat4_multiply(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 	void tpbrt_mat4_inverse(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
 
+	void tpbrt_free_bool_array(tpbrt_bool_array_t* array);
 	void tpbrt_free_int_array(tpbrt_int_array_t* array);
 	void tpbrt_free_uint_array(tpbrt_uint_array_t* array);
 	void tpbrt_free_float_array(tpbrt_float_array_t* array);
