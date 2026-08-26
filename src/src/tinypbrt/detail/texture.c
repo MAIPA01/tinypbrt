@@ -785,7 +785,7 @@ extern "C" {
 
 		textures_list->textures							  = new_list;
 		textures_list->textures[textures_list->count]	  = *texture;
-		textures_list->textures[textures_list->count].idx = new_count;
+		textures_list->textures[textures_list->count].idx = textures_list->count;
 		textures_list->count							  = new_count;
 		return TPBRT_ERROR_NONE;
 	}
