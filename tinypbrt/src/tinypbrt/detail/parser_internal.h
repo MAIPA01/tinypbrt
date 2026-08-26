@@ -25,7 +25,7 @@ extern "C" {
 			} option;
 
 			// Film, Camera, Sampler, Integrator, Accelerator, LightSource, AreaLightSource,
-			// Material, Shape, MakeNamedMedium
+			// Material, Shape
 			struct {
 				tpbrt_string_t type_name;
 				tpbrt_params_list_t params;
@@ -90,6 +90,13 @@ extern "C" {
 				tpbrt_string_t class_name;
 				tpbrt_params_list_t params;
 			} texture;
+
+			// MakeNamedMedium
+			struct {
+				tpbrt_string_t name;
+				tpbrt_string_t type;
+				tpbrt_params_list_t params;
+			} named_medium;
 
 			// MediumInterface
 			struct {

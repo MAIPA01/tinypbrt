@@ -174,10 +174,15 @@ extern "C" {
 			case TPBRT_DIRECTIVE_MATERIAL:
 			case TPBRT_DIRECTIVE_PIXEL_FILTER:
 			case TPBRT_DIRECTIVE_SHAPE:
-			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:
 				err = read_str(parser, &out_element->as.generic_with_params.type_name);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 				return read_param_list(parser, &out_element->as.generic_with_params.params);
+			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:
+				err = read_str(parser, &out_element->as.named_medium.name);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+				err = read_str(parser, &out_element->as.named_medium.type);
+					if (err != TPBRT_ERROR_NONE) { out_element->as.named_medium.type.data = TPBRT_NULL; }
+				return read_param_list(parser, &out_element->as.named_medium.params);
 
 			case TPBRT_DIRECTIVE_COLOR_SPACE:
 			case TPBRT_DIRECTIVE_ACTIVE_TRANSFORM:	  return read_str(parser, &out_element->as.single_string.type_name);
@@ -264,8 +269,8 @@ extern "C" {
 			case TPBRT_DIRECTIVE_AREA_LIGHT_SOURCE:
 			case TPBRT_DIRECTIVE_PIXEL_FILTER:
 			case TPBRT_DIRECTIVE_MATERIAL:
-			case TPBRT_DIRECTIVE_SHAPE:
-			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:	  tpbrt_free_params_list(&element->as.generic_with_params.params); break;
+			case TPBRT_DIRECTIVE_SHAPE:				  tpbrt_free_params_list(&element->as.generic_with_params.params); break;
+			case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM:	  tpbrt_free_params_list(&element->as.named_medium.params); break;
 			case TPBRT_DIRECTIVE_ATTRIBUTE:			  tpbrt_free_params_list(&element->as.attribute.params); break;
 			case TPBRT_DIRECTIVE_MAKE_NAMED_MATERIAL: tpbrt_free_params_list(&element->as.named_with_params.params); break;
 			case TPBRT_DIRECTIVE_TEXTURE:			  tpbrt_free_params_list(&element->as.texture.params); break;

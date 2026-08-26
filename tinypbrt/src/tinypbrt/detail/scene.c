@@ -932,13 +932,12 @@ extern "C" {
 						}
 
 						case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM: {
-							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, &current_state.medium_params);
+							last_error = tpbrt_params_list_extend(&element.as.named_medium.params, &current_state.medium_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_media_t media;
-							last_error = tpbrt_create_media(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.type_name, &element.as.generic_with_params.params, &media);
+							last_error = tpbrt_create_media(&element.as.named_medium.name, &element.as.named_medium.type,
+							  &element.as.named_medium.params, &media);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							last_error = tpbrt_medias_list_add_media(&out_scene->medias, &media);
