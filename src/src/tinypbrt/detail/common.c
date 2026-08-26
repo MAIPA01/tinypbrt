@@ -19,10 +19,11 @@ extern "C" {
 
 		const tpbrt_char_t* start	= current;
 		const tpbrt_bool_t isString = *start == '\"' ? TPBRT_TRUE : TPBRT_FALSE;
-			if (isString) { ++current; }
+			if (isString && current < end) { ++current; }
 			while (current < end && ((!isString && !isspace((tpbrt_uint_t)*current)) || (isString && *current != '\"'))) {
 				++current;
 			}
+			if (isString && current < end) { ++current; }
 
 		token.data = (tpbrt_char_t*)start;
 		token.size = (tpbrt_size_t)(current - start);
