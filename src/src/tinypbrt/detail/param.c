@@ -63,7 +63,7 @@ extern "C" {
 
 		const tpbrt_string_t type_str = tpbrt_next_token(token.data, end);
 			if (type_str.data == TPBRT_NULL || type_str.size == 0) { return TPBRT_ERROR_INVALID_PARAM_TYPE; }
-		token.data += token.size;
+		token.data += type_str.size;
 
 		tpbrt_param_type_t param_type;
 		const tpbrt_error_t error = tpbrt_param_type_from_string(&type_str, &param_type);
