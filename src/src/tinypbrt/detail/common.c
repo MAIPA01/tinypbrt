@@ -18,7 +18,8 @@ extern "C" {
 			if (current >= end) { return token; }
 
 		const tpbrt_char_t* start = current;
-			while (current < end && !isspace((tpbrt_uint_t)*current)) { ++current; }
+		const tpbrt_bool_t isString = *start == '\"' ? TPBRT_TRUE : TPBRT_FALSE;
+			while (current < end && ((!isString && !isspace((tpbrt_uint_t)*current)) || (isString && *current != '\"'))) { ++current; }
 
 		token.data = (tpbrt_char_t*)start;
 		token.size = (tpbrt_size_t)(current - start);
