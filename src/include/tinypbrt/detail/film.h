@@ -17,7 +17,7 @@ extern "C" {
 	} tpbrt_film_type_t;
 
 	typedef struct tpbrt_film_gbuffer_params_t {
-		tpbrt_coordinate_system_t coordinate_system;
+		tpbrt_coord_system_type_t coordinate_system;
 	} tpbrt_film_gbuffer_params_t;
 
 	typedef struct tpbrt_film_spectral_params_t {

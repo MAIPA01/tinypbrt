@@ -6,11 +6,10 @@
 extern "C" {
 #endif
 
-	tpbrt_error_t tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_string_t* const str) {
-			if (tokenizer == TPBRT_NULL || str == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	tpbrt_error_t tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_string_t str) {
+			if (tokenizer == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tokenizer->str	  = *str;
-		tokenizer->offset = 0u;
+		*tokenizer = (tpbrt_tokenizer_t) { .str = str, .offset = 0u };
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -41,7 +40,7 @@ extern "C" {
 					case '[':
 						case ']': {
 							const tpbrt_string_t view = { .data = tokenizer->str.data + start, .size = 1u };
-							tpbrt_create_token(&view, out_token);
+							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}
 					case ' ':
@@ -53,9 +52,11 @@ extern "C" {
 									const tpbrt_char_t c = tokenizer->str.data[tokenizer->offset++];
 										if (c == '"') { break; }
 								}
-							const tpbrt_string_t view = { .data = tokenizer->str.data + start,
-								.size							= tokenizer->offset - start };
-							tpbrt_create_token(&view, out_token);
+							const tpbrt_string_t view = {
+								.data = tokenizer->str.data + start,
+								.size = tokenizer->offset - start,
+							};
+							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}
 						case '#': {
@@ -74,9 +75,11 @@ extern "C" {
 										}
 									tokenizer->offset++;
 								}
-							const tpbrt_string_t view = { .data = tokenizer->str.data + start,
-								.size							= tokenizer->offset - start };
-							tpbrt_create_token(&view, out_token);
+							const tpbrt_string_t view = {
+								.data = tokenizer->str.data + start,
+								.size = tokenizer->offset - start,
+							};
+							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}
 					}

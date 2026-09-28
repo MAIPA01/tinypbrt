@@ -14,6 +14,9 @@
 #include <tinypbrt/detail/light.h>
 #include <tinypbrt/detail/material.h>
 #include <tinypbrt/detail/media.h>
+#include <tinypbrt/detail/object.h>
+#include <tinypbrt/detail/object_instance.h>
+#include <tinypbrt/detail/options.h>
 #include <tinypbrt/detail/sampler.h>
 #include <tinypbrt/detail/shape.h>
 #include <tinypbrt/detail/texture.h>
@@ -21,20 +24,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-	typedef struct tpbrt_options_t {
-		tpbrt_bool_t disable_pixel_jitter;
-		tpbrt_bool_t disable_texture_filtering;
-		tpbrt_bool_t disable_wave_length_jitter;
-		tpbrt_float_t displacement_edge_scale;
-		tpbrt_string_t mse_reference_image;
-		tpbrt_string_t mse_reference_out;
-		tpbrt_coordinate_system_t render_coord_sys;
-		tpbrt_int_t seed;
-		tpbrt_bool_t force_diffuse;
-		tpbrt_bool_t pixel_stats;
-		tpbrt_bool_t wavefront;
-	} tpbrt_options_t;
 
 	typedef struct tpbrt_scene_t {
 		tpbrt_float_t start_time;
@@ -55,17 +44,16 @@ extern "C" {
 		tpbrt_lights_list_t lights;
 		tpbrt_objects_list_t objects;
 
-		tpbrt_shape_array_t shapes;
+		tpbrt_shapes_list_t shapes;
 
-		tpbrt_instances_list_t instances;
+		tpbrt_objects_instances_list_t instances;
 
 		tpbrt_string_array_t includes;
 	} tpbrt_scene_t;
 
 	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene);
-	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* data, const tpbrt_char_t* working_directory,
-	  tpbrt_scene_t* out_scene);
-	void tpbrt_free_scene(tpbrt_scene_t* scene);
+	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* data, tpbrt_scene_t* out_scene);
+	void tpbrt_scene_free(tpbrt_scene_t* scene);
 
 #ifdef __cplusplus
 }

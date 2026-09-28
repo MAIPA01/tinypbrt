@@ -8,28 +8,27 @@
 extern "C" {
 #endif
 
-	static tpbrt_error_t tpbrt_accelerator_type_from_string(const tpbrt_string_t* const type_str,
-	  tpbrt_accelerator_type_t* const type) {
+	tpbrt_error_t tpbrt_accelerator_type_from_string(const tpbrt_string_t type_str, tpbrt_accelerator_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_ACCELERATOR_TYPE_MAX_NUM] = {
 			TPBRT_STRING("bvh"),
 			TPBRT_STRING("kdtree"),
 		};
 
-			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_ACCELERATOR_TYPE; }
 
 			for (tpbrt_accelerator_type_t t = 0; t < TPBRT_ACCELERATOR_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS + t)) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		return TPBRT_ERROR_UNKNOWN_ACCELERATOR_TYPE;
+		return TPBRT_ERROR_INVALID_ACCELERATOR_TYPE;
 	}
 
-	static tpbrt_error_t tpbrt_accelerator_bvh_split_method_from_string(const tpbrt_string_t* const method_str,
+	tpbrt_error_t tpbrt_accelerator_bvh_split_method_from_string(const tpbrt_string_t method_str,
 	  tpbrt_accelerator_bvh_split_method_t* const method) {
 		static const tpbrt_string_t METHODS_STRS[TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM] = {
 			TPBRT_STRING("sah"),
@@ -38,25 +37,23 @@ extern "C" {
 			TPBRT_STRING("hlbvh"),
 		};
 
-			if (method_str == TPBRT_NULL || method_str->data == TPBRT_NULL || method == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (method == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(method_str)) { return TPBRT_ERROR_INVALID_ACCELERATOR_BVH_SPLIT_METHOD; }
 
 			for (tpbrt_accelerator_bvh_split_method_t m = 0; m < TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM; ++m) {
-					if (tpbrt_string_equals(method_str, METHODS_STRS + m)) {
+					if (tpbrt_string_equals(method_str, METHODS_STRS[m])) {
 						*method = m;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		return TPBRT_ERROR_UNKNOWN_ACCELERATOR_BVH_SPLIT_METHOD;
+		return TPBRT_ERROR_INVALID_ACCELERATOR_BVH_SPLIT_METHOD;
 	}
 
-	tpbrt_error_t tpbrt_create_accelerator(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
+	tpbrt_error_t tpbrt_accelerator_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
 	  tpbrt_accelerator_t* accelerator) {
-			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || accelerator == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (accelerator == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(accelerator, 0, sizeof(tpbrt_accelerator_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -71,17 +68,17 @@ extern "C" {
 
 					tpbrt_accelerator_bvh_params_t* acc_params		= &accelerator->as.bvh;
 
-					err = tpbrt_params_list_get_uint(params, &MAX_NODES_PRIMS_STR, 4u, &acc_params->max_node_prims);
+					err = tpbrt_params_list_get_uint(params, MAX_NODES_PRIMS_STR, 4u, &acc_params->max_node_prims);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 
 					tpbrt_string_t method_str;
-					err = tpbrt_params_list_get_string(params, &SPLIT_METHOD_STR, &method_str);
+					err = tpbrt_params_list_get_string(params, SPLIT_METHOD_STR, &method_str);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
 						if (err == TPBRT_ERROR_NOT_FOUND) { acc_params->split_method = TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_SAH; }
 						else {
-							err = tpbrt_accelerator_bvh_split_method_from_string(&method_str, &acc_params->split_method);
-							tpbrt_free_string(&method_str);
+							err = tpbrt_accelerator_bvh_split_method_from_string(method_str, &acc_params->split_method);
+							tpbrt_string_free(&method_str);
 								if (err != TPBRT_ERROR_NONE) { return err; }
 						}
 					break;
@@ -96,21 +93,21 @@ extern "C" {
 					tpbrt_accelerator_kd_tree_params_t* acc_params	 = &accelerator->as.kd_tree;
 
 					static const tpbrt_uint_t INTERSECT_COST_DEFAULT = 5u;
-					err = tpbrt_params_list_get_uint(params, &INTERSECT_COST_STR, INTERSECT_COST_DEFAULT,
-					  &acc_params->intersect_cost);
+					err =
+					  tpbrt_params_list_get_uint(params, INTERSECT_COST_STR, INTERSECT_COST_DEFAULT, &acc_params->intersect_cost);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 
-					err = tpbrt_params_list_get_uint(params, &TRAVERSAL_COST_STR, 1u, &acc_params->traversal_cost);
+					err = tpbrt_params_list_get_uint(params, TRAVERSAL_COST_STR, 1u, &acc_params->traversal_cost);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 
 					static const tpbrt_float_t EMPTY_BONUS_DEFAULT = 0.5f;
-					err = tpbrt_params_list_get_float(params, &EMPTY_BONUS_STR, EMPTY_BONUS_DEFAULT, &acc_params->empty_bonus);
+					err = tpbrt_params_list_get_float(params, EMPTY_BONUS_STR, EMPTY_BONUS_DEFAULT, &acc_params->empty_bonus);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 
-					err = tpbrt_params_list_get_uint(params, &MAX_PRIMS_STR, 1u, &acc_params->max_prims);
+					err = tpbrt_params_list_get_uint(params, MAX_PRIMS_STR, 1u, &acc_params->max_prims);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 
-					err = tpbrt_params_list_get_int(params, &MAX_DEPTH_STR, -1, &acc_params->max_depth);
+					err = tpbrt_params_list_get_int(params, MAX_DEPTH_STR, -1, &acc_params->max_depth);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					break;
 				}

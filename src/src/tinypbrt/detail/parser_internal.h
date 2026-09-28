@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-	typedef struct {
+	typedef struct tpbrt_element_t {
 		tpbrt_directive_t type;
 
 		union {
@@ -106,15 +106,15 @@ extern "C" {
 		} as;
 	} tpbrt_element_t;
 
-	typedef struct {
+	typedef struct tpbrt_parser_t {
 		tpbrt_tokenizer_t tokenizer;
 	} tpbrt_parser_t;
 
-	tpbrt_error_t tpbrt_parser_init(tpbrt_parser_t* parser, const tpbrt_string_t* str);
+	void tpbrt_element_free(tpbrt_element_t* element);
 
-	tpbrt_error_t tpbrt_parser_parse_next(tpbrt_parser_t* parser, tpbrt_element_t* out_element);
+	tpbrt_error_t tpbrt_parser_init(tpbrt_parser_t* parser, tpbrt_string_t str);
 
-	void tpbrt_free_element(tpbrt_element_t* element);
+	tpbrt_error_t tpbrt_parser_next(tpbrt_parser_t* parser, tpbrt_element_t* out_element);
 
 #ifdef __cplusplus
 }

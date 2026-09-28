@@ -11,8 +11,11 @@
 extern "C" {
 #endif
 
-	tpbrt_error_t tpbrt_create_sampler(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
-	  tpbrt_sampler_t* sampler);
+	tpbrt_error_t tpbrt_sampler_type_from_string(tpbrt_string_t type_str, tpbrt_sampler_type_t* type);
+
+	tpbrt_error_t tpbrt_sampler_random_from_string(tpbrt_string_t random_str, tpbrt_sampler_random_t* random);
+
+	tpbrt_error_t tpbrt_sampler_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_sampler_t* sampler);
 
 #ifdef __cplusplus
 }

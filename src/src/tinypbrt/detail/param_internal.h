@@ -46,8 +46,10 @@ extern "C" {
 		tpbrt_string_t value;
 	} tpbrt_param_t;
 
-	tpbrt_error_t tpbrt_create_param(const tpbrt_string_t* declaration, tpbrt_param_value_type_t value_type,
-	  const tpbrt_string_t* value_str, tpbrt_param_t* param);
+	tpbrt_error_t tpbrt_param_type_from_string(tpbrt_string_t type_str, tpbrt_param_type_t* type_out);
+
+	tpbrt_error_t tpbrt_param_init(tpbrt_string_t declaration, tpbrt_param_value_type_t value_type, tpbrt_string_t value_str,
+	  tpbrt_param_t* param);
 
 	tpbrt_error_t tpbrt_param_as_strings(const tpbrt_param_t* param, tpbrt_string_array_t* out_strings);
 
@@ -89,9 +91,9 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_normal3s(const tpbrt_param_t* param, tpbrt_normal3_array_t* out_normal3s);
 	tpbrt_error_t tpbrt_param_as_normals(const tpbrt_param_t* param, tpbrt_normal_array_t* out_normals);
 
-	tpbrt_error_t tpbrt_param_as_texture(const tpbrt_param_t* param, const tpbrt_textures_list_t* textures_list,
+	tpbrt_error_t tpbrt_param_as_texture(const tpbrt_param_t* param, tpbrt_textures_list_t textures_list,
 	  tpbrt_texture_handle_t* out_texture);
-	tpbrt_error_t tpbrt_param_as_texture_of_type(const tpbrt_param_t* param, const tpbrt_textures_list_t* textures_list,
+	tpbrt_error_t tpbrt_param_as_texture_of_type(const tpbrt_param_t* param, tpbrt_textures_list_t textures_list,
 	  tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* out_texture);
 #pragma endregion
 
@@ -100,94 +102,90 @@ extern "C" {
 	typedef struct tpbrt_params_list_t {
 		tpbrt_param_t* params;
 		tpbrt_size_t count;
+		tpbrt_size_t capacity;
 	} tpbrt_params_list_t;
 
-	tpbrt_error_t tpbrt_init_params_list(tpbrt_params_list_t* params_list);
-	tpbrt_error_t tpbrt_params_list_add_param(tpbrt_params_list_t* params_list, const tpbrt_param_t* param);
-	tpbrt_error_t tpbrt_params_list_extend(tpbrt_params_list_t* dest_params_list, const tpbrt_params_list_t* src_params_list);
-	tpbrt_error_t tpbrt_params_list_get_param(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_param_t** param);
-	tpbrt_error_t tpbrt_params_list_get_param_const(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_init(tpbrt_params_list_t* params_list);
+	tpbrt_error_t tpbrt_params_list_reserve(tpbrt_params_list_t* params_list, tpbrt_size_t new_capacity);
+	tpbrt_error_t tpbrt_params_list_resize(tpbrt_params_list_t* params_list, tpbrt_size_t new_size);
+	tpbrt_error_t tpbrt_params_list_append(tpbrt_params_list_t* params_list, const tpbrt_param_t* param);
+	tpbrt_error_t tpbrt_params_list_extend(tpbrt_params_list_t* dst_params_list, tpbrt_params_list_t src_params_list);
+	tpbrt_error_t tpbrt_params_list_get(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_param_t** param);
+	tpbrt_error_t tpbrt_params_list_get_const(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  const tpbrt_param_t** param);
-	void tpbrt_free_params_list(tpbrt_params_list_t* params_list);
+	void tpbrt_params_list_free(tpbrt_params_list_t* params_list);
 
-	tpbrt_size_t tpbrt_params_list_size(const tpbrt_params_list_t* params_list);
-	tpbrt_bool_t tpbrt_params_list_is_empty(const tpbrt_params_list_t* params_list);
+	tpbrt_bool_t tpbrt_params_list_empty(tpbrt_params_list_t params_list);
 
-	tpbrt_error_t tpbrt_params_list_get_strings(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_strings(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_string_array_t* out_vals);
 
-	tpbrt_error_t tpbrt_params_list_get_string(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_string(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_string_t* out_val);
 
-	tpbrt_error_t tpbrt_params_list_get_bools(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_bools(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_bool_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_floats(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_floats(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_float_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_ints(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_ints(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_int_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_uints(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_uints(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_uint_array_t* out_vals);
 
-	tpbrt_error_t tpbrt_params_list_get_bool(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_bool_t default_val, tpbrt_bool_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_float(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_bool(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_bool_t default_val,
+	  tpbrt_bool_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_float(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_float_t default_val, tpbrt_float_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_opt_float(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_opt_float(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_opt_float_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_int(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_int_t default_val, tpbrt_int_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_uint(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_uint_t default_val, tpbrt_uint_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_int(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_int_t default_val,
+	  tpbrt_int_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_uint(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_uint_t default_val,
+	  tpbrt_uint_t* out_val);
 
-	tpbrt_error_t tpbrt_params_list_get_rgbs(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_rgbs(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_rgb_array_t* out_vals);
 
-	tpbrt_error_t tpbrt_params_list_get_rgb(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_rgb_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_spectrum(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_rgb(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_rgb_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_spectrum(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_spectrum_t* out_val);
 
-	tpbrt_error_t tpbrt_params_list_get_vec2(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_vec2_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_point2(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_vec2(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec2_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_point2(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point2_t* out_val);
 
-	tpbrt_error_t tpbrt_params_list_get_vec2s(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_vec2s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_vec2_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_point2s(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_point2s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point2_array_t* out_vals);
 
-	tpbrt_error_t tpbrt_params_list_get_vec3(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_vec3_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_vec(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_vec_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_point3(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_vec3(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec3_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_vec(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_point3(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point3_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_point(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  tpbrt_point_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_normal3(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_point(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_point_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_normal3(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_normal3_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_normal(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_normal(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_normal_t* out_val);
 
-	tpbrt_error_t tpbrt_params_list_get_vec3s(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_vec3s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_vec3_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_vecs(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_vecs(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_vec_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_point3s(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_point3s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point3_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_points(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_points(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_normal3s(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_normal3s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_normal3_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_normals(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
+	tpbrt_error_t tpbrt_params_list_get_normals(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_normal_array_t* out_vals);
 
-	tpbrt_error_t tpbrt_params_list_get_texture(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  const tpbrt_textures_list_t* textures_list, tpbrt_texture_handle_t* out_val);
-	tpbrt_error_t tpbrt_params_list_get_texture_of_type(const tpbrt_params_list_t* params_list, const tpbrt_string_t* param_name,
-	  const tpbrt_textures_list_t* textures_list, tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_texture(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
+	  tpbrt_textures_list_t textures_list, tpbrt_texture_handle_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_texture_of_type(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
+	  tpbrt_textures_list_t textures_list, tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* out_val);
 #pragma endregion
 
 #ifdef __cplusplus

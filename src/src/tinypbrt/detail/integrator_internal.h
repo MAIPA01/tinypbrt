@@ -12,8 +12,12 @@
 extern "C" {
 #endif
 
-	tpbrt_error_t tpbrt_create_integrator(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
-	  tpbrt_integrator_t* integrator);
+	tpbrt_error_t tpbrt_integrator_type_from_string(tpbrt_string_t type_str, tpbrt_integrator_type_t* type);
+
+	tpbrt_error_t tpbrt_integrator_light_sampler_from_string(tpbrt_string_t sampler_str,
+	  tpbrt_integrator_light_sampler_t* sampler);
+
+	tpbrt_error_t tpbrt_integrator_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_integrator_t* integrator);
 
 #ifdef __cplusplus
 }

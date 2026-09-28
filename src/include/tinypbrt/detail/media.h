@@ -102,10 +102,8 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_medias_list_t;
 
-	tpbrt_error_t tpbrt_get_media_by_name(const tpbrt_medias_list_t* medias, const tpbrt_string_t* name,
-	  const tpbrt_media_t** media);
-	tpbrt_error_t tpbrt_get_media_by_handle(const tpbrt_medias_list_t* medias, tpbrt_media_handle_t handle,
-	  const tpbrt_media_t** media);
+	tpbrt_error_t tpbrt_get_media_by_name(tpbrt_medias_list_t medias, tpbrt_string_t name, const tpbrt_media_t** media);
+	tpbrt_error_t tpbrt_get_media_by_handle(tpbrt_medias_list_t medias, tpbrt_media_handle_t handle, const tpbrt_media_t** media);
 
 #ifdef __cplusplus
 }

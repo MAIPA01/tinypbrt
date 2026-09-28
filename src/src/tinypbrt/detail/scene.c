@@ -1,6 +1,6 @@
 #include <tinypbrt/pch.h>
 
-#include <tinypbrt/detail/scene_internal.h>
+#include <tinypbrt/detail/scene.h>
 
 #include <tinypbrt/detail/accelerator_internal.h>
 #include <tinypbrt/detail/camera_internal.h>
@@ -12,219 +12,18 @@
 #include <tinypbrt/detail/material_internal.h>
 #include <tinypbrt/detail/math_internal.h>
 #include <tinypbrt/detail/media_internal.h>
+#include <tinypbrt/detail/object_instance_internal.h>
+#include <tinypbrt/detail/object_internal.h>
+#include <tinypbrt/detail/options_internal.h>
+#include <tinypbrt/detail/parser_internal.h>
 #include <tinypbrt/detail/sampler_internal.h>
 #include <tinypbrt/detail/shape_internal.h>
+#include <tinypbrt/detail/state_internal.h>
 #include <tinypbrt/detail/texture_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-	tpbrt_error_t tpbrt_init_options(tpbrt_options_t* options) {
-			if (options == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
-
-		options->disable_pixel_jitter		= TPBRT_FALSE;
-		options->disable_texture_filtering	= TPBRT_FALSE;
-		options->disable_wave_length_jitter = TPBRT_FALSE;
-		options->displacement_edge_scale	= 1;
-		options->mse_reference_image.data	= TPBRT_NULL;
-		options->mse_reference_image.size	= 0;
-		options->mse_reference_out.data		= TPBRT_NULL;
-		options->mse_reference_out.size		= 0;
-		options->render_coord_sys			= TPBRT_COORDINATE_SYSTEM_CAMERA_WORLD;
-		options->seed						= 0;
-		options->force_diffuse				= TPBRT_FALSE;
-		options->pixel_stats				= TPBRT_FALSE;
-		options->wavefront					= TPBRT_FALSE;
-		return TPBRT_ERROR_NONE;
-	}
-
-	tpbrt_error_t tpbrt_options_apply(tpbrt_options_t* options, const tpbrt_param_t* param) {
-			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
-
-		static const tpbrt_string_t DISABLE_PIXEL_JITTER = TPBRT_STRING("disablepixeljitter");
-			if (tpbrt_string_equals(&param->name, &DISABLE_PIXEL_JITTER)) {
-				return tpbrt_param_as_bool(param, &options->disable_pixel_jitter);
-			}
-
-		static const tpbrt_string_t DISABLE_TEXTURE_FILTERING = TPBRT_STRING("disabletexturefiltering");
-			if (tpbrt_string_equals(&param->name, &DISABLE_TEXTURE_FILTERING)) {
-				return tpbrt_param_as_bool(param, &options->disable_texture_filtering);
-			}
-
-		static const tpbrt_string_t DISABLE_WAVE_LENGTH_JITTER = TPBRT_STRING("disablewavelengthjitter");
-			if (tpbrt_string_equals(&param->name, &DISABLE_WAVE_LENGTH_JITTER)) {
-				return tpbrt_param_as_bool(param, &options->disable_wave_length_jitter);
-			}
-
-		static const tpbrt_string_t DISPLACEMENT_EDGE_SCALE = TPBRT_STRING("displacementedgescale");
-			if (tpbrt_string_equals(&param->name, &DISPLACEMENT_EDGE_SCALE)) {
-				return tpbrt_param_as_float(param, &options->displacement_edge_scale);
-			}
-
-		static const tpbrt_string_t MSE_REFERENCE_IMAGE = TPBRT_STRING("msereferenceimage");
-			if (tpbrt_string_equals(&param->name, &MSE_REFERENCE_IMAGE)) {
-				return tpbrt_param_as_string(param, &options->mse_reference_image);
-			}
-
-		static const tpbrt_string_t MSE_REFERENCE_OUT = TPBRT_STRING("msereferenceout");
-			if (tpbrt_string_equals(&param->name, &MSE_REFERENCE_OUT)) {
-				return tpbrt_param_as_string(param, &options->mse_reference_out);
-			}
-
-		static const tpbrt_string_t RENDER_COORD_SYS = TPBRT_STRING("rendercoordsys");
-			if (tpbrt_string_equals(&param->name, &RENDER_COORD_SYS)) {
-				tpbrt_string_t coord_str;
-				tpbrt_error_t err = tpbrt_param_as_string(param, &coord_str);
-					if (err != TPBRT_ERROR_NONE) { return err; }
-
-				err = tpbrt_coordinate_system_from_string(&coord_str, &options->render_coord_sys);
-				tpbrt_free_string(&coord_str);
-				return err;
-			}
-
-		static const tpbrt_string_t SEED = TPBRT_STRING("seed");
-			if (tpbrt_string_equals(&param->name, &SEED)) { return tpbrt_param_as_int(param, &options->seed); }
-
-		static const tpbrt_string_t FORCE_DIFFUSE = TPBRT_STRING("forcediffuse");
-			if (tpbrt_string_equals(&param->name, &FORCE_DIFFUSE)) { return tpbrt_param_as_bool(param, &options->force_diffuse); }
-
-		static const tpbrt_string_t PIXEL_STATS = TPBRT_STRING("pixelstats");
-			if (tpbrt_string_equals(&param->name, &PIXEL_STATS)) { return tpbrt_param_as_bool(param, &options->pixel_stats); }
-
-		static const tpbrt_string_t WAVEFRONT = TPBRT_STRING("wavefront");
-			if (tpbrt_string_equals(&param->name, &WAVEFRONT)) { return tpbrt_param_as_bool(param, &options->wavefront); }
-
-		return TPBRT_ERROR_UNKNOWN_OPTION;
-	}
-
-	void tpbrt_free_options(tpbrt_options_t* options) {
-			if (options == TPBRT_NULL) { return; }
-
-		tpbrt_free_string(&options->mse_reference_image);
-		tpbrt_free_string(&options->mse_reference_out);
-	}
-
-#define DYN_ARRAY_PUSH(arr, count, capacity, item, type)                           \
-		do {                                                                       \
-				if ((count) >= (capacity)) {                                       \
-					(capacity) = (capacity) == 0 ? 8 : (capacity) * 2;             \
-					(arr)	   = (type*)realloc((arr), (capacity) * sizeof(type)); \
-				}                                                                  \
-			(arr)[(count)++] = (item);                                             \
-	} while (0)
-
-	tpbrt_error_t tpbrt_init_state(tpbrt_state_t* const state) {
-		memset(state, 0, sizeof(tpbrt_state_t));
-		state->reverse_orientation = TPBRT_FALSE;
-		state->active_ctm		   = TPBRT_ACTIVE_CTM_ALL;
-		tpbrt_mat4_identity(&state->ctm.start);
-		tpbrt_mat4_identity(&state->ctm.end);
-		state->current_color_space	  = TPBRT_COLOR_SPACE_SRGB;
-		state->current_inside_medium  = TPBRT_MEDIA_HANDLE_INVALID;
-		state->current_outside_medium = TPBRT_MEDIA_HANDLE_INVALID;
-		state->current_area_light	  = TPBRT_MEDIA_HANDLE_INVALID;
-		state->material_handle		  = TPBRT_MATERIAL_HANDLE_INVALID;
-		state->active_object		  = TPBRT_NULL;
-
-		tpbrt_error_t err			  = tpbrt_init_params_list(&state->shape_params);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_state(state);
-				return err;
-			}
-
-		err = tpbrt_init_params_list(&state->light_params);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_state(state);
-				return err;
-			}
-
-		err = tpbrt_init_params_list(&state->material_params);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_state(state);
-				return err;
-			}
-
-		err = tpbrt_init_params_list(&state->medium_params);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_state(state);
-				return err;
-			}
-
-		err = tpbrt_init_params_list(&state->texture_params);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_state(state);
-				return err;
-			}
-		return TPBRT_ERROR_NONE;
-	}
-
-	tpbrt_error_t tpbrt_state_clone(tpbrt_state_t* const dest, const tpbrt_state_t* const src) {
-		*dest = *src;
-		tpbrt_init_params_list(&dest->shape_params);
-		tpbrt_params_list_extend(&dest->shape_params, &src->shape_params);
-		tpbrt_init_params_list(&dest->light_params);
-		tpbrt_params_list_extend(&dest->light_params, &src->light_params);
-		tpbrt_init_params_list(&dest->material_params);
-		tpbrt_params_list_extend(&dest->material_params, &src->material_params);
-		tpbrt_init_params_list(&dest->medium_params);
-		tpbrt_params_list_extend(&dest->medium_params, &src->medium_params);
-		tpbrt_init_params_list(&dest->texture_params);
-		tpbrt_params_list_extend(&dest->texture_params, &src->texture_params);
-		return TPBRT_ERROR_NONE;
-	}
-
-	void tpbrt_free_state(tpbrt_state_t* const state) {
-			if (state == TPBRT_NULL) { return; }
-
-			if (state->active_object != TPBRT_NULL) {
-				tpbrt_free_object(state->active_object);
-				free(state->active_object);
-				state->active_object = TPBRT_NULL;
-			}
-
-		tpbrt_free_params_list(&state->shape_params);
-		tpbrt_free_params_list(&state->light_params);
-		tpbrt_free_params_list(&state->material_params);
-		tpbrt_free_params_list(&state->medium_params);
-		tpbrt_free_params_list(&state->texture_params);
-	}
-
-	tpbrt_error_t tpbrt_init_coord_sys_map(tpbrt_coord_sys_map_t* const map) {
-			if (map == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
-
-		map->entries  = TPBRT_NULL;
-		map->count	  = 0;
-		map->capacity = 0;
-		return TPBRT_ERROR_NONE;
-	}
-
-	tpbrt_error_t tpbrt_coord_sys_map_insert(tpbrt_coord_sys_map_t* const map, const tpbrt_string_t* const name,
-	  const tpbrt_mat4_animated_t* const transform) {
-		tpbrt_coord_sys_entry_t entry;
-		entry.name = *name;
-		memcpy(&entry.transform, transform, sizeof(tpbrt_mat4_animated_t));
-		DYN_ARRAY_PUSH(map->entries, map->count, map->capacity, entry, tpbrt_coord_sys_entry_t);
-		return TPBRT_ERROR_NONE;
-	}
-
-	tpbrt_bool_t tpbrt_coord_sys_map_get(const tpbrt_coord_sys_map_t* const map, const tpbrt_string_t* const name,
-	  tpbrt_mat4_animated_t* const out_transform) {
-			for (tpbrt_size_t i = 0; i < map->count; i++) {
-					if (map->entries[i].name.size == name->size &&
-						strncmp(map->entries[i].name.data, name->data, name->size) == 0) {
-						memcpy(out_transform, &map->entries[i].transform, sizeof(tpbrt_mat4_animated_t));
-						return TPBRT_TRUE;
-					}
-			}
-		return TPBRT_FALSE;
-	}
-
-	void tpbrt_free_coord_sys_map(const tpbrt_coord_sys_map_t* const map) {
-			if (map == TPBRT_NULL) { return; }
-
-			if (map->entries) { free(map->entries); }
-	}
 
 	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene) {
 			if (filepath == TPBRT_NULL || out_scene == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -245,8 +44,9 @@ extern "C" {
 				return TPBRT_ERROR_OUT_OF_MEMORY;
 			}
 
-		fread(file_data.data, 1, file_data.size, f);
-		file_data.data[file_data.size] = '\0';
+		static const tpbrt_char_t NULL_TERMINATOR = '\0';
+		fread((tpbrt_char_t*)file_data.data, 1, file_data.size, f);
+		memcpy((tpbrt_char_t*)(file_data.data + file_data.size), &NULL_TERMINATOR, sizeof(tpbrt_char_t));
 		fclose(f);
 
 		tpbrt_char_t working_directory[1024];
@@ -264,129 +64,134 @@ extern "C" {
 					}
 			}
 
-		const tpbrt_error_t err = tpbrt_scene_load_from_memory(file_data.data, working_directory, out_scene);
+		const tpbrt_error_t err = tpbrt_scene_load_from_memory(file_data.data, out_scene);
 
 			if (err == TPBRT_ERROR_NONE) {
 				const tpbrt_size_t cap	= out_scene->includes.count == 0 ? 8 : out_scene->includes.count * 2;
 
 				tpbrt_string_t* tempPtr = realloc(out_scene->includes.data, cap * sizeof(tpbrt_string_t));
 					if (tempPtr == TPBRT_NULL) {
-						tpbrt_free_string(&file_data);
+						tpbrt_string_free(&file_data);
 						return TPBRT_ERROR_OUT_OF_MEMORY;
 					}
 				out_scene->includes.data							  = tempPtr;
 
 				out_scene->includes.data[out_scene->includes.count++] = file_data;
 			}
-			else { tpbrt_free_string(&file_data); }
+			else { tpbrt_string_free(&file_data); }
 
 		return err;
 	}
 
-	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* data, const tpbrt_char_t* working_directory,
-	  tpbrt_scene_t* out_scene) {
+	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* data, tpbrt_scene_t* out_scene) {
 		memset(out_scene, 0, sizeof(tpbrt_scene_t));
 
-		tpbrt_error_t err = tpbrt_init_options(&out_scene->options);
+		tpbrt_error_t err = tpbrt_options_init(&out_scene->options);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_init_textures_list(&out_scene->textures);
+		err = tpbrt_textures_list_init(&out_scene->textures);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_init_materials_list(&out_scene->materials);
+		err = tpbrt_materials_list_init(&out_scene->materials);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_init_lights_list(&out_scene->lights);
+		err = tpbrt_lights_list_init(&out_scene->lights);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_init_medias_list(&out_scene->medias);
+		err = tpbrt_medias_list_init(&out_scene->medias);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_init_objects_list(&out_scene->objects);
+		err = tpbrt_objects_list_init(&out_scene->objects);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_init_instances_list(&out_scene->instances);
+		err = tpbrt_objects_instances_list_init(&out_scene->instances);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_create_default_film(&out_scene->film);
+		err = tpbrt_film_init_default(&out_scene->film);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		err = tpbrt_create_default_filter(&out_scene->filter);
+		err = tpbrt_filter_init_default(&out_scene->filter);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		out_scene->shapes.data		 = TPBRT_NULL;
-		out_scene->shapes.count		 = 0;
-
-		tpbrt_parser_node_t* parsers = TPBRT_NULL;
-		tpbrt_size_t parsers_count = 0, parsers_cap = 0;
-
-		tpbrt_parser_node_t root_node;
-		root_node.file_data.data	   = TPBRT_NULL;
-		const tpbrt_string_t file_view = { .data = (tpbrt_char_t*)data, .size = strlen(data) };
-		err							   = tpbrt_parser_init(&root_node.parser, &file_view);
+		err = tpbrt_shapes_list_init(&out_scene->shapes);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
-		DYN_ARRAY_PUSH(parsers, parsers_count, parsers_cap, root_node, tpbrt_parser_node_t);
+
+		tpbrt_string_t file_view;
+		err = tpbrt_string_from_cstr(data, &file_view);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
+
+		tpbrt_parser_t parser;
+		err = tpbrt_parser_init(&parser, file_view);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
 
 		tpbrt_state_t current_state;
-		err = tpbrt_init_state(&current_state);
+		err = tpbrt_state_init(&current_state);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
-		tpbrt_state_t* states_stack = TPBRT_NULL;
-		tpbrt_size_t states_count = 0, states_cap = 0;
+		tpbrt_states_stack_t states;
+		err = tpbrt_states_stack_init(&states);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
+
 		tpbrt_bool_t is_world_block = TPBRT_FALSE;
 
-		tpbrt_coord_sys_map_t named_coord_systems;
-		err = tpbrt_init_coord_sys_map(&named_coord_systems);
+		tpbrt_coord_system_map_t named_coord_systems;
+		err = tpbrt_coord_system_map_init(&named_coord_systems);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_scene(out_scene);
+				tpbrt_scene_free(out_scene);
 				return err;
 			}
 
 		tpbrt_error_t last_error = TPBRT_ERROR_NONE;
 
-			while (parsers_count > 0) {
-				tpbrt_parser_node_t* current_node = &parsers[parsers_count - 1];
+			while (0) {
 				tpbrt_element_t element;
 
-				err = tpbrt_parser_parse_next(&current_node->parser, &element);
+				err = tpbrt_parser_next(&parser, &element);
 
-					if (err == TPBRT_ERROR_END_OF_FILE) {
-						parsers_count--;
-						continue;
-					}
+					if (err == TPBRT_ERROR_END_OF_FILE) { break; }
+
 					if (err != TPBRT_ERROR_NONE) {
 						last_error = err;
 						break;
@@ -479,13 +284,13 @@ extern "C" {
 							break;
 						}
 						case TPBRT_DIRECTIVE_COORDINATE_SYSTEM: {
-							last_error =
-							  tpbrt_coord_sys_map_insert(&named_coord_systems, &element.as.named_entity.name, &current_state.ctm);
+							last_error = tpbrt_coord_system_map_insert(&named_coord_systems, element.as.named_entity.name,
+							  &current_state.ctm);
 							break;
 						}
 						case TPBRT_DIRECTIVE_COORD_SYS_TRANSFORM: {
 							tpbrt_mat4_animated_t mat;
-							tpbrt_coord_sys_map_get(&named_coord_systems, &element.as.named_entity.name, &mat);
+							tpbrt_coord_system_map_get(&named_coord_systems, element.as.named_entity.name, &mat);
 
 								if (current_state.active_ctm == TPBRT_ACTIVE_CTM_ALL ||
 									current_state.active_ctm == TPBRT_ACTIVE_CTM_START_TIME) {
@@ -547,13 +352,13 @@ extern "C" {
 							static const tpbrt_string_t END_TIME_STR   = TPBRT_STRING("EndTime");
 							static const tpbrt_string_t ALL_STR		   = TPBRT_STRING("All");
 
-								if (tpbrt_string_equals(&element.as.single_string.type_name, &START_TIME_STR)) {
+								if (tpbrt_string_equals(element.as.single_string.type_name, START_TIME_STR)) {
 									current_state.active_ctm = TPBRT_ACTIVE_CTM_START_TIME;
 								}
-								else if (tpbrt_string_equals(&element.as.single_string.type_name, &END_TIME_STR)) {
+								else if (tpbrt_string_equals(element.as.single_string.type_name, END_TIME_STR)) {
 									current_state.active_ctm = TPBRT_ACTIVE_CTM_END_TIME;
 								}
-								else if (tpbrt_string_equals(&element.as.single_string.type_name, &ALL_STR)) {
+								else if (tpbrt_string_equals(element.as.single_string.type_name, ALL_STR)) {
 									current_state.active_ctm = TPBRT_ACTIVE_CTM_ALL;
 								}
 								else { last_error = TPBRT_ERROR_UNEXPECTED_TOKEN; }
@@ -570,8 +375,8 @@ extern "C" {
 								}
 							out_scene->includes.data = tempPtr;
 
-							last_error				 = tpbrt_copy_string(&out_scene->includes.data[out_scene->includes.count++],
-							  &element.as.include_import.path);
+							last_error				 = tpbrt_string_copy(&out_scene->includes.data[out_scene->includes.count++],
+							  element.as.include_import.path);
 							break;
 						}
 						case TPBRT_DIRECTIVE_IMPORT: {
@@ -584,8 +389,8 @@ extern "C" {
 								}
 							out_scene->includes.data = tempPtr;
 
-							last_error				 = tpbrt_copy_string(&out_scene->includes.data[out_scene->includes.count++],
-							  &element.as.include_import.path);
+							last_error				 = tpbrt_string_copy(&out_scene->includes.data[out_scene->includes.count++],
+							  element.as.include_import.path);
 							break;
 						}
 
@@ -610,11 +415,11 @@ extern "C" {
 							tpbrt_mat4_inverse(&camera_to_world.end, &current_state.ctm.end);
 
 							static const tpbrt_string_t CAM_STR = TPBRT_STRING("camera");
-							last_error = tpbrt_coord_sys_map_insert(&named_coord_systems, &CAM_STR, &camera_to_world);
+							last_error = tpbrt_coord_system_map_insert(&named_coord_systems, CAM_STR, &camera_to_world);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error = tpbrt_create_camera(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->film, &camera_to_world,
+							last_error = tpbrt_camera_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, &out_scene->film, &camera_to_world,
 							  current_state.current_inside_medium, current_state.current_outside_medium, &out_scene->camera);
 							break;
 						}
@@ -624,8 +429,8 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_create_sampler(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->sampler);
+							last_error = tpbrt_sampler_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, &out_scene->sampler);
 							break;
 						}
 						case TPBRT_DIRECTIVE_COLOR_SPACE: {
@@ -634,7 +439,7 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_color_space_from_string(&element.as.single_string.type_name,
+							last_error = tpbrt_color_space_from_string(element.as.single_string.type_name,
 							  &current_state.current_color_space);
 							break;
 						}
@@ -644,8 +449,8 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_create_film(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->film);
+							last_error = tpbrt_film_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, &out_scene->film);
 							break;
 						}
 						case TPBRT_DIRECTIVE_PIXEL_FILTER: {
@@ -654,8 +459,8 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_create_filter(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->filter);
+							last_error = tpbrt_filter_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, &out_scene->filter);
 							break;
 						}
 						case TPBRT_DIRECTIVE_INTEGRATOR: {
@@ -664,8 +469,8 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_create_integrator(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->integrator);
+							last_error = tpbrt_integrator_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, &out_scene->integrator);
 							break;
 						}
 						case TPBRT_DIRECTIVE_ACCELERATOR: {
@@ -674,8 +479,8 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_create_accelerator(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->accelerator);
+							last_error = tpbrt_accelerator_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, &out_scene->accelerator);
 							break;
 						}
 
@@ -695,16 +500,18 @@ extern "C" {
 							tpbrt_state_t cloned;
 							last_error = tpbrt_state_clone(&cloned, &current_state);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
-							DYN_ARRAY_PUSH(states_stack, states_count, states_cap, cloned, tpbrt_state_t);
+							last_error = tpbrt_states_stack_push(&states, &cloned);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
 							break;
 						}
 						case TPBRT_DIRECTIVE_ATTRIBUTE_END: {
-								if (states_count == 0) {
+								if (states.count == 0) {
 									last_error = TPBRT_ERROR_TOO_MANY_END_ATTRIBUTES;
 									break;
 								}
-							tpbrt_free_state(&current_state);
-							current_state = states_stack[--states_count];
+							tpbrt_state_free(&current_state);
+							last_error = tpbrt_states_stack_pop(&states, &current_state);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
 							break;
 						}
 						case TPBRT_DIRECTIVE_ATTRIBUTE: {
@@ -714,25 +521,25 @@ extern "C" {
 							static const tpbrt_string_t TEXTURE_STR	 = TPBRT_STRING("texture");
 							static const tpbrt_string_t MEDIUM_STR	 = TPBRT_STRING("medium");
 
-								if (tpbrt_string_equals(&element.as.attribute.target, &SHAPE_STR)) {
+								if (tpbrt_string_equals(element.as.attribute.target, SHAPE_STR)) {
 									last_error =
-									  tpbrt_params_list_extend(&current_state.shape_params, &element.as.attribute.params);
+									  tpbrt_params_list_extend(&current_state.shape_params, element.as.attribute.params);
 								}
-								else if (tpbrt_string_equals(&element.as.attribute.target, &LIGHT_STR)) {
+								else if (tpbrt_string_equals(element.as.attribute.target, LIGHT_STR)) {
 									last_error =
-									  tpbrt_params_list_extend(&current_state.light_params, &element.as.attribute.params);
+									  tpbrt_params_list_extend(&current_state.light_params, element.as.attribute.params);
 								}
-								else if (tpbrt_string_equals(&element.as.attribute.target, &MATERIAL_STR)) {
+								else if (tpbrt_string_equals(element.as.attribute.target, MATERIAL_STR)) {
 									last_error =
-									  tpbrt_params_list_extend(&current_state.material_params, &element.as.attribute.params);
+									  tpbrt_params_list_extend(&current_state.material_params, element.as.attribute.params);
 								}
-								else if (tpbrt_string_equals(&element.as.attribute.target, &TEXTURE_STR)) {
+								else if (tpbrt_string_equals(element.as.attribute.target, TEXTURE_STR)) {
 									last_error =
-									  tpbrt_params_list_extend(&current_state.texture_params, &element.as.attribute.params);
+									  tpbrt_params_list_extend(&current_state.texture_params, element.as.attribute.params);
 								}
-								else if (tpbrt_string_equals(&element.as.attribute.target, &MEDIUM_STR)) {
+								else if (tpbrt_string_equals(element.as.attribute.target, MEDIUM_STR)) {
 									last_error =
-									  tpbrt_params_list_extend(&current_state.medium_params, &element.as.attribute.params);
+									  tpbrt_params_list_extend(&current_state.medium_params, element.as.attribute.params);
 								}
 							break;
 						}
@@ -749,21 +556,21 @@ extern "C" {
 								}
 
 							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, &current_state.shape_params);
+							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.shape_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_shape_t shape;
-							last_error = tpbrt_create_shape(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->textures, &current_state.ctm,
-							  current_state.material_handle, current_state.current_area_light,
-							  current_state.current_inside_medium, current_state.current_outside_medium,
-							  current_state.reverse_orientation, &shape);
+							last_error =
+							  tpbrt_shape_init(element.as.generic_with_params.type_name, element.as.generic_with_params.params,
+								out_scene->textures, &current_state.ctm, current_state.material_handle,
+								current_state.current_area_light, current_state.current_inside_medium,
+								current_state.current_outside_medium, current_state.reverse_orientation, &shape);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 								if (current_state.active_object != TPBRT_NULL) {
 									last_error = tpbrt_object_add_shape(current_state.active_object, &shape);
 								}
-								else { last_error = tpbrt_shape_array_add_shape(&out_scene->shapes, &shape); }
+								else { last_error = tpbrt_shapes_list_append(&out_scene->shapes, &shape); }
 							break;
 						}
 						case TPBRT_DIRECTIVE_OBJECT_BEGIN: {
@@ -781,10 +588,11 @@ extern "C" {
 							last_error = tpbrt_state_clone(&cloned, &current_state);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							DYN_ARRAY_PUSH(states_stack, states_count, states_cap, cloned, tpbrt_state_t);
+							last_error = tpbrt_states_stack_push(&states, &cloned);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							current_state.active_object = malloc(sizeof(tpbrt_object_t));
-							last_error = tpbrt_create_object(&element.as.named_entity.name, current_state.active_object);
+							last_error = tpbrt_object_init(element.as.named_entity.name, current_state.active_object);
 							break;
 						}
 						case TPBRT_DIRECTIVE_OBJECT_END: {
@@ -798,14 +606,15 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_objects_list_add_object(&out_scene->objects, current_state.active_object);
+							last_error = tpbrt_objects_list_append(&out_scene->objects, current_state.active_object);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							free(current_state.active_object);
 							current_state.active_object = TPBRT_NULL;
 
-							tpbrt_free_state(&current_state);
-							current_state = states_stack[--states_count];
+							tpbrt_state_free(&current_state);
+							last_error = tpbrt_states_stack_pop(&states, &current_state);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
 							break;
 						}
 						case TPBRT_DIRECTIVE_OBJECT_INSTANCE: {
@@ -814,12 +623,12 @@ extern "C" {
 									break;
 								}
 
-							tpbrt_instance_t inst;
-							last_error = tpbrt_create_instance(&element.as.named_entity.name, &out_scene->objects,
+							tpbrt_object_instance_t inst;
+							last_error = tpbrt_object_instance_init(element.as.named_entity.name, out_scene->objects,
 							  &current_state.ctm, &inst);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error = tpbrt_instances_list_add_instance(&out_scene->instances, &inst);
+							last_error = tpbrt_objects_instances_list_append(&out_scene->instances, &inst);
 							break;
 						}
 
@@ -830,16 +639,16 @@ extern "C" {
 								}
 
 							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, &current_state.light_params);
+							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.light_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_light_source_t light;
-							last_error = tpbrt_create_light_source(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, current_state.current_color_space, &current_state.ctm,
+							last_error = tpbrt_light_source_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, current_state.current_color_space, &current_state.ctm,
 							  current_state.current_inside_medium, current_state.current_outside_medium, &light);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error = tpbrt_lights_list_add_light_source(&out_scene->lights, &light);
+							last_error = tpbrt_lights_list_append_light_source(&out_scene->lights, &light);
 							break;
 						}
 						case TPBRT_DIRECTIVE_AREA_LIGHT_SOURCE: {
@@ -849,16 +658,16 @@ extern "C" {
 								}
 
 							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, &current_state.light_params);
+							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.light_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_area_light_t area_light;
-							last_error = tpbrt_create_area_light(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, current_state.current_color_space, &area_light);
+							last_error = tpbrt_area_light_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, current_state.current_color_space, &area_light);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error = tpbrt_lights_list_add_area_light(&out_scene->lights, &current_state.current_area_light,
-							  &area_light);
+							last_error = tpbrt_lights_list_append_area_light(&out_scene->lights,
+							  &current_state.current_area_light, &area_light);
 							break;
 						}
 
@@ -869,16 +678,15 @@ extern "C" {
 								}
 
 							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, &current_state.material_params);
+							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.material_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_material_t mat;
-							last_error = tpbrt_create_material(&element.as.generic_with_params.type_name,
-							  &element.as.generic_with_params.params, &out_scene->textures, &out_scene->materials, &mat);
+							last_error = tpbrt_material_init(element.as.generic_with_params.type_name,
+							  element.as.generic_with_params.params, out_scene->textures, out_scene->materials, &mat);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error =
-							  tpbrt_materials_list_add_material(&out_scene->materials, &mat, &current_state.material_handle);
+							last_error = tpbrt_materials_list_append(&out_scene->materials, &mat, &current_state.material_handle);
 							break;
 						}
 						case TPBRT_DIRECTIVE_MAKE_NAMED_MATERIAL: {
@@ -888,16 +696,15 @@ extern "C" {
 								}
 
 							last_error =
-							  tpbrt_params_list_extend(&element.as.named_with_params.params, &current_state.material_params);
+							  tpbrt_params_list_extend(&element.as.named_with_params.params, current_state.material_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_material_t mat;
-							last_error = tpbrt_create_named_material(&element.as.named_with_params.name,
-							  &element.as.named_with_params.params, &out_scene->textures, &out_scene->materials, &mat);
+							last_error = tpbrt_material_init_named(element.as.named_with_params.name,
+							  element.as.named_with_params.params, out_scene->textures, out_scene->materials, &mat);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error =
-							  tpbrt_materials_list_add_material(&out_scene->materials, &mat, &current_state.material_handle);
+							last_error = tpbrt_materials_list_append(&out_scene->materials, &mat, &current_state.material_handle);
 							break;
 						}
 						case TPBRT_DIRECTIVE_NAMED_MATERIAL: {
@@ -906,8 +713,8 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_materials_list_get_material_handle(&out_scene->materials,
-							  &element.as.named_entity.name, &current_state.material_handle);
+							last_error = tpbrt_materials_list_get_handle(out_scene->materials, element.as.named_entity.name,
+							  &current_state.material_handle);
 							break;
 						}
 
@@ -917,30 +724,30 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_params_list_extend(&element.as.texture.params, &current_state.texture_params);
+							last_error = tpbrt_params_list_extend(&element.as.texture.params, current_state.texture_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_texture_t tex;
-							last_error = tpbrt_create_texture(&element.as.texture.name, &element.as.texture.type_name,
-							  &element.as.texture.class_name, &element.as.texture.params, &out_scene->textures,
-							  &current_state.ctm, &tex);
+							last_error = tpbrt_texture_init(element.as.texture.name, element.as.texture.type_name,
+							  element.as.texture.class_name, element.as.texture.params, out_scene->textures, &current_state.ctm,
+							  &tex);
 
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error = tpbrt_textures_list_add_texture(&out_scene->textures, &tex);
+							last_error = tpbrt_textures_list_append(&out_scene->textures, &tex);
 							break;
 						}
 
 						case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM: {
-							last_error = tpbrt_params_list_extend(&element.as.named_medium.params, &current_state.medium_params);
+							last_error = tpbrt_params_list_extend(&element.as.named_medium.params, current_state.medium_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_media_t media;
-							last_error = tpbrt_create_media(&element.as.named_medium.name, &element.as.named_medium.type,
-							  &element.as.named_medium.params, &media);
+							last_error = tpbrt_media_init(element.as.named_medium.name, element.as.named_medium.type,
+							  element.as.named_medium.params, &media);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error = tpbrt_medias_list_add_media(&out_scene->medias, &media);
+							last_error = tpbrt_medias_list_append(&out_scene->medias, &media);
 							break;
 						}
 						case TPBRT_DIRECTIVE_MEDIUM_INTERFACE: {
@@ -948,8 +755,8 @@ extern "C" {
 									current_state.current_inside_medium = TPBRT_MEDIA_HANDLE_INVALID;
 								}
 								else {
-									last_error = tpbrt_medias_list_get_media_handle(&out_scene->medias,
-									  &element.as.medium_interface.interior, &current_state.current_inside_medium);
+									last_error = tpbrt_medias_list_get_handle(out_scene->medias,
+									  element.as.medium_interface.interior, &current_state.current_inside_medium);
 										if (last_error != TPBRT_ERROR_NONE) { break; }
 								}
 
@@ -957,8 +764,8 @@ extern "C" {
 									current_state.current_outside_medium = TPBRT_MEDIA_HANDLE_INVALID;
 								}
 								else {
-									last_error = tpbrt_medias_list_get_media_handle(&out_scene->medias,
-									  &element.as.medium_interface.exterior, &current_state.current_outside_medium);
+									last_error = tpbrt_medias_list_get_handle(out_scene->medias,
+									  element.as.medium_interface.exterior, &current_state.current_outside_medium);
 										if (last_error != TPBRT_ERROR_NONE) { break; }
 								}
 							break;
@@ -968,37 +775,35 @@ extern "C" {
 						}
 					}
 
-				tpbrt_free_element(&element);
+				tpbrt_element_free(&element);
 					if (last_error != TPBRT_ERROR_NONE) { break; }
 			}
 
-		tpbrt_free_state(&current_state);
-			for (tpbrt_size_t i = 0; i < states_count; i++) { tpbrt_free_state(&states_stack[i]); }
-			if (states_stack) { free(states_stack); }
-			if (parsers) { free(parsers); }
-		tpbrt_free_coord_sys_map(&named_coord_systems);
+		tpbrt_state_free(&current_state);
+		tpbrt_states_stack_free(&states);
+		tpbrt_coord_system_map_free(&named_coord_systems);
 
 		return last_error;
 	}
 
-	void tpbrt_free_scene(tpbrt_scene_t* scene) {
+	void tpbrt_scene_free(tpbrt_scene_t* scene) {
 			if (scene == TPBRT_NULL) { return; }
 
-		tpbrt_free_options(&scene->options);
+		tpbrt_options_free(&scene->options);
 
-		tpbrt_free_camera(&scene->camera);
-		tpbrt_free_film(&scene->film);
+		tpbrt_camera_free(&scene->camera);
+		tpbrt_film_free(&scene->film);
 
-		tpbrt_free_textures_list(&scene->textures);
-		tpbrt_free_materials_list(&scene->materials);
-		tpbrt_free_lights_list(&scene->lights);
-		tpbrt_free_medias_list(&scene->medias);
-		tpbrt_free_objects_list(&scene->objects);
-		tpbrt_free_instances_list(&scene->instances);
+		tpbrt_textures_list_free(&scene->textures);
+		tpbrt_materials_list_free(&scene->materials);
+		tpbrt_lights_list_free(&scene->lights);
+		tpbrt_medias_list_free(&scene->medias);
+		tpbrt_objects_list_free(&scene->objects);
+		tpbrt_objects_instances_list_free(&scene->instances);
 
-		tpbrt_free_shape_array(&scene->shapes);
+		tpbrt_shapes_list_free(&scene->shapes);
 
-		tpbrt_free_string_array(&scene->includes);
+		tpbrt_string_array_free(&scene->includes);
 	}
 
 #ifdef __cplusplus

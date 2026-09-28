@@ -6,11 +6,25 @@
 extern "C" {
 #endif
 
+	tpbrt_uint_t tpbrt_next_power_of_two(tpbrt_uint_t n) {
+			if (n == 0) { return 1; }
+
+		--n;
+		n |= n >> (1 << 0);
+		n |= n >> (1 << 1);
+		n |= n >> (1 << 2);
+		n |= n >> (1 << 3);
+		n |= n >> (1 << 4);
+		++n;
+
+		return n;
+	}
+
 	void tpbrt_mat4_identity(tpbrt_mat4_t* const m) {
 			if (m == TPBRT_NULL) { return; }
 
 		tpbrt_float_t* out = (tpbrt_float_t*)m;
-			for (int i = 0; i < 16; i++) { out[i] = (i % 5 == 0) ? 1.0f : 0.0f; }
+			for (int i = 0; i < 16; i++) { out[i] = i % 5 == 0 ? 1.0f : 0.0f; }
 	}
 
 	void tpbrt_mat4_from_array(tpbrt_mat4_t* const m, const tpbrt_float_t arr[16]) {
@@ -130,7 +144,7 @@ extern "C" {
 		out[15]						  = 1.0f;
 	}
 
-	void tpbrt_mat4_multiply(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b) {
+	void tpbrt_mat4_multiply(tpbrt_mat4_t* const out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b) {
 			if (out_m == TPBRT_NULL || a == TPBRT_NULL || b == TPBRT_NULL) { return; }
 
 		tpbrt_float_t* out		 = (tpbrt_float_t*)out_m;
@@ -200,46 +214,46 @@ extern "C" {
 			for (tpbrt_uint_t i = 0; i < 16; ++i) { out[i] = inv[i] * inv_det; }
 	}
 
-	void tpbrt_free_bool_array(tpbrt_bool_array_t* array) {
+	void tpbrt_bool_array_free(tpbrt_bool_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_BOOL_ARRAY;
 	}
 
-	void tpbrt_free_int_array(tpbrt_int_array_t* array) {
+	void tpbrt_int_array_free(tpbrt_int_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_INT_ARRAY;
 	}
 
-	void tpbrt_free_uint_array(tpbrt_uint_array_t* array) {
+	void tpbrt_uint_array_free(tpbrt_uint_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_UINT_ARRAY;
 	}
 
-	void tpbrt_free_float_array(tpbrt_float_array_t* array) {
+	void tpbrt_float_array_free(tpbrt_float_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_FLOAT_ARRAY;
 	}
 
-	void tpbrt_free_vec2_array(tpbrt_vec2_array_t* array) {
+	void tpbrt_vec2_array_free(tpbrt_vec2_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_VEC2_ARRAY;
 	}
 
-	void tpbrt_free_vec3_array(tpbrt_vec3_array_t* array) {
+	void tpbrt_vec3_array_free(tpbrt_vec3_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_VEC3_ARRAY;
 	}
 
 #ifdef __cplusplus

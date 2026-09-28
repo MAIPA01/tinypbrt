@@ -9,16 +9,19 @@
 extern "C" {
 #endif
 
-	tpbrt_error_t tpbrt_color_space_from_string(const tpbrt_string_t* color_space_str, tpbrt_color_space_t* color_space_out);
-	tpbrt_error_t tpbrt_spectrum_builtin_from_string(const tpbrt_string_t* builtin_str, tpbrt_spectrum_builtin_t* builtin_out);
+#define TPBRT_EMPTY_RGB_ARRAY		  (tpbrt_rgb_array_t) { .data = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_WAVELENGTHS_ARRAY (tpbrt_wavelength_array_t) { .data = TPBRT_NULL, .count = 0 }
 
-	void tpbrt_free_rgb_array(tpbrt_rgb_array_t* array);
+	tpbrt_error_t tpbrt_color_space_from_string(tpbrt_string_t color_space_str, tpbrt_color_space_t* color_space_out);
+	tpbrt_error_t tpbrt_spectrum_builtin_from_string(tpbrt_string_t builtin_str, tpbrt_spectrum_builtin_t* builtin_out);
 
-	tpbrt_error_t tpbrt_copy_wavelengths_array(tpbrt_wavelength_array_t* dst, const tpbrt_wavelength_array_t* src);
-	void tpbrt_free_wavelength_array(tpbrt_wavelength_array_t* wavelength_array);
+	void tpbrt_rgb_array_free(tpbrt_rgb_array_t* array);
 
-	tpbrt_error_t tpbrt_copy_spectrum(tpbrt_spectrum_t* dst, const tpbrt_spectrum_t* src);
-	void tpbrt_free_spectrum(tpbrt_spectrum_t* spectrum);
+	tpbrt_error_t tpbrt_wavelengths_array_copy(tpbrt_wavelength_array_t* dst, tpbrt_wavelength_array_t src);
+	void tpbrt_wavelength_array_free(tpbrt_wavelength_array_t* wavelength_array);
+
+	tpbrt_error_t tpbrt_spectrum_copy(tpbrt_spectrum_t* dst, tpbrt_spectrum_t src);
+	void tpbrt_spectrum_free(tpbrt_spectrum_t* spectrum);
 
 #ifdef __cplusplus
 }

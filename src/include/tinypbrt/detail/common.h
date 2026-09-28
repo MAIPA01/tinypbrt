@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 	typedef struct tpbrt_string_t {
-		tpbrt_char_t* data;
+		const tpbrt_char_t* data;
 		tpbrt_size_t size;
 	} tpbrt_string_t;
 

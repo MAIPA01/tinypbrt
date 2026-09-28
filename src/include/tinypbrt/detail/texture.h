@@ -104,10 +104,10 @@ extern "C" {
 	} tpbrt_texture_filter_t;
 
 	typedef enum tpbrt_texture_encoding_t : uint8_t {
-		TPBRT_TEXTURE_ENCODING_SRGB		 = 0,
-		TPBRT_TEXTURE_ENCODING_LINEAR	 = 1,
-		TPBRT_TEXTURE_ENCODING_GAMMA_VAL = 2,
-		TPBRT_TEXTURE_ENCODING_MAX_NUM	 = 3,
+		TPBRT_TEXTURE_ENCODING_SRGB	   = 0,
+		TPBRT_TEXTURE_ENCODING_LINEAR  = 1,
+		TPBRT_TEXTURE_ENCODING_GAMMA   = 2,
+		TPBRT_TEXTURE_ENCODING_MAX_NUM = 3,
 	} tpbrt_texture_encoding_t;
 
 	typedef struct tpbrt_texture_image_map_params_t {
@@ -201,14 +201,15 @@ extern "C" {
 		} as;
 	} tpbrt_texture_t;
 
+#define TPBRT_TEXTURE_IDX_INVALID ~(tpbrt_size_t)0
+
 	typedef struct tpbrt_textures_list_t {
 		tpbrt_texture_t* textures;
 		tpbrt_size_t count;
 	} tpbrt_textures_list_t;
 
-	tpbrt_error_t tpbrt_get_texture_by_name(const tpbrt_textures_list_t* textures, const tpbrt_string_t* name,
-	  const tpbrt_texture_t** texture);
-	tpbrt_error_t tpbrt_get_texture_by_handle(const tpbrt_textures_list_t* textures, const tpbrt_texture_handle_t* handle,
+	tpbrt_error_t tpbrt_get_texture_by_name(tpbrt_textures_list_t textures, tpbrt_string_t name, const tpbrt_texture_t** texture);
+	tpbrt_error_t tpbrt_get_texture_by_handle(tpbrt_textures_list_t textures, tpbrt_texture_handle_t handle,
 	  const tpbrt_texture_t** texture);
 
 #ifdef __cplusplus

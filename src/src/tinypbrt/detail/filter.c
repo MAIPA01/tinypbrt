@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	static tpbrt_error_t tpbrt_filter_type_from_string(const tpbrt_string_t* const type_str, tpbrt_filter_type_t* const type) {
+	tpbrt_error_t tpbrt_filter_type_from_string(const tpbrt_string_t type_str, tpbrt_filter_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_FILTER_TYPE_MAX_NUM] = {
 			TPBRT_STRING("box"),
 			TPBRT_STRING("gaussian"),
@@ -17,33 +17,34 @@ extern "C" {
 			TPBRT_STRING("triangle"),
 		};
 
-			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_FILTER_TYPE; }
 
 			for (tpbrt_filter_type_t t = 0; t < TPBRT_FILTER_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, &TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		return TPBRT_ERROR_UNKNOWN_FILTER_TYPE;
+		return TPBRT_ERROR_INVALID_FILTER_TYPE;
 	}
 
-	tpbrt_error_t tpbrt_create_default_filter(tpbrt_filter_t* const filter) {
+	tpbrt_error_t tpbrt_filter_init_default(tpbrt_filter_t* const filter) {
 			if (filter == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		filter->type			  = TPBRT_FILTER_TYPE_GAUSSIAN;
-		filter->x_radius		  = 1.5f;
-		filter->y_radius		  = 1.5f;
-		filter->as.gaussian.sigma = 0.5f;
+		*filter = (tpbrt_filter_t) {
+			.type			   = TPBRT_FILTER_TYPE_GAUSSIAN,
+			.x_radius		   = 1.5f,
+			.y_radius		   = 1.5f,
+			.as.gaussian.sigma = 0.5f,
+		};
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_create_filter(const tpbrt_string_t* type, const tpbrt_params_list_t* const params,
-	  tpbrt_filter_t* const filter) {
-			if (params == TPBRT_NULL || filter == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	tpbrt_error_t tpbrt_filter_init(const tpbrt_string_t type, const tpbrt_params_list_t params, tpbrt_filter_t* const filter) {
+			if (filter == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(filter, 0, sizeof(tpbrt_filter_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -62,7 +63,7 @@ extern "C" {
 					defaultRadius						  = 1.5f;
 
 					static const tpbrt_string_t SIGMA_STR = TPBRT_STRING("sigma");
-					err = tpbrt_params_list_get_float(params, &SIGMA_STR, 0.5f, &filter->as.gaussian.sigma);
+					err = tpbrt_params_list_get_float(params, SIGMA_STR, 0.5f, &filter->as.gaussian.sigma);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					break;
 				}
@@ -72,10 +73,10 @@ extern "C" {
 					static const tpbrt_string_t B_STR = TPBRT_STRING("B");
 					static const tpbrt_string_t C_STR = TPBRT_STRING("C");
 
-					err = tpbrt_params_list_get_float(params, &B_STR, 1.f / 3.f, &filter->as.mitchell.B);
+					err = tpbrt_params_list_get_float(params, B_STR, 1.f / 3.f, &filter->as.mitchell.B);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 
-					err = tpbrt_params_list_get_float(params, &C_STR, 1.f / 3.f, &filter->as.mitchell.C);
+					err = tpbrt_params_list_get_float(params, C_STR, 1.f / 3.f, &filter->as.mitchell.C);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					break;
 				}
@@ -84,7 +85,7 @@ extern "C" {
 
 					static const tpbrt_string_t TAU_STR = TPBRT_STRING("tau");
 
-					err = tpbrt_params_list_get_float(params, &TAU_STR, 3.f, &filter->as.sinc.tau);
+					err = tpbrt_params_list_get_float(params, TAU_STR, 3.f, &filter->as.sinc.tau);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					break;
 				}
@@ -95,11 +96,11 @@ extern "C" {
 			}
 
 		static const tpbrt_string_t X_RADIUS_STR = TPBRT_STRING("xradius");
-		err = tpbrt_params_list_get_float(params, &X_RADIUS_STR, defaultRadius, &filter->x_radius);
+		err = tpbrt_params_list_get_float(params, X_RADIUS_STR, defaultRadius, &filter->x_radius);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		static const tpbrt_string_t Y_RADIUS_STR = TPBRT_STRING("yradius");
-		err = tpbrt_params_list_get_float(params, &Y_RADIUS_STR, defaultRadius, &filter->y_radius);
+		err = tpbrt_params_list_get_float(params, Y_RADIUS_STR, defaultRadius, &filter->y_radius);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		return TPBRT_ERROR_NONE;

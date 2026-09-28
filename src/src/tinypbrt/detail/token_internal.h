@@ -74,11 +74,14 @@ extern "C" {
 		tpbrt_directive_t directive;
 	} tpbrt_token_t;
 
-	tpbrt_error_t tpbrt_create_token(const tpbrt_string_t* value, tpbrt_token_t* token);
+	tpbrt_error_t tpbrt_directive_from_string(tpbrt_string_t directive_str, tpbrt_directive_t* directive_out);
+
+	tpbrt_error_t tpbrt_token_init(tpbrt_string_t value, tpbrt_token_t* token);
 
 	tpbrt_size_t tpbrt_token_size(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_quoted_string(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_directive(const tpbrt_token_t* token);
+	tpbrt_bool_t tpbrt_token_is_single(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_open_brace(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_close_brace(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_valid(const tpbrt_token_t* token);

@@ -117,40 +117,10 @@ extern "C" {
 		} as;
 	} tpbrt_shape_t;
 
-	typedef struct tpbrt_shape_array_t {
-		tpbrt_shape_t* data;
+	typedef struct tpbrt_shapes_list_t {
+		tpbrt_shape_t* shapes;
 		tpbrt_size_t count;
-	} tpbrt_shape_array_t;
-
-	typedef struct tpbrt_object_t {
-		tpbrt_size_t idx;
-		tpbrt_string_t name;
-		tpbrt_shape_array_t shapes;
-	} tpbrt_object_t;
-
-	typedef struct tpbrt_objects_list_t {
-		tpbrt_object_t* objects;
-		tpbrt_size_t count;
-	} tpbrt_objects_list_t;
-
-	typedef tpbrt_uint_t tpbrt_object_handle_t;
-
-#define TPBRT_OBJECT_HANDLE_INVALID ~(tpbrt_object_handle_t)0
-
-	typedef struct tpbrt_instance_t {
-		tpbrt_object_handle_t object;
-		tpbrt_mat4_animated_t transform;
-	} tpbrt_instance_t;
-
-	typedef struct tpbrt_instances_list_t {
-		tpbrt_instance_t* instances;
-		tpbrt_size_t count;
-	} tpbrt_instances_list_t;
-
-	tpbrt_error_t tpbrt_get_object_by_name(const tpbrt_objects_list_t* objects, const tpbrt_string_t* name,
-	  const tpbrt_object_t** object);
-	tpbrt_error_t tpbrt_get_object_by_handle(const tpbrt_objects_list_t* objects, tpbrt_object_handle_t handle,
-	  const tpbrt_object_t** object);
+	} tpbrt_shapes_list_t;
 
 #ifdef __cplusplus
 }

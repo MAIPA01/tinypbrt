@@ -11,48 +11,26 @@ extern "C" {
 #endif
 
 #pragma region SHAPE
-	tpbrt_error_t tpbrt_create_shape(const tpbrt_string_t* type_str, const tpbrt_params_list_t* params,
-	  const tpbrt_textures_list_t* textures, const tpbrt_mat4_animated_t* ctm, tpbrt_material_handle_t material_handle,
-	  tpbrt_area_light_handle_t area_light_handle, tpbrt_media_handle_t interior_media_handle,
-	  tpbrt_media_handle_t exterior_media_handle, tpbrt_bool_t reverse_orientation, tpbrt_shape_t* shape);
-	void tpbrt_free_shape(tpbrt_shape_t* shape);
+
+	tpbrt_error_t tpbrt_shape_type_from_string(tpbrt_string_t type_str, tpbrt_shape_type_t* type);
+
+	tpbrt_error_t tpbrt_shape_curve_basis_from_string(tpbrt_string_t basis_str, tpbrt_shape_curve_basis_t* basis);
+
+	tpbrt_error_t tpbrt_shape_curve_type_from_string(tpbrt_string_t type_str, tpbrt_shape_curve_type_t* type);
+
+	tpbrt_error_t tpbrt_shape_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_textures_list_t textures,
+	  const tpbrt_mat4_animated_t* ctm, tpbrt_material_handle_t material_handle, tpbrt_area_light_handle_t area_light_handle,
+	  tpbrt_media_handle_t interior_media_handle, tpbrt_media_handle_t exterior_media_handle, tpbrt_bool_t reverse_orientation,
+	  tpbrt_shape_t* shape);
+	void tpbrt_shape_free(tpbrt_shape_t* shape);
+
 #pragma endregion
 
-#pragma region SHAPE_ARRAY
-	tpbrt_error_t tpbrt_init_shape_array(tpbrt_shape_array_t* shape_array);
-	tpbrt_error_t tpbrt_shape_array_add_shape(tpbrt_shape_array_t* shape_array, const tpbrt_shape_t* shape);
-	void tpbrt_free_shape_array(tpbrt_shape_array_t* shape_array);
-#pragma endregion
+#pragma region SHAPES_LIST
+	tpbrt_error_t tpbrt_shapes_list_init(tpbrt_shapes_list_t* shapes_list);
+	tpbrt_error_t tpbrt_shapes_list_append(tpbrt_shapes_list_t* shapes_list, const tpbrt_shape_t* shape);
+	void tpbrt_shapes_list_free(tpbrt_shapes_list_t* shapes_list);
 
-#pragma region OBJECT
-	tpbrt_error_t tpbrt_create_object(const tpbrt_string_t* name, tpbrt_object_t* object);
-	tpbrt_error_t tpbrt_object_add_shape(tpbrt_object_t* object, const tpbrt_shape_t* shape);
-	void tpbrt_free_object(tpbrt_object_t* object);
-#pragma endregion
-
-#pragma region OBJECTS_LIST
-	tpbrt_error_t tpbrt_init_objects_list(tpbrt_objects_list_t* objects_list);
-	tpbrt_error_t tpbrt_objects_list_add_object(tpbrt_objects_list_t* objects_list, const tpbrt_object_t* object);
-	tpbrt_error_t tpbrt_objects_list_get_object(const tpbrt_objects_list_t* objects_list, const tpbrt_string_t* object_name,
-	  const tpbrt_object_t** object);
-	tpbrt_error_t tpbrt_objects_list_get_object_handle(const tpbrt_objects_list_t* objects_list,
-	  const tpbrt_string_t* object_name, tpbrt_object_handle_t* object_handle);
-	void tpbrt_free_objects_list(tpbrt_objects_list_t* objects_list);
-
-	tpbrt_size_t tpbrt_objects_list_size(const tpbrt_objects_list_t* objects_list);
-	tpbrt_bool_t tpbrt_objects_list_is_empty(const tpbrt_objects_list_t* objects_list);
-#pragma endregion
-
-#pragma region OBJECT_INSTANCE
-	tpbrt_error_t tpbrt_create_instance(const tpbrt_string_t* object_name, const tpbrt_objects_list_t* objects,
-	  const tpbrt_mat4_animated_t* ctm, tpbrt_instance_t* instance);
-	void tpbrt_free_instance(tpbrt_instance_t* instance);
-#pragma endregion
-
-#pragma region OBJECT_INSTANCES_LIST
-	tpbrt_error_t tpbrt_init_instances_list(tpbrt_instances_list_t* instances_list);
-	tpbrt_error_t tpbrt_instances_list_add_instance(tpbrt_instances_list_t* instances_list, const tpbrt_instance_t* instance);
-	void tpbrt_free_instances_list(tpbrt_instances_list_t* instances_list);
 #pragma endregion
 
 #ifdef __cplusplus

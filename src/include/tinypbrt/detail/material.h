@@ -187,9 +187,9 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_materials_list_t;
 
-	tpbrt_error_t tpbrt_get_material_by_name(const tpbrt_materials_list_t* materials, const tpbrt_string_t* name,
+	tpbrt_error_t tpbrt_get_material_by_name(tpbrt_materials_list_t materials, tpbrt_string_t name,
 	  const tpbrt_material_t** material);
-	tpbrt_error_t tpbrt_get_material_by_handle(const tpbrt_materials_list_t* materials, tpbrt_material_handle_t handle,
+	tpbrt_error_t tpbrt_get_material_by_handle(tpbrt_materials_list_t materials, tpbrt_material_handle_t handle,
 	  const tpbrt_material_t** material);
 
 #ifdef __cplusplus

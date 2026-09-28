@@ -23,6 +23,7 @@ else()
 	set(BUILD_STATIC_LIBS ON)
 endif()
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cpm.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party.cmake)
 
 if (TINYPBRT_ENABLE_CLANG_TIDY)

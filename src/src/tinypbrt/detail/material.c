@@ -13,8 +13,7 @@ extern "C" {
 
 #pragma region MATERIAL
 
-	static tpbrt_error_t tpbrt_material_type_from_string(const tpbrt_string_t* const type_str,
-	  tpbrt_material_type_t* const type) {
+	tpbrt_error_t tpbrt_material_type_from_string(const tpbrt_string_t type_str, tpbrt_material_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_MATERIAL_TYPE_MAX_NUM] = {
 			TPBRT_STRING("coateddiffuse"),
 			TPBRT_STRING("coatedconductor"),
@@ -30,27 +29,88 @@ extern "C" {
 			TPBRT_STRING("thindielectric"),
 		};
 
-			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_MATERIAL_TYPE; }
 
 			for (tpbrt_material_type_t t = 0; t < TPBRT_MATERIAL_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS + t)) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		return TPBRT_ERROR_UNKNOWN_MATERIAL_TYPE;
+		return TPBRT_ERROR_INVALID_MATERIAL_TYPE;
 	}
 
-	tpbrt_error_t tpbrt_create_material(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
-	  const tpbrt_textures_list_t* const textures, const tpbrt_materials_list_t* const materials,
-	  tpbrt_material_t* const material) {
-			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || textures == TPBRT_NULL ||
-				materials == TPBRT_NULL || material == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
+	static tpbrt_error_t tpbrt_material_read_bump_map(tpbrt_material_bump_map_params_t* const bump_map,
+	  const tpbrt_params_list_t params, const tpbrt_textures_list_t textures) {
+			if (bump_map == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t DISPLACEMENT_STR = TPBRT_STRING("displacement");
+		static const tpbrt_string_t NORMAL_MAP_STR	 = TPBRT_STRING("normalmap");
+
+		tpbrt_error_t err = tpbrt_params_list_get_texture_of_type(params, DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+		  &bump_map->as.displacement);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+			if (err == TPBRT_ERROR_NONE) { bump_map->type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
+			else if (err == TPBRT_ERROR_NOT_FOUND) {
+				err = tpbrt_params_list_get_string(params, NORMAL_MAP_STR, &bump_map->as.normal_map);
+					if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+					if (err == TPBRT_ERROR_NONE) { bump_map->type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP; }
+					if (err == TPBRT_ERROR_NOT_FOUND) { bump_map->type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE; }
 			}
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	static tpbrt_error_t tpbrt_material_read_roughness(tpbrt_material_roughness_params_t* const roughness_params,
+	  const tpbrt_params_list_t params, const tpbrt_textures_list_t textures) {
+			if (roughness_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t ROUGHNESS_STR		= TPBRT_STRING("roughness");
+		static const tpbrt_string_t U_ROUGHNESS_STR		= TPBRT_STRING("uroughness");
+		static const tpbrt_string_t V_ROUGHNESS_STR		= TPBRT_STRING("vroughness");
+		static const tpbrt_string_t REMAP_ROUGHNESS_STR = TPBRT_STRING("remaproughness");
+
+		tpbrt_error_t err = tpbrt_params_list_get_texture_of_type(params, ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+		  &roughness_params->roughness);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				roughness_params->roughness.value_type	   = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
+				roughness_params->roughness.as.float_value = 0.0f;
+			}
+
+		err = tpbrt_params_list_get_texture_of_type(params, U_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+		  &roughness_params->u_roughness);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				roughness_params->u_roughness.value_type	 = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
+				roughness_params->u_roughness.as.float_value = 0.0f;
+			}
+
+		err = tpbrt_params_list_get_texture_of_type(params, V_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+		  &roughness_params->v_roughness);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				roughness_params->v_roughness.value_type	 = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
+				roughness_params->v_roughness.as.float_value = 0.0f;
+			}
+
+		err = tpbrt_params_list_get_bool(params, REMAP_ROUGHNESS_STR, TPBRT_TRUE, &roughness_params->remap_roughness);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_material_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
+	  const tpbrt_textures_list_t textures, const tpbrt_materials_list_t materials, tpbrt_material_t* const material) {
+			if (material == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(material, 0, sizeof(tpbrt_material_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -58,16 +118,9 @@ extern "C" {
 
 		tpbrt_error_t err = tpbrt_material_type_from_string(type_str, &material->type);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_material(material);
+				tpbrt_material_free(material);
 				return err;
 			}
-
-		static const tpbrt_string_t DISPLACEMENT_STR	= TPBRT_STRING("displacement");
-		static const tpbrt_string_t NORMAL_MAP_STR		= TPBRT_STRING("normalmap");
-		static const tpbrt_string_t ROUGHNESS_STR		= TPBRT_STRING("roughness");
-		static const tpbrt_string_t U_ROUGHNESS_STR		= TPBRT_STRING("uroughness");
-		static const tpbrt_string_t V_ROUGHNESS_STR		= TPBRT_STRING("vroughness");
-		static const tpbrt_string_t REMAP_ROUGHNESS_STR = TPBRT_STRING("remaproughness");
 
 			switch (material->type) {
 			default:
@@ -81,35 +134,16 @@ extern "C" {
 
 					tpbrt_material_coated_diffuse_params_t* mat_params = &material->as.coated_diffuse;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture_of_type(params, &ALBEDO_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, ALBEDO_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->albedo);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -119,9 +153,9 @@ extern "C" {
 						}
 
 					err =
-					  tpbrt_params_list_get_texture_of_type(params, &G_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT, &mat_params->g);
+					  tpbrt_params_list_get_texture_of_type(params, G_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT, &mat_params->g);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -131,27 +165,27 @@ extern "C" {
 						}
 
 					static const tpbrt_uint_t MAX_DEPTH_DEFAULT = 10u;
-					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &mat_params->max_depth);
+					err = tpbrt_params_list_get_uint(params, MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &mat_params->max_depth);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_uint(params, &N_SAMPLES_STR, 1, &mat_params->n_samples);
+					err = tpbrt_params_list_get_uint(params, N_SAMPLES_STR, 1, &mat_params->n_samples);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_float(params, &THICKNESS_STR, 0.01f, &mat_params->thickness);
+					err = tpbrt_params_list_get_float(params, THICKNESS_STR, 0.01f, &mat_params->thickness);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_texture(params, &REFLECTANCE_STR, textures, &mat_params->reflectance);
+					err = tpbrt_params_list_get_texture(params, REFLECTANCE_STR, textures, &mat_params->reflectance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -160,50 +194,11 @@ extern "C" {
 							mat_params->reflectance.as.float_value = 0.5f;
 						}
 
-#pragma region ROUGHNESS
-					err = tpbrt_params_list_get_texture_of_type(params, &ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.roughness.value_type	  = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &U_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.u_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.u_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.u_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &V_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.v_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.v_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.v_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_bool(params, &REMAP_ROUGHNESS_STR, TPBRT_TRUE,
-					  &mat_params->roughness_params.remap_roughness);
+					err = tpbrt_material_read_roughness(&mat_params->roughness_params, params, textures);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
-#pragma endregion
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_COATED_CONDUCTOR: {
@@ -218,35 +213,16 @@ extern "C" {
 
 					tpbrt_material_coated_conductor_params_t* mat_params = &material->as.coated_conductor;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture_of_type(params, &ALBEDO_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, ALBEDO_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->albedo);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -256,9 +232,9 @@ extern "C" {
 						}
 
 					err =
-					  tpbrt_params_list_get_texture_of_type(params, &G_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT, &mat_params->g);
+					  tpbrt_params_list_get_texture_of_type(params, G_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT, &mat_params->g);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -267,34 +243,34 @@ extern "C" {
 							mat_params->g.as.float_value = 0.0f;
 						}
 
-					err = tpbrt_params_list_get_uint(params, &MAX_DEPTH_STR, 10u, &mat_params->max_depth);
+					err = tpbrt_params_list_get_uint(params, MAX_DEPTH_STR, 10u, &mat_params->max_depth);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_uint(params, &N_SAMPLES_STR, 1, &mat_params->n_samples);
+					err = tpbrt_params_list_get_uint(params, N_SAMPLES_STR, 1, &mat_params->n_samples);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_float(params, &THICKNESS_STR, 0.01f, &mat_params->thickness);
+					err = tpbrt_params_list_get_float(params, THICKNESS_STR, 0.01f, &mat_params->thickness);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_spectrum(params, &REFLECTANCE_STR, &mat_params->as.reflectance);
+					err = tpbrt_params_list_get_spectrum(params, REFLECTANCE_STR, &mat_params->as.reflectance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
 						if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_spectrum(params, &CONDUCTOR_ETA_STR, &mat_params->as.conductor.eta);
+							err = tpbrt_params_list_get_spectrum(params, CONDUCTOR_ETA_STR, &mat_params->as.conductor.eta);
 								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
+									tpbrt_material_free(material);
 									return err;
 								}
 
@@ -303,9 +279,9 @@ extern "C" {
 									mat_params->as.conductor.eta.as.builtin = TPBRT_SPECTRUM_BUILTIN_METAL_CU_ETA;
 								}
 
-							err = tpbrt_params_list_get_spectrum(params, &CONDUCTOR_K_STR, &mat_params->as.conductor.k);
+							err = tpbrt_params_list_get_spectrum(params, CONDUCTOR_K_STR, &mat_params->as.conductor.k);
 								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
+									tpbrt_material_free(material);
 									return err;
 								}
 
@@ -315,50 +291,11 @@ extern "C" {
 								}
 						}
 
-#pragma region ROUGHNESS
-					err = tpbrt_params_list_get_texture_of_type(params, &ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.roughness.value_type	  = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &U_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.u_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.u_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.u_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &V_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.v_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.v_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.v_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_bool(params, &REMAP_ROUGHNESS_STR, TPBRT_TRUE,
-					  &mat_params->roughness_params.remap_roughness);
+					err = tpbrt_material_read_roughness(&mat_params->roughness_params, params, textures);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
-#pragma endregion
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_CONDUCTOR: {
@@ -368,35 +305,16 @@ extern "C" {
 
 					tpbrt_material_conductor_params_t* mat_params = &material->as.conductor;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture_of_type(params, &REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->as.reflectance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -404,10 +322,10 @@ extern "C" {
 						else if (err == TPBRT_ERROR_NOT_FOUND) {
 							mat_params->value_type = TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_ETA_K;
 
-							err = tpbrt_params_list_get_texture_of_type(params, &ETA_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+							err = tpbrt_params_list_get_texture_of_type(params, ETA_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 							  &mat_params->as.conductor.eta);
 								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
+									tpbrt_material_free(material);
 									return err;
 								}
 
@@ -416,10 +334,10 @@ extern "C" {
 									mat_params->as.conductor.eta.as.spectrum_builtin = TPBRT_SPECTRUM_BUILTIN_METAL_CU_ETA;
 								}
 
-							err = tpbrt_params_list_get_texture_of_type(params, &K_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+							err = tpbrt_params_list_get_texture_of_type(params, K_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 							  &mat_params->as.conductor.k);
 								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
+									tpbrt_material_free(material);
 									return err;
 								}
 
@@ -429,50 +347,11 @@ extern "C" {
 								}
 						}
 
-#pragma region ROUGHNESS
-					err = tpbrt_params_list_get_texture_of_type(params, &ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.roughness.value_type	  = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &U_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.u_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.u_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.u_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &V_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.v_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.v_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.v_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_bool(params, &REMAP_ROUGHNESS_STR, TPBRT_TRUE,
-					  &mat_params->roughness_params.remap_roughness);
+					err = tpbrt_material_read_roughness(&mat_params->roughness_params, params, textures);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
-#pragma endregion
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIELECTRIC: {
@@ -480,34 +359,15 @@ extern "C" {
 
 					tpbrt_material_dielectric_params_t* mat_params = &material->as.dielectric;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture(params, &ETA_STR, textures, &mat_params->eta);
+					err = tpbrt_params_list_get_texture(params, ETA_STR, textures, &mat_params->eta);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -516,50 +376,11 @@ extern "C" {
 							mat_params->eta.as.float_value = 1.5f;
 						}
 
-#pragma region ROUGHNESS
-					err = tpbrt_params_list_get_texture_of_type(params, &ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.roughness.value_type	  = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &U_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.u_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.u_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.u_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &V_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.v_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.v_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.v_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_bool(params, &REMAP_ROUGHNESS_STR, TPBRT_TRUE,
-					  &mat_params->roughness_params.remap_roughness);
+					err = tpbrt_material_read_roughness(&mat_params->roughness_params, params, textures);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
-#pragma endregion
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIFFUSE: {
@@ -567,35 +388,16 @@ extern "C" {
 
 					tpbrt_material_diffuse_params_t* mat_params = &material->as.diffuse;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture_of_type(params, &REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->reflectance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -612,35 +414,16 @@ extern "C" {
 
 					tpbrt_material_diffuse_transmission_params_t* mat_params = &material->as.diffuse_transmission;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture_of_type(params, &REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->reflectance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -649,10 +432,10 @@ extern "C" {
 							mat_params->reflectance.as.float_value = 0.25f;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &TRANSMITTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, TRANSMITTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->transmittance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -661,10 +444,10 @@ extern "C" {
 							mat_params->transmittance.as.float_value = 0.25f;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &SCALE_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, SCALE_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->scale);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -686,49 +469,30 @@ extern "C" {
 
 					tpbrt_material_hair_params_t* mat_params	= &material->as.hair;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture_of_type(params, &SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->sigma_a);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->reflectance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &EUMELANIN_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, EUMELANIN_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->eumelanin);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -737,17 +501,17 @@ extern "C" {
 							mat_params->eumelanin.as.float_value = 1.3f;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &PHEOMELANIN_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, PHEOMELANIN_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->pheomelanin);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &ETA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, ETA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->eta);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -756,10 +520,10 @@ extern "C" {
 							mat_params->eta.as.float_value = 1.55f;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &BETA_M_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, BETA_M_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->beta_m);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -768,10 +532,10 @@ extern "C" {
 							mat_params->beta_m.as.float_value = 0.3f;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &BETA_N_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, BETA_N_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->beta_n);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -780,10 +544,10 @@ extern "C" {
 							mat_params->beta_n.as.float_value = 0.3f;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &ALPHA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, ALPHA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->alpha);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -799,34 +563,15 @@ extern "C" {
 
 					tpbrt_material_measured_params_t* mat_params = &material->as.measured;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_string(params, &FILE_NAME_STR, &mat_params->file_name);
+					err = tpbrt_params_list_get_string(params, FILE_NAME_STR, &mat_params->file_name);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 					break;
@@ -838,39 +583,38 @@ extern "C" {
 					tpbrt_material_mix_params_t* mat_params	  = &material->as.mix;
 
 					tpbrt_string_array_t temp_strings;
-					err = tpbrt_params_list_get_strings(params, &MATERIALS_STR, &temp_strings);
+					err = tpbrt_params_list_get_strings(params, MATERIALS_STR, &temp_strings);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
 						if (temp_strings.count < 2) {
-							tpbrt_free_string_array(&temp_strings);
-							tpbrt_free_material(material);
+							tpbrt_string_array_free(&temp_strings);
+							tpbrt_material_free(material);
 							return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 						}
 
 						if (temp_strings.count > 2) {
-							tpbrt_free_string_array(&temp_strings);
-							tpbrt_free_material(material);
+							tpbrt_string_array_free(&temp_strings);
+							tpbrt_material_free(material);
 							return TPBRT_ERROR_TOO_MANY_VALUES;
 						}
 
 						for (tpbrt_size_t i = 0; i < temp_strings.count; ++i) {
-							err = tpbrt_materials_list_get_material_handle(materials, &temp_strings.data[i],
-							  &mat_params->materials[i]);
+							err = tpbrt_materials_list_get_handle(materials, temp_strings.data[i], &mat_params->materials[i]);
 								if (err != TPBRT_ERROR_NONE) {
-									tpbrt_free_string_array(&temp_strings);
-									tpbrt_free_material(material);
+									tpbrt_string_array_free(&temp_strings);
+									tpbrt_material_free(material);
 									return err;
 								}
 						}
-					tpbrt_free_string_array(&temp_strings);
+					tpbrt_string_array_free(&temp_strings);
 
-					err = tpbrt_params_list_get_texture_of_type(params, &AMOUNT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, AMOUNT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->amount);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -892,35 +636,16 @@ extern "C" {
 
 					tpbrt_material_subsurface_params_t* mat_params = &material->as.subsurface;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
 
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
-
-					err = tpbrt_params_list_get_texture_of_type(params, &ETA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, ETA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->eta);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -930,9 +655,9 @@ extern "C" {
 						}
 
 					err =
-					  tpbrt_params_list_get_texture_of_type(params, &G_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT, &mat_params->g);
+					  tpbrt_params_list_get_texture_of_type(params, G_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT, &mat_params->g);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -941,30 +666,30 @@ extern "C" {
 							mat_params->g.as.float_value = 0.0f;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &MFP_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+					err = tpbrt_params_list_get_texture_of_type(params, MFP_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
 					  &mat_params->mfp);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_string(params, &NAME_STR, &mat_params->name);
+					err = tpbrt_params_list_get_string(params, NAME_STR, &mat_params->name);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->reflectance);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->sigma_a);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -973,10 +698,10 @@ extern "C" {
 							mat_params->sigma_a.as.rgb	   = (tpbrt_rgb_t) { .r = 0.0011f, .g = 0.0024f, .b = 0.014f };
 						}
 
-					err = tpbrt_params_list_get_texture_of_type(params, &SIGMA_S_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+					err = tpbrt_params_list_get_texture_of_type(params, SIGMA_S_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 					  &mat_params->sigma_s);
 						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
@@ -985,85 +710,27 @@ extern "C" {
 							mat_params->sigma_s.as.rgb	   = (tpbrt_rgb_t) { .r = 2.55f, .g = 3.12f, .b = 3.77f };
 						}
 
-					err = tpbrt_params_list_get_float(params, &SCALE_STR, 1.0f, &mat_params->scale);
+					err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &mat_params->scale);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
 
-#pragma region ROUGHNESS
-					err = tpbrt_params_list_get_texture_of_type(params, &ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.roughness.value_type	  = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &U_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.u_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.u_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.u_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_texture_of_type(params, &V_ROUGHNESS_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->roughness_params.v_roughness);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							mat_params->roughness_params.v_roughness.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-							mat_params->roughness_params.v_roughness.as.float_value = 0.0f;
-						}
-
-					err = tpbrt_params_list_get_bool(params, &REMAP_ROUGHNESS_STR, TPBRT_TRUE,
-					  &mat_params->roughness_params.remap_roughness);
+					err = tpbrt_material_read_roughness(&mat_params->roughness_params, params, textures);
 						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_material(material);
+							tpbrt_material_free(material);
 							return err;
 						}
-#pragma endregion
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_THIN_DIELECTRIC: {
 					tpbrt_material_thin_dielectric_params_t* mat_params = &material->as.thin_dielectric;
 
-#pragma region BUMP_MAP
-					err = tpbrt_params_list_get_texture_of_type(params, &DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-					  &mat_params->bump_map.as.displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_material(material);
+					err = tpbrt_material_read_bump_map(&mat_params->bump_map, params, textures);
+						if (err != TPBRT_ERROR_NONE) {
+							tpbrt_material_free(material);
 							return err;
 						}
-
-						if (err == TPBRT_ERROR_NONE) { mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT; }
-						else if (err == TPBRT_ERROR_NOT_FOUND) {
-							err = tpbrt_params_list_get_string(params, &NORMAL_MAP_STR, &mat_params->bump_map.as.normal_map);
-								if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-									tpbrt_free_material(material);
-									return err;
-								}
-
-								if (err == TPBRT_ERROR_NONE) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
-								}
-								if (err == TPBRT_ERROR_NOT_FOUND) {
-									mat_params->bump_map.type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE;
-								}
-						}
-#pragma endregion
 					break;
 				}
 			}
@@ -1071,132 +738,114 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_create_named_material(const tpbrt_string_t* const name, const tpbrt_params_list_t* const params,
-	  const tpbrt_textures_list_t* const textures, const tpbrt_materials_list_t* const materials,
-	  tpbrt_material_t* const material) {
-			if (name == TPBRT_NULL || name->data == TPBRT_NULL || params == TPBRT_NULL || textures == TPBRT_NULL ||
-				materials == TPBRT_NULL || material == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+	tpbrt_error_t tpbrt_material_init_named(const tpbrt_string_t name, const tpbrt_params_list_t params,
+	  const tpbrt_textures_list_t textures, const tpbrt_materials_list_t materials, tpbrt_material_t* const material) {
+			if (material == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(name)) { return TPBRT_ERROR_INVALID_STRING; }
 
 			if (memset(material, 0, sizeof(tpbrt_material_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t TYPE_STR = TPBRT_STRING("type");
 
 		tpbrt_string_t type_str;
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, &TYPE_STR, &type_str);
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, TYPE_STR, &type_str);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_create_material(&type_str, params, textures, materials, material);
-		tpbrt_free_string(&type_str);
+		err = tpbrt_material_init(type_str, params, textures, materials, material);
+		tpbrt_string_free(&type_str);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_copy_string(&material->name, name);
+		err = tpbrt_string_copy(&material->name, name);
 			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_material(material);
+				tpbrt_material_free(material);
 				return err;
 			}
 
 		return TPBRT_ERROR_NONE;
 	}
 
-	void tpbrt_free_material(tpbrt_material_t* const material) {
+	static void tpbrt_material_bump_map_free(tpbrt_material_bump_map_params_t* const bump_map) {
+			if (bump_map->type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) { tpbrt_string_free(&bump_map->as.normal_map); }
+	}
+
+	void tpbrt_material_free(tpbrt_material_t* const material) {
 			if (material == TPBRT_NULL) { return; }
 
-		tpbrt_free_string(&material->name);
+		tpbrt_string_free(&material->name);
 
 			switch (material->type) {
 				case TPBRT_MATERIAL_TYPE_COATED_DIFFUSE: {
 					tpbrt_material_coated_diffuse_params_t* params = &material->as.coated_diffuse;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_COATED_CONDUCTOR: {
 					tpbrt_material_coated_conductor_params_t* params = &material->as.coated_conductor;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_CONDUCTOR: {
 					tpbrt_material_conductor_params_t* params = &material->as.conductor;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIELECTRIC: {
 					tpbrt_material_dielectric_params_t* params = &material->as.dielectric;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIFFUSE: {
 					tpbrt_material_diffuse_params_t* params = &material->as.diffuse;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_DIFFUSE_TRANSMISSION: {
 					tpbrt_material_diffuse_transmission_params_t* params = &material->as.diffuse_transmission;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_HAIR: {
 					tpbrt_material_hair_params_t* params = &material->as.hair;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_MEASURED: {
 					tpbrt_material_measured_params_t* params = &material->as.measured;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
-
-					tpbrt_free_string(&params->file_name);
+					tpbrt_material_bump_map_free(&params->bump_map);
+					tpbrt_string_free(&params->file_name);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_SUBSURFACE: {
 					tpbrt_material_subsurface_params_t* params = &material->as.subsurface;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
-
-					tpbrt_free_string(&params->name);
+					tpbrt_material_bump_map_free(&params->bump_map);
+					tpbrt_string_free(&params->name);
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_THIN_DIELECTRIC: {
 					tpbrt_material_thin_dielectric_params_t* params = &material->as.thin_dielectric;
-						if (params->bump_map.type == TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP) {
-							tpbrt_free_string(&params->bump_map.as.normal_map);
-						}
+					tpbrt_material_bump_map_free(&params->bump_map);
 					break;
 				}
-			default: break;
+				default: {
+					break;
+				}
 			}
 	}
 
 #pragma endregion
 
 #pragma region MATERIALS_LIST
+#define TPBRT_EMPTY_MATERIALS_LIST (tpbrt_materials_list_t) { .materials = TPBRT_NULL, .count = 0 }
 
-	tpbrt_error_t tpbrt_init_materials_list(tpbrt_materials_list_t* const materials_list) {
+	tpbrt_error_t tpbrt_materials_list_init(tpbrt_materials_list_t* const materials_list) {
 			if (materials_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		materials_list->materials = TPBRT_NULL;
-		materials_list->count	  = 0;
+		*materials_list = TPBRT_EMPTY_MATERIALS_LIST;
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_materials_list_add_material(tpbrt_materials_list_t* const materials_list,
+	tpbrt_error_t tpbrt_materials_list_append(tpbrt_materials_list_t* const materials_list,
 	  const tpbrt_material_t* const material, tpbrt_material_handle_t* const handle) {
 			if (material == TPBRT_NULL || materials_list == TPBRT_NULL || handle == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
@@ -1218,16 +867,13 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_materials_list_get_material_by_name(const tpbrt_materials_list_t* const materials_list,
-	  const tpbrt_string_t* const material_name, const tpbrt_material_t** const material) {
-			if (materials_list == TPBRT_NULL || material_name == TPBRT_NULL || material_name->data == TPBRT_NULL ||
-				material == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+	tpbrt_error_t tpbrt_materials_list_get(const tpbrt_materials_list_t materials_list, const tpbrt_string_t material_name,
+	  const tpbrt_material_t** const material) {
+			if (material == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			for (tpbrt_size_t i = 0; i < materials_list->count; i++) {
-					if (tpbrt_string_equals(&materials_list->materials[i].name, material_name)) {
-						*material = &materials_list->materials[i];
+			for (tpbrt_size_t i = 0; i < materials_list.count; i++) {
+					if (tpbrt_string_equals(materials_list.materials[i].name, material_name)) {
+						*material = &materials_list.materials[i];
 						return TPBRT_ERROR_NONE;
 					}
 			}
@@ -1235,15 +881,12 @@ extern "C" {
 		return TPBRT_ERROR_NOT_FOUND;
 	}
 
-	tpbrt_error_t tpbrt_materials_list_get_material_handle(const tpbrt_materials_list_t* const materials_list,
-	  const tpbrt_string_t* const material_name, tpbrt_material_handle_t* const material_handle) {
-			if (materials_list == TPBRT_NULL || material_name == TPBRT_NULL || material_name->data == TPBRT_NULL ||
-				material_handle == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+	tpbrt_error_t tpbrt_materials_list_get_handle(const tpbrt_materials_list_t materials_list, const tpbrt_string_t material_name,
+	  tpbrt_material_handle_t* const material_handle) {
+			if (material_handle == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_material_t* material;
-		const tpbrt_error_t err = tpbrt_materials_list_get_material_by_name(materials_list, material_name, &material);
+		const tpbrt_error_t err = tpbrt_materials_list_get(materials_list, material_name, &material);
 
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
@@ -1251,43 +894,38 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	void tpbrt_free_materials_list(tpbrt_materials_list_t* const materials_list) {
+	void tpbrt_materials_list_free(tpbrt_materials_list_t* const materials_list) {
 			if (materials_list == TPBRT_NULL || materials_list->materials == TPBRT_NULL) { return; }
 
-			for (tpbrt_size_t i = 0; i < materials_list->count; ++i) { tpbrt_free_material(materials_list->materials + i); }
+			for (tpbrt_size_t i = 0; i < materials_list->count; ++i) { tpbrt_material_free(materials_list->materials + i); }
 
 		free(materials_list->materials);
-		materials_list->materials = TPBRT_NULL;
-		materials_list->count	  = 0;
+		*materials_list = TPBRT_EMPTY_MATERIALS_LIST;
 	}
 
-	tpbrt_size_t tpbrt_materials_list_size(const tpbrt_materials_list_t* const materials_list) {
-		return materials_list != TPBRT_NULL ? materials_list->count : 0;
-	}
-
-	tpbrt_bool_t tpbrt_materials_list_is_empty(const tpbrt_materials_list_t* const materials_list) {
-		return tpbrt_materials_list_size(materials_list) == 0;
+	tpbrt_bool_t tpbrt_materials_list_empty(const tpbrt_materials_list_t materials_list) {
+		return materials_list.materials == TPBRT_NULL || materials_list.count == 0;
 	}
 
 #pragma endregion
 
 #pragma region API
 
-	tpbrt_error_t tpbrt_get_material_by_name(const tpbrt_materials_list_t* const materials, const tpbrt_string_t* const name,
+	tpbrt_error_t tpbrt_get_material_by_name(const tpbrt_materials_list_t materials, const tpbrt_string_t name,
 	  const tpbrt_material_t** const material) {
-		return tpbrt_materials_list_get_material_by_name(materials, name, material);
+		return tpbrt_materials_list_get(materials, name, material);
 	}
 
-	tpbrt_error_t tpbrt_get_material_by_handle(const tpbrt_materials_list_t* const materials,
-	  const tpbrt_material_handle_t handle, const tpbrt_material_t** const material) {
-			if (materials == TPBRT_NULL || material == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	tpbrt_error_t tpbrt_get_material_by_handle(const tpbrt_materials_list_t materials, const tpbrt_material_handle_t handle,
+	  const tpbrt_material_t** const material) {
+			if (material == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (handle == TPBRT_MATERIAL_HANDLE_INVALID || handle >= materials->count) {
+			if (handle == TPBRT_MATERIAL_HANDLE_INVALID || handle >= materials.count) {
 				*material = TPBRT_NULL;
 				return TPBRT_ERROR_INVALID_HANDLE;
 			}
 
-		*material = &materials->materials[handle];
+		*material = &materials.materials[handle];
 		return TPBRT_ERROR_NONE;
 	}
 
