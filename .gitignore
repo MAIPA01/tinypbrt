@@ -12,3 +12,5 @@ _deps
 CMakeUserPresets.json
 /.idea
 /third_party
+/.vs
+/build
