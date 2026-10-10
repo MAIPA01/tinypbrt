@@ -8,6 +8,11 @@
 extern "C" {
 #endif
 
+	typedef struct tpbrt_opt_float_t {
+		tpbrt_float_t value;
+		tpbrt_bool_t has_value : 1;
+	} tpbrt_opt_float_t;
+
 	typedef struct tpbrt_bool_array_t {
 		tpbrt_bool_t* data;
 		tpbrt_size_t count;
@@ -29,11 +34,34 @@ extern "C" {
 	} tpbrt_float_array_t;
 
 	typedef struct tpbrt_vec2_t {
-		tpbrt_float_t x, y;
+		union {
+			struct {
+				tpbrt_float_t x;
+				tpbrt_float_t y;
+			};
+
+			tpbrt_float_t v[2];
+		};
 	} tpbrt_vec2_t;
 
 	typedef struct tpbrt_vec3_t {
-		tpbrt_float_t x, y, z;
+		union {
+			struct {
+				union {
+					tpbrt_float_t x, r;
+				};
+
+				union {
+					tpbrt_float_t y, g;
+				};
+
+				union {
+					tpbrt_float_t z, b;
+				};
+			};
+
+			tpbrt_float_t v[3];
+		};
 	} tpbrt_vec3_t;
 
 	typedef struct tpbrt_vec2_array_t {
@@ -51,22 +79,9 @@ extern "C" {
 	} tpbrt_mat4_t;
 
 	typedef struct tpbrt_mat4_animated_t {
-		tpbrt_mat4_t start, end;
+		tpbrt_mat4_t start;
+		tpbrt_mat4_t end;
 	} tpbrt_mat4_animated_t;
-
-	typedef tpbrt_vec2_t tpbrt_point2_t;
-	typedef tpbrt_vec3_t tpbrt_vec_t;
-	typedef tpbrt_vec3_t tpbrt_point3_t;
-	typedef tpbrt_point3_t tpbrt_point_t;
-	typedef tpbrt_vec3_t tpbrt_normal3_t;
-	typedef tpbrt_normal3_t tpbrt_normal_t;
-
-	typedef tpbrt_vec2_array_t tpbrt_point2_array_t;
-	typedef tpbrt_vec3_array_t tpbrt_vec_array_t;
-	typedef tpbrt_vec3_array_t tpbrt_point3_array_t;
-	typedef tpbrt_point3_array_t tpbrt_point_array_t;
-	typedef tpbrt_vec3_array_t tpbrt_normal3_array_t;
-	typedef tpbrt_normal3_array_t tpbrt_normal_array_t;
 
 #ifdef __cplusplus
 }

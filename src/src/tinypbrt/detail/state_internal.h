@@ -2,14 +2,15 @@
 #ifndef _TINYPBRT_STATE_INTERNAL_H_
 #define _TINYPBRT_STATE_INTERNAL_H_
 
-#include <tinypbrt/detail/color_internal.h>
-#include <tinypbrt/detail/common_internal.h>
-#include <tinypbrt/detail/fwd.h>
+#include <tinypbrt/detail/fwd_internal.h>
+
+#include <tinypbrt/detail/error.h>
+
 #include <tinypbrt/detail/light_internal.h>
 #include <tinypbrt/detail/material_internal.h>
 #include <tinypbrt/detail/math_internal.h>
 #include <tinypbrt/detail/media_internal.h>
-#include <tinypbrt/detail/object_internal.h>
+#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,10 +23,7 @@ extern "C" {
 	} tpbrt_active_ctm_t;
 
 	typedef struct tpbrt_state_t {
-		tpbrt_bool_t reverse_orientation;
-		tpbrt_active_ctm_t active_ctm;
 		tpbrt_mat4_animated_t ctm;
-		tpbrt_color_space_t current_color_space;
 
 		tpbrt_media_handle_t current_inside_medium;
 		tpbrt_media_handle_t current_outside_medium;
@@ -41,6 +39,10 @@ extern "C" {
 		tpbrt_params_list_t material_params;
 		tpbrt_params_list_t medium_params;
 		tpbrt_params_list_t texture_params;
+
+		tpbrt_bool_t reverse_orientation		: 1;
+		tpbrt_active_ctm_t active_ctm			: 2;
+		tpbrt_color_space_t current_color_space : 2;
 	} tpbrt_state_t;
 
 	tpbrt_error_t tpbrt_state_init(tpbrt_state_t* state);

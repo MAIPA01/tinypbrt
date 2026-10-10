@@ -2,6 +2,13 @@
 
 #include <tinypbrt/detail/state_internal.h>
 
+#include <tinypbrt/detail/color_internal.h>
+#include <tinypbrt/detail/light_internal.h>
+#include <tinypbrt/detail/material_internal.h>
+#include <tinypbrt/detail/math_internal.h>
+#include <tinypbrt/detail/media_internal.h>
+#include <tinypbrt/detail/object_internal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,7 +23,7 @@ extern "C" {
 		state->current_color_space	  = TPBRT_COLOR_SPACE_SRGB;
 		state->current_inside_medium  = TPBRT_MEDIA_HANDLE_INVALID;
 		state->current_outside_medium = TPBRT_MEDIA_HANDLE_INVALID;
-		state->current_area_light	  = TPBRT_MEDIA_HANDLE_INVALID;
+		state->current_area_light	  = TPBRT_AREA_LIGHT_HANDLE_INVALID;
 		state->material_handle		  = TPBRT_MATERIAL_HANDLE_INVALID;
 		state->active_object		  = TPBRT_NULL;
 
@@ -49,6 +56,7 @@ extern "C" {
 				tpbrt_state_free(state);
 				return err;
 			}
+
 		return TPBRT_ERROR_NONE;
 	}
 

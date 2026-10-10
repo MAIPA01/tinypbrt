@@ -3,6 +3,7 @@
 #include <tinypbrt/detail/color_internal.h>
 
 #include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/math_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,7 +18,7 @@ extern "C" {
 			TPBRT_STRING("srgb"),
 		};
 
-			if (color_space_out == NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+			if (color_space_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (tpbrt_string_empty(color_space_str)) { return TPBRT_ERROR_INVALID_COLOR_SPACE; }
 
@@ -42,12 +43,19 @@ extern "C" {
 			TPBRT_STRING("glass-F10"),
 			TPBRT_STRING("glass-F11"),
 			TPBRT_STRING("metal-Ag-eta"),
+			TPBRT_STRING("metal-Ag-k"),
 			TPBRT_STRING("metal-Al-eta"),
+			TPBRT_STRING("metal-Al-k"),
 			TPBRT_STRING("metal-Au-eta"),
+			TPBRT_STRING("metal-Au-k"),
 			TPBRT_STRING("metal-Cu-eta"),
+			TPBRT_STRING("metal-Cu-k"),
 			TPBRT_STRING("metal-CuZn-eta"),
+			TPBRT_STRING("metal-CuZn-k"),
 			TPBRT_STRING("metal-MgO-eta"),
+			TPBRT_STRING("metal-MgO-k"),
 			TPBRT_STRING("metal-TiO2-eta"),
+			TPBRT_STRING("metal-TiO2-k"),
 			TPBRT_STRING("stdillum-A"),
 			TPBRT_STRING("stdillum-D50"),
 			TPBRT_STRING("stdillum-D65"),
@@ -66,18 +74,7 @@ extern "C" {
 			TPBRT_STRING("illum-acesD60"),
 		};
 
-		static const tpbrt_string_t
-		  METALS_KS_BUILTINS_STRS[TPBRT_SPECTRUM_BUILTIN_METAL_TI_O2_K - TPBRT_SPECTRUM_BUILTIN_METAL_AG_K + 1] = {
-			  TPBRT_STRING("metal-Ag-k"),
-			  TPBRT_STRING("metal-Al-k"),
-			  TPBRT_STRING("metal-Au-k"),
-			  TPBRT_STRING("metal-Cu-k"),
-			  TPBRT_STRING("metal-CuZn-k"),
-			  TPBRT_STRING("metal-MgO-k"),
-			  TPBRT_STRING("metal-TiO2-k"),
-		  };
-
-			if (builtin_out == NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+			if (builtin_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (tpbrt_string_empty(builtin_str)) { return TPBRT_ERROR_INVALID_SPECTRUM_BUILTIN; }
 
@@ -88,22 +85,10 @@ extern "C" {
 					}
 			}
 
-			for (tpbrt_spectrum_builtin_t b = TPBRT_SPECTRUM_BUILTIN_METAL_AG_K; b <= TPBRT_SPECTRUM_BUILTIN_METAL_TI_O2_K; ++b) {
-					if (tpbrt_string_equals(builtin_str, METALS_KS_BUILTINS_STRS[b])) {
-						*builtin_out = b;
-						return TPBRT_ERROR_NONE;
-					}
-			}
-
 		return TPBRT_ERROR_INVALID_SPECTRUM_BUILTIN;
 	}
 
-	void tpbrt_rgb_array_free(tpbrt_rgb_array_t* const array) {
-			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
-
-		free(array->data);
-		*array = TPBRT_EMPTY_RGB_ARRAY;
-	}
+	void tpbrt_rgb_array_free(tpbrt_rgb_array_t* const array) { tpbrt_vec3_array_free(array); }
 
 	tpbrt_error_t tpbrt_wavelengths_array_copy(tpbrt_wavelength_array_t* const dst, const tpbrt_wavelength_array_t src) {
 			if (dst == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }

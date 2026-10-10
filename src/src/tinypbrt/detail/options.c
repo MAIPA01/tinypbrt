@@ -4,6 +4,7 @@
 
 #include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/coord_internal.h>
+#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,17 +34,35 @@ extern "C" {
 
 		static const tpbrt_string_t DISABLE_PIXEL_JITTER = TPBRT_STRING("disablepixeljitter");
 			if (tpbrt_string_equals(param->name, DISABLE_PIXEL_JITTER)) {
-				return tpbrt_param_as_bool(param, &options->disable_pixel_jitter);
+				tpbrt_bool_t disable_pixel_jitter;
+				const tpbrt_error_t err = tpbrt_param_as_bool(param, &disable_pixel_jitter);
+
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				options->disable_pixel_jitter = disable_pixel_jitter;
+				return TPBRT_ERROR_NONE;
 			}
 
 		static const tpbrt_string_t DISABLE_TEXTURE_FILTERING = TPBRT_STRING("disabletexturefiltering");
 			if (tpbrt_string_equals(param->name, DISABLE_TEXTURE_FILTERING)) {
-				return tpbrt_param_as_bool(param, &options->disable_texture_filtering);
+				tpbrt_bool_t disable_texture_filtering;
+				const tpbrt_error_t err = tpbrt_param_as_bool(param, &disable_texture_filtering);
+
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				options->disable_texture_filtering = disable_texture_filtering;
+				return TPBRT_ERROR_NONE;
 			}
 
 		static const tpbrt_string_t DISABLE_WAVE_LENGTH_JITTER = TPBRT_STRING("disablewavelengthjitter");
 			if (tpbrt_string_equals(param->name, DISABLE_WAVE_LENGTH_JITTER)) {
-				return tpbrt_param_as_bool(param, &options->disable_wave_length_jitter);
+				tpbrt_bool_t disable_wave_length_jitter;
+				const tpbrt_error_t err = tpbrt_param_as_bool(param, &disable_wave_length_jitter);
+
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				options->disable_wave_length_jitter = disable_wave_length_jitter;
+				return TPBRT_ERROR_NONE;
 			}
 
 		static const tpbrt_string_t DISPLACEMENT_EDGE_SCALE = TPBRT_STRING("displacementedgescale");
@@ -67,22 +86,51 @@ extern "C" {
 				tpbrt_error_t err = tpbrt_param_as_string(param, &coord_str);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 
-				err = tpbrt_coord_system_type_from_string(coord_str, &options->render_coord_sys);
+				tpbrt_coord_system_type_t render_coord_sys;
+				err = tpbrt_coord_system_type_from_string(coord_str, &render_coord_sys);
 				tpbrt_string_free(&coord_str);
-				return err;
+
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				options->render_coord_sys = render_coord_sys;
+				return TPBRT_ERROR_NONE;
 			}
 
 		static const tpbrt_string_t SEED = TPBRT_STRING("seed");
 			if (tpbrt_string_equals(param->name, SEED)) { return tpbrt_param_as_int(param, &options->seed); }
 
 		static const tpbrt_string_t FORCE_DIFFUSE = TPBRT_STRING("forcediffuse");
-			if (tpbrt_string_equals(param->name, FORCE_DIFFUSE)) { return tpbrt_param_as_bool(param, &options->force_diffuse); }
+			if (tpbrt_string_equals(param->name, FORCE_DIFFUSE)) {
+				tpbrt_bool_t force_diffuse;
+				const tpbrt_error_t err = tpbrt_param_as_bool(param, &force_diffuse);
+
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				options->force_diffuse = force_diffuse;
+				return TPBRT_ERROR_NONE;
+			}
 
 		static const tpbrt_string_t PIXEL_STATS = TPBRT_STRING("pixelstats");
-			if (tpbrt_string_equals(param->name, PIXEL_STATS)) { return tpbrt_param_as_bool(param, &options->pixel_stats); }
+			if (tpbrt_string_equals(param->name, PIXEL_STATS)) {
+				tpbrt_bool_t pixel_stats;
+				const tpbrt_error_t err = tpbrt_param_as_bool(param, &pixel_stats);
+
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				options->pixel_stats = pixel_stats;
+				return TPBRT_ERROR_NONE;
+			}
 
 		static const tpbrt_string_t WAVEFRONT = TPBRT_STRING("wavefront");
-			if (tpbrt_string_equals(param->name, WAVEFRONT)) { return tpbrt_param_as_bool(param, &options->wavefront); }
+			if (tpbrt_string_equals(param->name, WAVEFRONT)) {
+				tpbrt_bool_t wavefront;
+				const tpbrt_error_t err = tpbrt_param_as_bool(param, &wavefront);
+
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				options->wavefront = wavefront;
+				return TPBRT_ERROR_NONE;
+			}
 
 		return TPBRT_ERROR_INVALID_OPTION;
 	}

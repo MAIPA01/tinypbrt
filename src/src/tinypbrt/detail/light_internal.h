@@ -2,8 +2,9 @@
 #ifndef _TINYPBRT_LIGHT_INTERNAL_H_
 #define _TINYPBRT_LIGHT_INTERNAL_H_
 
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/light.h>
-#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +20,8 @@ extern "C" {
 #pragma endregion
 
 #pragma region AREA_LIGHT
+	tpbrt_error_t tpbrt_area_light_type_from_string(tpbrt_string_t type_str, tpbrt_area_light_type_t* type);
+
 	tpbrt_error_t tpbrt_area_light_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_color_space_t color_space,
 	  tpbrt_area_light_t* area_light);
 	void tpbrt_area_light_free(tpbrt_area_light_t* area_light);

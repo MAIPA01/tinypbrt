@@ -2,7 +2,11 @@
 #ifndef _TINYPBRT_TOKENIZER_INTERNAL_H_
 #define _TINYPBRT_TOKENIZER_INTERNAL_H_
 
-#include <tinypbrt/detail/token_internal.h>
+#include <tinypbrt/detail/fwd_internal.h>
+
+#include <tinypbrt/detail/error.h>
+
+#include <tinypbrt/detail/common_internal.h>
 
 #ifdef __cplusplus
 extern "C" {

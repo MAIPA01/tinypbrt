@@ -2,10 +2,9 @@
 #ifndef _TINYPBRT_MEDIA_INTERNAL_H_
 #define _TINYPBRT_MEDIA_INTERNAL_H_
 
-#include <tinypbrt/detail/media.h>
+#include <tinypbrt/detail/fwd_internal.h>
 
-#include <tinypbrt/detail/error.h>
-#include <tinypbrt/detail/param_internal.h>
+#include <tinypbrt/detail/media.h>
 
 #ifdef __cplusplus
 extern "C" {

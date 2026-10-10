@@ -2,6 +2,8 @@
 #ifndef _TINYPBRT_FILM_H_
 #define _TINYPBRT_FILM_H_
 
+#include <tinypbrt/detail/fwd.h>
+
 #include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/coord.h>
 
@@ -17,7 +19,7 @@ extern "C" {
 	} tpbrt_film_type_t;
 
 	typedef struct tpbrt_film_gbuffer_params_t {
-		tpbrt_coord_system_type_t coordinate_system;
+		tpbrt_coord_system_type_t coordinate_system : 2;
 	} tpbrt_film_gbuffer_params_t;
 
 	typedef struct tpbrt_film_spectral_params_t {
@@ -52,20 +54,21 @@ extern "C" {
 		tpbrt_float_t crop_window[4];
 		tpbrt_uint_t pixel_bounds[4];
 		tpbrt_string_t file_name;
-		tpbrt_film_sensor_t sensor;
 		tpbrt_uint_t x_resolution;
 		tpbrt_uint_t y_resolution;
 		tpbrt_float_t diagonal;
-		tpbrt_bool_t save_fp16;
 		tpbrt_float_t iso;
 		tpbrt_float_t white_balance;
 		tpbrt_float_t max_component_value;
-		tpbrt_film_type_t type;
 
 		union {
 			tpbrt_film_gbuffer_params_t gbuffer;
 			tpbrt_film_spectral_params_t spectral;
 		} as;
+
+		tpbrt_bool_t save_fp16	   : 1;
+		tpbrt_film_type_t type	   : 2;
+		tpbrt_film_sensor_t sensor : 5;
 	} tpbrt_film_t;
 
 #ifdef __cplusplus

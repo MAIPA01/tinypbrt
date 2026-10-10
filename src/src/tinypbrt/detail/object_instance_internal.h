@@ -2,6 +2,8 @@
 #ifndef _TINYPBRT_OBJECT_INSTANCE_INTERNAL_H_
 #define _TINYPBRT_OBJECT_INSTANCE_INTERNAL_H_
 
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/object_instance.h>
 
 #ifdef __cplusplus

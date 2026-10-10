@@ -2,10 +2,11 @@
 #ifndef _TINYPBRT_FILTER_INTERNAL_H_
 #define _TINYPBRT_FILTER_INTERNAL_H_
 
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/filter.h>
 
 #include <tinypbrt/detail/error.h>
-#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {

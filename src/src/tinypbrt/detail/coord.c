@@ -66,7 +66,7 @@ extern "C" {
 	void tpbrt_coord_system_map_free(tpbrt_coord_system_map_t* const map) {
 			if (map == TPBRT_NULL) { return; }
 
-			if (map->entries) { free(map->entries); }
+			if (map->entries != TPBRT_NULL) { free(map->entries); }
 		*map = TPBRT_EMPTY_COORD_SYSTEM_MAP;
 	}
 

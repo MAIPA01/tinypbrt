@@ -2,6 +2,8 @@
 #ifndef _TINYPBRT_CAMERA_H_
 #define _TINYPBRT_CAMERA_H_
 
+#include <tinypbrt/detail/fwd.h>
+
 #include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/math.h>
 #include <tinypbrt/detail/media.h>
@@ -40,12 +42,13 @@ extern "C" {
 	} tpbrt_camera_spherical_mapping_t;
 
 	typedef struct tpbrt_camera_spherical_params_t {
-		tpbrt_camera_spherical_mapping_t mapping;
+		tpbrt_camera_spherical_mapping_t mapping : 1;
 	} tpbrt_camera_spherical_params_t;
 
 	typedef enum tpbrt_camera_realistic_aperture_type_t : uint8_t {
 		TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_FILE_NAME = 0,
 		TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN   = 1,
+		TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_MAX_NUM   = 2,
 	} tpbrt_camera_realistic_aperture_type_t;
 
 	typedef enum tpbrt_camera_realistic_aperture_builtin_t : uint8_t {
@@ -58,12 +61,12 @@ extern "C" {
 	} tpbrt_camera_realistic_aperture_builtin_t;
 
 	typedef struct tpbrt_camera_realistic_aperture_t {
-		tpbrt_camera_realistic_aperture_type_t type;
-
 		union {
-			tpbrt_camera_realistic_aperture_builtin_t builtin;
+			tpbrt_camera_realistic_aperture_builtin_t builtin : 3;
 			tpbrt_string_t file_name;
 		} as;
+
+		tpbrt_camera_realistic_aperture_type_t type : 1;
 	} tpbrt_camera_realistic_aperture_t;
 
 	typedef struct tpbrt_camera_realistic_params_t {
@@ -74,7 +77,6 @@ extern "C" {
 	} tpbrt_camera_realistic_params_t;
 
 	typedef struct tpbrt_camera_t {
-		tpbrt_camera_type_t type;
 		tpbrt_float_t shutter_open;
 		tpbrt_float_t shutter_close;
 		tpbrt_mat4_animated_t transform;
@@ -87,6 +89,8 @@ extern "C" {
 			tpbrt_camera_spherical_params_t spherical;
 			tpbrt_camera_realistic_params_t realistic;
 		} as;
+
+		tpbrt_camera_type_t type : 2;
 	} tpbrt_camera_t;
 
 #ifdef __cplusplus

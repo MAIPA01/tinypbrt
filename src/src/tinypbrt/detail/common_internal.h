@@ -2,7 +2,10 @@
 #ifndef _TINYPBRT_COMMON_INTERNAL_H_
 #define _TINYPBRT_COMMON_INTERNAL_H_
 
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/common.h>
+
 #include <tinypbrt/detail/error.h>
 
 #ifdef __cplusplus

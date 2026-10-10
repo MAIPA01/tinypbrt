@@ -31,7 +31,6 @@ extern "C" {
 	} tpbrt_filter_sinc_params_t;
 
 	typedef struct tpbrt_filter_t {
-		tpbrt_filter_type_t type;
 		tpbrt_float_t x_radius;
 		tpbrt_float_t y_radius;
 
@@ -40,6 +39,8 @@ extern "C" {
 			tpbrt_filter_mitchell_params_t mitchell;
 			tpbrt_filter_sinc_params_t sinc;
 		} as;
+
+		tpbrt_filter_type_t type : 3;
 	} tpbrt_filter_t;
 
 #ifdef __cplusplus

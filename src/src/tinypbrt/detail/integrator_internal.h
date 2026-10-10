@@ -2,11 +2,11 @@
 #ifndef _TINYPBRT_INTEGRATOR_INTERNAL_H_
 #define _TINYPBRT_INTEGRATOR_INTERNAL_H_
 
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/integrator.h>
 
-#include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/error.h>
-#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,3 @@
-#include <inttypes.h>
 #include <tinypbrt/pch.h>
 
 #include <tinypbrt/detail/common_internal.h>

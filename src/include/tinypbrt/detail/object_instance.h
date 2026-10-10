@@ -3,6 +3,8 @@
 #define _TINYPBRT_OBJECT_INSTANCE_H_
 
 #include <tinypbrt/detail/fwd.h>
+
+#include <tinypbrt/detail/math.h>
 #include <tinypbrt/detail/object.h>
 
 #ifdef __cplusplus

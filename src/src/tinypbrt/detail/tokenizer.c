@@ -2,6 +2,9 @@
 
 #include <tinypbrt/detail/tokenizer_internal.h>
 
+#include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/token_internal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,7 +30,7 @@ extern "C" {
 		return has_token;
 	}
 
-	tpbrt_bool_t tpbrt_tokenizer_next(tpbrt_tokenizer_t* tokenizer, tpbrt_token_t* const out_token) {
+	tpbrt_bool_t tpbrt_tokenizer_next(tpbrt_tokenizer_t* const tokenizer, tpbrt_token_t* const out_token) {
 			if (tokenizer == TPBRT_NULL || out_token == TPBRT_NULL || tokenizer->str.data == TPBRT_NULL) { return TPBRT_FALSE; }
 
 			while (tokenizer->offset < tokenizer->str.size) {

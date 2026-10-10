@@ -4,6 +4,7 @@
 
 #include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/math_internal.h>
+#include <tinypbrt/detail/param_internal.h>
 #include <tinypbrt/detail/texture_internal.h>
 
 #ifdef __cplusplus
@@ -79,6 +80,197 @@ extern "C" {
 		return TPBRT_ERROR_INVALID_SHAPE_CURVE_TYPE;
 	}
 
+	static tpbrt_error_t tpbrt_shape_read_curve(tpbrt_shape_curve_params_t* const curve, const tpbrt_params_list_t params) {
+			if (curve == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t P_STR			= TPBRT_STRING("P");
+		static const tpbrt_string_t BASIS_STR		= TPBRT_STRING("basis");
+		static const tpbrt_string_t DEGREE_STR		= TPBRT_STRING("degree");
+		static const tpbrt_string_t TYPE_STR		= TPBRT_STRING("type");
+		static const tpbrt_string_t N_STR			= TPBRT_STRING("N");
+		static const tpbrt_string_t WIDTH_STR		= TPBRT_STRING("width");
+		static const tpbrt_string_t WIDTH_0_STR		= TPBRT_STRING("width0");
+		static const tpbrt_string_t WIDTH_1_STR		= TPBRT_STRING("width1");
+		static const tpbrt_string_t SPLIT_DEPTH_STR = TPBRT_STRING("splitdepth");
+
+		tpbrt_point3_array_t temp_P;
+		tpbrt_error_t err = tpbrt_params_list_get_point3s_of_size(params, P_STR, 4u, &temp_P);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		memcpy(curve->P, temp_P.data, sizeof(tpbrt_point3_t) * 4u);
+		tpbrt_vec3_array_free(&temp_P);
+
+		tpbrt_string_t temp_string;
+		err = tpbrt_params_list_get_string(params, BASIS_STR, &temp_string);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		tpbrt_shape_curve_basis_t basis;
+		err = tpbrt_shape_curve_basis_from_string(temp_string, &basis);
+		tpbrt_string_free(&temp_string);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+		curve->basis = basis;
+
+		tpbrt_uint_t temp_uint;
+		err = tpbrt_params_list_get_uint(params, DEGREE_STR, 3u, &temp_uint);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+			if (temp_uint > 3u || temp_uint < 2u) { return TPBRT_ERROR_INVALID_PARAM_VALUE; }
+
+		curve->degree = (tpbrt_shape_curve_degree_t)temp_uint;
+
+		err			  = tpbrt_params_list_get_string(params, TYPE_STR, &temp_string);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		tpbrt_shape_curve_type_t type;
+		err = tpbrt_shape_curve_type_from_string(temp_string, &type);
+		tpbrt_string_free(&temp_string);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+		curve->type = type;
+
+			if (curve->type == TPBRT_SHAPE_CURVE_TYPE_RIBBON) {
+				tpbrt_normal_array_t temp_normal;
+				err = tpbrt_params_list_get_normals_of_size(params, N_STR, 2u, &temp_normal);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				memcpy(curve->N, temp_normal.data, sizeof(tpbrt_normal_t) * 2u);
+				tpbrt_vec3_array_free(&temp_normal);
+			}
+
+		err = tpbrt_params_list_get_float(params, WIDTH_STR, 1.0f, &curve->width);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_opt_float(params, WIDTH_0_STR, &curve->width0);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_opt_float(params, WIDTH_1_STR, &curve->width1);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_params_list_get_uint(params, SPLIT_DEPTH_STR, 3u, &curve->split_depth);
+	}
+
+	static tpbrt_error_t tpbrt_shape_read_cylinder(tpbrt_shape_cylinder_params_t* const cylinder,
+	  const tpbrt_params_list_t params) {
+			if (cylinder == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t RADIUS_STR	= TPBRT_STRING("radius");
+		static const tpbrt_string_t Z_MIN_STR	= TPBRT_STRING("zmin");
+		static const tpbrt_string_t Z_MAX_STR	= TPBRT_STRING("zmax");
+		static const tpbrt_string_t PHI_MAX_STR = TPBRT_STRING("phimax");
+
+		tpbrt_error_t err						= tpbrt_params_list_get_float(params, RADIUS_STR, 1.0f, &cylinder->radius);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, Z_MIN_STR, -1.0f, &cylinder->z_min);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, Z_MAX_STR, 1.0f, &cylinder->z_max);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_params_list_get_float(params, PHI_MAX_STR, 360.0f, &cylinder->phi_max);
+	}
+
+	static tpbrt_error_t tpbrt_shape_read_disk(tpbrt_shape_disk_params_t* const disk, const tpbrt_params_list_t params) {
+			if (disk == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t HEIGHT_STR		 = TPBRT_STRING("height");
+		static const tpbrt_string_t RADIUS_STR		 = TPBRT_STRING("radius");
+		static const tpbrt_string_t INNER_RADIUS_STR = TPBRT_STRING("innerradius");
+		static const tpbrt_string_t PHI_MAX_STR		 = TPBRT_STRING("phimax");
+
+		tpbrt_error_t err							 = tpbrt_params_list_get_float(params, HEIGHT_STR, 0.0f, &disk->height);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, RADIUS_STR, 1.0f, &disk->radius);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, INNER_RADIUS_STR, 0.0f, &disk->inner_radius);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_params_list_get_float(params, PHI_MAX_STR, 360.0f, &disk->phi_max);
+	}
+
+	static tpbrt_error_t tpbrt_shape_read_sphere(tpbrt_shape_sphere_params_t* const sphere, const tpbrt_params_list_t params) {
+			if (sphere == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t RADIUS_STR	= TPBRT_STRING("radius");
+		static const tpbrt_string_t Z_MIN_STR	= TPBRT_STRING("zmin");
+		static const tpbrt_string_t Z_MAX_STR	= TPBRT_STRING("zmax");
+		static const tpbrt_string_t PHI_MAX_STR = TPBRT_STRING("phimax");
+
+		tpbrt_error_t err						= tpbrt_params_list_get_float(params, RADIUS_STR, 1.0f, &sphere->radius);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, Z_MIN_STR, -sphere->radius, &sphere->z_min);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, Z_MAX_STR, sphere->radius, &sphere->z_max);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_params_list_get_float(params, PHI_MAX_STR, 360.0f, &sphere->phi_max);
+	}
+
+	static tpbrt_error_t tpbrt_shape_read_triangle_mesh(tpbrt_shape_triangle_mesh_params_t* const triangle_mesh,
+	  const tpbrt_params_list_t params) {
+			if (triangle_mesh == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t INDICES_STR = TPBRT_STRING("indices");
+		static const tpbrt_string_t P_STR		= TPBRT_STRING("P");
+		static const tpbrt_string_t N_STR		= TPBRT_STRING("N");
+		static const tpbrt_string_t S_STR		= TPBRT_STRING("S");
+		static const tpbrt_string_t UV_STR		= TPBRT_STRING("uv");
+
+		tpbrt_error_t err						= tpbrt_params_list_get_point3s(params, P_STR, &triangle_mesh->P);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_uints(params, INDICES_STR, &triangle_mesh->indices);
+			if (err != TPBRT_ERROR_NONE && !(triangle_mesh->indices.count == 3 && err == TPBRT_ERROR_NOT_FOUND)) { return err; }
+
+		err = tpbrt_params_list_get_normals(params, N_STR, &triangle_mesh->N);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+		err = tpbrt_params_list_get_vec3s(params, S_STR, &triangle_mesh->S);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+		err = tpbrt_params_list_get_point2s(params, UV_STR, &triangle_mesh->uv);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	static tpbrt_error_t tpbrt_shape_read_ply_mesh(tpbrt_shape_ply_mesh_params_t* const ply_mesh,
+	  const tpbrt_params_list_t params, const tpbrt_textures_list_t textures) {
+			if (ply_mesh == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t FILE_NAME_STR	 = TPBRT_STRING("filename");
+		static const tpbrt_string_t DISPLACEMENT_STR = TPBRT_STRING("displacement");
+		static const tpbrt_string_t EDGE_LENGTH_STR	 = TPBRT_STRING("edgelength");
+
+		tpbrt_error_t err							 = tpbrt_params_list_get_string(params, FILE_NAME_STR, &ply_mesh->file_name);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_texture(params, DISPLACEMENT_STR, textures, &ply_mesh->displacement);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+		return tpbrt_params_list_get_float(params, EDGE_LENGTH_STR, 1.0f, &ply_mesh->edge_length);
+	}
+
+	static tpbrt_error_t tpbrt_shape_read_loop_subdiv(tpbrt_shape_loop_subdiv_params_t* const loop_subdiv,
+	  const tpbrt_params_list_t params) {
+			if (loop_subdiv == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t LEVELS_STR	= TPBRT_STRING("levels");
+		static const tpbrt_string_t INDICES_STR = TPBRT_STRING("indices");
+		static const tpbrt_string_t P_STR		= TPBRT_STRING("P");
+
+		tpbrt_error_t err						= tpbrt_params_list_get_uint(params, LEVELS_STR, 3u, &loop_subdiv->levels);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_uints(params, INDICES_STR, &loop_subdiv->indices);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_params_list_get_points(params, P_STR, &loop_subdiv->P);
+	}
+
 	tpbrt_error_t tpbrt_shape_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
 	  const tpbrt_textures_list_t textures, const tpbrt_mat4_animated_t* const ctm, const tpbrt_material_handle_t material_handle,
 	  const tpbrt_area_light_handle_t area_light_handle, const tpbrt_media_handle_t interior_media_handle,
@@ -102,338 +294,55 @@ extern "C" {
 				return err;
 			}
 
-			if (err == TPBRT_ERROR_NOT_FOUND) {
-				shape->alpha.value_type		= TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-				shape->alpha.as.float_value = 1.0f;
-			}
+			if (err == TPBRT_ERROR_NOT_FOUND) { shape->alpha = TPBRT_TEXTURE_HANDLE_FLOAT(1.0f); }
 
-		err = tpbrt_shape_type_from_string(type_str, &shape->type);
+		tpbrt_shape_type_t type;
+		err = tpbrt_shape_type_from_string(type_str, &type);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_shape_free(shape);
 				return err;
 			}
+		shape->type = type;
 
-		tpbrt_string_t temp_string;
 			switch (shape->type) {
 			default:
 				case TPBRT_SHAPE_TYPE_BILINEAR_MESH: {
+					err = TPBRT_ERROR_NONE;
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_CURVE: {
-					static const tpbrt_string_t P_STR			= TPBRT_STRING("P");
-					static const tpbrt_string_t BASIS_STR		= TPBRT_STRING("basis");
-					static const tpbrt_string_t DEGREE_STR		= TPBRT_STRING("degree");
-					static const tpbrt_string_t TYPE_STR		= TPBRT_STRING("type");
-					static const tpbrt_string_t N_STR			= TPBRT_STRING("N");
-					static const tpbrt_string_t WIDTH_STR		= TPBRT_STRING("width");
-					static const tpbrt_string_t WIDTH_0_STR		= TPBRT_STRING("width0");
-					static const tpbrt_string_t WIDTH_1_STR		= TPBRT_STRING("width1");
-					static const tpbrt_string_t SPLIT_DEPTH_STR = TPBRT_STRING("splitdepth");
-
-					tpbrt_shape_curve_params_t* shape_params	= &shape->as.curve;
-
-					tpbrt_point3_array_t temp_P;
-					err = tpbrt_params_list_get_point3s(params, P_STR, &temp_P);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-						if (temp_P.count < 4) {
-							tpbrt_vec3_array_free(&temp_P);
-							tpbrt_shape_free(shape);
-							return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
-						}
-
-						if (temp_P.count > 4) {
-							tpbrt_vec3_array_free(&temp_P);
-							tpbrt_shape_free(shape);
-							return TPBRT_ERROR_TOO_MANY_VALUES;
-						}
-
-						for (tpbrt_uint_t i = 0; i < 4; ++i) { shape_params->P[i] = temp_P.data[i]; }
-					tpbrt_vec3_array_free(&temp_P);
-
-					err = tpbrt_params_list_get_string(params, BASIS_STR, &temp_string);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_shape_curve_basis_from_string(temp_string, &shape_params->basis);
-					tpbrt_string_free(&temp_string);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					tpbrt_uint_t temp_uint;
-					err = tpbrt_params_list_get_uint(params, DEGREE_STR, 3u, &temp_uint);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-						if (temp_uint > 3 || temp_uint < 2) {
-							tpbrt_shape_free(shape);
-							return TPBRT_ERROR_INVALID_PARAM_VALUE;
-						}
-
-					shape_params->degree = (tpbrt_shape_curve_degree_t)temp_uint;
-
-					err					 = tpbrt_params_list_get_string(params, TYPE_STR, &temp_string);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_shape_curve_type_from_string(temp_string, &shape_params->type);
-					tpbrt_string_free(&temp_string);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-						if (shape_params->type == TPBRT_SHAPE_CURVE_TYPE_RIBBON) {
-							tpbrt_normal_array_t temp_normal;
-							err = tpbrt_params_list_get_normals(params, N_STR, &temp_normal);
-								if (err != TPBRT_ERROR_NONE) {
-									tpbrt_shape_free(shape);
-									return err;
-								}
-
-								if (temp_normal.count < 2) {
-									tpbrt_vec3_array_free(&temp_normal);
-									tpbrt_shape_free(shape);
-									return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
-								}
-
-								if (temp_normal.count > 2) {
-									tpbrt_vec3_array_free(&temp_normal);
-									tpbrt_shape_free(shape);
-									return TPBRT_ERROR_TOO_MANY_VALUES;
-								}
-
-								for (tpbrt_uint_t i = 0; i < 2; ++i) { shape_params->N[i] = temp_normal.data[i]; }
-							tpbrt_vec3_array_free(&temp_normal);
-						}
-
-					err = tpbrt_params_list_get_float(params, WIDTH_STR, 1.0f, &shape_params->width);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_opt_float(params, WIDTH_0_STR, &shape_params->width0);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_opt_float(params, WIDTH_1_STR, &shape_params->width1);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_uint(params, SPLIT_DEPTH_STR, 3u, &shape_params->split_depth);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
+					err = tpbrt_shape_read_curve(&shape->as.curve, params);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_CYLINDER: {
-					static const tpbrt_string_t RADIUS_STR		= TPBRT_STRING("radius");
-					static const tpbrt_string_t Z_MIN_STR		= TPBRT_STRING("zmin");
-					static const tpbrt_string_t Z_MAX_STR		= TPBRT_STRING("zmax");
-					static const tpbrt_string_t PHI_MAX_STR		= TPBRT_STRING("phimax");
-
-					tpbrt_shape_cylinder_params_t* shape_params = &shape->as.cylinder;
-
-					err = tpbrt_params_list_get_float(params, RADIUS_STR, 1.0f, &shape_params->radius);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, Z_MIN_STR, -1.0f, &shape_params->z_min);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, Z_MAX_STR, 1.0f, &shape_params->z_max);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, PHI_MAX_STR, 360.0f, &shape_params->phi_max);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
+					err = tpbrt_shape_read_cylinder(&shape->as.cylinder, params);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_DISK: {
-					static const tpbrt_string_t HEIGHT_STR		 = TPBRT_STRING("height");
-					static const tpbrt_string_t RADIUS_STR		 = TPBRT_STRING("radius");
-					static const tpbrt_string_t INNER_RADIUS_STR = TPBRT_STRING("innerradius");
-					static const tpbrt_string_t PHI_MAX_STR		 = TPBRT_STRING("phimax");
-
-					tpbrt_shape_disk_params_t* shape_params		 = &shape->as.disk;
-
-					err = tpbrt_params_list_get_float(params, HEIGHT_STR, 0.0f, &shape_params->height);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, RADIUS_STR, 1.0f, &shape_params->radius);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, INNER_RADIUS_STR, 0.0f, &shape_params->inner_radius);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, PHI_MAX_STR, 360.0f, &shape_params->phi_max);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
+					err = tpbrt_shape_read_disk(&shape->as.disk, params);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_SPHERE: {
-					static const tpbrt_string_t RADIUS_STR	  = TPBRT_STRING("radius");
-					static const tpbrt_string_t Z_MIN_STR	  = TPBRT_STRING("zmin");
-					static const tpbrt_string_t Z_MAX_STR	  = TPBRT_STRING("zmax");
-					static const tpbrt_string_t PHI_MAX_STR	  = TPBRT_STRING("phimax");
-
-					tpbrt_shape_sphere_params_t* shape_params = &shape->as.sphere;
-
-					err = tpbrt_params_list_get_float(params, RADIUS_STR, 1.0f, &shape_params->radius);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, Z_MIN_STR, -shape_params->radius, &shape_params->z_min);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, Z_MAX_STR, shape_params->radius, &shape_params->z_max);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, PHI_MAX_STR, 360.0f, &shape_params->phi_max);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
+					err = tpbrt_shape_read_sphere(&shape->as.sphere, params);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_TRIANGLE_MESH: {
-					static const tpbrt_string_t INDICES_STR			 = TPBRT_STRING("indices");
-					static const tpbrt_string_t P_STR				 = TPBRT_STRING("P");
-					static const tpbrt_string_t N_STR				 = TPBRT_STRING("N");
-					static const tpbrt_string_t S_STR				 = TPBRT_STRING("S");
-					static const tpbrt_string_t UV_STR				 = TPBRT_STRING("uv");
-
-					tpbrt_shape_triangle_mesh_params_t* shape_params = &shape->as.triangle_mesh;
-
-					err = tpbrt_params_list_get_point3s(params, P_STR, &shape_params->P);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_uints(params, INDICES_STR, &shape_params->indices);
-						if (err != TPBRT_ERROR_NONE && !(shape_params->indices.count == 3 && err == TPBRT_ERROR_NOT_FOUND)) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_normals(params, N_STR, &shape_params->N);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_vec3s(params, S_STR, &shape_params->S);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_point2s(params, UV_STR, &shape_params->uv);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
+					err = tpbrt_shape_read_triangle_mesh(&shape->as.triangle_mesh, params);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_PLY_MESH: {
-					static const tpbrt_string_t FILE_NAME_STR	 = TPBRT_STRING("filename");
-					static const tpbrt_string_t DISPLACEMENT_STR = TPBRT_STRING("displacement");
-					static const tpbrt_string_t EDGE_LENGTH_STR	 = TPBRT_STRING("edgelength");
-
-					tpbrt_shape_ply_mesh_params_t* shape_params	 = &shape->as.ply_mesh;
-
-					err = tpbrt_params_list_get_string(params, FILE_NAME_STR, &shape_params->file_name);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_texture(params, DISPLACEMENT_STR, textures, &shape_params->displacement);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_float(params, EDGE_LENGTH_STR, 1.0f, &shape_params->edge_length);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
+					err = tpbrt_shape_read_ply_mesh(&shape->as.ply_mesh, params, textures);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_LOOP_SUBDIV: {
-					static const tpbrt_string_t LEVELS_STR		   = TPBRT_STRING("levels");
-					static const tpbrt_string_t INDICES_STR		   = TPBRT_STRING("indices");
-					static const tpbrt_string_t P_STR			   = TPBRT_STRING("P");
-
-					tpbrt_shape_loop_subdiv_params_t* shape_params = &shape->as.loop_subdiv;
-
-					err = tpbrt_params_list_get_uint(params, LEVELS_STR, 3u, &shape_params->levels);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_uints(params, INDICES_STR, &shape_params->indices);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
-
-					err = tpbrt_params_list_get_points(params, P_STR, &shape_params->P);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_shape_free(shape);
-							return err;
-						}
+					err = tpbrt_shape_read_loop_subdiv(&shape->as.loop_subdiv, params);
 					break;
 				}
+			}
+
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_shape_free(shape);
+				return err;
 			}
 
 		return TPBRT_ERROR_NONE;

@@ -2,6 +2,8 @@
 
 #include <tinypbrt/detail/token_internal.h>
 
+#include <tinypbrt/detail/common_internal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -78,13 +80,13 @@ extern "C" {
 			if (memset(token, 0, sizeof(tpbrt_token_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		token->value = value;
-			if (tpbrt_directive_from_string(value, &token->directive) == TPBRT_ERROR_NONE) {
-				token->type = TPBRT_TOKEN_TYPE_DIRECTIVE;
-			}
+		tpbrt_directive_t directive;
+			if (tpbrt_directive_from_string(value, &directive) == TPBRT_ERROR_NONE) { token->type = TPBRT_TOKEN_TYPE_DIRECTIVE; }
 			else if (value.size >= 2 && value.data[0] == '\"' && value.data[value.size - 1] == '\"') {
 				token->type = TPBRT_TOKEN_TYPE_QUOTED_STRING;
 			}
 			else { token->type = TPBRT_TOKEN_TYPE_SINGLE; }
+		token->directive = directive;
 		return TPBRT_ERROR_NONE;
 	}
 

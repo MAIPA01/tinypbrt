@@ -2,14 +2,24 @@
 #ifndef _TINYPBRT_TEXTURE_INTERNAL_H_
 #define _TINYPBRT_TEXTURE_INTERNAL_H_
 
-#include <tinypbrt/detail/texture.h>
+#include <tinypbrt/detail/fwd_internal.h>
 
-#include <tinypbrt/detail/error.h>
-#include <tinypbrt/detail/param_internal.h>
+#include <tinypbrt/detail/texture.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define TPBRT_TEXTURE_HANDLE_NONE                                                   \
+	(tpbrt_texture_handle_t) { .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE }
+#define TPBRT_TEXTURE_HANDLE_FLOAT(value)                                                                       \
+	(tpbrt_texture_handle_t) { .as.float_value = (value), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT }
+#define TPBRT_TEXTURE_HANDLE_RGB(r_val, g_val, b_val)                                                                        \
+	(tpbrt_texture_handle_t) { .as.rgb = TPBRT_RGB(r_val, g_val, b_val), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_RGB }
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM(builtin) \
+	(tpbrt_texture_handle_t) { .as.spectrum_builtin = (builtin), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM_BUILTIN }
+#define TPBRT_TEXTURE_HANDLE_TEXTURE(idx)                                                                       \
+	(tpbrt_texture_handle_t) { .as.texture_idx = (idx), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE }
 
 #pragma region TEXTURE
 

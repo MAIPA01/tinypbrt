@@ -2,8 +2,11 @@
 #ifndef _TINYPBRT_TOKEN_INTERNAL_H_
 #define _TINYPBRT_TOKEN_INTERNAL_H_
 
-#include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/error.h>
+
+#include <tinypbrt/detail/common_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,9 +72,9 @@ extern "C" {
 	} tpbrt_token_type_t;
 
 	typedef struct tpbrt_token_t {
-		tpbrt_token_type_t type;
 		tpbrt_string_t value;
-		tpbrt_directive_t directive;
+		tpbrt_token_type_t type		: 2;
+		tpbrt_directive_t directive : 6;
 	} tpbrt_token_t;
 
 	tpbrt_error_t tpbrt_directive_from_string(tpbrt_string_t directive_str, tpbrt_directive_t* directive_out);

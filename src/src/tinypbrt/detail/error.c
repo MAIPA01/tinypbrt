@@ -1,7 +1,8 @@
 #include <tinypbrt/pch.h>
 
-#include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/error.h>
+
+#include <tinypbrt/detail/common_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,6 +69,7 @@ extern "C" {
 			TPBRT_STRING("Found duplicated object"),				  // TPBRT_ERROR_DUPLICATE_OBJECT_NAME
 			TPBRT_STRING("Unsupported filter type"),				  // TPBRT_ERROR_INVALID_FILTER_TYPE
 			TPBRT_STRING("Provided texture is of wrong type"),		  // TPBRT_ERROR_WRONG_TEXTURE_TYPE
+			TPBRT_STRING("Provided coord system name is invalid"),	  // TPBRT_ERROR_INVALID_COORD_SYSTEM_NAME
 			TPBRT_STRING("Undefined error"),						  // DEFAULT
 		};
 

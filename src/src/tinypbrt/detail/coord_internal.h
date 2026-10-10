@@ -2,10 +2,14 @@
 #ifndef _TINYPBRT_COORD_INTERNAL_H_
 #define _TINYPBRT_COORD_INTERNAL_H_
 
-#include <tinypbrt/detail/common.h>
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/coord.h>
+
 #include <tinypbrt/detail/error.h>
-#include <tinypbrt/detail/math.h>
+
+#include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/math_internal.h>
 
 #ifdef __cplusplus
 extern "C" {

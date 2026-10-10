@@ -2,10 +2,9 @@
 #ifndef _TINYPBRT_CAMERA_INTERNAL_H_
 #define _TINYPBRT_CAMERA_INTERNAL_H_
 
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/camera.h>
-#include <tinypbrt/detail/error.h>
-#include <tinypbrt/detail/film_internal.h>
-#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {

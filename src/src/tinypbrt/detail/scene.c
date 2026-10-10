@@ -5,7 +5,9 @@
 #include <tinypbrt/detail/accelerator_internal.h>
 #include <tinypbrt/detail/camera_internal.h>
 #include <tinypbrt/detail/color_internal.h>
+#include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/coord_internal.h>
+#include <tinypbrt/detail/film_internal.h>
 #include <tinypbrt/detail/filter_internal.h>
 #include <tinypbrt/detail/integrator_internal.h>
 #include <tinypbrt/detail/light_internal.h>
@@ -15,11 +17,14 @@
 #include <tinypbrt/detail/object_instance_internal.h>
 #include <tinypbrt/detail/object_internal.h>
 #include <tinypbrt/detail/options_internal.h>
+#include <tinypbrt/detail/param_internal.h>
 #include <tinypbrt/detail/parser_internal.h>
 #include <tinypbrt/detail/sampler_internal.h>
 #include <tinypbrt/detail/shape_internal.h>
 #include <tinypbrt/detail/state_internal.h>
 #include <tinypbrt/detail/texture_internal.h>
+#include <tinypbrt/detail/token_internal.h>
+#include <tinypbrt/detail/tokenizer_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -185,7 +190,7 @@ extern "C" {
 
 		tpbrt_error_t last_error = TPBRT_ERROR_NONE;
 
-			while (0) {
+			while (TPBRT_TRUE) {
 				tpbrt_element_t element;
 
 				err = tpbrt_parser_next(&parser, &element);
@@ -290,7 +295,11 @@ extern "C" {
 						}
 						case TPBRT_DIRECTIVE_COORD_SYS_TRANSFORM: {
 							tpbrt_mat4_animated_t mat;
-							tpbrt_coord_system_map_get(&named_coord_systems, element.as.named_entity.name, &mat);
+								if (tpbrt_coord_system_map_get(&named_coord_systems, element.as.named_entity.name, &mat) ==
+									TPBRT_FALSE) {
+									last_error = TPBRT_ERROR_INVALID_COORD_SYSTEM_NAME;
+									break;
+								}
 
 								if (current_state.active_ctm == TPBRT_ACTIVE_CTM_ALL ||
 									current_state.active_ctm == TPBRT_ACTIVE_CTM_START_TIME) {
@@ -304,8 +313,7 @@ extern "C" {
 							break;
 						}
 						case TPBRT_DIRECTIVE_TRANSFORM: {
-							tpbrt_mat4_t transform;
-							tpbrt_mat4_from_array(&transform, element.as.transform.m);
+							tpbrt_mat4_t transform = element.as.transform.m;
 
 								if (current_state.active_ctm == TPBRT_ACTIVE_CTM_ALL ||
 									current_state.active_ctm == TPBRT_ACTIVE_CTM_START_TIME) {
@@ -319,8 +327,7 @@ extern "C" {
 							break;
 						}
 						case TPBRT_DIRECTIVE_CONCAT_TRANSFORM: {
-							tpbrt_mat4_t right;
-							tpbrt_mat4_from_array(&right, element.as.transform.m);
+							tpbrt_mat4_t right = element.as.transform.m;
 
 							tpbrt_mat4_t res;
 
@@ -439,8 +446,9 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_color_space_from_string(element.as.single_string.type_name,
-							  &current_state.current_color_space);
+							tpbrt_color_space_t color_space;
+							last_error = tpbrt_color_space_from_string(element.as.single_string.type_name, &color_space);
+							current_state.current_color_space = color_space;
 							break;
 						}
 						case TPBRT_DIRECTIVE_FILM: {
@@ -501,7 +509,6 @@ extern "C" {
 							last_error = tpbrt_state_clone(&cloned, &current_state);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 							last_error = tpbrt_states_stack_push(&states, &cloned);
-								if (last_error != TPBRT_ERROR_NONE) { break; }
 							break;
 						}
 						case TPBRT_DIRECTIVE_ATTRIBUTE_END: {
@@ -511,7 +518,6 @@ extern "C" {
 								}
 							tpbrt_state_free(&current_state);
 							last_error = tpbrt_states_stack_pop(&states, &current_state);
-								if (last_error != TPBRT_ERROR_NONE) { break; }
 							break;
 						}
 						case TPBRT_DIRECTIVE_ATTRIBUTE: {

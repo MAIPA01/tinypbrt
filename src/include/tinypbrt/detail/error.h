@@ -66,7 +66,8 @@ extern "C" {
 		TPBRT_ERROR_DUPLICATE_OBJECT_NAME					  = 54,
 		TPBRT_ERROR_INVALID_FILTER_TYPE						  = 55,
 		TPBRT_ERROR_WRONG_TEXTURE_TYPE						  = 56,
-		TPBRT_ERROR_MAX_NUM									  = 57,
+		TPBRT_ERROR_INVALID_COORD_SYSTEM_NAME				  = 57,
+		TPBRT_ERROR_MAX_NUM									  = 58,
 	} tpbrt_error_t;
 
 	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);

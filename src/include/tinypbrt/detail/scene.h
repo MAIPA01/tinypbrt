@@ -2,14 +2,14 @@
 #ifndef _TINYPBRT_SCENE_H_
 #define _TINYPBRT_SCENE_H_
 
+#include <tinypbrt/detail/fwd.h>
+
 #include <tinypbrt/detail/accelerator.h>
 #include <tinypbrt/detail/camera.h>
 #include <tinypbrt/detail/common.h>
-#include <tinypbrt/detail/coord.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/film.h>
 #include <tinypbrt/detail/filter.h>
-#include <tinypbrt/detail/fwd.h>
 #include <tinypbrt/detail/integrator.h>
 #include <tinypbrt/detail/light.h>
 #include <tinypbrt/detail/material.h>
@@ -26,9 +26,6 @@ extern "C" {
 #endif
 
 	typedef struct tpbrt_scene_t {
-		tpbrt_float_t start_time;
-		tpbrt_float_t end_time;
-
 		tpbrt_options_t options;
 
 		tpbrt_camera_t camera;
@@ -36,16 +33,16 @@ extern "C" {
 		tpbrt_integrator_t integrator;
 		tpbrt_accelerator_t accelerator;
 		tpbrt_sampler_t sampler;
+		tpbrt_float_t start_time;
 		tpbrt_filter_t filter;
+		tpbrt_float_t end_time;
 
 		tpbrt_textures_list_t textures;
 		tpbrt_materials_list_t materials;
 		tpbrt_medias_list_t medias;
 		tpbrt_lights_list_t lights;
-		tpbrt_objects_list_t objects;
-
 		tpbrt_shapes_list_t shapes;
-
+		tpbrt_objects_list_t objects;
 		tpbrt_objects_instances_list_t instances;
 
 		tpbrt_string_array_t includes;

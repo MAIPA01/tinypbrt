@@ -2,7 +2,8 @@
 #ifndef _TINYPBRT_SHAPE_H_
 #define _TINYPBRT_SHAPE_H_
 
-#include <tinypbrt/detail/common.h>
+#include <tinypbrt/detail/fwd.h>
+
 #include <tinypbrt/detail/light.h>
 #include <tinypbrt/detail/material.h>
 #include <tinypbrt/detail/math.h>
@@ -33,7 +34,7 @@ extern "C" {
 
 	typedef enum tpbrt_shape_curve_degree_t : uint8_t {
 		TPBRT_SHAPE_CURVE_DEGREE_2 = 2,
-		TPBRT_SHAPE_CURVE_DEGREE_3 = 3
+		TPBRT_SHAPE_CURVE_DEGREE_3 = 3,
 	} tpbrt_shape_curve_degree_t;
 
 	typedef enum tpbrt_shape_curve_type_t : uint8_t {
@@ -45,14 +46,14 @@ extern "C" {
 
 	typedef struct tpbrt_shape_curve_params_t {
 		tpbrt_point3_t P[4];
-		tpbrt_shape_curve_basis_t basis;
-		tpbrt_shape_curve_degree_t degree;
-		tpbrt_shape_curve_type_t type;
 		tpbrt_normal_t N[2];
 		tpbrt_float_t width;
 		tpbrt_opt_float_t width0;
 		tpbrt_opt_float_t width1;
 		tpbrt_uint_t split_depth;
+		tpbrt_shape_curve_basis_t basis	  : 1;
+		tpbrt_shape_curve_degree_t degree : 2;
+		tpbrt_shape_curve_type_t type	  : 2;
 	} tpbrt_shape_curve_params_t;
 
 	typedef struct tpbrt_shape_cylinder_params_t {
@@ -91,20 +92,18 @@ extern "C" {
 	} tpbrt_shape_ply_mesh_params_t;
 
 	typedef struct tpbrt_shape_loop_subdiv_params_t {
-		tpbrt_uint_t levels;
 		tpbrt_uint_array_t indices;
 		tpbrt_point_array_t P;
+		tpbrt_uint_t levels;
 	} tpbrt_shape_loop_subdiv_params_t;
 
 	typedef struct tpbrt_shape_t {
-		tpbrt_shape_type_t type;
 		tpbrt_texture_handle_t alpha;
 		tpbrt_mat4_animated_t transform;
 		tpbrt_material_handle_t material;
 		tpbrt_area_light_handle_t area_light;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
-		tpbrt_bool_t reverse_orientation;
 
 		union {
 			tpbrt_shape_curve_params_t curve;
@@ -115,6 +114,9 @@ extern "C" {
 			tpbrt_shape_ply_mesh_params_t ply_mesh;
 			tpbrt_shape_loop_subdiv_params_t loop_subdiv;
 		} as;
+
+		tpbrt_shape_type_t type			 : 3;
+		tpbrt_bool_t reverse_orientation : 1;
 	} tpbrt_shape_t;
 
 	typedef struct tpbrt_shapes_list_t {

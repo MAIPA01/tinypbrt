@@ -24,7 +24,7 @@ extern "C" {
 
 	typedef struct tpbrt_accelerator_bvh_params_t {
 		tpbrt_uint_t max_node_prims;
-		tpbrt_accelerator_bvh_split_method_t split_method;
+		tpbrt_accelerator_bvh_split_method_t split_method : 2;
 	} tpbrt_accelerator_bvh_params_t;
 
 	typedef struct tpbrt_accelerator_kd_tree_params_t {
@@ -36,12 +36,12 @@ extern "C" {
 	} tpbrt_accelerator_kd_tree_params_t;
 
 	typedef struct tpbrt_accelerator_t {
-		tpbrt_accelerator_type_t type;
-
 		union {
 			tpbrt_accelerator_bvh_params_t bvh;
 			tpbrt_accelerator_kd_tree_params_t kd_tree;
 		} as;
+
+		tpbrt_accelerator_type_t type : 1;
 	} tpbrt_accelerator_t;
 
 #ifdef __cplusplus

@@ -2,7 +2,7 @@
 #ifndef _TINYPBRT_SAMPLERS_H_
 #define _TINYPBRT_SAMPLERS_H_
 
-#include <tinypbrt/detail/common.h>
+#include <tinypbrt/detail/fwd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +28,7 @@ extern "C" {
 
 	typedef struct tpbrt_sampler_halton_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 2;
 	} tpbrt_sampler_halton_params_t;
 
 	typedef struct tpbrt_sampler_independent_params_t {
@@ -37,27 +37,26 @@ extern "C" {
 
 	typedef struct tpbrt_sampler_padded_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 2;
 	} tpbrt_sampler_padded_sobol_params_t;
 
 	typedef struct tpbrt_sampler_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 2;
 	} tpbrt_sampler_sobol_params_t;
 
 	typedef struct tpbrt_sampler_stratified_params_t {
-		tpbrt_bool_t jitter;
 		tpbrt_uint_t x_samples;
 		tpbrt_uint_t y_samples;
+		tpbrt_bool_t jitter : 1;
 	} tpbrt_sampler_stratified_params_t;
 
 	typedef struct tpbrt_sampler_z_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 2;
 	} tpbrt_sampler_z_sobol_params_t;
 
 	typedef struct tpbrt_sampler_t {
-		tpbrt_sampler_type_t type;
 		tpbrt_int_t seed;
 
 		union {
@@ -68,6 +67,8 @@ extern "C" {
 			tpbrt_sampler_stratified_params_t stratified;
 			tpbrt_sampler_z_sobol_params_t z_sobol;
 		} as;
+
+		tpbrt_sampler_type_t type : 3;
 	} tpbrt_sampler_t;
 
 #ifdef __cplusplus

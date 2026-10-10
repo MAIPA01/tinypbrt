@@ -16,7 +16,7 @@ extern "C" {
 
 			if (memset(object, 0, sizeof(tpbrt_object_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		object->idx		  = TPBRT_OBJECT_HANDLE_INVALID;
+		object->idx		  = TPBRT_OBJECT_IDX_INVALID;
 
 		tpbrt_error_t err = tpbrt_shapes_list_init(&object->children);
 			if (err != TPBRT_ERROR_NONE) {
@@ -91,10 +91,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_objects_list_get_handle(const tpbrt_objects_list_t objects_list, const tpbrt_string_t object_name,
 	  tpbrt_object_handle_t* const object_handle) {
-			if (object_handle == TPBRT_NULL) {
-				*object_handle = TPBRT_OBJECT_HANDLE_INVALID;
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (object_handle == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_object_t* object;
 		const tpbrt_error_t err = tpbrt_objects_list_get(objects_list, object_name, &object);
@@ -104,7 +101,7 @@ extern "C" {
 				return err;
 			}
 
-		*object_handle = object->idx;
+		object_handle->object_idx = object->idx;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -134,12 +131,12 @@ extern "C" {
 	  const tpbrt_object_t** const object) {
 			if (object == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (handle >= objects.count) {
+			if (handle.object_idx == TPBRT_OBJECT_IDX_INVALID || handle.object_idx >= objects.count) {
 				*object = TPBRT_NULL;
 				return TPBRT_ERROR_INVALID_HANDLE;
 			}
 
-		*object = &objects.objects[handle];
+		*object = objects.objects + handle.object_idx;
 		return TPBRT_ERROR_NONE;
 	}
 

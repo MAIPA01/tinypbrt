@@ -2,21 +2,39 @@
 #ifndef _TINYPBRT_MATH_INTERNAL_H_
 #define _TINYPBRT_MATH_INTERNAL_H_
 
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/math.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define TPBRT_VEC2(x_val, y_val)                  \
+	(tpbrt_vec3_t) { .x = (x_val), .y = (y_val) }
+#define TPBRT_VEC3(x_val, y_val, z_val)                         \
+	(tpbrt_vec3_t) { .x = (x_val), .y = (y_val), .z = (z_val) }
+
+#define TPBRT_OPT_FLOAT(float_value)                                        \
+	(tpbrt_opt_float_t) { .value = (float_value), .has_value = TPBRT_TRUE }
+#define TPBRT_EMPTY_OPT_FLOAT                                       \
+	(tpbrt_opt_float_t) { .value = 0.0f, .has_value = TPBRT_FALSE }
+
 	tpbrt_uint_t tpbrt_next_power_of_two(tpbrt_uint_t n);
+
+	tpbrt_float_t tpbrt_vec3_dot(tpbrt_vec3_t a, tpbrt_vec3_t b);
+	tpbrt_vec3_t tpbrt_vec3_cross(tpbrt_vec3_t a, tpbrt_vec3_t b);
+	tpbrt_float_t tpbrt_vec3_length(tpbrt_vec3_t a);
+	tpbrt_vec3_t tpbrt_vec3_normalize(tpbrt_vec3_t a);
+	tpbrt_vec3_t tpbrt_vec3_subtract(tpbrt_vec3_t a, tpbrt_vec3_t b);
+	tpbrt_bool_t tpbrt_vec3_equals(tpbrt_vec3_t a, tpbrt_vec3_t b);
 
 	void tpbrt_mat4_identity(tpbrt_mat4_t* m);
 	void tpbrt_mat4_from_array(tpbrt_mat4_t* m, const tpbrt_float_t arr[16]);
-	void tpbrt_mat4_from_translation(tpbrt_mat4_t* m, const tpbrt_float_t vec[3]);
-	void tpbrt_mat4_from_scale(tpbrt_mat4_t* m, const tpbrt_float_t vec[3]);
-	void tpbrt_mat4_from_axis_angle(tpbrt_mat4_t* m, const tpbrt_float_t axis[3], tpbrt_float_t angle);
-	void tpbrt_mat4_look_at_lh(tpbrt_mat4_t* m, const tpbrt_float_t eye[3], const tpbrt_float_t look_at[3],
-	  const tpbrt_float_t up[3]);
+	void tpbrt_mat4_from_translation(tpbrt_mat4_t* m, tpbrt_vec3_t vec);
+	void tpbrt_mat4_from_scale(tpbrt_mat4_t* m, tpbrt_vec3_t vec);
+	void tpbrt_mat4_from_axis_angle(tpbrt_mat4_t* m, tpbrt_vec3_t axis, tpbrt_float_t angle);
+	void tpbrt_mat4_look_at_lh(tpbrt_mat4_t* m, tpbrt_vec3_t eye, tpbrt_vec3_t look_at, tpbrt_vec3_t up);
 	void tpbrt_mat4_multiply(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 	void tpbrt_mat4_inverse(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
 

@@ -5,6 +5,7 @@
 #include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/coord_internal.h>
 #include <tinypbrt/detail/math_internal.h>
+#include <tinypbrt/detail/param_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -124,6 +125,43 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
+	static tpbrt_error_t tpbrt_film_read_gbuffer(tpbrt_film_gbuffer_params_t* const gbuffer, const tpbrt_params_list_t params) {
+			if (gbuffer == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_string_t coordinate_system_str;
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, TPBRT_FILM_GBUFFER_COORD_SYS_STR, &coordinate_system_str);
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				gbuffer->coordinate_system = TPBRT_FILM_GBUFFER_COORD_SYS_DEFAULT;
+				return TPBRT_ERROR_NONE;
+			}
+
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		tpbrt_coord_system_type_t coordinate_system;
+		err = tpbrt_coord_system_type_from_string(coordinate_system_str, &coordinate_system);
+		tpbrt_string_free(&coordinate_system_str);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+		gbuffer->coordinate_system = coordinate_system;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	static tpbrt_error_t tpbrt_film_read_spectral(tpbrt_film_spectral_params_t* const spectral,
+	  const tpbrt_params_list_t params) {
+			if (spectral == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_error_t err = tpbrt_params_list_get_uint(params, TPBRT_FILM_SPECTRAL_N_BUCKETS_STR,
+		  TPBRT_FILM_SPECTRAL_N_BUCKETS_DEFAULT, &spectral->nbuckets);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, TPBRT_FILM_SPECTRAL_LAMBDA_MIN_STR, TPBRT_FILM_SPECTRAL_LAMBDA_MIN_DEFAULT,
+		  &spectral->lambda_min);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_params_list_get_float(params, TPBRT_FILM_SPECTRAL_LAMBDA_MAX_STR, TPBRT_FILM_SPECTRAL_LAMBDA_MAX_DEFAULT,
+		  &spectral->lambda_max);
+	}
+
 	tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params, tpbrt_film_t* const film) {
 			if (film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -132,62 +170,31 @@ extern "C" {
 		tpbrt_error_t err;
 		film->type = TPBRT_FILM_TYPE_RGB;
 			if (!tpbrt_string_empty(type_str)) {
-				err = tpbrt_film_type_from_string(type_str, &film->type);
+				tpbrt_film_type_t type;
+				err = tpbrt_film_type_from_string(type_str, &type);
 					if (err != TPBRT_ERROR_NONE) { return err; }
+				film->type = type;
 			}
 
 			switch (film->type) {
 			default:
 				case TPBRT_FILM_TYPE_RGB: {
+					err = TPBRT_ERROR_NONE;
 					break;
 				}
 				case TPBRT_FILM_TYPE_GBUFFER: {
-					tpbrt_string_t coordinate_system_str;
-					err = tpbrt_params_list_get_string(params, TPBRT_FILM_GBUFFER_COORD_SYS_STR, &coordinate_system_str);
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							film->as.gbuffer.coordinate_system = TPBRT_FILM_GBUFFER_COORD_SYS_DEFAULT;
-							break;
-						}
-
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_film_free(film);
-							return err;
-						}
-
-					err = tpbrt_coord_system_type_from_string(coordinate_system_str, &film->as.gbuffer.coordinate_system);
-					tpbrt_string_free(&coordinate_system_str);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_film_free(film);
-							return err;
-						}
+					err = tpbrt_film_read_gbuffer(&film->as.gbuffer, params);
 					break;
 				}
 				case TPBRT_FILM_TYPE_SPECTRAL: {
-					err = tpbrt_params_list_get_uint(params, TPBRT_FILM_SPECTRAL_N_BUCKETS_STR,
-					  TPBRT_FILM_SPECTRAL_N_BUCKETS_DEFAULT, &film->as.spectral.nbuckets);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_film_free(film);
-							return err;
-						}
-
-
-					err = tpbrt_params_list_get_float(params, TPBRT_FILM_SPECTRAL_LAMBDA_MIN_STR,
-					  TPBRT_FILM_SPECTRAL_LAMBDA_MIN_DEFAULT, &film->as.spectral.lambda_min);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_film_free(film);
-							return err;
-						}
-
-
-					err = tpbrt_params_list_get_float(params, TPBRT_FILM_SPECTRAL_LAMBDA_MAX_STR,
-					  TPBRT_FILM_SPECTRAL_LAMBDA_MAX_DEFAULT, &film->as.spectral.lambda_max);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_film_free(film);
-							return err;
-						}
-
+					err = tpbrt_film_read_spectral(&film->as.spectral, params);
 					break;
 				}
+			}
+
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_film_free(film);
+				return err;
 			}
 
 		err = tpbrt_params_list_get_uint(params, TPBRT_FILM_X_RESOULUTION_STR, TPBRT_FILM_X_RES_DEFAULT, &film->x_resolution);
@@ -203,26 +210,14 @@ extern "C" {
 			}
 
 		tpbrt_float_array_t crop_window;
-		err = tpbrt_params_list_get_floats(params, TPBRT_FILM_CROP_WINDOW_STR, &crop_window);
+		err = tpbrt_params_list_get_floats_of_size(params, TPBRT_FILM_CROP_WINDOW_STR, 4u, &crop_window);
 			if (err != TPBRT_ERROR_NOT_FOUND) {
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_film_free(film);
 						return err;
 					}
 
-					if (crop_window.count < 4) {
-						tpbrt_float_array_free(&crop_window);
-						tpbrt_film_free(film);
-						return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
-					}
-
-					if (crop_window.count > 4) {
-						tpbrt_float_array_free(&crop_window);
-						tpbrt_film_free(film);
-						return TPBRT_ERROR_TOO_MANY_VALUES;
-					}
-
-					for (tpbrt_uint_t i = 0; i < 4; ++i) { film->crop_window[i] = crop_window.data[i]; }
+				memcpy(film->crop_window, crop_window.data, sizeof(tpbrt_float_t) * 4u);
 				tpbrt_float_array_free(&crop_window);
 			}
 			else {
@@ -233,26 +228,14 @@ extern "C" {
 			}
 
 		tpbrt_uint_array_t pixel_bounds;
-		err = tpbrt_params_list_get_uints(params, TPBRT_FILM_PIXEL_BOUNDS_STR, &pixel_bounds);
+		err = tpbrt_params_list_get_uints_of_size(params, TPBRT_FILM_PIXEL_BOUNDS_STR, 4u, &pixel_bounds);
 			if (err != TPBRT_ERROR_NOT_FOUND) {
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_film_free(film);
 						return err;
 					}
 
-					if (pixel_bounds.count < 4) {
-						tpbrt_uint_array_free(&pixel_bounds);
-						tpbrt_film_free(film);
-						return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
-					}
-
-					if (pixel_bounds.count > 4) {
-						tpbrt_uint_array_free(&pixel_bounds);
-						tpbrt_film_free(film);
-						return TPBRT_ERROR_TOO_MANY_VALUES;
-					}
-
-					for (tpbrt_uint_t i = 0; i < 4; ++i) { film->pixel_bounds[i] = pixel_bounds.data[i]; }
+				memcpy(film->pixel_bounds, pixel_bounds.data, sizeof(tpbrt_uint_t) * 4u);
 				tpbrt_uint_array_free(&pixel_bounds);
 			}
 			else {
@@ -281,13 +264,15 @@ extern "C" {
 					}
 			}
 
-		err = tpbrt_params_list_get_bool(params, TPBRT_FILM_SAVE_FP16_STR, TPBRT_FILM_SAVE_FP16_DEFAULT, &film->save_fp16);
+		tpbrt_bool_t save_fp16;
+		err = tpbrt_params_list_get_bool(params, TPBRT_FILM_SAVE_FP16_STR, TPBRT_FILM_SAVE_FP16_DEFAULT, &save_fp16);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_film_free(film);
 				return err;
 			}
+		film->save_fp16 = save_fp16;
 
-		err = tpbrt_params_list_get_float(params, TPBRT_FILM_ISO_STR, TPBRT_FILM_ISO_DEFAULT, &film->iso);
+		err				= tpbrt_params_list_get_float(params, TPBRT_FILM_ISO_STR, TPBRT_FILM_ISO_DEFAULT, &film->iso);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_film_free(film);
 				return err;
@@ -308,12 +293,14 @@ extern "C" {
 			}
 			if (err == TPBRT_ERROR_NOT_FOUND) { film->sensor = TPBRT_FILM_SENSOR_DEFAULT; }
 			else {
-				err = tpbrt_film_sensor_from_string(sensor_str, &film->sensor);
+				tpbrt_film_sensor_t sensor;
+				err = tpbrt_film_sensor_from_string(sensor_str, &sensor);
 				tpbrt_string_free(&sensor_str);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_film_free(film);
 						return err;
 					}
+				film->sensor = sensor;
 			}
 
 		err = tpbrt_params_list_get_float(params, TPBRT_FILM_MAX_COMPONENT_VALUE_STR, TPBRT_FILM_MAX_COMPONENT_VALUE_DEFAULT,

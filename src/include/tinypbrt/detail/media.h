@@ -25,17 +25,18 @@ extern "C" {
 	typedef struct tpbrt_media_cloud_params_t {
 		tpbrt_float_t density;
 		tpbrt_float_t frequency;
+		tpbrt_point3_t p0;
 		tpbrt_float_t g;
-		tpbrt_point3_t p0, p1;
+		tpbrt_point3_t p1;
+		tpbrt_float_t wispiness;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
-		tpbrt_float_t wispiness;
 	} tpbrt_media_cloud_params_t;
 
 	typedef struct tpbrt_media_homogeneous_params_t {
 		tpbrt_float_t g;
-		tpbrt_spectrum_t Le;
 		tpbrt_float_t Le_scale;
+		tpbrt_spectrum_t Le;
 		tpbrt_string_t preset;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
@@ -47,17 +48,18 @@ extern "C" {
 		tpbrt_float_t Le_scale;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
-		tpbrt_float_t scale;
 		tpbrt_string_t file_name;
 		tpbrt_float_t temperature_offset;
 		tpbrt_float_t temperature_scale;
+		tpbrt_float_t scale;
 	} tpbrt_media_nano_vdb_params_t;
 
 	typedef struct tpbrt_media_rgb_grid_params_t {
-		tpbrt_float_t g;
 		tpbrt_rgb_array_t Le;
+		tpbrt_point3_t p0;
 		tpbrt_float_t Le_scale;
-		tpbrt_point3_t p0, p1;
+		tpbrt_point3_t p1;
+		tpbrt_float_t g;
 		tpbrt_rgb_array_t sigma_a;
 		tpbrt_rgb_array_t sigma_s;
 		tpbrt_float_t scale;
@@ -65,23 +67,25 @@ extern "C" {
 
 	typedef struct tpbrt_media_uniform_grid_params_t {
 		tpbrt_float_array_t density;
-		tpbrt_float_t g;
 		tpbrt_spectrum_t Le;
+		tpbrt_point3_t p0;
 		tpbrt_float_t Le_scale;
-		tpbrt_point3_t p0, p1;
-		tpbrt_uint_t nx, ny, nz;
+		tpbrt_point3_t p1;
+		tpbrt_uint_t nx;
+		tpbrt_uint_t ny;
+		tpbrt_uint_t nz;
 		tpbrt_string_t preset;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
 		tpbrt_float_t scale;
+		tpbrt_float_t g;
 		tpbrt_float_array_t temperature;
 		tpbrt_float_t temperature_offset;
 		tpbrt_float_t temperature_scale;
 	} tpbrt_media_uniform_grid_params_t;
 
 	typedef struct tpbrt_media_t {
-		tpbrt_size_t idx;
-		tpbrt_media_type_t type;
+		tpbrt_media_idx_t idx;
 		tpbrt_string_t name;
 
 		union {
@@ -91,11 +95,16 @@ extern "C" {
 			tpbrt_media_rgb_grid_params_t rgb_grid;
 			tpbrt_media_nano_vdb_params_t nano_vdb;
 		} as;
+
+		tpbrt_media_type_t type : 3;
 	} tpbrt_media_t;
 
-	typedef tpbrt_size_t tpbrt_media_handle_t;
+	typedef struct tpbrt_media_handle_t {
+		tpbrt_media_idx_t media_idx;
+	} tpbrt_media_handle_t;
 
-#define TPBRT_MEDIA_HANDLE_INVALID ~(tpbrt_media_handle_t)0
+#define TPBRT_MEDIA_HANDLE_INVALID                                  \
+	(tpbrt_media_handle_t) { .media_idx = TPBRT_MEDIA_IDX_INVALID }
 
 	typedef struct tpbrt_medias_list_t {
 		tpbrt_media_t* medias;
