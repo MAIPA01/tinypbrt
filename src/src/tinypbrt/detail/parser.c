@@ -137,7 +137,8 @@ extern "C" {
 			}
 
 		tpbrt_string_t value_str = { .data = parser->tokenizer.str.data + start_offset, .size = end_offset - start_offset };
-			if (value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY && (value_str.size >= 2u && value_str.data[0] == '\"' && value_str.data[value_str.size - 1] == '\"')) {
+			if (value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY &&
+				(value_str.size >= 2u && value_str.data[0] == '\"' && value_str.data[value_str.size - 1] == '\"')) {
 				value_type = TPBRT_PARAM_VALUE_TYPE_STRING;
 				value_str  = (tpbrt_string_t) { .data = value_str.data + 1u, .size = value_str.size - 2u };
 			}
@@ -329,6 +330,8 @@ extern "C" {
 					return TPBRT_ERROR_INVALID_DIRECTIVE;
 				}
 			}
+
+		return TPBRT_ERROR_NONE;
 	}
 
 #ifdef __cplusplus
