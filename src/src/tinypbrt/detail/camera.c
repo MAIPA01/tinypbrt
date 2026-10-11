@@ -87,11 +87,11 @@ extern "C" {
 			}
 
 		static const tpbrt_string_t FRAME_ASPECT_RATIO_STR = TPBRT_STRING("frameaspectratio");
-		const tpbrt_float_t default_aspect_ratio		   = film->x_resolution / film->y_resolution;
+		const tpbrt_float_t default_aspect_ratio	   = (tpbrt_float_t)film->x_resolution / (tpbrt_float_t)film->y_resolution;
 
-		static const tpbrt_string_t SCREEN_WINDOW_STR	   = TPBRT_STRING("screenwindow");
-		static const tpbrt_string_t LENS_RADIUS_STR		   = TPBRT_STRING("lensradius");
-		static const tpbrt_string_t FOCAL_DISTANCE_STR	   = TPBRT_STRING("focaldistance");
+		static const tpbrt_string_t SCREEN_WINDOW_STR  = TPBRT_STRING("screenwindow");
+		static const tpbrt_string_t LENS_RADIUS_STR	   = TPBRT_STRING("lensradius");
+		static const tpbrt_string_t FOCAL_DISTANCE_STR = TPBRT_STRING("focaldistance");
 
 		tpbrt_error_t err = tpbrt_params_list_get_float(params, FRAME_ASPECT_RATIO_STR, default_aspect_ratio, frame_aspect_ratio);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -221,10 +221,50 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
+	tpbrt_error_t tpbrt_camera_init_default(const tpbrt_film_t* const film, tpbrt_camera_t* const camera) {
+			if (camera == TPBRT_NULL || film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_mat4_identity(&camera->transform.start);
+		tpbrt_mat4_identity(&camera->transform.end);
+		camera->interior_media_handle			  = TPBRT_MEDIA_HANDLE_INVALID;
+		camera->exterior_media_handle			  = TPBRT_MEDIA_HANDLE_INVALID;
+		camera->shutter_open					  = 0.0f;
+		camera->shutter_close					  = 1.0f;
+
+		const tpbrt_float_t default_aspect_ratio  = (tpbrt_float_t)film->x_resolution / (tpbrt_float_t)film->y_resolution;
+
+		camera->type							  = TPBRT_CAMERA_TYPE_PERSPECTIVE;
+		camera->as.perspective.fov				  = 90.0f;
+		camera->as.perspective.frame_aspect_ratio = default_aspect_ratio;
+
+			if (film->x_resolution < film->y_resolution) {
+				const tpbrt_float_t aspect				= 1.0f / default_aspect_ratio;
+
+				camera->as.perspective.screen_window[0] = -1.0f;
+				camera->as.perspective.screen_window[1] = 1.0f;
+				camera->as.perspective.screen_window[2] = -aspect;
+				camera->as.perspective.screen_window[3] = aspect;
+			}
+			else {
+				const tpbrt_float_t aspect				= default_aspect_ratio;
+
+				camera->as.perspective.screen_window[0] = -aspect;
+				camera->as.perspective.screen_window[1] = aspect;
+				camera->as.perspective.screen_window[2] = -1.0f;
+				camera->as.perspective.screen_window[3] = 1.0f;
+			}
+
+		camera->as.perspective.lens_radius	  = 0.0f;
+		camera->as.perspective.focal_distance = 1e+30f;
+		return TPBRT_ERROR_NONE;
+	}
+
 	tpbrt_error_t tpbrt_camera_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
 	  const tpbrt_film_t* const film, const tpbrt_mat4_animated_t* const ctm, const tpbrt_media_handle_t interior_media_handle,
 	  const tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_t* const camera) {
-			if (camera == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+			if (camera == TPBRT_NULL || film == TPBRT_NULL || ctm == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 

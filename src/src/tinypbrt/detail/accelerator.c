@@ -110,6 +110,18 @@ extern "C" {
 		return tpbrt_params_list_get_int(params, MAX_DEPTH_STR, -1, &kd_tree_params->max_depth);
 	}
 
+	tpbrt_error_t tpbrt_accelerator_init_default(tpbrt_accelerator_t* const accelerator) {
+			if (accelerator == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(accelerator, 0, sizeof(tpbrt_accelerator_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		accelerator->type				   = TPBRT_ACCELERATOR_TYPE_BVH;
+		accelerator->as.bvh.max_node_prims = 4u;
+		accelerator->as.bvh.split_method   = TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_SAH;
+
+		return TPBRT_ERROR_NONE;
+	}
+
 	tpbrt_error_t tpbrt_accelerator_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
 	  tpbrt_accelerator_t* const accelerator) {
 			if (accelerator == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }

@@ -74,10 +74,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_objects_list_get(const tpbrt_objects_list_t objects_list, const tpbrt_string_t object_name,
 	  const tpbrt_object_t** const object) {
-			if (object == TPBRT_NULL) {
-				*object = TPBRT_NULL;
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (object == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			for (tpbrt_size_t i = 0; i < objects_list.count; i++) {
 					if (tpbrt_string_equals(objects_list.objects[i].name, object_name)) {

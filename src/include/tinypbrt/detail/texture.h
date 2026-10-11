@@ -126,7 +126,7 @@ extern "C" {
 		tpbrt_float_t scale;
 		tpbrt_opt_float_t gamma;
 		tpbrt_texture_wrap_t wrap		  : 2;
-		tpbrt_texture_filter_t filter	  : 2;
+		tpbrt_texture_filter_t filter	  : 3;
 		tpbrt_texture_encoding_t encoding : 2;
 		tpbrt_bool_t invert				  : 1;
 	} tpbrt_texture_image_map_params_t;

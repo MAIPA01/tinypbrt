@@ -174,6 +174,19 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
+	tpbrt_error_t tpbrt_sampler_init_default(tpbrt_sampler_t* const sampler) {
+			if (sampler == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(sampler, 0, sizeof(tpbrt_sampler_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		sampler->seed					  = 0;
+		sampler->type					  = TPBRT_SAMPLER_TYPE_Z_SOBOL;
+		sampler->as.z_sobol.pixel_samples = 16u;
+		sampler->as.z_sobol.randomization = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
+
+		return TPBRT_ERROR_NONE;
+	}
+
 	tpbrt_error_t tpbrt_sampler_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params, tpbrt_sampler_t* sampler) {
 			if (sampler == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 

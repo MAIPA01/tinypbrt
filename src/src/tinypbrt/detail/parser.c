@@ -49,34 +49,43 @@ extern "C" {
 		const tpbrt_error_t err = tpbrt_read_token(parser, &token);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (!tpbrt_token_is_quoted_string(&token)) { return TPBRT_ERROR_INVALID_STRING; }
+			if (tpbrt_token_is_quoted_string(&token) == TPBRT_FALSE) { return TPBRT_ERROR_INVALID_STRING; }
 
-			if (!tpbrt_read_string_value(token.value, out_str)) { return TPBRT_ERROR_INVALID_STRING; }
+			if (tpbrt_read_string_value(token.value, out_str) == TPBRT_FALSE) { return TPBRT_ERROR_INVALID_STRING; }
 		return TPBRT_ERROR_NONE;
 	}
 
-	static tpbrt_error_t tpbrt_read_float_token(tpbrt_parser_t* const parser, tpbrt_float_t* const out_f) {
+	static tpbrt_error_t tpbrt_read_single_token(tpbrt_parser_t* const parser, tpbrt_string_t* const out_single) {
 		tpbrt_token_t token;
 		const tpbrt_error_t err = tpbrt_read_token(parser, &token);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (!tpbrt_token_is_single(&token)) { return TPBRT_ERROR_INVALID_STRING; }
+			if (tpbrt_token_is_single(&token) == TPBRT_FALSE) { return TPBRT_ERROR_INVALID_TOKEN; }
 
-			if (!tpbrt_read_float_value(token.value, out_f)) { return TPBRT_ERROR_PARSE_FLOAT; }
+		*out_single = token.value;
 		return TPBRT_ERROR_NONE;
 	}
 
-	static tpbrt_error_t tpbrt_read_point_token(tpbrt_parser_t* const parser, tpbrt_point_t out_p) {
+	static tpbrt_error_t tpbrt_read_float_token(tpbrt_parser_t* const parser, tpbrt_float_t* const out_f) {
+		tpbrt_string_t value;
+		const tpbrt_error_t err = tpbrt_read_single_token(parser, &value);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+			if (!tpbrt_read_float_value(value, out_f)) { return TPBRT_ERROR_PARSE_FLOAT; }
+		return TPBRT_ERROR_NONE;
+	}
+
+	static tpbrt_error_t tpbrt_read_point_token(tpbrt_parser_t* const parser, tpbrt_point_t* const out_p) {
 			for (tpbrt_uint_t i = 0; i < 3; ++i) {
-				const tpbrt_error_t err = tpbrt_read_float_token(parser, &out_p.v[i]);
+				const tpbrt_error_t err = tpbrt_read_float_token(parser, &out_p->v[i]);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 			}
 		return TPBRT_ERROR_NONE;
 	}
 
-	static tpbrt_error_t tpbrt_read_matrix_token(tpbrt_parser_t* const parser, tpbrt_mat4_t out_m) {
+	static tpbrt_error_t tpbrt_read_matrix_token(tpbrt_parser_t* const parser, tpbrt_mat4_t* const out_m) {
 			for (tpbrt_uint_t i = 0; i < 16; ++i) {
-				const tpbrt_error_t err = tpbrt_read_float_token(parser, &out_m.m[i]);
+				const tpbrt_error_t err = tpbrt_read_float_token(parser, &out_m->m[i]);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 			}
 		return TPBRT_ERROR_NONE;
@@ -127,9 +136,10 @@ extern "C" {
 				end_offset	 = start_offset + value_tok.value.size;
 			}
 
-		const tpbrt_string_t value_str = { .data = parser->tokenizer.str.data + start_offset, .size = end_offset - start_offset };
-			if (value_str.size >= 2u && value_str.data[0] == '\"' && value_str.data[value_str.size - 1] == '\"') {
+		tpbrt_string_t value_str = { .data = parser->tokenizer.str.data + start_offset, .size = end_offset - start_offset };
+			if (value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY && (value_str.size >= 2u && value_str.data[0] == '\"' && value_str.data[value_str.size - 1] == '\"')) {
 				value_type = TPBRT_PARAM_VALUE_TYPE_STRING;
+				value_str  = (tpbrt_string_t) { .data = value_str.data + 1u, .size = value_str.size - 2u };
 			}
 
 		return tpbrt_param_init(type_and_name, value_type, value_str, out_param);
@@ -227,7 +237,7 @@ extern "C" {
 
 			case TPBRT_DIRECTIVE_COLOR_SPACE:
 				case TPBRT_DIRECTIVE_ACTIVE_TRANSFORM: {
-					return tpbrt_read_string_token(parser, &out_element->as.single_string.type_name);
+					return tpbrt_read_single_token(parser, &out_element->as.single_string.type_name);
 				}
 
 			case TPBRT_DIRECTIVE_COORDINATE_SYSTEM:
@@ -240,28 +250,28 @@ extern "C" {
 
 			case TPBRT_DIRECTIVE_TRANSLATE:
 				case TPBRT_DIRECTIVE_SCALE: {
-					return tpbrt_read_point_token(parser, out_element->as.vector3.v);
+					return tpbrt_read_point_token(parser, &out_element->as.vector3.v);
 				}
 
 				case TPBRT_DIRECTIVE_ROTATE: {
 					err = tpbrt_read_float_token(parser, &out_element->as.rotate.angle);
 						if (err != TPBRT_ERROR_NONE) { return err; }
-					return tpbrt_read_point_token(parser, out_element->as.rotate.v);
+					return tpbrt_read_point_token(parser, &out_element->as.rotate.v);
 				}
 
 				case TPBRT_DIRECTIVE_LOOK_AT: {
-					err = tpbrt_read_point_token(parser, out_element->as.look_at.eye);
+					err = tpbrt_read_point_token(parser, &out_element->as.look_at.eye);
 						if (err != TPBRT_ERROR_NONE) { return err; }
-					err = tpbrt_read_point_token(parser, out_element->as.look_at.look_at);
+					err = tpbrt_read_point_token(parser, &out_element->as.look_at.look_at);
 						if (err != TPBRT_ERROR_NONE) { return err; }
-					return tpbrt_read_point_token(parser, out_element->as.look_at.up);
+					return tpbrt_read_point_token(parser, &out_element->as.look_at.up);
 				}
 
 			case TPBRT_DIRECTIVE_TRANSFORM:
 				case TPBRT_DIRECTIVE_CONCAT_TRANSFORM: {
 					err = tpbrt_skip_brace_token(parser, TPBRT_TRUE);
 						if (err != TPBRT_ERROR_NONE) { return err; }
-					err = tpbrt_read_matrix_token(parser, out_element->as.transform.m);
+					err = tpbrt_read_matrix_token(parser, &out_element->as.transform.m);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					return tpbrt_skip_brace_token(parser, TPBRT_FALSE);
 				}
@@ -297,7 +307,13 @@ extern "C" {
 				case TPBRT_DIRECTIVE_MEDIUM_INTERFACE: {
 					err = tpbrt_read_string_token(parser, &out_element->as.medium_interface.interior);
 						if (err != TPBRT_ERROR_NONE) { return err; }
-					return tpbrt_read_string_token(parser, &out_element->as.medium_interface.exterior);
+					err = tpbrt_read_string_token(parser, &out_element->as.medium_interface.exterior);
+						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+						if (err == TPBRT_ERROR_NOT_FOUND) {
+							out_element->as.medium_interface.exterior = out_element->as.medium_interface.interior;
+						}
+					break;
 				}
 
 			case TPBRT_DIRECTIVE_IDENTITY:

@@ -592,6 +592,20 @@ extern "C" {
 				case TPBRT_MATERIAL_TYPE_COATED_CONDUCTOR: {
 					tpbrt_material_coated_conductor_params_t* const params = &material->as.coated_conductor;
 					tpbrt_material_free_bump_map(&params->bump_map);
+
+						switch (params->value_type) {
+							default: {
+								break;
+							}
+							case TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_REFLECTANCE: {
+								tpbrt_spectrum_free(&params->as.reflectance);
+								break;
+							}
+							case TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_ETA_K: {
+								tpbrt_spectrum_free(&params->as.conductor.eta);
+								tpbrt_spectrum_free(&params->as.conductor.k);
+							}
+						}
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_CONDUCTOR: {

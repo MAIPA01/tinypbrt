@@ -572,7 +572,7 @@ extern "C" {
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_uint_value(token, &out_vals->data[idx].wavelength)) {
+					if (!tpbrt_read_float_value(token, &out_vals->data[idx].wavelength)) {
 						tpbrt_wavelength_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_UINT;
 					}
@@ -626,7 +626,7 @@ extern "C" {
 
 			if (param->type == TPBRT_PARAM_TYPE_BLACKBODY) {
 				out_val->type = TPBRT_SPECTRUM_TYPE_BLACKBODY;
-				return tpbrt_param_as_uint(param, &out_val->as.blackbody);
+				return tpbrt_param_as_float(param, &out_val->as.blackbody);
 			}
 
 			if (param->type == TPBRT_PARAM_TYPE_SPECTRUM) {
@@ -1088,7 +1088,7 @@ extern "C" {
 			for (tpbrt_size_t i = 0; i < src_params_list.count; i++) {
 				tpbrt_param_t* existing;
 					if (tpbrt_params_list_get(*dst_params_list, src_params_list.params[i].name, &existing) == TPBRT_ERROR_NONE) {
-						*existing = src_params_list.params[i];
+						//*existing = src_params_list.params[i];
 						continue;
 					}
 

@@ -717,6 +717,8 @@ extern "C" {
 				}
 			default: break;
 			}
+
+		tpbrt_string_free(&texture->name);
 	}
 
 #pragma endregion

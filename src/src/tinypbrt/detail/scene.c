@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene) {
+	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* const filepath, tpbrt_scene_t* const out_scene) {
 			if (filepath == TPBRT_NULL || out_scene == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		FILE* f;
@@ -69,7 +69,7 @@ extern "C" {
 					}
 			}
 
-		const tpbrt_error_t err = tpbrt_scene_load_from_memory(file_data.data, out_scene);
+		const tpbrt_error_t err = tpbrt_scene_load_from_memory(file_data.data, working_directory, out_scene);
 
 			if (err == TPBRT_ERROR_NONE) {
 				const tpbrt_size_t cap	= out_scene->includes.count == 0 ? 8 : out_scene->includes.count * 2;
@@ -88,10 +88,18 @@ extern "C" {
 		return err;
 	}
 
-	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* data, tpbrt_scene_t* out_scene) {
+	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* const data, const tpbrt_char_t* const working_directory,
+	  tpbrt_scene_t* const out_scene) {
+			if (data == TPBRT_NULL || working_directory == TPBRT_NULL || out_scene == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+
 		memset(out_scene, 0, sizeof(tpbrt_scene_t));
 
-		tpbrt_error_t err = tpbrt_options_init(&out_scene->options);
+		out_scene->start_time = 0.0f;
+		out_scene->end_time	  = 1.0f;
+
+		tpbrt_error_t err	  = tpbrt_options_init(&out_scene->options);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_scene_free(out_scene);
 				return err;
@@ -133,6 +141,24 @@ extern "C" {
 				return err;
 			}
 
+		err = tpbrt_accelerator_init_default(&out_scene->accelerator);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
+
+		err = tpbrt_integrator_init_default(&out_scene->integrator);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
+
+		err = tpbrt_sampler_init_default(&out_scene->sampler);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
+
 		err = tpbrt_film_init_default(&out_scene->film);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_scene_free(out_scene);
@@ -140,6 +166,12 @@ extern "C" {
 			}
 
 		err = tpbrt_filter_init_default(&out_scene->filter);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
+
+		err = tpbrt_camera_init_default(&out_scene->film, &out_scene->camera);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_scene_free(out_scene);
 				return err;
@@ -417,6 +449,8 @@ extern "C" {
 									break;
 								}
 
+							tpbrt_camera_free(&out_scene->camera);
+
 							tpbrt_mat4_animated_t camera_to_world;
 							tpbrt_mat4_inverse(&camera_to_world.start, &current_state.ctm.start);
 							tpbrt_mat4_inverse(&camera_to_world.end, &current_state.ctm.end);
@@ -456,6 +490,8 @@ extern "C" {
 									last_error = TPBRT_ERROR_UNEXPECTED_TOKEN;
 									break;
 								}
+
+							tpbrt_film_free(&out_scene->film);
 
 							last_error = tpbrt_film_init(element.as.generic_with_params.type_name,
 							  element.as.generic_with_params.params, &out_scene->film);
@@ -708,9 +744,9 @@ extern "C" {
 							tpbrt_material_t mat;
 							last_error = tpbrt_material_init_named(element.as.named_with_params.name,
 							  element.as.named_with_params.params, out_scene->textures, out_scene->materials, &mat);
-								if (last_error != TPBRT_ERROR_NONE) { break; }
+							// if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							last_error = tpbrt_materials_list_append(&out_scene->materials, &mat, &current_state.material_handle);
+							// last_error = tpbrt_materials_list_append(&out_scene->materials, &mat, &current_state.material_handle);
 							break;
 						}
 						case TPBRT_DIRECTIVE_NAMED_MATERIAL: {

@@ -28,7 +28,7 @@ extern "C" {
 
 	typedef struct tpbrt_sampler_halton_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization : 2;
+		tpbrt_sampler_random_t randomization : 3;
 	} tpbrt_sampler_halton_params_t;
 
 	typedef struct tpbrt_sampler_independent_params_t {

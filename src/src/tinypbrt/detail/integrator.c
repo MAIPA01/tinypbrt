@@ -174,7 +174,7 @@ extern "C" {
 		err = tpbrt_params_list_get_uint(params, MUTATIONS_PER_PIXEL_STR, MUTATIONS_PER_PIXEL_DEFAULT, &mlt->mutations_per_pixel);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_float_t LARGE_STEP_PROBABILITY_DEFAULT = 0.03f;
+		static const tpbrt_float_t LARGE_STEP_PROBABILITY_DEFAULT = 0.3f;
 		err = tpbrt_params_list_get_float(params, LARGE_STEP_PROBABILITY_STR, LARGE_STEP_PROBABILITY_DEFAULT,
 		  &mlt->large_step_probability);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -236,15 +236,7 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (simple_vol_path == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_error_t err = tpbrt_integrator_read_max_depth(&simple_vol_path->max_depth, params);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-
-		tpbrt_bool_t regularize;
-		err = tpbrt_integrator_read_regularize(&regularize, params);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-		simple_vol_path->regularize = regularize;
-
-		return TPBRT_ERROR_NONE;
+		return tpbrt_integrator_read_max_depth(&simple_vol_path->max_depth, params);
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_sppm(tpbrt_integrator_sppm_params_t* const sppm,
@@ -278,6 +270,24 @@ extern "C" {
 		err = tpbrt_integrator_read_light_sampler(&light_sampler, params);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 		vol_path->light_sampler = light_sampler;
+
+		tpbrt_bool_t regularize;
+		err = tpbrt_integrator_read_regularize(&regularize, params);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+		vol_path->regularize = regularize;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_integrator_init_default(tpbrt_integrator_t* const integrator) {
+			if (integrator == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(integrator, 0, sizeof(tpbrt_integrator_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		integrator->type					  = TPBRT_INTEGRATOR_TYPE_VOL_PATH;
+
+		integrator->as.vol_path.max_depth	  = 5u;
+		integrator->as.vol_path.light_sampler = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
 
 		return TPBRT_ERROR_NONE;
 	}

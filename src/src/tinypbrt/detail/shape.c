@@ -223,7 +223,7 @@ extern "C" {
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_uints(params, INDICES_STR, &triangle_mesh->indices);
-			if (err != TPBRT_ERROR_NONE && !(triangle_mesh->indices.count == 3 && err == TPBRT_ERROR_NOT_FOUND)) { return err; }
+			if (err != TPBRT_ERROR_NONE && !(triangle_mesh->P.count == 3 && err == TPBRT_ERROR_NOT_FOUND)) { return err; }
 
 		err = tpbrt_params_list_get_normals(params, N_STR, &triangle_mesh->N);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }

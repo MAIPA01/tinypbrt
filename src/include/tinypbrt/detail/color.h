@@ -29,7 +29,7 @@ extern "C" {
 	} tpbrt_spectrum_type_t;
 
 	typedef struct tpbrt_wavelength_t {
-		tpbrt_uint_t wavelength;
+		tpbrt_float_t wavelength;
 		tpbrt_float_t value;
 	} tpbrt_wavelength_t;
 

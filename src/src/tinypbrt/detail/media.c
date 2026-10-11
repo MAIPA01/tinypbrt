@@ -129,7 +129,7 @@ extern "C" {
 		static const tpbrt_string_t SIGMA_S_STR			   = TPBRT_STRING("sigma_s");
 		static const tpbrt_string_t SCALE_STR			   = TPBRT_STRING("scale");
 		static const tpbrt_string_t FILE_NAME_STR		   = TPBRT_STRING("filename");
-		static const tpbrt_string_t TEMPERATURE_OFFSET_STR = TPBRT_STRING("temepratureoffset");
+		static const tpbrt_string_t TEMPERATURE_OFFSET_STR = TPBRT_STRING("temperatureoffset");
 		static const tpbrt_string_t TEMPERATURE_SCALE_STR  = TPBRT_STRING("temperaturescale");
 
 		tpbrt_error_t err								   = tpbrt_params_list_get_float(params, G_STR, 0.0f, &nano_vdb->g);
@@ -219,7 +219,7 @@ extern "C" {
 		static const tpbrt_string_t SIGMA_S_STR			   = TPBRT_STRING("sigma_s");
 		static const tpbrt_string_t SCALE_STR			   = TPBRT_STRING("scale");
 		static const tpbrt_string_t TEMPERATURE_STR		   = TPBRT_STRING("temperature");
-		static const tpbrt_string_t TEMPERATURE_OFFSET_STR = TPBRT_STRING("temepratureoffset");
+		static const tpbrt_string_t TEMPERATURE_OFFSET_STR = TPBRT_STRING("temperatureoffset");
 		static const tpbrt_string_t TEMPERATURE_SCALE_STR  = TPBRT_STRING("temperaturescale");
 
 		tpbrt_error_t err = tpbrt_params_list_get_floats(params, DENSITY_STR, &uniform_grid->density);

@@ -157,8 +157,8 @@ extern "C" {
 		const tpbrt_float_t* b_f = (const tpbrt_float_t*)b;
 			for (int c = 0; c < 4; c++) {
 					for (int r = 0; r < 4; r++) {
-						out_m->m[c * 4 + r] = a_f[0 * 4 + r] * b_f[c * 4 + 0] + a_f[1 * 4 + r] * b_f[c * 4 + 1] +
-											  a_f[2 * 4 + r] * b_f[c * 4 + 2] + a_f[3 * 4 + r] * b_f[c * 4 + 3];
+						out_m->m[r * 4 + c] = a_f[0 * 4 + c] * b_f[r * 4 + 0] + a_f[1 * 4 + c] * b_f[r * 4 + 1] +
+											  a_f[2 * 4 + c] * b_f[r * 4 + 2] + a_f[3 * 4 + c] * b_f[r * 4 + 3];
 					}
 			}
 	}

@@ -39,6 +39,7 @@ if (NOT TINYPBRT_INSTALL_TEST)
 endif()
 
 if (TINYPBRT_BUILD_TESTS OR TINYPBRT_BUILD_COVERAGE)
+	enable_testing()
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
 endif()
 

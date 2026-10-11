@@ -2,7 +2,9 @@
 #ifndef _TINYPBRT_FWD_H_
 #define _TINYPBRT_FWD_H_
 
+#include <stddef.h>
 #include <stdint.h>
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -160,7 +162,7 @@ extern "C" {
 	typedef struct tpbrt_wavelength_t tpbrt_wavelength_t;
 	typedef struct tpbrt_wavelength_array_t tpbrt_wavelength_array_t;
 
-	typedef uint32_t tpbrt_blackbody_t;
+	typedef tpbrt_float_t tpbrt_blackbody_t;
 
 	typedef tpbrt_vec3_t tpbrt_rgb_t;
 	typedef tpbrt_vec3_array_t tpbrt_rgb_array_t;

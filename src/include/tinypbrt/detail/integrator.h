@@ -73,7 +73,6 @@ extern "C" {
 
 	typedef struct tpbrt_integrator_simple_vol_path_params_t {
 		tpbrt_uint_t max_depth;
-		tpbrt_bool_t regularize : 1;
 	} tpbrt_integrator_simple_vol_path_params_t;
 
 	typedef struct tpbrt_integrator_sppm_params_t {
@@ -86,6 +85,7 @@ extern "C" {
 	typedef struct tpbrt_integrator_vol_path_params_t {
 		tpbrt_uint_t max_depth;
 		tpbrt_integrator_light_sampler_t light_sampler : 2;
+		tpbrt_bool_t regularize						   : 1;
 	} tpbrt_integrator_vol_path_params_t;
 
 	typedef struct tpbrt_integrator_t {
