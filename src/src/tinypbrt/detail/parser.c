@@ -236,7 +236,9 @@ extern "C" {
 					return tpbrt_read_param_list_token(parser, &out_element->as.named_medium.params);
 				}
 
-			case TPBRT_DIRECTIVE_COLOR_SPACE:
+				case TPBRT_DIRECTIVE_COLOR_SPACE: {
+					return tpbrt_read_string_token(parser, &out_element->as.single_string.type_name);
+				}
 				case TPBRT_DIRECTIVE_ACTIVE_TRANSFORM: {
 					return tpbrt_read_single_token(parser, &out_element->as.single_string.type_name);
 				}
@@ -308,13 +310,14 @@ extern "C" {
 				case TPBRT_DIRECTIVE_MEDIUM_INTERFACE: {
 					err = tpbrt_read_string_token(parser, &out_element->as.medium_interface.interior);
 						if (err != TPBRT_ERROR_NONE) { return err; }
-					err = tpbrt_read_string_token(parser, &out_element->as.medium_interface.exterior);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							out_element->as.medium_interface.exterior = out_element->as.medium_interface.interior;
+					tpbrt_token_t next;
+						if (tpbrt_tokenizer_peek(&parser->tokenizer, &next) == TPBRT_TRUE &&
+							tpbrt_token_is_quoted_string(&next) == TPBRT_TRUE) {
+							return tpbrt_read_string_token(parser, &out_element->as.medium_interface.exterior);
 						}
-					break;
+					out_element->as.medium_interface.exterior = out_element->as.medium_interface.interior;
+					return TPBRT_ERROR_NONE;
 				}
 
 			case TPBRT_DIRECTIVE_IDENTITY:

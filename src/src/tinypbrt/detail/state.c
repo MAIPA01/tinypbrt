@@ -78,12 +78,6 @@ extern "C" {
 	void tpbrt_state_free(tpbrt_state_t* const state) {
 			if (state == TPBRT_NULL) { return; }
 
-			if (state->active_object != TPBRT_NULL) {
-				tpbrt_object_free(state->active_object);
-				free(state->active_object);
-				state->active_object = TPBRT_NULL;
-			}
-
 		tpbrt_params_list_free(&state->shape_params);
 		tpbrt_params_list_free(&state->light_params);
 		tpbrt_params_list_free(&state->material_params);

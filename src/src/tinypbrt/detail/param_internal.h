@@ -166,6 +166,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_params_list_resize(tpbrt_params_list_t* params_list, tpbrt_size_t new_size);
 	tpbrt_error_t tpbrt_params_list_append(tpbrt_params_list_t* params_list, const tpbrt_param_t* param);
 	tpbrt_error_t tpbrt_params_list_extend(tpbrt_params_list_t* dst_params_list, tpbrt_params_list_t src_params_list);
+	tpbrt_error_t tpbrt_params_list_append_missing(tpbrt_params_list_t* dst_params_list, tpbrt_params_list_t src_params_list);
 	tpbrt_error_t tpbrt_params_list_get(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_param_t** param);
 	tpbrt_error_t tpbrt_params_list_get_const(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  const tpbrt_param_t** param);

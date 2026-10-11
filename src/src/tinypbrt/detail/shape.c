@@ -102,13 +102,16 @@ extern "C" {
 
 		tpbrt_string_t temp_string;
 		err = tpbrt_params_list_get_string(params, BASIS_STR, &temp_string);
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-		tpbrt_shape_curve_basis_t basis;
-		err = tpbrt_shape_curve_basis_from_string(temp_string, &basis);
-		tpbrt_string_free(&temp_string);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-		curve->basis = basis;
+			if (err == TPBRT_ERROR_NOT_FOUND) { curve->basis = TPBRT_SHAPE_CURVE_BASIS_BEZIER; }
+			else {
+				tpbrt_shape_curve_basis_t basis;
+				err = tpbrt_shape_curve_basis_from_string(temp_string, &basis);
+				tpbrt_string_free(&temp_string);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+				curve->basis = basis;
+			}
 
 		tpbrt_uint_t temp_uint;
 		err = tpbrt_params_list_get_uint(params, DEGREE_STR, 3u, &temp_uint);
@@ -119,13 +122,16 @@ extern "C" {
 		curve->degree = (tpbrt_shape_curve_degree_t)temp_uint;
 
 		err			  = tpbrt_params_list_get_string(params, TYPE_STR, &temp_string);
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-		tpbrt_shape_curve_type_t type;
-		err = tpbrt_shape_curve_type_from_string(temp_string, &type);
-		tpbrt_string_free(&temp_string);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-		curve->type = type;
+			if (err == TPBRT_ERROR_NOT_FOUND) { curve->type = TPBRT_SHAPE_CURVE_TYPE_FLAT; }
+			else {
+				tpbrt_shape_curve_type_t type;
+				err = tpbrt_shape_curve_type_from_string(temp_string, &type);
+				tpbrt_string_free(&temp_string);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+				curve->type = type;
+			}
 
 			if (curve->type == TPBRT_SHAPE_CURVE_TYPE_RIBBON) {
 				tpbrt_normal_array_t temp_normal;
@@ -223,7 +229,16 @@ extern "C" {
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_uints(params, INDICES_STR, &triangle_mesh->indices);
-			if (err != TPBRT_ERROR_NONE && !(triangle_mesh->P.count == 3 && err == TPBRT_ERROR_NOT_FOUND)) { return err; }
+			if (err == TPBRT_ERROR_NOT_FOUND && triangle_mesh->P.count == 3) {
+				triangle_mesh->indices.data = malloc(3u * sizeof(tpbrt_uint_t));
+					if (triangle_mesh->indices.data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+				triangle_mesh->indices.data[0] = 0;
+				triangle_mesh->indices.data[1] = 1;
+				triangle_mesh->indices.data[2] = 2;
+				triangle_mesh->indices.count   = 3u;
+			}
+			else if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_normals(params, N_STR, &triangle_mesh->N);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }

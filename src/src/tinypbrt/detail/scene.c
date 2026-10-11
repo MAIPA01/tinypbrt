@@ -311,12 +311,16 @@ extern "C" {
 
 								if (current_state.active_ctm == TPBRT_ACTIVE_CTM_ALL ||
 									current_state.active_ctm == TPBRT_ACTIVE_CTM_START_TIME) {
-									current_state.ctm.start = look_at;
+									tpbrt_mat4_t res;
+									tpbrt_mat4_multiply(&res, &current_state.ctm.start, &look_at);
+									current_state.ctm.start = res;
 								}
 
 								if (current_state.active_ctm == TPBRT_ACTIVE_CTM_ALL ||
 									current_state.active_ctm == TPBRT_ACTIVE_CTM_END_TIME) {
-									current_state.ctm.end = look_at;
+									tpbrt_mat4_t res;
+									tpbrt_mat4_multiply(&res, &current_state.ctm.end, &look_at);
+									current_state.ctm.end = res;
 								}
 							break;
 						}
@@ -345,7 +349,8 @@ extern "C" {
 							break;
 						}
 						case TPBRT_DIRECTIVE_TRANSFORM: {
-							tpbrt_mat4_t transform = element.as.transform.m;
+							tpbrt_mat4_t transform;
+							tpbrt_mat4_transpose(&transform, &element.as.transform.m);
 
 								if (current_state.active_ctm == TPBRT_ACTIVE_CTM_ALL ||
 									current_state.active_ctm == TPBRT_ACTIVE_CTM_START_TIME) {
@@ -359,7 +364,8 @@ extern "C" {
 							break;
 						}
 						case TPBRT_DIRECTIVE_CONCAT_TRANSFORM: {
-							tpbrt_mat4_t right = element.as.transform.m;
+							tpbrt_mat4_t right;
+							tpbrt_mat4_transpose(&right, &element.as.transform.m);
 
 							tpbrt_mat4_t res;
 
@@ -475,11 +481,6 @@ extern "C" {
 							break;
 						}
 						case TPBRT_DIRECTIVE_COLOR_SPACE: {
-								if (is_world_block) {
-									last_error = TPBRT_ERROR_UNEXPECTED_TOKEN;
-									break;
-								}
-
 							tpbrt_color_space_t color_space;
 							last_error = tpbrt_color_space_from_string(element.as.single_string.type_name, &color_space);
 							current_state.current_color_space = color_space;
@@ -597,8 +598,8 @@ extern "C" {
 									break;
 								}
 
-							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.shape_params);
+							last_error = tpbrt_params_list_append_missing(&element.as.generic_with_params.params,
+							  current_state.shape_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_shape_t shape;
@@ -680,8 +681,8 @@ extern "C" {
 									break;
 								}
 
-							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.light_params);
+							last_error = tpbrt_params_list_append_missing(&element.as.generic_with_params.params,
+							  current_state.light_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_light_source_t light;
@@ -699,8 +700,8 @@ extern "C" {
 									break;
 								}
 
-							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.light_params);
+							last_error = tpbrt_params_list_append_missing(&element.as.generic_with_params.params,
+							  current_state.light_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_area_light_t area_light;
@@ -719,8 +720,8 @@ extern "C" {
 									break;
 								}
 
-							last_error =
-							  tpbrt_params_list_extend(&element.as.generic_with_params.params, current_state.material_params);
+							last_error = tpbrt_params_list_append_missing(&element.as.generic_with_params.params,
+							  current_state.material_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_material_t mat;
@@ -737,16 +738,17 @@ extern "C" {
 									break;
 								}
 
-							last_error =
-							  tpbrt_params_list_extend(&element.as.named_with_params.params, current_state.material_params);
+							last_error = tpbrt_params_list_append_missing(&element.as.named_with_params.params,
+							  current_state.material_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_material_t mat;
 							last_error = tpbrt_material_init_named(element.as.named_with_params.name,
 							  element.as.named_with_params.params, out_scene->textures, out_scene->materials, &mat);
-							// if (last_error != TPBRT_ERROR_NONE) { break; }
+								if (last_error != TPBRT_ERROR_NONE) { break; }
 
-							// last_error = tpbrt_materials_list_append(&out_scene->materials, &mat, &current_state.material_handle);
+							tpbrt_material_handle_t mat_handle;
+							last_error = tpbrt_materials_list_append(&out_scene->materials, &mat, &mat_handle);
 							break;
 						}
 						case TPBRT_DIRECTIVE_NAMED_MATERIAL: {
@@ -766,7 +768,8 @@ extern "C" {
 									break;
 								}
 
-							last_error = tpbrt_params_list_extend(&element.as.texture.params, current_state.texture_params);
+							last_error =
+							  tpbrt_params_list_append_missing(&element.as.texture.params, current_state.texture_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_texture_t tex;
@@ -781,7 +784,8 @@ extern "C" {
 						}
 
 						case TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM: {
-							last_error = tpbrt_params_list_extend(&element.as.named_medium.params, current_state.medium_params);
+							last_error =
+							  tpbrt_params_list_append_missing(&element.as.named_medium.params, current_state.medium_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_media_t media;
@@ -821,6 +825,10 @@ extern "C" {
 					if (last_error != TPBRT_ERROR_NONE) { break; }
 			}
 
+			if (current_state.active_object != TPBRT_NULL) {
+				tpbrt_object_free(current_state.active_object);
+				free(current_state.active_object);
+			}
 		tpbrt_state_free(&current_state);
 		tpbrt_states_stack_free(&states);
 		tpbrt_coord_system_map_free(&named_coord_systems);

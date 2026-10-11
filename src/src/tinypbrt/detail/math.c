@@ -153,12 +153,13 @@ extern "C" {
 	void tpbrt_mat4_multiply(tpbrt_mat4_t* const out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b) {
 			if (out_m == TPBRT_NULL || a == TPBRT_NULL || b == TPBRT_NULL) { return; }
 
-		const tpbrt_float_t* a_f = (const tpbrt_float_t*)a;
-		const tpbrt_float_t* b_f = (const tpbrt_float_t*)b;
-			for (int c = 0; c < 4; c++) {
-					for (int r = 0; r < 4; r++) {
-						out_m->m[r * 4 + c] = a_f[0 * 4 + c] * b_f[r * 4 + 0] + a_f[1 * 4 + c] * b_f[r * 4 + 1] +
-											  a_f[2 * 4 + c] * b_f[r * 4 + 2] + a_f[3 * 4 + c] * b_f[r * 4 + 3];
+		const tpbrt_float_t* const a_f = (const tpbrt_float_t*)a;
+		const tpbrt_float_t* const b_f = (const tpbrt_float_t*)b;
+			for (tpbrt_uint_t c = 0; c < 4; ++c) {
+					for (tpbrt_uint_t r = 0; r < 4; ++r) {
+						tpbrt_float_t sum = 0.0f;
+							for (tpbrt_uint_t k = 0; k < 4; ++k) { sum += a_f[r * 4u + k] * b_f[k * 4u + c]; }
+						out_m->m[r * 4 + c] = sum;
 					}
 			}
 	}
@@ -217,6 +218,14 @@ extern "C" {
 
 		const tpbrt_float_t inv_det = 1.0f / det;
 			for (tpbrt_uint_t i = 0; i < 16; ++i) { out[i] = inv[i] * inv_det; }
+	}
+
+	void tpbrt_mat4_transpose(tpbrt_mat4_t* const out_m, const tpbrt_mat4_t* const in_m) {
+			if (out_m == TPBRT_NULL || in_m == TPBRT_NULL) { return; }
+
+			for (tpbrt_uint_t r = 0; r < 4; ++r) {
+					for (tpbrt_uint_t c = 0; c < 4; ++c) { out_m->m[r * 4u + c] = in_m->m[c * 4u + r]; }
+			}
 	}
 
 	void tpbrt_bool_array_free(tpbrt_bool_array_t* array) {

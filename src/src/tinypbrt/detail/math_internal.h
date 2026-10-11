@@ -37,6 +37,7 @@ extern "C" {
 	void tpbrt_mat4_look_at_lh(tpbrt_mat4_t* m, tpbrt_vec3_t eye, tpbrt_vec3_t look_at, tpbrt_vec3_t up);
 	void tpbrt_mat4_multiply(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 	void tpbrt_mat4_inverse(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
+	void tpbrt_mat4_transpose(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
 
 #define TPBRT_EMPTY_BOOL_ARRAY	(tpbrt_bool_array_t) { .data = TPBRT_NULL, .count = 0 }
 #define TPBRT_EMPTY_INT_ARRAY	(tpbrt_int_array_t) { .data = TPBRT_NULL, .count = 0 }

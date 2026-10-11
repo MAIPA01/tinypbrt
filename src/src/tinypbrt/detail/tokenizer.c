@@ -51,23 +51,15 @@ extern "C" {
 					case '\t':
 					case '\r':	  continue;
 						case '"': {
-							tpbrt_bool_t escape_in_string = TPBRT_FALSE;
-							tpbrt_bool_t in_nested_string = TPBRT_FALSE;
 								while (tokenizer->offset < tokenizer->str.size) {
 									const tpbrt_char_t c = tokenizer->str.data[tokenizer->offset++];
 
-										if (escape_in_string == TPBRT_TRUE && c == '"') {
-											in_nested_string = in_nested_string ? TPBRT_FALSE : TPBRT_TRUE;
-											escape_in_string = TPBRT_FALSE;
-											continue;
-										}
-
 										if (c == '\\') {
-											escape_in_string = TPBRT_TRUE;
+												if (tokenizer->offset < tokenizer->str.size) { tokenizer->offset++; }
 											continue;
 										}
 
-										if (c == '"' && in_nested_string == TPBRT_FALSE) { break; }
+										if (c == '"') { break; }
 								}
 							const tpbrt_string_t view = {
 								.data = tokenizer->str.data + start,

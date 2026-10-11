@@ -164,11 +164,7 @@ extern "C" {
 				return err;
 			}
 
-		const tpbrt_string_t token = tpbrt_next_value(param->value.data, param->value.data + param->value.size);
-			if (token.data == TPBRT_NULL) { return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER; }
-		tpbrt_string_t temp;
-			if (!tpbrt_read_string_value(token, &temp)) { return TPBRT_ERROR_PARSE_STRING; }
-		return tpbrt_string_copy(out_val, temp);
+		return tpbrt_string_copy(out_val, param->value);
 	}
 
 #pragma endregion
@@ -1088,7 +1084,25 @@ extern "C" {
 			for (tpbrt_size_t i = 0; i < src_params_list.count; i++) {
 				tpbrt_param_t* existing;
 					if (tpbrt_params_list_get(*dst_params_list, src_params_list.params[i].name, &existing) == TPBRT_ERROR_NONE) {
-						//*existing = src_params_list.params[i];
+						*existing = src_params_list.params[i];
+						continue;
+					}
+
+				const tpbrt_error_t err = tpbrt_params_list_append(dst_params_list, &src_params_list.params[i]);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+			}
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_params_list_append_missing(tpbrt_params_list_t* const dst_params_list,
+	  const tpbrt_params_list_t src_params_list) {
+			if (dst_params_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_params_list_reserve(dst_params_list, dst_params_list->count + src_params_list.count);
+
+			for (tpbrt_size_t i = 0; i < src_params_list.count; i++) {
+				tpbrt_param_t* existing;
+					if (tpbrt_params_list_get(*dst_params_list, src_params_list.params[i].name, &existing) == TPBRT_ERROR_NONE) {
 						continue;
 					}
 
