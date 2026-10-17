@@ -44,8 +44,6 @@ extern "C" {
 		tpbrt_shapes_list_t shapes;
 		tpbrt_objects_list_t objects;
 		tpbrt_objects_instances_list_t instances;
-
-		tpbrt_string_array_t includes;
 	} tpbrt_scene_t;
 
 	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene);

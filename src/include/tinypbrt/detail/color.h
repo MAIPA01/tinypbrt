@@ -25,7 +25,8 @@ extern "C" {
 		TPBRT_SPECTRUM_TYPE_BLACKBODY  = 2,
 		TPBRT_SPECTRUM_TYPE_FILE	   = 3,
 		TPBRT_SPECTRUM_TYPE_BUILTIN	   = 4,
-		TPBRT_SPECTRUM_TYPE_MAX_NUM	   = 5,
+		TPBRT_SPECTRUM_TYPE_CONSTANT   = 5,
+		TPBRT_SPECTRUM_TYPE_MAX_NUM	   = 6,
 	} tpbrt_spectrum_type_t;
 
 	typedef struct tpbrt_wavelength_t {
@@ -86,6 +87,7 @@ extern "C" {
 			tpbrt_blackbody_t blackbody;
 			tpbrt_string_t file_name;
 			tpbrt_spectrum_builtin_t builtin : 6;
+			tpbrt_uint_t constant;
 		} as;
 
 		tpbrt_spectrum_type_t type : 3;

@@ -58,6 +58,9 @@ extern "C" {
 
 			TPBRT_STRING("MakeNamedMedium"),
 			TPBRT_STRING("MediumInterface"),
+
+			TPBRT_STRING("TransformBegin"),
+			TPBRT_STRING("TransformEnd"),
 		};
 
 			if (directive_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }

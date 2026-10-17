@@ -112,6 +112,61 @@ extern "C" {
 		return str.data == NULL || str.size == 0 ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
+	tpbrt_error_t tpbrt_string_copy_unescaped(tpbrt_string_t* const dst, const tpbrt_string_t src) {
+			if (dst == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(src)) {
+				*dst = TPBRT_EMPTY_STRING;
+				return TPBRT_ERROR_NONE;
+			}
+
+		tpbrt_char_t* const out = malloc(sizeof(tpbrt_char_t) * (src.size + 1u));
+			if (out == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+		tpbrt_size_t n = 0;
+			for (tpbrt_size_t i = 0u; i < src.size; ++i) {
+				tpbrt_char_t c = src.data[i];
+					if (c == '\\' && i + 1u < src.size) {
+						c = src.data[++i];
+							switch (c) {
+								case 'b': {
+									c = '\b';
+									break;
+								}
+								case 'f': {
+									c = '\f';
+									break;
+								}
+								case 'n': {
+									c = '\n';
+									break;
+								}
+								case 'r': {
+									c = '\r';
+									break;
+								}
+								case 't': {
+									c = '\t';
+									break;
+								}
+							case '\\':
+							case '\'':
+								case '"': {
+									break;
+								}
+								default: {
+									free(out);
+									return TPBRT_ERROR_INVALID_STRING;
+								}
+							}
+					}
+				out[n++] = c;
+			}
+		out[n] = '\0';
+		*dst   = (tpbrt_string_t) { .data = out, .size = n };
+		return TPBRT_ERROR_NONE;
+	}
+
 	tpbrt_error_t tpbrt_string_copy(tpbrt_string_t* const dst, const tpbrt_string_t src) {
 			if (dst == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -135,8 +190,8 @@ extern "C" {
 	  tpbrt_size_t* const out_size) {
 			if (dst == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		const tpbrt_size_t n = min(src.size, dst_size - 1);
-		strncpy_s(dst, sizeof(tpbrt_char_t) * dst_size, src.data, n);
+		const tpbrt_size_t n = TPBRT_MIN(src.size, dst_size - 1);
+		memcpy(dst, src.data, sizeof(tpbrt_char_t) * n);
 		dst[n] = '\0';
 
 			if (out_size != TPBRT_NULL) { *out_size = n; }

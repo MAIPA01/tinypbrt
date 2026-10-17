@@ -80,6 +80,41 @@ extern "C" {
 		return TPBRT_ERROR_INVALID_SHAPE_CURVE_TYPE;
 	}
 
+	static tpbrt_error_t tpbrt_shape_read_bilinear_mesh(tpbrt_shape_bilinear_mesh_params_t* const bilinear_mesh,
+	  const tpbrt_params_list_t params) {
+			if (bilinear_mesh == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t INDICES_STR = TPBRT_STRING("indices");
+		static const tpbrt_string_t P_STR		= TPBRT_STRING("P");
+		static const tpbrt_string_t N_STR		= TPBRT_STRING("N");
+		static const tpbrt_string_t UV_STR		= TPBRT_STRING("uv");
+
+		tpbrt_error_t err						= tpbrt_params_list_get_point3s(params, P_STR, &bilinear_mesh->P);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_uints(params, INDICES_STR, &bilinear_mesh->indices);
+			if (err == TPBRT_ERROR_NOT_FOUND && bilinear_mesh->P.count == 4) {
+				bilinear_mesh->indices.data = malloc(4u * sizeof(tpbrt_uint_t));
+					if (bilinear_mesh->indices.data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+				bilinear_mesh->indices.data[0] = 0u;
+				bilinear_mesh->indices.data[1] = 1u;
+				bilinear_mesh->indices.data[2] = 2u;
+				bilinear_mesh->indices.data[3] = 3u;
+				bilinear_mesh->indices.count   = 4u;
+			}
+			else if (err != TPBRT_ERROR_NONE) { return err; }
+			else if (bilinear_mesh->indices.count % 4u != 0u) { return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER; }
+
+		err = tpbrt_params_list_get_normals(params, N_STR, &bilinear_mesh->N);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+		err = tpbrt_params_list_get_point2s(params, UV_STR, &bilinear_mesh->uv);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+
+		return TPBRT_ERROR_NONE;
+	}
+
 	static tpbrt_error_t tpbrt_shape_read_curve(tpbrt_shape_curve_params_t* const curve, const tpbrt_params_list_t params) {
 			if (curve == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -233,12 +268,13 @@ extern "C" {
 				triangle_mesh->indices.data = malloc(3u * sizeof(tpbrt_uint_t));
 					if (triangle_mesh->indices.data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-				triangle_mesh->indices.data[0] = 0;
-				triangle_mesh->indices.data[1] = 1;
-				triangle_mesh->indices.data[2] = 2;
+				triangle_mesh->indices.data[0] = 0u;
+				triangle_mesh->indices.data[1] = 1u;
+				triangle_mesh->indices.data[2] = 2u;
 				triangle_mesh->indices.count   = 3u;
 			}
 			else if (err != TPBRT_ERROR_NONE) { return err; }
+			else if (triangle_mesh->indices.count % 3u != 0u) { return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER; }
 
 		err = tpbrt_params_list_get_normals(params, N_STR, &triangle_mesh->N);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
@@ -322,7 +358,7 @@ extern "C" {
 			switch (shape->type) {
 			default:
 				case TPBRT_SHAPE_TYPE_BILINEAR_MESH: {
-					err = TPBRT_ERROR_NONE;
+					err = tpbrt_shape_read_bilinear_mesh(&shape->as.bilinear_mesh, params);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_CURVE: {

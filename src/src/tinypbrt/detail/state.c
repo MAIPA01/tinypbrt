@@ -14,6 +14,8 @@ extern "C" {
 #endif
 
 	tpbrt_error_t tpbrt_state_init(tpbrt_state_t* const state) {
+			if (state == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 			if (memset(state, 0, sizeof(tpbrt_state_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		state->reverse_orientation = TPBRT_FALSE;
@@ -26,6 +28,7 @@ extern "C" {
 		state->current_area_light	  = TPBRT_AREA_LIGHT_HANDLE_INVALID;
 		state->material_handle		  = TPBRT_MATERIAL_HANDLE_INVALID;
 		state->active_object		  = TPBRT_NULL;
+		state->type					  = TPBRT_STATE_TYPE_GLOBAL;
 
 		tpbrt_error_t err			  = tpbrt_params_list_init(&state->shape_params);
 			if (err != TPBRT_ERROR_NONE) {
@@ -61,6 +64,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_state_clone(tpbrt_state_t* const dest, const tpbrt_state_t* const src) {
+			if (dest == TPBRT_NULL || src == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		*dest = *src;
 		tpbrt_params_list_init(&dest->shape_params);
 		tpbrt_params_list_extend(&dest->shape_params, src->shape_params);

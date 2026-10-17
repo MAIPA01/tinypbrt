@@ -387,7 +387,22 @@ extern "C" {
 				tpbrt_area_light_free(area_light);
 				return err;
 			}
-		area_light->type = area_light_type;
+		area_light->type					  = area_light_type;
+
+		static const tpbrt_string_t POWER_STR = TPBRT_STRING("power");
+		static const tpbrt_string_t SCALE_STR = TPBRT_STRING("scale");
+
+		err									  = tpbrt_params_list_get_opt_float(params, POWER_STR, &area_light->power);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_area_light_free(area_light);
+				return err;
+			}
+
+		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &area_light->scale);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_area_light_free(area_light);
+				return err;
+			}
 
 		tpbrt_spectrum_builtin_t current_color_space_illuminant;
 			switch (color_space) {

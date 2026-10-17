@@ -43,6 +43,13 @@ extern "C" {
 	  const tpbrt_mat4_animated_t* const transform) {
 		const tpbrt_coord_system_map_entry_t entry = (tpbrt_coord_system_map_entry_t) { .name = name, .transform = *transform };
 
+			for (tpbrt_size_t i = 0; i < map->count; ++i) {
+					if (tpbrt_string_equals(map->entries[i].name, name) == TPBRT_TRUE) {
+						map->entries[i].transform = *transform;
+						return TPBRT_ERROR_NONE;
+					}
+			}
+
 			if (map->count >= map->capacity) {
 				map->capacity = map->capacity == 0 ? 8 : map->capacity * 2;
 				map->entries  = realloc(map->entries, map->capacity * sizeof(tpbrt_coord_system_map_entry_t));

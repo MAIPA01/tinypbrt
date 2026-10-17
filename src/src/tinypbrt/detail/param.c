@@ -113,11 +113,15 @@ extern "C" {
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
 				tpbrt_string_t temp;
-					if (!tpbrt_read_string_value(token, &temp)) {
+					if (tpbrt_read_string_value(token, &temp) == TPBRT_FALSE) {
 						tpbrt_string_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_STRING;
 					}
-				tpbrt_string_copy(&out_vals->data[idx], temp);
+				const tpbrt_error_t err = tpbrt_string_copy_unescaped(&out_vals->data[idx], temp);
+					if (err != TPBRT_ERROR_NONE) {
+						tpbrt_string_array_free(out_vals);
+						return err;
+					}
 
 				++idx;
 				token.data += token.size;
@@ -159,12 +163,12 @@ extern "C" {
 				tpbrt_error_t err = tpbrt_param_as_strings_of_size(param, 1u, &strings);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 
-				err = tpbrt_string_copy(out_val, strings.data[0]);
+				err = tpbrt_string_copy_unescaped(out_val, strings.data[0]);
 				tpbrt_string_array_free(&strings);
 				return err;
 			}
 
-		return tpbrt_string_copy(out_val, param->value);
+		return tpbrt_string_copy_unescaped(out_val, param->value);
 	}
 
 #pragma endregion
@@ -568,14 +572,14 @@ extern "C" {
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx].wavelength)) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx].wavelength) == TPBRT_FALSE) {
 						tpbrt_wavelength_array_free(out_vals);
-						return TPBRT_ERROR_PARSE_UINT;
+						return TPBRT_ERROR_PARSE_FLOAT;
 					}
 				token.data += token.size;
 
 				token = tpbrt_next_value(token.data, end);
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx].value)) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx].value) == TPBRT_FALSE) {
 						tpbrt_wavelength_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_FLOAT;
 					}
@@ -650,7 +654,7 @@ extern "C" {
 
 				// filename
 				out_val->type = TPBRT_SPECTRUM_TYPE_FILE;
-				return tpbrt_string_copy(&out_val->as.file_name, param->value);
+				return tpbrt_string_copy_unescaped(&out_val->as.file_name, param->value);
 			}
 
 		return TPBRT_ERROR_INVALID_OBJECT_TYPE;

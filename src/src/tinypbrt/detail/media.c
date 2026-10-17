@@ -70,12 +70,12 @@ extern "C" {
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &cloud->sigma_a);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->sigma_a = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->sigma_a = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &cloud->sigma_s);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->sigma_s = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->sigma_s = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		return tpbrt_params_list_get_float(params, WISPINESS_STR, 1.0f, &cloud->wispiness);
 	}
@@ -98,7 +98,7 @@ extern "C" {
 		err = tpbrt_params_list_get_spectrum(params, LE_STR, &homogeneous->Le);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->Le = TPBRT_SPECTRUM_BLACKBODY(0u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->Le = TPBRT_SPECTRUM_CONSTANT(0u); }
 
 		err = tpbrt_params_list_get_float(params, LE_SCALE_STR, 1.0f, &homogeneous->Le_scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -109,12 +109,12 @@ extern "C" {
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &homogeneous->sigma_a);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->sigma_a = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->sigma_a = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &homogeneous->sigma_s);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->sigma_s = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->sigma_s = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		return tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &homogeneous->scale);
 	}
@@ -141,12 +141,12 @@ extern "C" {
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &nano_vdb->sigma_a);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { nano_vdb->sigma_a = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { nano_vdb->sigma_a = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &nano_vdb->sigma_s);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { nano_vdb->sigma_s = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { nano_vdb->sigma_s = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &nano_vdb->scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -231,7 +231,7 @@ extern "C" {
 		err = tpbrt_params_list_get_spectrum(params, LE_STR, &uniform_grid->Le);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->Le = TPBRT_SPECTRUM_BLACKBODY(0u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->Le = TPBRT_SPECTRUM_CONSTANT(0u); }
 
 		err = tpbrt_params_list_get_float(params, LE_SCALE_STR, 1.0f, &uniform_grid->Le_scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -261,12 +261,12 @@ extern "C" {
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &uniform_grid->sigma_a);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->sigma_a = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->sigma_a = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &uniform_grid->sigma_s);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->sigma_s = TPBRT_SPECTRUM_BLACKBODY(1u); }
+			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->sigma_s = TPBRT_SPECTRUM_CONSTANT(1u); }
 
 		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &uniform_grid->scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }

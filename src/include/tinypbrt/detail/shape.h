@@ -44,6 +44,13 @@ extern "C" {
 		TPBRT_SHAPE_CURVE_TYPE_MAX_NUM	= 3,
 	} tpbrt_shape_curve_type_t;
 
+	typedef struct tpbrt_shape_bilinear_mesh_params_t {
+		tpbrt_uint_array_t indices;
+		tpbrt_point3_array_t P;
+		tpbrt_normal_array_t N;
+		tpbrt_point2_array_t uv;
+	} tpbrt_shape_bilinear_mesh_params_t;
+
 	typedef struct tpbrt_shape_curve_params_t {
 		tpbrt_point3_t P[4];
 		tpbrt_normal_t N[2];
@@ -106,6 +113,7 @@ extern "C" {
 		tpbrt_media_handle_t exterior_media_handle;
 
 		union {
+			tpbrt_shape_bilinear_mesh_params_t bilinear_mesh;
 			tpbrt_shape_curve_params_t curve;
 			tpbrt_shape_cylinder_params_t cylinder;
 			tpbrt_shape_disk_params_t disk;

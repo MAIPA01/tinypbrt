@@ -62,13 +62,18 @@ extern "C" {
 		TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM	= 36,
 		TPBRT_DIRECTIVE_MEDIUM_INTERFACE	= 37,
 
-		TPBRT_DIRECTIVE_MAX_NUM				= 38,
+		// removed (but used as AttributeBegin, AttributeEnd for back compatibility)
+		TPBRT_DIRECTIVE_TRANSFORM_BEGIN		= 38,
+		TPBRT_DIRECTIVE_TRANSFORM_END		= 39,
+
+		TPBRT_DIRECTIVE_MAX_NUM				= 40,
 	} tpbrt_directive_t;
 
 	typedef enum tpbrt_token_type_t : uint8_t {
 		TPBRT_TOKEN_TYPE_SINGLE		   = 0,
 		TPBRT_TOKEN_TYPE_QUOTED_STRING = 1,
 		TPBRT_TOKEN_TYPE_DIRECTIVE	   = 2,
+		TPBRT_TOKEN_TYPE_MAX_NUM	   = 3,
 	} tpbrt_token_type_t;
 
 	typedef struct tpbrt_token_t {

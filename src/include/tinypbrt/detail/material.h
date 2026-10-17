@@ -63,6 +63,7 @@ extern "C" {
 		tpbrt_material_bump_map_params_t bump_map;
 		tpbrt_texture_handle_t albedo;
 		tpbrt_texture_handle_t g;
+		tpbrt_texture_handle_t eta;
 		tpbrt_uint_t max_depth;
 		tpbrt_uint_t n_samples;
 		tpbrt_texture_handle_t reflectance;
@@ -92,7 +93,8 @@ extern "C" {
 			tpbrt_spectrum_t reflectance;
 		} as;
 
-		tpbrt_material_roughness_params_t roughness_params;
+		tpbrt_material_roughness_params_t conductor_roughness_params;
+		tpbrt_material_roughness_params_t interface_roughness_params;
 		tpbrt_float_t thickness;
 		tpbrt_material_conductor_value_type_t value_type : 1;
 	} tpbrt_material_coated_conductor_params_t;
@@ -168,6 +170,7 @@ extern "C" {
 
 	typedef struct tpbrt_material_thin_dielectric_params_t {
 		tpbrt_material_bump_map_params_t bump_map;
+		tpbrt_texture_handle_t eta;
 	} tpbrt_material_thin_dielectric_params_t;
 
 	typedef struct tpbrt_material_t {

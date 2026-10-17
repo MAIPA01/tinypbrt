@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+#define TPBRT_MIN(a, b) ((a) < (b) ? (a) : (b))
+
 #pragma region PARSING
 	tpbrt_string_t tpbrt_next_value(const tpbrt_char_t* current, const tpbrt_char_t* end);
 	tpbrt_bool_t tpbrt_read_string_value(tpbrt_string_t value_str, tpbrt_string_t* out_val);
@@ -22,13 +24,14 @@ extern "C" {
 #pragma endregion
 
 #pragma region STRING
-#define TPBRT_STRING(value) (tpbrt_string_t) { .data = value, .size = sizeof(value) - 1 }
-#define TPBRT_EMPTY_STRING	(tpbrt_string_t) { .data = TPBRT_NULL, .size = 0 }
+#define TPBRT_STRING(value) (tpbrt_string_t) { .data = (value), .size = sizeof((value)) - 1u }
+#define TPBRT_EMPTY_STRING	(tpbrt_string_t) { .data = TPBRT_NULL, .size = 0u }
 
 	tpbrt_error_t tpbrt_string_from_cstr(const tpbrt_char_t* cstr, tpbrt_string_t* out_val);
 
 	tpbrt_bool_t tpbrt_string_empty(tpbrt_string_t str);
 
+	tpbrt_error_t tpbrt_string_copy_unescaped(tpbrt_string_t* dst, tpbrt_string_t src);
 	tpbrt_error_t tpbrt_string_copy(tpbrt_string_t* dst, tpbrt_string_t src);
 	tpbrt_error_t tpbrt_string_copy_to(tpbrt_string_t src, tpbrt_char_t* dst, tpbrt_size_t dst_size, tpbrt_size_t* out_size);
 

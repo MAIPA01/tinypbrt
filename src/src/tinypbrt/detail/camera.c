@@ -221,95 +221,91 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_camera_init_default(const tpbrt_film_t* const film, tpbrt_camera_t* const camera) {
-			if (camera == TPBRT_NULL || film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	tpbrt_error_t tpbrt_camera_create_info_init_default(tpbrt_camera_create_info_t* const info) {
+			if (info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+			if (memset(info, 0, sizeof(tpbrt_camera_create_info_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_mat4_identity(&camera->transform.start);
-		tpbrt_mat4_identity(&camera->transform.end);
-		camera->interior_media_handle			  = TPBRT_MEDIA_HANDLE_INVALID;
-		camera->exterior_media_handle			  = TPBRT_MEDIA_HANDLE_INVALID;
-		camera->shutter_open					  = 0.0f;
-		camera->shutter_close					  = 1.0f;
+		info->type				= TPBRT_CAMERA_TYPE_PERSPECTIVE;
 
-		const tpbrt_float_t default_aspect_ratio  = (tpbrt_float_t)film->x_resolution / (tpbrt_float_t)film->y_resolution;
+		const tpbrt_error_t err = tpbrt_params_list_init(&info->params);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		camera->type							  = TPBRT_CAMERA_TYPE_PERSPECTIVE;
-		camera->as.perspective.fov				  = 90.0f;
-		camera->as.perspective.frame_aspect_ratio = default_aspect_ratio;
+		tpbrt_mat4_identity(&info->camera_to_world.start);
+		tpbrt_mat4_identity(&info->camera_to_world.end);
+		info->interior_media_handle = TPBRT_MEDIA_HANDLE_INVALID;
+		info->exterior_media_handle = TPBRT_MEDIA_HANDLE_INVALID;
 
-			if (film->x_resolution < film->y_resolution) {
-				const tpbrt_float_t aspect				= 1.0f / default_aspect_ratio;
-
-				camera->as.perspective.screen_window[0] = -1.0f;
-				camera->as.perspective.screen_window[1] = 1.0f;
-				camera->as.perspective.screen_window[2] = -aspect;
-				camera->as.perspective.screen_window[3] = aspect;
-			}
-			else {
-				const tpbrt_float_t aspect				= default_aspect_ratio;
-
-				camera->as.perspective.screen_window[0] = -aspect;
-				camera->as.perspective.screen_window[1] = aspect;
-				camera->as.perspective.screen_window[2] = -1.0f;
-				camera->as.perspective.screen_window[3] = 1.0f;
-			}
-
-		camera->as.perspective.lens_radius	  = 0.0f;
-		camera->as.perspective.focal_distance = 1e+30f;
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_camera_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
-	  const tpbrt_film_t* const film, const tpbrt_mat4_animated_t* const ctm, const tpbrt_media_handle_t interior_media_handle,
-	  const tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_t* const camera) {
-			if (camera == TPBRT_NULL || film == TPBRT_NULL || ctm == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	tpbrt_error_t tpbrt_camera_create_info_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
+	  const tpbrt_mat4_animated_t* const camera_to_world, const tpbrt_media_handle_t interior_media_handle,
+	  const tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_create_info_t* const info) {
+			if (info == TPBRT_NULL || camera_to_world == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(info, 0, sizeof(tpbrt_camera_create_info_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		info->params				= params;
+		info->camera_to_world		= *camera_to_world;
+		info->interior_media_handle = interior_media_handle;
+		info->exterior_media_handle = exterior_media_handle;
+
+		tpbrt_camera_type_t type;
+		const tpbrt_error_t err = tpbrt_camera_type_from_string(type_str, &type);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+		info->type = type;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_camera_create_info_free(tpbrt_camera_create_info_t* const info) {
+			if (info == TPBRT_NULL) { return; }
+
+		tpbrt_params_list_free(&info->params);
+	}
+
+	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* const info, const tpbrt_film_t* const film,
+	  tpbrt_camera_t* const camera) {
+			if (camera == TPBRT_NULL || film == TPBRT_NULL || info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		camera->transform							 = *ctm;
-		camera->interior_media_handle				 = interior_media_handle;
-		camera->exterior_media_handle				 = exterior_media_handle;
+		camera->transform							 = info->camera_to_world;
+		camera->interior_media_handle				 = info->interior_media_handle;
+		camera->exterior_media_handle				 = info->exterior_media_handle;
+		camera->type								 = info->type;
 
 		static const tpbrt_string_t SHUTTER_OPEN_STR = TPBRT_STRING("shutteropen");
-		tpbrt_error_t err = tpbrt_params_list_get_float(params, SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
+		tpbrt_error_t err = tpbrt_params_list_get_float(info->params, SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_camera_free(camera);
 				return err;
 			}
 
 		static const tpbrt_string_t SHUTTER_CLOSE_STR = TPBRT_STRING("shutterclose");
-		err = tpbrt_params_list_get_float(params, SHUTTER_CLOSE_STR, 1.0f, &camera->shutter_close);
+		err = tpbrt_params_list_get_float(info->params, SHUTTER_CLOSE_STR, 1.0f, &camera->shutter_close);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_camera_free(camera);
 				return err;
 			}
-
-		tpbrt_camera_type_t type;
-		err = tpbrt_camera_type_from_string(type_str, &type);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_camera_free(camera);
-				return err;
-			}
-		camera->type = type;
 
 			switch (camera->type) {
 			default:
 				case TPBRT_CAMERA_TYPE_ORTHOGRAPHIC: {
-					err = tpbrt_camera_read_orthographic(&camera->as.orthographic, film, params);
+					err = tpbrt_camera_read_orthographic(&camera->as.orthographic, film, info->params);
 					break;
 				}
 				case TPBRT_CAMERA_TYPE_PERSPECTIVE: {
-					err = tpbrt_camera_read_perspective(&camera->as.perspective, film, params);
+					err = tpbrt_camera_read_perspective(&camera->as.perspective, film, info->params);
 					break;
 				}
 				case TPBRT_CAMERA_TYPE_REALISTIC: {
-					err = tpbrt_camera_read_realistic(&camera->as.realistic, params);
+					err = tpbrt_camera_read_realistic(&camera->as.realistic, info->params);
 					break;
 				}
 				case TPBRT_CAMERA_TYPE_SPHERICAL: {
-					err = tpbrt_camera_read_spherical(&camera->as.spherical, params);
+					err = tpbrt_camera_read_spherical(&camera->as.spherical, info->params);
 					break;
 				}
 			}

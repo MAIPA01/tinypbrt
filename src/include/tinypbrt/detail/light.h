@@ -97,6 +97,8 @@ extern "C" {
 			tpbrt_area_light_diffuse_params_t diffuse;
 		} as;
 
+		tpbrt_float_t scale;
+		tpbrt_opt_float_t power;
 		tpbrt_area_light_type_t type : 1;
 	} tpbrt_area_light_t;
 
