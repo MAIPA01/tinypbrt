@@ -50,7 +50,7 @@ extern "C" {
 
 		tpbrt_bool_t reverse_orientation		: 1;
 		tpbrt_active_ctm_t active_ctm			: 2;
-		tpbrt_color_space_t current_color_space : 2;
+		tpbrt_color_space_t current_color_space : 3;
 		tpbrt_state_type_t type					: 2;
 	} tpbrt_state_t;
 

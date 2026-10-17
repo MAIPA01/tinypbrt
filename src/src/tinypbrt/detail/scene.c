@@ -35,10 +35,10 @@ extern "C" {
 	static tpbrt_error_t tpbrt_read_file(const tpbrt_char_t* const path, tpbrt_string_t* const out_data) {
 		FILE* f				= TPBRT_NULL;
 		const errno_t f_err = fopen_s(&f, path, "rb");
-			if (f_err == 0u || f == TPBRT_NULL) { return TPBRT_ERROR_FILE_NOT_FOUND; }
+			if (f_err != 0u || f == TPBRT_NULL) { return TPBRT_ERROR_FILE_NOT_FOUND; }
 
 		fseek(f, 0, SEEK_END);
-		const tpbrt_size_t size = ftell(f);
+		const tpbrt_long_t size = ftell(f);
 		fseek(f, 0, SEEK_SET);
 			if (size < 0) {
 				fclose(f);
@@ -50,7 +50,7 @@ extern "C" {
 				fclose(f);
 				return TPBRT_ERROR_OUT_OF_MEMORY;
 			}
-		const tpbrt_size_t read = fread(buffer, 1u, size, f);
+		const tpbrt_size_t read = fread(buffer, 1u, (tpbrt_size_t)size, f);
 		buffer[read]			= '\0';
 		fclose(f);
 
@@ -64,18 +64,20 @@ extern "C" {
 		  path.size > 0u && (path.data[0] == '/' || path.data[0] == '\\' || (path.size > 1u && path.data[1] == ':')) ?
 			TPBRT_TRUE :
 			TPBRT_FALSE;
-		const tpbrt_size_t dir_len = (is_absolute || working_directory == TPBRT_NULL) ? 0u : strlen(working_directory);
+		const tpbrt_size_t dir_len =
+		  (is_absolute == TPBRT_TRUE || working_directory == TPBRT_NULL) ? 0u : strlen(working_directory);
 			if (dir_len + 1u + path.size + 1u > out_size) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
 		tpbrt_size_t pos = 0u;
 			if (dir_len > 0u) {
-				memcpy(out, working_directory, dir_len);
+				const errno_t err = strncpy_s(out, out_size, working_directory, dir_len);
+					if (err != 0u) { return TPBRT_ERROR_INVALID_STRING; }
+
 				pos		   = dir_len;
 				out[pos++] = '/';
 			}
-		memcpy(out + pos, path.data, path.size);
-		out[pos + path.size] = '\0';
-		return TPBRT_ERROR_NONE;
+		const errno_t err = strncpy_s(out + pos, out_size - pos * sizeof(tpbrt_char_t), path.data, path.size);
+		return err == 0u ? TPBRT_ERROR_NONE : TPBRT_ERROR_INVALID_STRING;
 	}
 
 	static tpbrt_error_t tpbrt_scene_keep_buffer(tpbrt_string_array_t* const includes, const tpbrt_string_t buffer) {
@@ -94,17 +96,18 @@ extern "C" {
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		tpbrt_char_t working_directory[1024];
-		working_directory[0]			= '\0';
+		working_directory[0]				  = '\0';
 
-		const tpbrt_char_t* last_slash	= strrchr(filepath, '/');
-		const tpbrt_char_t* last_bslash = strrchr(filepath, '\\');
-		const tpbrt_char_t* sep			= last_slash > last_bslash ? last_slash : last_bslash;
+		const tpbrt_char_t* const last_slash  = strrchr(filepath, '/');
+		const tpbrt_char_t* const last_bslash = strrchr(filepath, '\\');
+		const tpbrt_char_t* sep				  = last_slash;
+			if (last_bslash != TPBRT_NULL && (sep == TPBRT_NULL || last_bslash > sep)) { sep = last_bslash; }
 
 			if (sep != TPBRT_NULL) {
 				const tpbrt_size_t dir_len = sep - filepath;
 					if (dir_len < 1024) {
-						strncpy_s(working_directory, 1024 * sizeof(tpbrt_char_t), filepath, dir_len);
-						working_directory[dir_len] = '\0';
+						const errno_t errn = strncpy_s(working_directory, 1024 * sizeof(tpbrt_char_t), filepath, dir_len);
+							if (errn != 0u) { return TPBRT_ERROR_INVALID_STRING; }
 					}
 			}
 
@@ -444,7 +447,7 @@ extern "C" {
 					case TPBRT_DIRECTIVE_INCLUDE:
 						case TPBRT_DIRECTIVE_IMPORT: {
 								if (parsers_count >= TPBRT_MAX_INCLUDE_DEPTH) {
-									last_error = TPBRT_ERROR_UNEXPECTED_TOKEN;
+									last_error = TPBRT_ERROR_INCLUDES_STACK_OVERFLOW;
 									break;
 								}
 
@@ -489,14 +492,15 @@ extern "C" {
 							tpbrt_mat4_inverse(&camera_to_world.start, &current_state.ctm.start);
 							tpbrt_mat4_inverse(&camera_to_world.end, &current_state.ctm.end);
 
-							static const tpbrt_string_t CAM_STR = TPBRT_STRING("camera");
-							last_error =
-							  tpbrt_coord_system_map_insert(&named_coord_systems, CAM_STR, &camera_create_info.camera_to_world);
-								if (last_error != TPBRT_ERROR_NONE) { break; }
-
+							tpbrt_camera_create_info_free(&camera_create_info);
 							last_error = tpbrt_camera_create_info_init(element.as.generic_with_params.type_name,
 							  element.as.generic_with_params.params, &camera_to_world, current_state.current_inside_medium,
 							  current_state.current_outside_medium, &camera_create_info);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
+							static const tpbrt_string_t CAM_STR = TPBRT_STRING("camera");
+							last_error =
+							  tpbrt_coord_system_map_insert(&named_coord_systems, CAM_STR, &camera_create_info.camera_to_world);
 							break;
 						}
 						case TPBRT_DIRECTIVE_SAMPLER: {
@@ -871,6 +875,7 @@ extern "C" {
 				last_error = tpbrt_camera_init(&camera_create_info, &out_scene->film, &out_scene->camera);
 			}
 		tpbrt_camera_create_info_free(&camera_create_info);
+		tpbrt_string_array_free(&includes);
 
 			if (current_state.active_object != TPBRT_NULL) {
 				tpbrt_object_free(current_state.active_object);

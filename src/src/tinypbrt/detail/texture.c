@@ -132,7 +132,7 @@ extern "C" {
 				return TPBRT_ERROR_INVALID_TEXTURE_ENCODING;
 			}
 
-			if (token.data - encoding_str.data >= GAMMA_STR.size) {
+			if ((tpbrt_size_t)(token.data - encoding_str.data) >= GAMMA_STR.size) {
 				gamma_val_out->has_value = TPBRT_FALSE;
 				return TPBRT_ERROR_INVALID_TEXTURE_ENCODING;
 			}

@@ -87,7 +87,7 @@ extern "C" {
 			tpbrt_blackbody_t blackbody;
 			tpbrt_string_t file_name;
 			tpbrt_spectrum_builtin_t builtin : 6;
-			tpbrt_uint_t constant;
+			tpbrt_float_t constant;
 		} as;
 
 		tpbrt_spectrum_type_t type : 3;

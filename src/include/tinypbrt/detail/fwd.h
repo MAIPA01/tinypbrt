@@ -2,9 +2,9 @@
 #ifndef _TINYPBRT_FWD_H_
 #define _TINYPBRT_FWD_H_
 
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,6 +34,7 @@ extern "C" {
 	typedef uint32_t tpbrt_uint_t;
 	typedef float tpbrt_float_t;
 	typedef size_t tpbrt_size_t;
+	typedef long tpbrt_long_t;
 
 	typedef tpbrt_size_t tpbrt_idx_t;
 #define TPBRT_IDX_INVALID ~(tpbrt_idx_t)0

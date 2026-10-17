@@ -90,7 +90,7 @@ extern "C" {
 			tpbrt_camera_realistic_params_t realistic;
 		} as;
 
-		tpbrt_camera_type_t type : 2;
+		tpbrt_camera_type_t type : 3;
 	} tpbrt_camera_t;
 
 #ifdef __cplusplus

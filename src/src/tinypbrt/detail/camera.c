@@ -246,14 +246,27 @@ extern "C" {
 
 			if (memset(info, 0, sizeof(tpbrt_camera_create_info_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		info->params				= params;
+		tpbrt_error_t err = tpbrt_params_list_init(&info->params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_create_info_free(info);
+				return err;
+			}
+		err = tpbrt_params_list_extend(&info->params, params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_create_info_free(info);
+				return err;
+			}
+
 		info->camera_to_world		= *camera_to_world;
 		info->interior_media_handle = interior_media_handle;
 		info->exterior_media_handle = exterior_media_handle;
 
 		tpbrt_camera_type_t type;
-		const tpbrt_error_t err = tpbrt_camera_type_from_string(type_str, &type);
-			if (err != TPBRT_ERROR_NONE) { return err; }
+		err = tpbrt_camera_type_from_string(type_str, &type);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_create_info_free(info);
+				return err;
+			}
 		info->type = type;
 
 		return TPBRT_ERROR_NONE;

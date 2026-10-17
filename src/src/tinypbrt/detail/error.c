@@ -70,7 +70,9 @@ extern "C" {
 			TPBRT_STRING("Unsupported filter type"),				  // TPBRT_ERROR_INVALID_FILTER_TYPE
 			TPBRT_STRING("Provided texture is of wrong type"),		  // TPBRT_ERROR_WRONG_TEXTURE_TYPE
 			TPBRT_STRING("Provided coord system name is invalid"),	  // TPBRT_ERROR_INVALID_COORD_SYSTEM_NAME
-			TPBRT_STRING("Undefined error"),						  // DEFAULT
+			TPBRT_STRING("Index was out of range"),					  // TPBRT_INDEX_OUT_OF_RANGE
+			TPBRT_STRING("Includes depth was greater than maximum depth"), // TPBRT_ERROR_INCLUDES_STACK_OVERFLOW
+			TPBRT_STRING("Undefined error"),							   // DEFAULT
 		};
 
 			if (buffer == TPBRT_NULL || buffer_size == 0) { return 0; }

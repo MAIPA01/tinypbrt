@@ -141,6 +141,10 @@ extern "C" {
 					dst->as.builtin = src.as.builtin;
 					break;
 				}
+				case TPBRT_SPECTRUM_TYPE_CONSTANT: {
+					dst->as.constant = src.as.constant;
+					break;
+				}
 				default: {
 					break;
 				}

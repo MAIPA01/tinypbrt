@@ -191,8 +191,8 @@ extern "C" {
 			if (dst == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_size_t n = TPBRT_MIN(src.size, dst_size - 1);
-		memcpy(dst, src.data, sizeof(tpbrt_char_t) * n);
-		dst[n] = '\0';
+		const errno_t err	 = strncpy_s(dst, dst_size, src.data, n);
+			if (err != 0u) { return TPBRT_ERROR_INVALID_STRING; }
 
 			if (out_size != TPBRT_NULL) { *out_size = n; }
 		return TPBRT_ERROR_NONE;
