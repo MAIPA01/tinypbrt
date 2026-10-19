@@ -42,7 +42,7 @@ extern "C" {
 	} tpbrt_camera_spherical_mapping_t;
 
 	typedef struct tpbrt_camera_spherical_params_t {
-		tpbrt_camera_spherical_mapping_t mapping : 1;
+		tpbrt_camera_spherical_mapping_t mapping : 2;
 	} tpbrt_camera_spherical_params_t;
 
 	typedef enum tpbrt_camera_realistic_aperture_type_t : uint8_t {
@@ -66,7 +66,7 @@ extern "C" {
 			tpbrt_string_t file_name;
 		} as;
 
-		tpbrt_camera_realistic_aperture_type_t type : 1;
+		tpbrt_camera_realistic_aperture_type_t type : 2;
 	} tpbrt_camera_realistic_aperture_t;
 
 	typedef struct tpbrt_camera_realistic_params_t {

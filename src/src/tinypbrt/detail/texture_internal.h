@@ -6,22 +6,27 @@
 
 #include <tinypbrt/detail/texture.h>
 
+#include <tinypbrt/detail/color_internal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define TPBRT_TEXTURE_HANDLE_NONE                                                   \
-	(tpbrt_texture_handle_t) { .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE }
-#define TPBRT_TEXTURE_HANDLE_FLOAT(value)                                                                       \
-	(tpbrt_texture_handle_t) { .as.float_value = (value), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT }
-#define TPBRT_TEXTURE_HANDLE_RGB(r_val, g_val, b_val)                                                                        \
-	(tpbrt_texture_handle_t) { .as.rgb = TPBRT_RGB(r_val, g_val, b_val), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_RGB }
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM(builtin) \
-	(tpbrt_texture_handle_t) { .as.spectrum_builtin = (builtin), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM_BUILTIN }
 #define TPBRT_TEXTURE_HANDLE_TEXTURE(idx)                                                                       \
 	(tpbrt_texture_handle_t) { .as.texture_idx = (idx), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE }
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM(spectrum_val)                                                                    \
+	(tpbrt_texture_handle_t) { .as.spectrum = (spectrum_val), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM }
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_WAVELENGTHS TPBRT_TEXTURE_HANDLE_SPECTRUM(TPBRT_SPECTRUM_WAVELENGTHS)
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB(r_val, g_val, b_val)             \
+	TPBRT_TEXTURE_HANDLE_SPECTRUM(TPBRT_SPECTRUM_RGB(r_val, g_val, b_val))
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BLACKBODY(value)		 TPBRT_TEXTURE_HANDLE_SPECTRUM(TPBRT_SPECTRUM_BLACKBODY(value))
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_FILE_NAME				 TPBRT_TEXTURE_HANDLE_SPECTRUM(TPBRT_SPECTRUM_FILE_NAME)
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BUILTIN(builtin_value) TPBRT_TEXTURE_HANDLE_SPECTRUM(TPBRT_SPECTRUM_BUILTIN(builtin_value))
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(value)		 TPBRT_TEXTURE_HANDLE_SPECTRUM(TPBRT_SPECTRUM_CONSTANT(value))
 
 #pragma region TEXTURE
+
+	void tpbrt_texture_handle_free(tpbrt_texture_handle_t* texture_handle);
 
 	tpbrt_error_t tpbrt_texture_type_from_string(tpbrt_string_t type_str, tpbrt_texture_type_t* type_out);
 

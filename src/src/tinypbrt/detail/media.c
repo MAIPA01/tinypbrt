@@ -172,6 +172,9 @@ extern "C" {
 		static const tpbrt_string_t SIGMA_A_STR	 = TPBRT_STRING("sigma_a");
 		static const tpbrt_string_t SIGMA_S_STR	 = TPBRT_STRING("sigma_s");
 		static const tpbrt_string_t SCALE_STR	 = TPBRT_STRING("scale");
+		static const tpbrt_string_t NX_STR		 = TPBRT_STRING("nx");
+		static const tpbrt_string_t NY_STR		 = TPBRT_STRING("ny");
+		static const tpbrt_string_t NZ_STR		 = TPBRT_STRING("nz");
 
 		tpbrt_error_t err						 = tpbrt_params_list_get_float(params, G_STR, 0.0f, &rgb_grid->g);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -198,7 +201,25 @@ extern "C" {
 		err = tpbrt_params_list_get_rgbs(params, SIGMA_S_STR, &rgb_grid->sigma_s);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-		return tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &rgb_grid->scale);
+		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &rgb_grid->scale);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_uint(params, NX_STR, 1u, &rgb_grid->nx);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_uint(params, NY_STR, 1u, &rgb_grid->ny);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_uint(params, NZ_STR, 1u, &rgb_grid->nz);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		const tpbrt_size_t voxels = (tpbrt_size_t)rgb_grid->nx * rgb_grid->ny * rgb_grid->nz;
+			if ((rgb_grid->Le.count != 0u && rgb_grid->Le.count != voxels) ||
+				(rgb_grid->sigma_a.count != 0u && rgb_grid->sigma_a.count != voxels) ||
+				(rgb_grid->sigma_s.count != 0u && rgb_grid->sigma_s.count != voxels)) {
+				return TPBRT_ERROR_INDEX_OUT_OF_RANGE;
+			}
+		return TPBRT_ERROR_NONE;
 	}
 
 	static tpbrt_error_t tpbrt_media_read_uniform_grid(tpbrt_media_uniform_grid_params_t* const uniform_grid,
@@ -241,7 +262,7 @@ extern "C" {
 
 			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->p0 = TPBRT_VEC3(0.0f, 0.0f, 0.0f); }
 
-		err = tpbrt_params_list_get_point3(params, P1_STR, &uniform_grid->p0);
+		err = tpbrt_params_list_get_point3(params, P1_STR, &uniform_grid->p1);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
 			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->p1 = TPBRT_VEC3(1.0f, 1.0f, 1.0f); }
@@ -281,10 +302,12 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_media_init(const tpbrt_string_t name, const tpbrt_string_t type_str, const tpbrt_params_list_t params,
-	  tpbrt_media_t* const media) {
-			if (media == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	  const tpbrt_mat4_animated_t* const ctm, tpbrt_media_t* const media) {
+			if (media == TPBRT_NULL || ctm == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(media, 0, sizeof(tpbrt_media_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		media->transform  = *ctm;
 
 		tpbrt_error_t err = tpbrt_string_copy(&media->name, name);
 			if (err != TPBRT_ERROR_NONE) {
@@ -292,7 +315,8 @@ extern "C" {
 				return err;
 			}
 
-		tpbrt_string_t temp_string = type_str;
+		tpbrt_string_t temp_string	  = type_str;
+		tpbrt_bool_t owns_temp_string = TPBRT_FALSE;
 			if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) {
 				static const tpbrt_string_t TYPE_STR = TPBRT_STRING("type");
 				err									 = tpbrt_params_list_get_string(params, TYPE_STR, &temp_string);
@@ -300,11 +324,12 @@ extern "C" {
 						tpbrt_media_free(media);
 						return err;
 					}
+				owns_temp_string = TPBRT_TRUE;
 			}
 
 		tpbrt_media_type_t type;
 		err = tpbrt_media_type_from_string(temp_string, &type);
-		tpbrt_string_free(&temp_string);
+			if (owns_temp_string == TPBRT_TRUE) { tpbrt_string_free(&temp_string); }
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_media_free(media);
 				return err;

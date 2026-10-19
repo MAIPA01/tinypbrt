@@ -58,7 +58,7 @@ extern "C" {
 		tpbrt_opt_float_t width0;
 		tpbrt_opt_float_t width1;
 		tpbrt_uint_t split_depth;
-		tpbrt_shape_curve_basis_t basis	  : 1;
+		tpbrt_shape_curve_basis_t basis	  : 2;
 		tpbrt_shape_curve_degree_t degree : 2;
 		tpbrt_shape_curve_type_t type	  : 2;
 	} tpbrt_shape_curve_params_t;
@@ -123,7 +123,7 @@ extern "C" {
 			tpbrt_shape_loop_subdiv_params_t loop_subdiv;
 		} as;
 
-		tpbrt_shape_type_t type			 : 3;
+		tpbrt_shape_type_t type			 : 4;
 		tpbrt_bool_t reverse_orientation : 1;
 	} tpbrt_shape_t;
 

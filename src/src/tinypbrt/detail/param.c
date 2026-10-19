@@ -619,45 +619,50 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_spectrum(const tpbrt_param_t* const param, tpbrt_spectrum_t* const out_val) {
 			if (param == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->type == TPBRT_PARAM_TYPE_RGB) {
-				out_val->type = TPBRT_SPECTRUM_TYPE_RGB;
-				return tpbrt_param_as_rgb(param, &out_val->as.rgb);
+			switch (param->type) {
+				case TPBRT_PARAM_TYPE_RGB: {
+					out_val->type = TPBRT_SPECTRUM_TYPE_RGB;
+					return tpbrt_param_as_rgb(param, &out_val->as.rgb);
+				}
+				case TPBRT_PARAM_TYPE_BLACKBODY: {
+					out_val->type = TPBRT_SPECTRUM_TYPE_BLACKBODY;
+					return tpbrt_param_as_float(param, &out_val->as.blackbody);
+				}
+				case TPBRT_PARAM_TYPE_FLOAT: {
+					out_val->type = TPBRT_SPECTRUM_TYPE_CONSTANT;
+					return tpbrt_param_as_float(param, &out_val->as.constant);
+				}
+				case TPBRT_PARAM_TYPE_SPECTRUM: {
+					// wavelengths list
+					tpbrt_error_t err = tpbrt_param_as_wavelengths(param, &out_val->as.wavelengths);
+						// possible error: PARSE_FLOAT, PARSE_UINT, MISSING_REQUIRED_PARAMETER, ERROR_INVALID_POINTER, INVALID_OBJECT_TYPE
+						if (err == TPBRT_ERROR_NONE) {
+							out_val->type = TPBRT_SPECTRUM_TYPE_WAVELENGTH;
+							return TPBRT_ERROR_NONE;
+						}
+
+						if (err != TPBRT_ERROR_INVALID_OBJECT_TYPE) { return err; }
+
+						if (param->value_type != TPBRT_PARAM_VALUE_TYPE_STRING) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+
+					// builtin
+					tpbrt_spectrum_builtin_t builtin;
+					err = tpbrt_spectrum_builtin_from_string(param->value, &builtin);
+						// possible error: UNKNOWN_SPECTRUM_BUILTIN
+						if (err == TPBRT_ERROR_NONE) {
+							out_val->type		= TPBRT_SPECTRUM_TYPE_BUILTIN;
+							out_val->as.builtin = builtin;
+							return TPBRT_ERROR_NONE;
+						}
+
+					// filename
+					out_val->type = TPBRT_SPECTRUM_TYPE_FILE;
+					return tpbrt_string_copy_unescaped(&out_val->as.file_name, param->value);
+				}
+				default: {
+					return TPBRT_ERROR_INVALID_PARAM_TYPE;
+				}
 			}
-
-			if (param->type == TPBRT_PARAM_TYPE_BLACKBODY) {
-				out_val->type = TPBRT_SPECTRUM_TYPE_BLACKBODY;
-				return tpbrt_param_as_float(param, &out_val->as.blackbody);
-			}
-
-			if (param->type == TPBRT_PARAM_TYPE_SPECTRUM) {
-				// wavelengths list
-				tpbrt_error_t err = tpbrt_param_as_wavelengths(param, &out_val->as.wavelengths);
-				// possible error: PARSE_FLOAT, PARSE_UINT, MISSING_REQUIRED_PARAMETER, ERROR_INVALID_POINTER, INVALID_OBJECT_TYPE
-					if (err == TPBRT_ERROR_NONE) {
-						out_val->type = TPBRT_SPECTRUM_TYPE_WAVELENGTH;
-						return TPBRT_ERROR_NONE;
-					}
-
-					if (err != TPBRT_ERROR_INVALID_OBJECT_TYPE) { return err; }
-
-					if (param->value_type != TPBRT_PARAM_VALUE_TYPE_STRING) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
-
-				// builtin
-				tpbrt_spectrum_builtin_t builtin;
-				err = tpbrt_spectrum_builtin_from_string(param->value, &builtin);
-					// possible error: UNKNOWN_SPECTRUM_BUILTIN
-					if (err == TPBRT_ERROR_NONE) {
-						out_val->type		= TPBRT_SPECTRUM_TYPE_BUILTIN;
-						out_val->as.builtin = builtin;
-						return TPBRT_ERROR_NONE;
-					}
-
-				// filename
-				out_val->type = TPBRT_SPECTRUM_TYPE_FILE;
-				return tpbrt_string_copy_unescaped(&out_val->as.file_name, param->value);
-			}
-
-		return TPBRT_ERROR_INVALID_OBJECT_TYPE;
 	}
 
 #pragma endregion
@@ -939,97 +944,72 @@ extern "C" {
 	  tpbrt_texture_handle_t* const out_val) {
 			if (param == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_error_t err = TPBRT_ERROR_NONE;
-			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_SINGLE || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
-				// float
-				err = tpbrt_param_as_float(param, &out_val->as.float_value);
-					if (err == TPBRT_ERROR_NONE) {
-						out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-						return TPBRT_ERROR_NONE;
-					}
+			switch (param->type) {
+			case TPBRT_PARAM_TYPE_BLACKBODY:
+			case TPBRT_PARAM_TYPE_SPECTRUM:
+			case TPBRT_PARAM_TYPE_RGB:
+				case TPBRT_PARAM_TYPE_FLOAT: {
+					const tpbrt_error_t err = tpbrt_param_as_spectrum(param, &out_val->as.spectrum);
+						if (err != TPBRT_ERROR_NONE) {
+							*out_val = TPBRT_TEXTURE_HANDLE_INVALID;
+							return err;
+						}
+					out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM;
+					return TPBRT_ERROR_NONE;
+				}
+			case TPBRT_PARAM_TYPE_STRING:
+				case TPBRT_PARAM_TYPE_TEXTURE: {
+					tpbrt_string_t temp_string = TPBRT_EMPTY_STRING;
+					tpbrt_error_t err		   = tpbrt_param_as_string(param, &temp_string);
+						if (err != TPBRT_ERROR_NONE) {
+							*out_val = TPBRT_TEXTURE_HANDLE_INVALID;
+							return err;
+						}
+					err = tpbrt_textures_list_get_handle(textures_list, temp_string, out_val);
+					tpbrt_string_free(&temp_string);
+					return err;
+				}
+				default: {
+					return TPBRT_ERROR_INVALID_PARAM_TYPE;
+				}
 			}
-
-			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_STRING || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
-				// texture | spectrum builtin
-				tpbrt_string_t temp_string;
-				err = tpbrt_param_as_string(param, &temp_string);
-					if (err == TPBRT_ERROR_NONE) {
-						// spectrum builtin
-						tpbrt_spectrum_builtin_t spectrum_builtin;
-						err = tpbrt_spectrum_builtin_from_string(temp_string, &spectrum_builtin);
-							if (err == TPBRT_ERROR_NONE) {
-								tpbrt_string_free(&temp_string);
-								*out_val = TPBRT_TEXTURE_HANDLE_SPECTRUM(spectrum_builtin);
-								return TPBRT_ERROR_NONE;
-							}
-
-						// texture
-						err = tpbrt_textures_list_get_handle(textures_list, temp_string, out_val);
-						tpbrt_string_free(&temp_string);
-						return err;
-					}
-			}
-
-			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
-				// rgb
-				err = tpbrt_param_as_rgb(param, &out_val->as.rgb);
-					if (err == TPBRT_ERROR_NONE) {
-						out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_RGB;
-						return TPBRT_ERROR_NONE;
-					}
-			}
-
-		out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
-		return err;
 	}
 
 	tpbrt_error_t tpbrt_param_as_texture_of_type(const tpbrt_param_t* const param, const tpbrt_textures_list_t textures_list,
 	  const tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* out_val) {
 			if (param == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_error_t err = TPBRT_ERROR_NONE;
-			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_SINGLE || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
-				// float
-				err = tpbrt_param_as_float(param, &out_val->as.float_value);
-					if (err == TPBRT_ERROR_NONE) {
-						out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_FLOAT;
-						return TPBRT_ERROR_NONE;
-					}
+			switch (param->type) {
+			case TPBRT_PARAM_TYPE_BLACKBODY:
+			case TPBRT_PARAM_TYPE_SPECTRUM:
+				case TPBRT_PARAM_TYPE_RGB:	 {
+						if (texture_type != TPBRT_TEXTURE_TYPE_SPECTRUM) { return TPBRT_ERROR_INVALID_TEXTURE_TYPE; }
+				}
+				case TPBRT_PARAM_TYPE_FLOAT: {
+					const tpbrt_error_t err = tpbrt_param_as_spectrum(param, &out_val->as.spectrum);
+						if (err != TPBRT_ERROR_NONE) {
+							*out_val = TPBRT_TEXTURE_HANDLE_INVALID;
+							return err;
+						}
+					out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM;
+					return TPBRT_ERROR_NONE;
+				}
+			case TPBRT_PARAM_TYPE_STRING:
+				case TPBRT_PARAM_TYPE_TEXTURE: {
+					tpbrt_string_t temp_string = TPBRT_EMPTY_STRING;
+					tpbrt_error_t err		   = tpbrt_param_as_string(param, &temp_string);
+						if (err != TPBRT_ERROR_NONE) {
+							*out_val = TPBRT_TEXTURE_HANDLE_INVALID;
+							return err;
+						}
+					err = tpbrt_textures_list_get_handle_with_type(textures_list, temp_string, texture_type, out_val);
+					tpbrt_string_free(&temp_string);
+					return err;
+				}
+				default: {
+					return TPBRT_ERROR_INVALID_PARAM_TYPE;
+				}
 			}
-
-			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_STRING || param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
-				// texture | spectrum builtin
-				tpbrt_string_t temp_string;
-				err = tpbrt_param_as_string(param, &temp_string);
-					if (err == TPBRT_ERROR_NONE) {
-						// spectrum builtin
-						tpbrt_spectrum_builtin_t spectrum_builtin;
-						err = tpbrt_spectrum_builtin_from_string(temp_string, &spectrum_builtin);
-							if (err == TPBRT_ERROR_NONE) {
-								tpbrt_string_free(&temp_string);
-								out_val->value_type			 = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM_BUILTIN;
-								out_val->as.spectrum_builtin = spectrum_builtin;
-								return TPBRT_ERROR_NONE;
-							}
-
-						// texture
-						err = tpbrt_textures_list_get_handle_with_type(textures_list, temp_string, texture_type, out_val);
-						tpbrt_string_free(&temp_string);
-						return err;
-					}
-			}
-
-			if (param->value_type == TPBRT_PARAM_VALUE_TYPE_ARRAY) {
-				// rgb
-				err = tpbrt_param_as_rgb(param, &out_val->as.rgb);
-					if (err == TPBRT_ERROR_NONE) {
-						out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_RGB;
-						return TPBRT_ERROR_NONE;
-					}
-			}
-
-		out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
-		return err;
 	}
 
 #pragma endregion

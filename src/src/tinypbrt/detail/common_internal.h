@@ -27,6 +27,8 @@ extern "C" {
 #define TPBRT_STRING(value) (tpbrt_string_t) { .data = (value), .size = sizeof((value)) - 1u }
 #define TPBRT_EMPTY_STRING	(tpbrt_string_t) { .data = TPBRT_NULL, .size = 0u }
 
+	tpbrt_error_t tpbrt_copy_chars(tpbrt_char_t* dst, tpbrt_size_t dst_size, const tpbrt_char_t* src, tpbrt_size_t n);
+
 	tpbrt_error_t tpbrt_string_from_cstr(const tpbrt_char_t* cstr, tpbrt_string_t* out_val);
 
 	tpbrt_bool_t tpbrt_string_empty(tpbrt_string_t str);

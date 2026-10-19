@@ -63,6 +63,9 @@ extern "C" {
 		tpbrt_rgb_array_t sigma_a;
 		tpbrt_rgb_array_t sigma_s;
 		tpbrt_float_t scale;
+		tpbrt_uint_t nx;
+		tpbrt_uint_t ny;
+		tpbrt_uint_t nz;
 	} tpbrt_media_rgb_grid_params_t;
 
 	typedef struct tpbrt_media_uniform_grid_params_t {
@@ -87,6 +90,7 @@ extern "C" {
 	typedef struct tpbrt_media_t {
 		tpbrt_media_idx_t idx;
 		tpbrt_string_t name;
+		tpbrt_mat4_animated_t transform;
 
 		union {
 			tpbrt_media_cloud_params_t cloud;

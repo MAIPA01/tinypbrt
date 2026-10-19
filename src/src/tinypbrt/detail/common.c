@@ -101,6 +101,16 @@ extern "C" {
 
 #pragma region STRING
 
+	tpbrt_error_t tpbrt_copy_chars(tpbrt_char_t* const dst, const tpbrt_size_t dst_size, const tpbrt_char_t* const src,
+	  const tpbrt_size_t n) {
+			if (dst == TPBRT_NULL || dst_size == 0u || n >= dst_size || (src == TPBRT_NULL && n > 0u)) {
+				return TPBRT_ERROR_INVALID_STRING;
+			}
+			if (n > 0u) { memcpy(dst, src, n); }
+		dst[n] = '\0';
+		return TPBRT_ERROR_NONE;
+	}
+
 	tpbrt_error_t tpbrt_string_from_cstr(const tpbrt_char_t* cstr, tpbrt_string_t* const out_val) {
 			if (cstr == TPBRT_NULL || out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -190,9 +200,9 @@ extern "C" {
 	  tpbrt_size_t* const out_size) {
 			if (dst == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		const tpbrt_size_t n = TPBRT_MIN(src.size, dst_size - 1);
-		const errno_t err	 = strncpy_s(dst, dst_size, src.data, n);
-			if (err != 0u) { return TPBRT_ERROR_INVALID_STRING; }
+		const tpbrt_size_t n	= TPBRT_MIN(src.size, dst_size - 1);
+		const tpbrt_error_t err = tpbrt_copy_chars(dst, dst_size, src.data, n);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 			if (out_size != TPBRT_NULL) { *out_size = n; }
 		return TPBRT_ERROR_NONE;

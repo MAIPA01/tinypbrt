@@ -32,10 +32,24 @@ extern "C" {
 
 #define TPBRT_MAX_INCLUDE_DEPTH 32u
 
+#if defined(_MSC_VER) || defined(__STDC_LIB_EXT1__)
+#define TPBRT_HAS_SECURE_CRT TPBRT_TRUE
+#else
+#define TPBRT_HAS_SECURE_CRT TPBRT_FALSE
+#endif
+
+	static inline FILE* tpbrt_fopen(const tpbrt_char_t* const path, const tpbrt_char_t* const mode) {
+#if TPBRT_HAS_SECURE_CRT
+		FILE* f = TPBRT_NULL;
+		return fopen_s(&f, path, mode) == 0u ? f : TPBRT_NULL;
+#else
+	return fopen(path, mode);
+#endif
+	}
+
 	static tpbrt_error_t tpbrt_read_file(const tpbrt_char_t* const path, tpbrt_string_t* const out_data) {
-		FILE* f				= TPBRT_NULL;
-		const errno_t f_err = fopen_s(&f, path, "rb");
-			if (f_err != 0u || f == TPBRT_NULL) { return TPBRT_ERROR_FILE_NOT_FOUND; }
+		FILE* f = tpbrt_fopen(path, "rb");
+			if (f == TPBRT_NULL) { return TPBRT_ERROR_FILE_NOT_FOUND; }
 
 		fseek(f, 0, SEEK_END);
 		const tpbrt_long_t size = ftell(f);
@@ -70,14 +84,13 @@ extern "C" {
 
 		tpbrt_size_t pos = 0u;
 			if (dir_len > 0u) {
-				const errno_t err = strncpy_s(out, out_size, working_directory, dir_len);
-					if (err != 0u) { return TPBRT_ERROR_INVALID_STRING; }
+				const tpbrt_error_t err = tpbrt_copy_chars(out, out_size, working_directory, dir_len);
+					if (err != TPBRT_ERROR_NONE) { return err; }
 
 				pos		   = dir_len;
 				out[pos++] = '/';
 			}
-		const errno_t err = strncpy_s(out + pos, out_size - pos * sizeof(tpbrt_char_t), path.data, path.size);
-		return err == 0u ? TPBRT_ERROR_NONE : TPBRT_ERROR_INVALID_STRING;
+		return tpbrt_copy_chars(out + pos, out_size - pos * sizeof(tpbrt_char_t), path.data, path.size);
 	}
 
 	static tpbrt_error_t tpbrt_scene_keep_buffer(tpbrt_string_array_t* const includes, const tpbrt_string_t buffer) {
@@ -105,9 +118,9 @@ extern "C" {
 
 			if (sep != TPBRT_NULL) {
 				const tpbrt_size_t dir_len = sep - filepath;
-					if (dir_len < 1024) {
-						const errno_t errn = strncpy_s(working_directory, 1024 * sizeof(tpbrt_char_t), filepath, dir_len);
-							if (errn != 0u) { return TPBRT_ERROR_INVALID_STRING; }
+					if (dir_len < 1024u) {
+						err = tpbrt_copy_chars(working_directory, 1024u * sizeof(tpbrt_char_t), filepath, dir_len);
+							if (err != TPBRT_ERROR_NONE) { return err; }
 					}
 			}
 
@@ -836,7 +849,7 @@ extern "C" {
 
 							tpbrt_media_t media;
 							last_error = tpbrt_media_init(element.as.named_medium.name, element.as.named_medium.type,
-							  element.as.named_medium.params, &media);
+							  element.as.named_medium.params, &current_state.ctm, &media);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							last_error = tpbrt_medias_list_append(&out_scene->medias, &media);

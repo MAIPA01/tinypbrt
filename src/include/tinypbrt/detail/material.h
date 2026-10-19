@@ -96,7 +96,7 @@ extern "C" {
 		tpbrt_material_roughness_params_t conductor_roughness_params;
 		tpbrt_material_roughness_params_t interface_roughness_params;
 		tpbrt_float_t thickness;
-		tpbrt_material_conductor_value_type_t value_type : 1;
+		tpbrt_material_conductor_value_type_t value_type : 2;
 	} tpbrt_material_coated_conductor_params_t;
 
 	typedef struct tpbrt_material_conductor_params_t {
@@ -112,7 +112,7 @@ extern "C" {
 		} as;
 
 		tpbrt_material_roughness_params_t roughness_params;
-		tpbrt_material_conductor_value_type_t value_type : 1;
+		tpbrt_material_conductor_value_type_t value_type : 2;
 	} tpbrt_material_conductor_params_t;
 
 	typedef struct tpbrt_material_dielectric_params_t {

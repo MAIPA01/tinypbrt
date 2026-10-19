@@ -37,12 +37,12 @@ extern "C" {
 
 	typedef struct tpbrt_sampler_padded_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization : 2;
+		tpbrt_sampler_random_t randomization : 3;
 	} tpbrt_sampler_padded_sobol_params_t;
 
 	typedef struct tpbrt_sampler_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization : 2;
+		tpbrt_sampler_random_t randomization : 3;
 	} tpbrt_sampler_sobol_params_t;
 
 	typedef struct tpbrt_sampler_stratified_params_t {
@@ -53,7 +53,7 @@ extern "C" {
 
 	typedef struct tpbrt_sampler_z_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization : 2;
+		tpbrt_sampler_random_t randomization : 3;
 	} tpbrt_sampler_z_sobol_params_t;
 
 	typedef struct tpbrt_sampler_t {
