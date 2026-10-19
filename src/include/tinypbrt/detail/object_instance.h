@@ -13,7 +13,7 @@ extern "C" {
 
 	typedef struct tpbrt_object_instance_t {
 		tpbrt_object_handle_t object;
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_animated_t transform;
 	} tpbrt_object_instance_t;
 
 	typedef struct tpbrt_objects_instances_list_t {

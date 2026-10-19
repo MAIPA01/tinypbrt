@@ -15,9 +15,9 @@ extern "C" {
 #define TPBRT_VEC3(x_val, y_val, z_val)                         \
 	(tpbrt_vec3_t) { .x = (x_val), .y = (y_val), .z = (z_val) }
 
-#define TPBRT_OPT_FLOAT(float_value)                                        \
+#define TPBRT_OPT_FLOAT_VALUE(float_value)                                  \
 	(tpbrt_opt_float_t) { .value = (float_value), .has_value = TPBRT_TRUE }
-#define TPBRT_EMPTY_OPT_FLOAT                                       \
+#define TPBRT_OPT_FLOAT_NONE                                        \
 	(tpbrt_opt_float_t) { .value = 0.0f, .has_value = TPBRT_FALSE }
 
 	tpbrt_uint_t tpbrt_next_power_of_two(tpbrt_uint_t n);
@@ -38,6 +38,7 @@ extern "C" {
 	void tpbrt_mat4_multiply(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 	void tpbrt_mat4_inverse(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
 	void tpbrt_mat4_transpose(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
+	tpbrt_bool_t tpbrt_mat4_equals(const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 
 #define TPBRT_EMPTY_BOOL_ARRAY	(tpbrt_bool_array_t) { .data = TPBRT_NULL, .count = 0 }
 #define TPBRT_EMPTY_INT_ARRAY	(tpbrt_int_array_t) { .data = TPBRT_NULL, .count = 0 }

@@ -12,8 +12,8 @@
 extern "C" {
 #endif
 
-#define TPBRT_TEXTURE_HANDLE_TEXTURE(idx)                                                                       \
-	(tpbrt_texture_handle_t) { .as.texture_idx = (idx), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE }
+#define TPBRT_TEXTURE_HANDLE_TEXTURE(idx)                                                                           \
+	(tpbrt_texture_handle_t) { .as.texture_idx = (idx), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX }
 #define TPBRT_TEXTURE_HANDLE_SPECTRUM(spectrum_val)                                                                    \
 	(tpbrt_texture_handle_t) { .as.spectrum = (spectrum_val), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM }
 #define TPBRT_TEXTURE_HANDLE_SPECTRUM_WAVELENGTHS TPBRT_TEXTURE_HANDLE_SPECTRUM(TPBRT_SPECTRUM_WAVELENGTHS)
@@ -42,7 +42,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_texture_mapping_from_string(tpbrt_string_t mapping_str, tpbrt_texture_mapping_t* mapping_out);
 
 	tpbrt_error_t tpbrt_texture_init(tpbrt_string_t name, tpbrt_string_t type_str, tpbrt_string_t class_str,
-	  tpbrt_params_list_t params, tpbrt_textures_list_t textures, const tpbrt_mat4_animated_t* ctm, tpbrt_texture_t* texture);
+	  tpbrt_params_list_t params, tpbrt_textures_list_t textures, tpbrt_transform_handle_t transform, tpbrt_texture_t* texture);
 	void tpbrt_texture_free(tpbrt_texture_t* texture);
 
 #pragma endregion

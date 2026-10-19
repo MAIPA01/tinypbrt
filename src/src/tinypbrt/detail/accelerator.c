@@ -65,10 +65,10 @@ extern "C" {
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		tpbrt_string_t method_str;
-		err = tpbrt_params_list_get_string(params, SPLIT_METHOD_STR, &method_str);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_string(params, SPLIT_METHOD_STR, TPBRT_EMPTY_STRING, &method_str);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) {
+			if (tpbrt_string_empty(method_str) == TPBRT_TRUE) {
 				bvh_params->split_method = TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_SAH;
 				return TPBRT_ERROR_NONE;
 			}

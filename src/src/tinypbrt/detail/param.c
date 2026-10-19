@@ -637,7 +637,7 @@ extern "C" {
 					tpbrt_error_t err = tpbrt_param_as_wavelengths(param, &out_val->as.wavelengths);
 						// possible error: PARSE_FLOAT, PARSE_UINT, MISSING_REQUIRED_PARAMETER, ERROR_INVALID_POINTER, INVALID_OBJECT_TYPE
 						if (err == TPBRT_ERROR_NONE) {
-							out_val->type = TPBRT_SPECTRUM_TYPE_WAVELENGTH;
+							out_val->type = TPBRT_SPECTRUM_TYPE_WAVELENGTHS;
 							return TPBRT_ERROR_NONE;
 						}
 
@@ -985,6 +985,7 @@ extern "C" {
 				case TPBRT_PARAM_TYPE_RGB:	 {
 						if (texture_type != TPBRT_TEXTURE_TYPE_SPECTRUM) { return TPBRT_ERROR_INVALID_TEXTURE_TYPE; }
 				}
+				/* fall through */
 				case TPBRT_PARAM_TYPE_FLOAT: {
 					const tpbrt_error_t err = tpbrt_param_as_spectrum(param, &out_val->as.spectrum);
 						if (err != TPBRT_ERROR_NONE) {
@@ -1164,11 +1165,16 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_string(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_string_t* const out_val) {
+	  const tpbrt_string_t default_val, tpbrt_string_t* const out_val) {
 			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_param_t* param;
 		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				*out_val = default_val;
+				return TPBRT_ERROR_NONE;
+			}
 
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
@@ -1416,8 +1422,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_rgb(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_rgb_t* const out_val) {
-		return tpbrt_params_list_get_vec3(params_list, param_name, out_val);
+	  const tpbrt_rgb_t default_val, tpbrt_rgb_t* const out_val) {
+		return tpbrt_params_list_get_vec3(params_list, param_name, default_val, out_val);
 	}
 
 #pragma endregion
@@ -1459,11 +1465,16 @@ extern "C" {
 #pragma region SPECTRUM
 
 	tpbrt_error_t tpbrt_params_list_get_spectrum(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_spectrum_t* const out_val) {
+	  const tpbrt_spectrum_t default_val, tpbrt_spectrum_t* const out_val) {
 			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_param_t* param;
 		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				*out_val = default_val;
+				return TPBRT_ERROR_NONE;
+			}
 
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
@@ -1505,11 +1516,16 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_vec2(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_vec2_t* const out_val) {
+	  const tpbrt_vec2_t default_val, tpbrt_vec2_t* const out_val) {
 			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_param_t* param;
 		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				*out_val = default_val;
+				return TPBRT_ERROR_NONE;
+			}
 
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
@@ -1527,8 +1543,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_point2(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_point2_t* const out_val) {
-		return tpbrt_params_list_get_vec2(params_list, param_name, out_val);
+	  const tpbrt_point2_t default_val, tpbrt_point2_t* const out_val) {
+		return tpbrt_params_list_get_vec2(params_list, param_name, default_val, out_val);
 	}
 
 #pragma endregion
@@ -1566,11 +1582,16 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_vec3(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_vec3_t* const out_val) {
+	  const tpbrt_vec3_t default_val, tpbrt_vec3_t* const out_val) {
 			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_param_t* param;
 		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				*out_val = default_val;
+				return TPBRT_ERROR_NONE;
+			}
 
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
@@ -1588,8 +1609,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_vec(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_vec_t* const out_val) {
-		return tpbrt_params_list_get_vec3(params_list, param_name, out_val);
+	  const tpbrt_vec_t default_val, tpbrt_vec_t* const out_val) {
+		return tpbrt_params_list_get_vec3(params_list, param_name, default_val, out_val);
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_point3s(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
@@ -1603,8 +1624,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_point3(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_point3_t* const out_val) {
-		return tpbrt_params_list_get_vec3(params_list, param_name, out_val);
+	  const tpbrt_point3_t default_val, tpbrt_point3_t* const out_val) {
+		return tpbrt_params_list_get_vec3(params_list, param_name, default_val, out_val);
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_points(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
@@ -1618,8 +1639,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_point(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_point_t* const out_val) {
-		return tpbrt_params_list_get_point3(params_list, param_name, out_val);
+	  const tpbrt_point_t default_val, tpbrt_point_t* const out_val) {
+		return tpbrt_params_list_get_point3(params_list, param_name, default_val, out_val);
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_normal3s(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
@@ -1633,8 +1654,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_normal3(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_normal3_t* const out_val) {
-		return tpbrt_params_list_get_vec3(params_list, param_name, out_val);
+	  const tpbrt_normal3_t default_val, tpbrt_normal3_t* const out_val) {
+		return tpbrt_params_list_get_vec3(params_list, param_name, default_val, out_val);
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_normals(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
@@ -1648,8 +1669,8 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_normal(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  tpbrt_normal_t* const out_val) {
-		return tpbrt_params_list_get_normal3(params_list, param_name, out_val);
+	  const tpbrt_normal_t default_val, tpbrt_normal_t* const out_val) {
+		return tpbrt_params_list_get_normal3(params_list, param_name, default_val, out_val);
 	}
 
 #pragma endregion
@@ -1657,14 +1678,20 @@ extern "C" {
 #pragma region TEXTURE
 
 	tpbrt_error_t tpbrt_params_list_get_texture(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  const tpbrt_textures_list_t textures_list, tpbrt_texture_handle_t* const out_val) {
+	  const tpbrt_textures_list_t textures_list, const tpbrt_texture_handle_t default_val,
+	  tpbrt_texture_handle_t* const out_val) {
 			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_param_t* param;
 		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
 
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				*out_val = default_val;
+				return TPBRT_ERROR_NONE;
+			}
+
 			if (err != TPBRT_ERROR_NONE) {
-				out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
+				*out_val = TPBRT_TEXTURE_HANDLE_INVALID;
 				return err;
 			}
 
@@ -1672,14 +1699,20 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_params_list_get_texture_of_type(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
-	  const tpbrt_textures_list_t textures_list, const tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* const out_val) {
+	  const tpbrt_textures_list_t textures_list, const tpbrt_texture_type_t texture_type,
+	  const tpbrt_texture_handle_t default_val, tpbrt_texture_handle_t* const out_val) {
 			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		const tpbrt_param_t* param;
 		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
 
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				*out_val = default_val;
+				return TPBRT_ERROR_NONE;
+			}
+
 			if (err != TPBRT_ERROR_NONE) {
-				out_val->value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_NONE;
+				*out_val = TPBRT_TEXTURE_HANDLE_INVALID;
 				return err;
 			}
 

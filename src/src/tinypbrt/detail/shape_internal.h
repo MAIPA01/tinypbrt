@@ -19,7 +19,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_shape_curve_type_from_string(tpbrt_string_t type_str, tpbrt_shape_curve_type_t* type);
 
 	tpbrt_error_t tpbrt_shape_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_textures_list_t textures,
-	  const tpbrt_mat4_animated_t* ctm, tpbrt_material_handle_t material_handle, tpbrt_area_light_handle_t area_light_handle,
+	  tpbrt_transform_animated_t transform, tpbrt_material_handle_t material_handle, tpbrt_area_light_handle_t area_light_handle,
 	  tpbrt_media_handle_t interior_media_handle, tpbrt_media_handle_t exterior_media_handle, tpbrt_bool_t reverse_orientation,
 	  tpbrt_shape_t* shape);
 	void tpbrt_shape_free(tpbrt_shape_t* shape);

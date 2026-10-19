@@ -83,10 +83,10 @@ extern "C" {
 		static const tpbrt_string_t LIGHT_SAMPLER_STR = TPBRT_STRING("lightsampler");
 
 		tpbrt_string_t sampler_str;
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, LIGHT_SAMPLER_STR, &sampler_str);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, LIGHT_SAMPLER_STR, TPBRT_EMPTY_STRING, &sampler_str);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) {
+			if (tpbrt_string_empty(sampler_str) == TPBRT_TRUE) {
 				*light_sampler = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
 				return TPBRT_ERROR_NONE;
 			}

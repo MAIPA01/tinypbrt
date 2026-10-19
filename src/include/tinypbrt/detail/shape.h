@@ -106,11 +106,13 @@ extern "C" {
 
 	typedef struct tpbrt_shape_t {
 		tpbrt_texture_handle_t alpha;
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_animated_t transform;
 		tpbrt_material_handle_t material;
 		tpbrt_area_light_handle_t area_light;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
+		tpbrt_shape_type_t type			 : 4;
+		tpbrt_bool_t reverse_orientation : 1;
 
 		union {
 			tpbrt_shape_bilinear_mesh_params_t bilinear_mesh;
@@ -122,9 +124,6 @@ extern "C" {
 			tpbrt_shape_ply_mesh_params_t ply_mesh;
 			tpbrt_shape_loop_subdiv_params_t loop_subdiv;
 		} as;
-
-		tpbrt_shape_type_t type			 : 4;
-		tpbrt_bool_t reverse_orientation : 1;
 	} tpbrt_shape_t;
 
 	typedef struct tpbrt_shapes_list_t {

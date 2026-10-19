@@ -8,15 +8,16 @@
 #include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/math.h>
+#include <tinypbrt/detail/transform.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 	typedef enum tpbrt_texture_handle_value_type_t : uint8_t {
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE	 = 0,
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM = 1,
-		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_MAX_NUM	 = 2,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX = 0,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM	= 1,
+		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_MAX_NUM		= 2,
 	} tpbrt_texture_handle_value_type_t;
 
 	typedef struct tpbrt_texture_handle_t {
@@ -28,9 +29,9 @@ extern "C" {
 		tpbrt_texture_handle_value_type_t value_type : 2;
 	} tpbrt_texture_handle_t;
 
-#define TPBRT_TEXTURE_HANDLE_INVALID                                                                       \
-	(tpbrt_texture_handle_t) {                                                                             \
-		.as.texture_idx = TPBRT_TEXTURE_IDX_INVALID, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE \
+#define TPBRT_TEXTURE_HANDLE_INVALID                                                                           \
+	(tpbrt_texture_handle_t) {                                                                                 \
+		.as.texture_idx = TPBRT_TEXTURE_IDX_INVALID, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX \
 	}
 
 	typedef enum tpbrt_texture_type_t : uint8_t {
@@ -87,7 +88,7 @@ extern "C" {
 	typedef struct tpbrt_texture_fbm_params_t {
 		tpbrt_uint_t octaves;
 		tpbrt_float_t roughness;
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_handle_t transform;
 	} tpbrt_texture_fbm_params_t;
 
 	typedef tpbrt_texture_fbm_params_t tpbrt_texture_wrinkled_params_t;
@@ -167,11 +168,11 @@ extern "C" {
 	} tpbrt_texture_mapping_uv_params_t;
 
 	typedef struct tpbrt_texture_mapping_spherical_params_t {
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_handle_t transform;
 	} tpbrt_texture_mapping_spherical_params_t;
 
 	typedef struct tpbrt_texture_mapping_cylindrical_params_t {
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_handle_t transform;
 	} tpbrt_texture_mapping_cylindrical_params_t;
 
 	typedef struct tpbrt_texture_mapping_planar_params_t {
@@ -183,6 +184,9 @@ extern "C" {
 
 	typedef struct tpbrt_texture_t {
 		tpbrt_texture_idx_t idx;
+		tpbrt_texture_type_t type		: 2;
+		tpbrt_texture_class_t tex_class : 4;
+		tpbrt_texture_mapping_t mapping : 3;
 		tpbrt_string_t name;
 
 		union {
@@ -207,10 +211,6 @@ extern "C" {
 			tpbrt_texture_ptex_params_t ptex;
 			tpbrt_texture_scale_params_t scale;
 		} as;
-
-		tpbrt_texture_type_t type		: 2;
-		tpbrt_texture_class_t tex_class : 4;
-		tpbrt_texture_mapping_t mapping : 3;
 	} tpbrt_texture_t;
 
 	typedef struct tpbrt_textures_list_t {

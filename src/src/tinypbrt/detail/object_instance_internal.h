@@ -13,7 +13,7 @@ extern "C" {
 #pragma region OBJECT_INSTANCE
 
 	tpbrt_error_t tpbrt_object_instance_init(tpbrt_string_t object_name, tpbrt_objects_list_t objects,
-	  const tpbrt_mat4_animated_t* ctm, tpbrt_object_instance_t* instance);
+	  tpbrt_transform_animated_t transform, tpbrt_object_instance_t* instance);
 	void tpbrt_object_instance_free(tpbrt_object_instance_t* instance);
 
 #pragma endregion

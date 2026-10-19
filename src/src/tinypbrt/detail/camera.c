@@ -6,6 +6,7 @@
 #include <tinypbrt/detail/film_internal.h>
 #include <tinypbrt/detail/math_internal.h>
 #include <tinypbrt/detail/param_internal.h>
+#include <tinypbrt/detail/transform_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -161,8 +162,8 @@ extern "C" {
 		static const tpbrt_string_t FOCUS_DISTANCE_STR	  = TPBRT_STRING("focusdistance");
 		static const tpbrt_string_t APERTURE_STR		  = TPBRT_STRING("aperture");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, LENS_FILE_STR, &realistic_params->lens_file);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, LENS_FILE_STR, TPBRT_EMPTY_STRING, &realistic_params->lens_file);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_float(params, APERTURE_DIAMETER_STR, 1.0f, &realistic_params->aperture_diameter);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -172,10 +173,10 @@ extern "C" {
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		tpbrt_string_t aperture_val;
-		err = tpbrt_params_list_get_string(params, APERTURE_STR, &aperture_val);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_string(params, APERTURE_STR, TPBRT_EMPTY_STRING, &aperture_val);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) {
+			if (tpbrt_string_empty(aperture_val) == TPBRT_TRUE) {
 				realistic_params->aperture.type		  = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN;
 				realistic_params->aperture.as.builtin = TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_CIRCULAR;
 				return TPBRT_ERROR_NONE;
@@ -185,8 +186,8 @@ extern "C" {
 		err = tpbrt_camera_realistic_aperture_builtin_from_string(aperture_val, &builtin);
 			if (err == TPBRT_ERROR_NONE) {
 				tpbrt_string_free(&aperture_val);
-				realistic_params->aperture.as.builtin = builtin;
 				realistic_params->aperture.type		  = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN;
+				realistic_params->aperture.as.builtin = builtin;
 				return TPBRT_ERROR_NONE;
 			}
 
@@ -203,10 +204,10 @@ extern "C" {
 		static const tpbrt_string_t MAPPING_STR = TPBRT_STRING("mapping");
 
 		tpbrt_string_t mapping_val;
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, MAPPING_STR, &mapping_val);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, MAPPING_STR, TPBRT_EMPTY_STRING, &mapping_val);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) {
+			if (tpbrt_string_empty(mapping_val) == TPBRT_TRUE) {
 				spherical_params->mapping = TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA;
 				return TPBRT_ERROR_NONE;
 			}
@@ -278,19 +279,33 @@ extern "C" {
 		tpbrt_params_list_free(&info->params);
 	}
 
-	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* const info, const tpbrt_film_t* const film,
-	  tpbrt_camera_t* const camera) {
-			if (camera == TPBRT_NULL || film == TPBRT_NULL || info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* const info, tpbrt_transforms_list_t* const transforms,
+	  const tpbrt_film_t* const film, tpbrt_camera_t* const camera) {
+			if (camera == TPBRT_NULL || film == TPBRT_NULL || info == TPBRT_NULL || transforms == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
 
 			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		camera->transform							 = info->camera_to_world;
-		camera->interior_media_handle				 = info->interior_media_handle;
-		camera->exterior_media_handle				 = info->exterior_media_handle;
-		camera->type								 = info->type;
+		camera->interior_media_handle = info->interior_media_handle;
+		camera->exterior_media_handle = info->exterior_media_handle;
+		camera->type				  = info->type;
+
+		tpbrt_error_t err =
+		  tpbrt_transforms_list_append(transforms, &info->camera_to_world.start, &camera->transform.start_transform);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_free(camera);
+				return err;
+			}
+
+		err = tpbrt_transforms_list_append(transforms, &info->camera_to_world.end, &camera->transform.end_transform);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_free(camera);
+				return err;
+			}
 
 		static const tpbrt_string_t SHUTTER_OPEN_STR = TPBRT_STRING("shutteropen");
-		tpbrt_error_t err = tpbrt_params_list_get_float(info->params, SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
+		err = tpbrt_params_list_get_float(info->params, SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_camera_free(camera);
 				return err;

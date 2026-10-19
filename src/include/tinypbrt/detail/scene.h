@@ -20,6 +20,7 @@
 #include <tinypbrt/detail/sampler.h>
 #include <tinypbrt/detail/shape.h>
 #include <tinypbrt/detail/texture.h>
+#include <tinypbrt/detail/transform.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +45,7 @@ extern "C" {
 		tpbrt_shapes_list_t shapes;
 		tpbrt_objects_list_t objects;
 		tpbrt_objects_instances_list_t instances;
+		tpbrt_transforms_list_t transforms;
 	} tpbrt_scene_t;
 
 	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene);

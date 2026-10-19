@@ -11,12 +11,12 @@ extern "C" {
 #pragma region OBJECT_INSTANCE
 
 	tpbrt_error_t tpbrt_object_instance_init(const tpbrt_string_t object_name, const tpbrt_objects_list_t objects,
-	  const tpbrt_mat4_animated_t* const ctm, tpbrt_object_instance_t* const instance) {
-			if (ctm == TPBRT_NULL || instance == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	  const tpbrt_transform_animated_t transform, tpbrt_object_instance_t* const instance) {
+			if (instance == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(instance, 0, sizeof(tpbrt_object_instance_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		instance->transform		= *ctm;
+		instance->transform		= transform;
 
 		const tpbrt_error_t err = tpbrt_objects_list_get_handle(objects, object_name, &instance->object);
 			if (err != TPBRT_ERROR_NONE) {

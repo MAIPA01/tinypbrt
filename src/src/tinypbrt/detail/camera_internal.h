@@ -36,7 +36,8 @@ extern "C" {
 
 	void tpbrt_camera_create_info_free(tpbrt_camera_create_info_t* info);
 
-	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* info, const tpbrt_film_t* film, tpbrt_camera_t* camera);
+	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* info, tpbrt_transforms_list_t* transforms,
+	  const tpbrt_film_t* film, tpbrt_camera_t* camera);
 
 	void tpbrt_camera_free(tpbrt_camera_t* camera);
 

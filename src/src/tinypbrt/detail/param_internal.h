@@ -43,7 +43,7 @@ extern "C" {
 	typedef struct tpbrt_param_t {
 		tpbrt_string_t name;
 		tpbrt_string_t value;
-		tpbrt_param_type_t type				: 4;
+		tpbrt_param_type_t type				: 5;
 		tpbrt_param_value_type_t value_type : 2;
 	} tpbrt_param_t;
 
@@ -180,7 +180,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_params_list_get_strings_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_string_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_string(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_string_t* out_val);
+	  tpbrt_string_t default_val, tpbrt_string_t* out_val);
 #pragma endregion
 
 #pragma region BOOL
@@ -226,7 +226,8 @@ extern "C" {
 	  tpbrt_rgb_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_rgbs_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_rgb_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_rgb(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_rgb_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_rgb(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_rgb_t default_val,
+	  tpbrt_rgb_t* out_val);
 #pragma endregion
 
 #pragma region WAVELENGTH
@@ -238,7 +239,7 @@ extern "C" {
 
 #pragma region SPECTRUM
 	tpbrt_error_t tpbrt_params_list_get_spectrum(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_spectrum_t* out_val);
+	  tpbrt_spectrum_t default_val, tpbrt_spectrum_t* out_val);
 #pragma endregion
 
 #pragma region VEC2
@@ -246,14 +247,15 @@ extern "C" {
 	  tpbrt_vec2_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_vec2s_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_vec2_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_vec2(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec2_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_vec2(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec2_t default_val,
+	  tpbrt_vec2_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_point2s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point2_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_point2s_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_point2_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_point2(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_point2_t* out_val);
+	  tpbrt_point2_t default_val, tpbrt_point2_t* out_val);
 #pragma endregion
 
 #pragma region VEC3
@@ -261,47 +263,51 @@ extern "C" {
 	  tpbrt_vec3_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_vec3s_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_vec3_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_vec3(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec3_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_vec3(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec3_t default_val,
+	  tpbrt_vec3_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_vecs(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_vec_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_vecs_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_vec_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_vec(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_vec(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_vec_t default_val,
+	  tpbrt_vec_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_point3s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point3_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_point3s_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_point3_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_point3(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_point3_t* out_val);
+	  tpbrt_point3_t default_val, tpbrt_point3_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_points(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_point_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_points_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_point_array_t* out_vals);
-	tpbrt_error_t tpbrt_params_list_get_point(tpbrt_params_list_t params_list, tpbrt_string_t param_name, tpbrt_point_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_point(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
+	  tpbrt_point_t default_val, tpbrt_point_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_normal3s(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_normal3_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_normal3s_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_normal3_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_normal3(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_normal3_t* out_val);
+	  tpbrt_normal3_t default_val, tpbrt_normal3_t* out_val);
 
 	tpbrt_error_t tpbrt_params_list_get_normals(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_normal_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_normals_of_size(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_size_t desired_size, tpbrt_normal_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_normal(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_normal_t* out_val);
+	  tpbrt_normal_t default_val, tpbrt_normal_t* out_val);
 #pragma endregion
 
 #pragma region TEXTURE
 	tpbrt_error_t tpbrt_params_list_get_texture(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_textures_list_t textures_list, tpbrt_texture_handle_t* out_val);
+	  tpbrt_textures_list_t textures_list, tpbrt_texture_handle_t default_val, tpbrt_texture_handle_t* out_val);
 	tpbrt_error_t tpbrt_params_list_get_texture_of_type(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
-	  tpbrt_textures_list_t textures_list, tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t* out_val);
+	  tpbrt_textures_list_t textures_list, tpbrt_texture_type_t texture_type, tpbrt_texture_handle_t default_val,
+	  tpbrt_texture_handle_t* out_val);
 #pragma endregion
 #pragma endregion
 

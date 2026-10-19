@@ -129,13 +129,14 @@ extern "C" {
 			if (gbuffer == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		tpbrt_string_t coordinate_system_str;
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, TPBRT_FILM_GBUFFER_COORD_SYS_STR, &coordinate_system_str);
-			if (err == TPBRT_ERROR_NOT_FOUND) {
+		tpbrt_error_t err =
+		  tpbrt_params_list_get_string(params, TPBRT_FILM_GBUFFER_COORD_SYS_STR, TPBRT_EMPTY_STRING, &coordinate_system_str);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+			if (tpbrt_string_empty(coordinate_system_str) == TPBRT_TRUE) {
 				gbuffer->coordinate_system = TPBRT_FILM_GBUFFER_COORD_SYS_DEFAULT;
 				return TPBRT_ERROR_NONE;
 			}
-
-			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		tpbrt_coord_system_type_t coordinate_system;
 		err = tpbrt_coord_system_type_from_string(coordinate_system_str, &coordinate_system);
@@ -251,12 +252,12 @@ extern "C" {
 				return err;
 			}
 
-		err = tpbrt_params_list_get_string(params, TPBRT_FILM_FILE_NAME_STR, &film->file_name);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
+		err = tpbrt_params_list_get_string(params, TPBRT_FILM_FILE_NAME_STR, TPBRT_EMPTY_STRING, &film->file_name);
+			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_film_free(film);
 				return err;
 			}
-			if (err == TPBRT_ERROR_NOT_FOUND) {
+			if (tpbrt_string_empty(film->file_name) == TPBRT_TRUE) {
 				err = tpbrt_string_copy(&film->file_name, TPBRT_FILM_FILE_NAME_DEFAULT);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_film_free(film);
@@ -286,12 +287,12 @@ extern "C" {
 			}
 
 		tpbrt_string_t sensor_str;
-		err = tpbrt_params_list_get_string(params, TPBRT_FILM_SENSOR_STR, &sensor_str);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
+		err = tpbrt_params_list_get_string(params, TPBRT_FILM_SENSOR_STR, TPBRT_EMPTY_STRING, &sensor_str);
+			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_film_free(film);
 				return err;
 			}
-			if (err == TPBRT_ERROR_NOT_FOUND) { film->sensor = TPBRT_FILM_SENSOR_DEFAULT; }
+			if (tpbrt_string_empty(sensor_str) == TPBRT_TRUE) { film->sensor = TPBRT_FILM_SENSOR_DEFAULT; }
 			else {
 				tpbrt_film_sensor_t sensor;
 				err = tpbrt_film_sensor_from_string(sensor_str, &sensor);

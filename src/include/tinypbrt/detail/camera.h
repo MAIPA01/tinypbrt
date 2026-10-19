@@ -79,7 +79,7 @@ extern "C" {
 	typedef struct tpbrt_camera_t {
 		tpbrt_float_t shutter_open;
 		tpbrt_float_t shutter_close;
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_animated_t transform;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
 

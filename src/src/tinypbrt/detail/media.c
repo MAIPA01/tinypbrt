@@ -57,25 +57,17 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, G_STR, 0.0f, &cloud->g);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point3(params, P0_STR, &cloud->p0);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_point3(params, P0_STR, TPBRT_VEC3(0.0f, 0.0f, 0.0f), &cloud->p0);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->p0 = TPBRT_VEC3(0.0f, 0.0f, 0.0f); }
+		err = tpbrt_params_list_get_point3(params, P1_STR, TPBRT_VEC3(1.0f, 1.0f, 1.0f), &cloud->p1);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point3(params, P1_STR, &cloud->p1);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &cloud->sigma_a);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->p1 = TPBRT_VEC3(1.0f, 1.0f, 1.0f); }
-
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &cloud->sigma_a);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->sigma_a = TPBRT_SPECTRUM_CONSTANT(1.0f); }
-
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &cloud->sigma_s);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { cloud->sigma_s = TPBRT_SPECTRUM_CONSTANT(1.0f); }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &cloud->sigma_s);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		return tpbrt_params_list_get_float(params, WISPINESS_STR, 1.0f, &cloud->wispiness);
 	}
@@ -95,26 +87,20 @@ extern "C" {
 		tpbrt_error_t err						 = tpbrt_params_list_get_float(params, G_STR, 0.0f, &homogeneous->g);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_spectrum(params, LE_STR, &homogeneous->Le);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->Le = TPBRT_SPECTRUM_CONSTANT(0.0f); }
+		err = tpbrt_params_list_get_spectrum(params, LE_STR, TPBRT_SPECTRUM_CONSTANT(0.0f), &homogeneous->Le);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_float(params, LE_SCALE_STR, 1.0f, &homogeneous->Le_scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_string(params, PRESET_STR, &homogeneous->preset);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_string(params, PRESET_STR, TPBRT_EMPTY_STRING, &homogeneous->preset);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &homogeneous->sigma_a);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &homogeneous->sigma_a);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->sigma_a = TPBRT_SPECTRUM_CONSTANT(1.0f); }
-
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &homogeneous->sigma_s);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { homogeneous->sigma_s = TPBRT_SPECTRUM_CONSTANT(1.0f); }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &homogeneous->sigma_s);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		return tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &homogeneous->scale);
 	}
@@ -138,21 +124,17 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, LE_SCALE_STR, 1.0f, &nano_vdb->Le_scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &nano_vdb->sigma_a);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &nano_vdb->sigma_a);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { nano_vdb->sigma_a = TPBRT_SPECTRUM_CONSTANT(1.0f); }
-
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &nano_vdb->sigma_s);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { nano_vdb->sigma_s = TPBRT_SPECTRUM_CONSTANT(1.0f); }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &nano_vdb->sigma_s);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &nano_vdb->scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_string(params, FILE_NAME_STR, &nano_vdb->file_name);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &nano_vdb->file_name);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_float(params, TEMPERATURE_OFFSET_STR, 0.0f, &nano_vdb->temperature_offset);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -185,15 +167,11 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, LE_SCALE_STR, 1.0f, &rgb_grid->Le_scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point3(params, P0_STR, &rgb_grid->p0);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_point3(params, P0_STR, TPBRT_VEC3(0.0f, 0.0f, 0.0f), &rgb_grid->p0);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { rgb_grid->p0 = TPBRT_VEC3(0.0f, 0.0f, 0.0f); }
-
-		err = tpbrt_params_list_get_point3(params, P1_STR, &rgb_grid->p1);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { rgb_grid->p1 = TPBRT_VEC3(1.0f, 1.0f, 1.0f); }
+		err = tpbrt_params_list_get_point3(params, P1_STR, TPBRT_VEC3(1.0f, 1.0f, 1.0f), &rgb_grid->p1);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_rgbs(params, SIGMA_A_STR, &rgb_grid->sigma_a);
 			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
@@ -249,23 +227,17 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, G_STR, 0.0f, &uniform_grid->g);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_spectrum(params, LE_STR, &uniform_grid->Le);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->Le = TPBRT_SPECTRUM_CONSTANT(0.0f); }
+		err = tpbrt_params_list_get_spectrum(params, LE_STR, TPBRT_SPECTRUM_CONSTANT(0.0f), &uniform_grid->Le);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_float(params, LE_SCALE_STR, 1.0f, &uniform_grid->Le_scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point3(params, P0_STR, &uniform_grid->p0);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_point3(params, P0_STR, TPBRT_VEC3(0.0f, 0.0f, 0.0f), &uniform_grid->p0);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->p0 = TPBRT_VEC3(0.0f, 0.0f, 0.0f); }
-
-		err = tpbrt_params_list_get_point3(params, P1_STR, &uniform_grid->p1);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->p1 = TPBRT_VEC3(1.0f, 1.0f, 1.0f); }
+		err = tpbrt_params_list_get_point3(params, P1_STR, TPBRT_VEC3(1.0f, 1.0f, 1.0f), &uniform_grid->p1);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_uint(params, NX_STR, 1u, &uniform_grid->nx);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -276,18 +248,14 @@ extern "C" {
 		err = tpbrt_params_list_get_uint(params, NZ_STR, 1u, &uniform_grid->nz);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_string(params, PRESET_STR, &uniform_grid->preset);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_string(params, PRESET_STR, TPBRT_EMPTY_STRING, &uniform_grid->preset);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &uniform_grid->sigma_a);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &uniform_grid->sigma_a);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->sigma_a = TPBRT_SPECTRUM_CONSTANT(1.0f); }
-
-		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &uniform_grid->sigma_s);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { uniform_grid->sigma_s = TPBRT_SPECTRUM_CONSTANT(1.0f); }
+		err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, TPBRT_SPECTRUM_CONSTANT(1.0f), &uniform_grid->sigma_s);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &uniform_grid->scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -302,12 +270,12 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_media_init(const tpbrt_string_t name, const tpbrt_string_t type_str, const tpbrt_params_list_t params,
-	  const tpbrt_mat4_animated_t* const ctm, tpbrt_media_t* const media) {
-			if (media == TPBRT_NULL || ctm == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	  const tpbrt_transform_handle_t transform, tpbrt_media_t* const media) {
+			if (media == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(media, 0, sizeof(tpbrt_media_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		media->transform  = *ctm;
+		media->transform  = transform;
 
 		tpbrt_error_t err = tpbrt_string_copy(&media->name, name);
 			if (err != TPBRT_ERROR_NONE) {
@@ -319,10 +287,14 @@ extern "C" {
 		tpbrt_bool_t owns_temp_string = TPBRT_FALSE;
 			if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) {
 				static const tpbrt_string_t TYPE_STR = TPBRT_STRING("type");
-				err									 = tpbrt_params_list_get_string(params, TYPE_STR, &temp_string);
+				err = tpbrt_params_list_get_string(params, TYPE_STR, TPBRT_EMPTY_STRING, &temp_string);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_media_free(media);
 						return err;
+					}
+					if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) {
+						tpbrt_media_free(media);
+						return TPBRT_ERROR_NOT_FOUND;
 					}
 				owns_temp_string = TPBRT_TRUE;
 			}
@@ -430,7 +402,7 @@ extern "C" {
 #pragma endregion
 
 #pragma region MEDIAS_LIST
-#define TPBRT_EMPTY_MEDIAS_LIST (tpbrt_medias_list_t) { .medias = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_MEDIAS_LIST (tpbrt_medias_list_t) { .medias = TPBRT_NULL, .count = 0u }
 
 	tpbrt_error_t tpbrt_medias_list_init(tpbrt_medias_list_t* const medias_list) {
 			if (medias_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -455,10 +427,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_medias_list_get(const tpbrt_medias_list_t medias_list, const tpbrt_string_t media_name,
 	  const tpbrt_media_t** const media) {
-			if (media == TPBRT_NULL) {
-				*media = TPBRT_NULL;
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (media == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			for (tpbrt_size_t i = 0; i < medias_list.count; i++) {
 					if (tpbrt_string_equals(medias_list.medias[i].name, media_name)) {
@@ -489,14 +458,14 @@ extern "C" {
 	void tpbrt_medias_list_free(tpbrt_medias_list_t* const medias_list) {
 			if (medias_list == TPBRT_NULL || medias_list->medias == TPBRT_NULL) { return; }
 
-			for (tpbrt_size_t i = 0; i < medias_list->count; ++i) { tpbrt_media_free(medias_list->medias + i); }
+			for (tpbrt_size_t i = 0u; i < medias_list->count; ++i) { tpbrt_media_free(medias_list->medias + i); }
 
 		free(medias_list->medias);
 		*medias_list = TPBRT_EMPTY_MEDIAS_LIST;
 	}
 
 	tpbrt_bool_t tpbrt_medias_list_empty(const tpbrt_medias_list_t medias_list) {
-		return medias_list.medias == TPBRT_NULL || medias_list.count == 0;
+		return medias_list.medias == TPBRT_NULL || medias_list.count == 0u;
 	}
 
 #pragma endregion

@@ -73,10 +73,10 @@ extern "C" {
 		static const tpbrt_string_t RANDOMIZATION_STR = TPBRT_STRING("randomization");
 
 		tpbrt_string_t random_str;
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, RANDOMIZATION_STR, &random_str);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, RANDOMIZATION_STR, TPBRT_EMPTY_STRING, &random_str);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) {
+			if (tpbrt_string_empty(random_str) == TPBRT_TRUE) {
 				*randomization = default_random;
 				return TPBRT_ERROR_NONE;
 			}

@@ -8,6 +8,7 @@
 #include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/error.h>
 #include <tinypbrt/detail/math.h>
+#include <tinypbrt/detail/transform.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -89,8 +90,9 @@ extern "C" {
 
 	typedef struct tpbrt_media_t {
 		tpbrt_media_idx_t idx;
+		tpbrt_media_type_t type : 3;
 		tpbrt_string_t name;
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_handle_t transform;
 
 		union {
 			tpbrt_media_cloud_params_t cloud;
@@ -99,8 +101,6 @@ extern "C" {
 			tpbrt_media_rgb_grid_params_t rgb_grid;
 			tpbrt_media_nano_vdb_params_t nano_vdb;
 		} as;
-
-		tpbrt_media_type_t type : 3;
 	} tpbrt_media_t;
 
 	typedef struct tpbrt_media_handle_t {

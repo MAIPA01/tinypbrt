@@ -228,6 +228,11 @@ extern "C" {
 			}
 	}
 
+	tpbrt_bool_t tpbrt_mat4_equals(const tpbrt_mat4_t* const a, const tpbrt_mat4_t* const b) {
+			if (a == TPBRT_NULL || b == TPBRT_NULL) { return TPBRT_FALSE; }
+		return memcmp(a, b, sizeof(tpbrt_mat4_t)) == 0 ? TPBRT_TRUE : TPBRT_FALSE;
+	}
+
 	void tpbrt_bool_array_free(tpbrt_bool_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
 

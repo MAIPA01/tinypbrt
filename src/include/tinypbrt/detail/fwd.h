@@ -36,8 +36,8 @@ extern "C" {
 	typedef size_t tpbrt_size_t;
 	typedef long tpbrt_long_t;
 
-	typedef tpbrt_size_t tpbrt_idx_t;
-#define TPBRT_IDX_INVALID ~(tpbrt_idx_t)0
+	typedef tpbrt_uint_t tpbrt_idx_t;
+#define TPBRT_IDX_INVALID (~(tpbrt_idx_t)0)
 
 	typedef struct tpbrt_opt_float_t tpbrt_opt_float_t;
 
@@ -68,6 +68,17 @@ extern "C" {
 
 	typedef struct tpbrt_mat4_t tpbrt_mat4_t;
 	typedef struct tpbrt_mat4_animated_t tpbrt_mat4_animated_t;
+#pragma endregion
+
+#pragma region TRANSFORM
+	typedef tpbrt_idx_t tpbrt_transform_idx_t;
+#define TPBRT_TRANSFORM_IDX_INVALID TPBRT_IDX_INVALID
+
+	typedef struct tpbrt_transform_handle_t tpbrt_transform_handle_t;
+
+	typedef struct tpbrt_transform_animated_t tpbrt_transform_animated_t;
+
+	typedef struct tpbrt_transforms_list_t tpbrt_transforms_list_t;
 #pragma endregion
 
 #pragma region TEXTURE

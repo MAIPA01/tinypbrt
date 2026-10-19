@@ -14,7 +14,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_light_source_type_from_string(tpbrt_string_t type_str, tpbrt_light_source_type_t* type);
 
 	tpbrt_error_t tpbrt_light_source_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_color_space_t color_space,
-	  const tpbrt_mat4_animated_t* ctm, tpbrt_media_handle_t interior_media_handle, tpbrt_media_handle_t exterior_media_handle,
+	  tpbrt_transform_handle_t transform, tpbrt_media_handle_t interior_media_handle, tpbrt_media_handle_t exterior_media_handle,
 	  tpbrt_light_source_t* light_source);
 	void tpbrt_light_source_free(tpbrt_light_source_t* light_source);
 #pragma endregion

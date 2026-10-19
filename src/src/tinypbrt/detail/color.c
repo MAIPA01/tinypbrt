@@ -119,7 +119,7 @@ extern "C" {
 		dst->type = src.type;
 
 			switch (src.type) {
-				case TPBRT_SPECTRUM_TYPE_WAVELENGTH: {
+				case TPBRT_SPECTRUM_TYPE_WAVELENGTHS: {
 					const tpbrt_error_t err = tpbrt_wavelengths_array_copy(&dst->as.wavelengths, src.as.wavelengths);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					break;
@@ -157,7 +157,7 @@ extern "C" {
 			if (spectrum == TPBRT_NULL) { return; }
 
 			switch (spectrum->type) {
-				case TPBRT_SPECTRUM_TYPE_WAVELENGTH: {
+				case TPBRT_SPECTRUM_TYPE_WAVELENGTHS: {
 					tpbrt_wavelength_array_free(&spectrum->as.wavelengths);
 					break;
 				}

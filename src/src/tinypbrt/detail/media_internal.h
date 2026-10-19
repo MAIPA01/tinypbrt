@@ -14,7 +14,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_media_type_from_string(tpbrt_string_t type_str, tpbrt_media_type_t* type);
 
 	tpbrt_error_t tpbrt_media_init(tpbrt_string_t name, tpbrt_string_t type_str, tpbrt_params_list_t params,
-	  const tpbrt_mat4_animated_t* ctm, tpbrt_media_t* media);
+	  tpbrt_transform_handle_t transform, tpbrt_media_t* media);
 	void tpbrt_media_free(tpbrt_media_t* media);
 #pragma endregion
 

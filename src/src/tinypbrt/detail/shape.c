@@ -142,10 +142,10 @@ extern "C" {
 		tpbrt_vec3_array_free(&temp_P);
 
 		tpbrt_string_t temp_string;
-		err = tpbrt_params_list_get_string(params, BASIS_STR, &temp_string);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_string(params, BASIS_STR, TPBRT_EMPTY_STRING, &temp_string);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { curve->basis = TPBRT_SHAPE_CURVE_BASIS_BEZIER; }
+			if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) { curve->basis = TPBRT_SHAPE_CURVE_BASIS_BEZIER; }
 			else {
 				tpbrt_shape_curve_basis_t basis;
 				err = tpbrt_shape_curve_basis_from_string(temp_string, &basis);
@@ -162,10 +162,10 @@ extern "C" {
 
 		curve->degree = (tpbrt_shape_curve_degree_t)temp_uint;
 
-		err			  = tpbrt_params_list_get_string(params, TYPE_STR, &temp_string);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err			  = tpbrt_params_list_get_string(params, TYPE_STR, TPBRT_EMPTY_STRING, &temp_string);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NOT_FOUND) { curve->type = TPBRT_SHAPE_CURVE_TYPE_FLAT; }
+			if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) { curve->type = TPBRT_SHAPE_CURVE_TYPE_FLAT; }
 			else {
 				tpbrt_shape_curve_type_t type;
 				err = tpbrt_shape_curve_type_from_string(temp_string, &type);
@@ -308,11 +308,12 @@ extern "C" {
 		static const tpbrt_string_t DISPLACEMENT_STR = TPBRT_STRING("displacement");
 		static const tpbrt_string_t EDGE_LENGTH_STR	 = TPBRT_STRING("edgelength");
 
-		tpbrt_error_t err							 = tpbrt_params_list_get_string(params, FILE_NAME_STR, &ply_mesh->file_name);
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &ply_mesh->file_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_texture(params, DISPLACEMENT_STR, textures, &ply_mesh->displacement);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
+		err = tpbrt_params_list_get_texture(params, DISPLACEMENT_STR, textures, TPBRT_TEXTURE_HANDLE_INVALID,
+		  &ply_mesh->displacement);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		return tpbrt_params_list_get_float(params, EDGE_LENGTH_STR, 1.0f, &ply_mesh->edge_length);
 	}
@@ -335,14 +336,15 @@ extern "C" {
 	}
 
 	tpbrt_error_t tpbrt_shape_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
-	  const tpbrt_textures_list_t textures, const tpbrt_mat4_animated_t* const ctm, const tpbrt_material_handle_t material_handle,
-	  const tpbrt_area_light_handle_t area_light_handle, const tpbrt_media_handle_t interior_media_handle,
-	  const tpbrt_media_handle_t exterior_media_handle, const tpbrt_bool_t reverse_orientation, tpbrt_shape_t* const shape) {
+	  const tpbrt_textures_list_t textures, const tpbrt_transform_animated_t transform,
+	  const tpbrt_material_handle_t material_handle, const tpbrt_area_light_handle_t area_light_handle,
+	  const tpbrt_media_handle_t interior_media_handle, const tpbrt_media_handle_t exterior_media_handle,
+	  const tpbrt_bool_t reverse_orientation, tpbrt_shape_t* const shape) {
 			if (shape == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(shape, 0, sizeof(tpbrt_shape_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		shape->transform					  = *ctm;
+		shape->transform					  = transform;
 		shape->material						  = material_handle;
 		shape->area_light					  = area_light_handle;
 		shape->interior_media_handle		  = interior_media_handle;
@@ -351,13 +353,12 @@ extern "C" {
 
 		static const tpbrt_string_t ALPHA_STR = TPBRT_STRING("alpha");
 
-		tpbrt_error_t err					  = tpbrt_params_list_get_texture(params, ALPHA_STR, textures, &shape->alpha);
-			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
+		tpbrt_error_t err =
+		  tpbrt_params_list_get_texture(params, ALPHA_STR, textures, TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f), &shape->alpha);
+			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_shape_free(shape);
 				return err;
 			}
-
-			if (err == TPBRT_ERROR_NOT_FOUND) { shape->alpha = TPBRT_TEXTURE_HANDLE_FLOAT(1.0f); }
 
 		tpbrt_shape_type_t type;
 		err = tpbrt_shape_type_from_string(type_str, &type);
@@ -414,6 +415,8 @@ extern "C" {
 	void tpbrt_shape_free(tpbrt_shape_t* const shape) {
 			if (shape == TPBRT_NULL) { return; }
 
+		tpbrt_texture_handle_free(&shape->alpha);
+
 			switch (shape->type) {
 				case TPBRT_SHAPE_TYPE_BILINEAR_MESH: {
 					tpbrt_shape_bilinear_mesh_params_t* const params = &shape->as.bilinear_mesh;
@@ -438,6 +441,7 @@ extern "C" {
 					tpbrt_shape_ply_mesh_params_t* const params = &shape->as.ply_mesh;
 
 					tpbrt_string_free(&params->file_name);
+					tpbrt_texture_handle_free(&params->displacement);
 					break;
 				}
 				case TPBRT_SHAPE_TYPE_LOOP_SUBDIV: {

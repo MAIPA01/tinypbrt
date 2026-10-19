@@ -61,7 +61,7 @@ extern "C" {
 	} tpbrt_light_source_spot_params_t;
 
 	typedef struct tpbrt_light_source_t {
-		tpbrt_mat4_animated_t transform;
+		tpbrt_transform_handle_t transform;
 		tpbrt_opt_float_t power_illuminance;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
@@ -92,6 +92,7 @@ extern "C" {
 
 	typedef struct tpbrt_area_light_t {
 		tpbrt_area_light_idx_t idx;
+		tpbrt_area_light_type_t type : 1;
 
 		union {
 			tpbrt_area_light_diffuse_params_t diffuse;
@@ -99,7 +100,6 @@ extern "C" {
 
 		tpbrt_float_t scale;
 		tpbrt_opt_float_t power;
-		tpbrt_area_light_type_t type : 1;
 	} tpbrt_area_light_t;
 
 	typedef struct tpbrt_area_light_handle_t {

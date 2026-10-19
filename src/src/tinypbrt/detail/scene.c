@@ -25,6 +25,7 @@
 #include <tinypbrt/detail/texture_internal.h>
 #include <tinypbrt/detail/token_internal.h>
 #include <tinypbrt/detail/tokenizer_internal.h>
+#include <tinypbrt/detail/transform_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -582,7 +583,8 @@ extern "C" {
 								}
 
 							tpbrt_camera_free(&out_scene->camera);
-							last_error = tpbrt_camera_init(&camera_create_info, &out_scene->film, &out_scene->camera);
+							last_error = tpbrt_camera_init(&camera_create_info, &out_scene->transforms, &out_scene->film,
+							  &out_scene->camera);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 							camera_created = TPBRT_TRUE;
 
@@ -659,12 +661,21 @@ extern "C" {
 							  current_state.shape_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
+							tpbrt_transform_animated_t transform;
+							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start,
+							  &transform.start_transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
+							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.end,
+							  &transform.end_transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
 							tpbrt_shape_t shape;
 							last_error =
 							  tpbrt_shape_init(element.as.generic_with_params.type_name, element.as.generic_with_params.params,
-								out_scene->textures, &current_state.ctm, current_state.material_handle,
-								current_state.current_area_light, current_state.current_inside_medium,
-								current_state.current_outside_medium, current_state.reverse_orientation, &shape);
+								out_scene->textures, transform, current_state.material_handle, current_state.current_area_light,
+								current_state.current_inside_medium, current_state.current_outside_medium,
+								current_state.reverse_orientation, &shape);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 								if (current_state.active_object != TPBRT_NULL) {
@@ -725,9 +736,18 @@ extern "C" {
 									break;
 								}
 
+							tpbrt_transform_animated_t transform;
+							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start,
+							  &transform.start_transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
+							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.end,
+							  &transform.end_transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
 							tpbrt_object_instance_t inst;
-							last_error = tpbrt_object_instance_init(element.as.named_entity.name, out_scene->objects,
-							  &current_state.ctm, &inst);
+							last_error =
+							  tpbrt_object_instance_init(element.as.named_entity.name, out_scene->objects, transform, &inst);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							last_error = tpbrt_objects_instances_list_append(&out_scene->instances, &inst);
@@ -744,9 +764,14 @@ extern "C" {
 							  current_state.light_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
+							tpbrt_transform_handle_t transform;
+							last_error =
+							  tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start, &transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
 							tpbrt_light_source_t light;
 							last_error = tpbrt_light_source_init(element.as.generic_with_params.type_name,
-							  element.as.generic_with_params.params, current_state.current_color_space, &current_state.ctm,
+							  element.as.generic_with_params.params, current_state.current_color_space, transform,
 							  current_state.current_inside_medium, current_state.current_outside_medium, &light);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
@@ -831,10 +856,14 @@ extern "C" {
 							  tpbrt_params_list_append_missing(&element.as.texture.params, current_state.texture_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
+							tpbrt_transform_handle_t transform;
+							last_error =
+							  tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start, &transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
 							tpbrt_texture_t tex;
 							last_error = tpbrt_texture_init(element.as.texture.name, element.as.texture.type_name,
-							  element.as.texture.class_name, element.as.texture.params, out_scene->textures, &current_state.ctm,
-							  &tex);
+							  element.as.texture.class_name, element.as.texture.params, out_scene->textures, transform, &tex);
 
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
@@ -847,9 +876,14 @@ extern "C" {
 							  tpbrt_params_list_append_missing(&element.as.named_medium.params, current_state.medium_params);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
+							tpbrt_transform_handle_t transform;
+							last_error =
+							  tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start, &transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
 							tpbrt_media_t media;
 							last_error = tpbrt_media_init(element.as.named_medium.name, element.as.named_medium.type,
-							  element.as.named_medium.params, &current_state.ctm, &media);
+							  element.as.named_medium.params, transform, &media);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							last_error = tpbrt_medias_list_append(&out_scene->medias, &media);
@@ -885,7 +919,7 @@ extern "C" {
 			}
 
 			if (last_error == TPBRT_ERROR_NONE && camera_created == TPBRT_FALSE) {
-				last_error = tpbrt_camera_init(&camera_create_info, &out_scene->film, &out_scene->camera);
+				last_error = tpbrt_camera_init(&camera_create_info, &out_scene->transforms, &out_scene->film, &out_scene->camera);
 			}
 		tpbrt_camera_create_info_free(&camera_create_info);
 		tpbrt_string_array_free(&includes);
