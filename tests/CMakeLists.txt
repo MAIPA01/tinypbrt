@@ -19,7 +19,13 @@ endif()
 
 # make exec
 add_executable(${C_TARGET_TEST} ${${C_TARGET_TEST_SOURCES}})
-add_test(${C_TARGET_TEST}_TEST ${C_TARGET_TEST})
+add_test(NAME ${C_TARGET_TEST}_TEST COMMAND ${C_TARGET_TEST})
+
+# gtest 1.17 i testy (std::filesystem) wymagają C++17
+target_compile_features(${C_TARGET_TEST} PRIVATE cxx_std_17)
+
+tinypbrt_enable_sanitizers(${C_TARGET_TEST})
+tinypbrt_set_sanitizers_test_environment(${C_TARGET_TEST}_TEST)
 
 target_link_libraries(${C_TARGET_TEST} PRIVATE   $<IF:$<BOOL:${TINYPBRT_INSTALL_TEST}>, tinypbrt::all, tinypbrt::tinypbrt>
         gtest_main
@@ -46,7 +52,7 @@ target_compile_options(${C_TARGET_TEST} PRIVATE
             /fp:fast
         >
         $<$<CONFIG:Debug>:
-            /RTC1
+            $<$<NOT:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>>:/RTC1>
             /Zi
         >
         /Zc:preprocessor
@@ -81,7 +87,7 @@ target_link_options(${C_TARGET_TEST} PRIVATE
     # GCC/clang with GNU frontend
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>>>:
         $<$<CONFIG:Release>:-flto>
-        -static
+        $<$<NOT:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>>:-static>
     >
     $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
         --coverage

@@ -10,6 +10,9 @@ option(TINYPBRT_BUILD_EXAMPLES				"Build examples"				${PROJECT_IS_TOP_LEVEL})
 
 option(TINYPBRT_ENABLE_CLANG_TIDY 			"Enables clang-tidy checks" 	${PROJECT_IS_TOP_LEVEL})
 
+option(TINYPBRT_ENABLE_SANITIZERS 			"Build tinypbrt and its tests with sanitizers" OFF)
+set(TINYPBRT_SANITIZERS "address;undefined" CACHE STRING "Sanitizers used when TINYPBRT_ENABLE_SANITIZERS=ON (address, undefined, leak, memory, thread)")
+
 option(TINYPBRT_INSTALL 					"Enables installation of this project"						${PROJECT_IS_TOP_LEVEL})
 option(TINYPBRT_INSTALL_TEST				"This is only to test if installation of tinypbrt works" 	OFF)
 
@@ -23,6 +26,7 @@ else()
 	set(BUILD_STATIC_LIBS ON)
 endif()
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sanitizers.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cpm.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party.cmake)
 

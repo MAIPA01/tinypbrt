@@ -66,7 +66,7 @@ target_compile_options(${C_TARGET_NAME} INTERFACE
                 /fp:fast
             >
             $<$<CONFIG:Debug>:
-                /RTC1
+                $<$<NOT:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>>:/RTC1>
                 /Zi
             >
             /Zc:preprocessor
@@ -104,13 +104,17 @@ target_link_options(${C_TARGET_NAME} INTERFACE
         # GCC/clang with GNU frontend
         $<$<OR:$<C_COMPILER_ID:GNU>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>>>:
             $<$<CONFIG:Release>:-flto>
-            -static
+            $<$<NOT:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>>:-static>
         >
         $<BUILD_INTERFACE:$<$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
             --coverage
             -fprofile-instr-generate
         >>
 )
+# endregion
+
+# region SANITIZERS
+tinypbrt_enable_sanitizers(${C_TARGET_NAME})
 # endregion
 
 # region INSTALL

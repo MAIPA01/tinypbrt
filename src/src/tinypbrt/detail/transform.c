@@ -89,7 +89,6 @@ extern "C" {
 				new_buckets[slot] = (tpbrt_transform_idx_t)i;
 			}
 
-		free(builder->buckets);
 		builder->buckets	   = new_buckets;
 		builder->buckets_count = new_buckets_count;
 		return TPBRT_ERROR_NONE;

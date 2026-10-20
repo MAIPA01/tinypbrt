@@ -142,6 +142,58 @@
       "displayName": "x86 Release C++11",
       "description": "Docelowy systemu Windows (32-bitowy). (RelWithDebInfo)",
       "inherits": ["release", "x86-debug-cpp11"]
+    },
+    {
+      "name": "sanitizers",
+      "hidden": true,
+      "cacheVariables": {
+        "TINYPBRT_ENABLE_SANITIZERS": "ON",
+        "TINYPBRT_SANITIZERS": "address;undefined",
+        "TINYPBRT_BUILD_COVERAGE": "OFF",
+        "TINYPBRT_BUILD_BENCHMARK": "OFF"
+      }
+    },
+    {
+      "name": "x64-debug-c11-sanitizers",
+      "displayName": "x64 Debug C11 + ASan/UBSan",
+      "description": "Docelowy system Windows (64-bitowy). (Debug, AddressSanitizer + UndefinedBehaviorSanitizer)",
+      "inherits": ["sanitizers", "x64-debug-c11"]
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "inherits": "cpp-base",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "TINYPBRT_BUILD_DOCUMENTATION": "OFF",
+        "TINYPBRT_BUILD_EXAMPLES": "OFF",
+        "TINYPBRT_ENABLE_CLANG_TIDY": "OFF"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-debug-sanitizers",
+      "displayName": "Linux/macOS Debug + ASan/UBSan/LSan",
+      "inherits": ["sanitizers", "linux-base", "c11", "debug"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "x64-debug-c11-sanitizers",
+      "configurePreset": "x64-debug-c11-sanitizers",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-debug-sanitizers",
+      "configurePreset": "linux-debug-sanitizers",
+      "output": { "outputOnFailure": true }
     }
   ]
 }
