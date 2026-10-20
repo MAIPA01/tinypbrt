@@ -69,21 +69,29 @@ extern "C" {
 	  tpbrt_transforms_list_t* const list) {
 			if (builder == TPBRT_NULL || list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		*builder = (tpbrt_transforms_list_builder_t) { .list = list, .capacity = 0u, .buckets = TPBRT_NULL, .buckets_count = 0u };
+		*builder =
+		  (tpbrt_transforms_list_builder_t) { .list = list, .capacity = list->count, .buckets = TPBRT_NULL, .buckets_count = 0u };
 		return TPBRT_ERROR_NONE;
 	}
 
 	static tpbrt_error_t tpbrt_transforms_list_builder_rehash(tpbrt_transforms_list_builder_t* const builder,
-	  const tpbrt_size_t new_capacity) {
+	  const tpbrt_size_t new_buckets_count) {
 			if (builder == TPBRT_NULL || builder->list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_uint_t* const new_buckets = realloc(builder->buckets, new_capacity * sizeof(tpbrt_uint_t));
+		tpbrt_transform_idx_t* const new_buckets = realloc(builder->buckets, new_buckets_count * sizeof(tpbrt_transform_idx_t));
 			if (new_buckets == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+		memset(new_buckets, TPBRT_TRANSFORM_IDX_INVALID, new_buckets_count * sizeof(tpbrt_transform_idx_t));
 
-			for (tpbrt_size_t i = builder->capacity; i < new_capacity; ++i) { new_buckets[i] = TPBRT_TRANSFORM_IDX_INVALID; }
+		const tpbrt_size_t mask = new_buckets_count - 1u;
+			for (tpbrt_size_t i = 0u; i < builder->list->count; ++i) {
+				tpbrt_size_t slot = tpbrt_mat4_hash(builder->list->transforms + i) & mask;
+					while (new_buckets[slot] != TPBRT_TRANSFORM_IDX_INVALID) { slot = (slot + 1u) & mask; }
+				new_buckets[slot] = (tpbrt_transform_idx_t)i;
+			}
 
-		builder->buckets  = new_buckets;
-		builder->capacity = new_capacity;
+		free(builder->buckets);
+		builder->buckets	   = new_buckets;
+		builder->buckets_count = new_buckets_count;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -96,7 +104,7 @@ extern "C" {
 		tpbrt_transforms_list_t* const list = builder->list;
 
 			if ((list->count + 1u) * 2u > builder->buckets_count) {
-				const tpbrt_size_t n	= builder->buckets_count == 0u ? 64u : builder->buckets_count;
+				const tpbrt_size_t n	= builder->buckets_count == 0u ? 64u : builder->buckets_count * 2u;
 				const tpbrt_error_t err = tpbrt_transforms_list_builder_rehash(builder, n);
 					if (err != TPBRT_ERROR_NONE) { return err; }
 			}
@@ -142,14 +150,16 @@ extern "C" {
 	}
 
 	void tpbrt_transforms_list_builder_finish(tpbrt_transforms_list_builder_t* const builder) {
-			if (builder == TPBRT_NULL || builder->list == TPBRT_NULL) { return; }
-
-		tpbrt_mat4_t* const tmp = realloc(builder->list->transforms, builder->list->count * sizeof(tpbrt_mat4_t));
-			if (tmp == TPBRT_NULL) { return; }
-
-		builder->list->transforms = tmp;
+			if (builder == TPBRT_NULL) { return; }
 
 		free(builder->buckets);
+
+		tpbrt_transforms_list_t* const list = builder->list;
+			if (list != TPBRT_NULL && list->count > 0u && builder->capacity > list->count) {
+				tpbrt_mat4_t* const tmp = realloc(list->transforms, list->count * sizeof(tpbrt_mat4_t));
+					if (tmp != TPBRT_NULL) { list->transforms = tmp; }
+			}
+
 		*builder =
 		  (tpbrt_transforms_list_builder_t) { .list = TPBRT_NULL, .capacity = 0u, .buckets = TPBRT_NULL, .buckets_count = 0u };
 	}

@@ -2,6 +2,10 @@
 #ifndef _TINYPBRT_FWD_H_
 #define _TINYPBRT_FWD_H_
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -19,6 +23,9 @@ extern "C" {
 #define TPBRT_INFINITY INFINITY
 #define TPBRT_PI	   M_PI
 #define TPBRT_EPSILON  1e-6
+
+#define TPBRT_INT_MAX  INT32_MAX
+#define TPBRT_UINT_MAX UINT32_MAX
 #pragma endregion
 
 #pragma region COMMON
@@ -36,6 +43,9 @@ extern "C" {
 	typedef float tpbrt_float_t;
 	typedef size_t tpbrt_size_t;
 	typedef long tpbrt_long_t;
+	typedef unsigned long tpbrt_ulong_t;
+	typedef long long tpbrt_longlong_t;
+	typedef unsigned long long tpbrt_ulonglong_t;
 
 	typedef tpbrt_uint_t tpbrt_idx_t;
 #define TPBRT_IDX_INVALID (~(tpbrt_idx_t)0)

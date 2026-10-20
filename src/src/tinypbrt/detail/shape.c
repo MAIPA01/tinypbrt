@@ -311,8 +311,8 @@ extern "C" {
 		tpbrt_error_t err = tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &ply_mesh->file_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_texture(params, DISPLACEMENT_STR, textures, TPBRT_TEXTURE_HANDLE_INVALID,
-		  &ply_mesh->displacement);
+		err = tpbrt_params_list_get_texture_of_type(params, DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+		  TPBRT_TEXTURE_HANDLE_INVALID, &ply_mesh->displacement);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		return tpbrt_params_list_get_float(params, EDGE_LENGTH_STR, 1.0f, &ply_mesh->edge_length);
@@ -353,8 +353,8 @@ extern "C" {
 
 		static const tpbrt_string_t ALPHA_STR = TPBRT_STRING("alpha");
 
-		tpbrt_error_t err =
-		  tpbrt_params_list_get_texture(params, ALPHA_STR, textures, TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f), &shape->alpha);
+		tpbrt_error_t err = tpbrt_params_list_get_texture_of_type(params, ALPHA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
+		  TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f), &shape->alpha);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_shape_free(shape);
 				return err;

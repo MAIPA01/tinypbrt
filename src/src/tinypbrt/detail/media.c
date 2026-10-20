@@ -266,7 +266,16 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, TEMPERATURE_OFFSET_STR, 0.0f, &uniform_grid->temperature_offset);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		return tpbrt_params_list_get_float(params, TEMPERATURE_SCALE_STR, 1.0f, &uniform_grid->temperature_scale);
+		err = tpbrt_params_list_get_float(params, TEMPERATURE_SCALE_STR, 1.0f, &uniform_grid->temperature_scale);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		const tpbrt_size_t voxels = (tpbrt_size_t)uniform_grid->nx * uniform_grid->ny * uniform_grid->nz;
+			if ((uniform_grid->density.count != 0u && uniform_grid->density.count != voxels) ||
+				(uniform_grid->temperature.count != 0u && uniform_grid->temperature.count != voxels)) {
+				return TPBRT_ERROR_INDEX_OUT_OF_RANGE;
+			}
+
+		return TPBRT_ERROR_NONE;
 	}
 
 	tpbrt_error_t tpbrt_media_init(const tpbrt_string_t name, const tpbrt_string_t type_str, const tpbrt_params_list_t params,

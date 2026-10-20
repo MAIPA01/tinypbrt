@@ -65,7 +65,7 @@ target_compile_options(${C_TARGET_TEST} PRIVATE
         -Werror
         -fno-strict-aliasing
     >
-    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${PCRE2CPP_BUILD_COVERAGE}>>:
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
         --coverage
         -fcoverage-mcdc
         -fprofile-instr-generate
@@ -83,7 +83,7 @@ target_link_options(${C_TARGET_TEST} PRIVATE
         $<$<CONFIG:Release>:-flto>
         -static
     >
-    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${PCRE2CPP_BUILD_COVERAGE}>>:
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
         --coverage
         -fprofile-instr-generate
     >

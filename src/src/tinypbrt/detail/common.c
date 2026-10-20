@@ -2,6 +2,8 @@
 
 #include <tinypbrt/detail/common_internal.h>
 
+#include <tinypbrt/detail/error.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,11 +31,13 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_read_string_value(const tpbrt_string_t value_str, tpbrt_string_t* const out_val) {
-			if (tpbrt_string_empty(value_str) || value_str.size < 2 || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 2u || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
-			if (value_str.data[0] != '\"' || value_str.data[value_str.size - 1] != '\"') { return TPBRT_FALSE; }
+			if (value_str.data[0u] != '\"' || value_str.data[value_str.size - 1u] != '\"') { return TPBRT_FALSE; }
 
-		*out_val = (tpbrt_string_t) { .data = value_str.data + 1, .size = value_str.size - 2 };
+		*out_val = (tpbrt_string_t) { .data = value_str.data + 1u, .size = value_str.size - 2u };
 		return TPBRT_TRUE;
 	}
 
@@ -41,14 +45,16 @@ extern "C" {
 		static const tpbrt_string_t TRUE_STR  = TPBRT_STRING("true");
 		static const tpbrt_string_t FALSE_STR = TPBRT_STRING("false");
 
-			if (tpbrt_string_empty(value_str) || value_str.size < 4 || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 4u || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
-			if (tpbrt_string_equals(value_str, TRUE_STR)) {
+			if (tpbrt_string_equals(value_str, TRUE_STR) == TPBRT_TRUE) {
 				*out_val = TPBRT_TRUE;
 				return TPBRT_TRUE;
 			}
 
-			if (tpbrt_string_equals(value_str, FALSE_STR)) {
+			if (tpbrt_string_equals(value_str, FALSE_STR) == TPBRT_TRUE) {
 				*out_val = TPBRT_FALSE;
 				return TPBRT_TRUE;
 			}
@@ -57,9 +63,11 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_read_float_value(const tpbrt_string_t value_str, tpbrt_float_t* const out_val) {
-		static const tpbrt_size_t MAX_BUFFER_SIZE = 64;
+		static const tpbrt_size_t MAX_BUFFER_SIZE = 64u;
 
-			if (tpbrt_string_empty(value_str) || value_str.size < 1 || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 1u || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
 			if (tpbrt_string_copy_to(value_str, buf, MAX_BUFFER_SIZE, TPBRT_NULL) != TPBRT_ERROR_NONE) { return TPBRT_FALSE; }
@@ -70,31 +78,43 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_read_int_value(const tpbrt_string_t value_str, tpbrt_int_t* const out_val) {
-		static const tpbrt_size_t MAX_BUFFER_SIZE = 64;
+		static const tpbrt_size_t MAX_BUFFER_SIZE = 64u;
 		static const tpbrt_int_t INT_RANIX		  = 10;
 
-			if (tpbrt_string_empty(value_str) || value_str.size < 1 || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 1u || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
 			if (tpbrt_string_copy_to(value_str, buf, MAX_BUFFER_SIZE, TPBRT_NULL) != TPBRT_ERROR_NONE) { return TPBRT_FALSE; }
 
 		tpbrt_char_t* end;
-		*out_val = (tpbrt_int_t)strtol(buf, &end, INT_RANIX);
+		const tpbrt_longlong_t parsed = strtoll(buf, &end, INT_RANIX);
+			if (end == buf || parsed > (tpbrt_longlong_t)TPBRT_INT_MAX) { return TPBRT_FALSE; }
+		*out_val = (tpbrt_int_t)parsed;
 		return end != buf;
 	}
 
 	tpbrt_bool_t tpbrt_read_uint_value(const tpbrt_string_t value_str, tpbrt_uint_t* const out_val) {
-		static const tpbrt_size_t MAX_BUFFER_SIZE = 64;
+		static const tpbrt_size_t MAX_BUFFER_SIZE = 64u;
 		static const tpbrt_int_t UINT_RANIX		  = 10;
 
-			if (tpbrt_string_empty(value_str) || value_str.size < 1 || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
+			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 1u || out_val == TPBRT_NULL) {
+				return TPBRT_FALSE;
+			}
 
 		tpbrt_char_t buf[MAX_BUFFER_SIZE];
 			if (tpbrt_string_copy_to(value_str, buf, MAX_BUFFER_SIZE, TPBRT_NULL) != TPBRT_ERROR_NONE) { return TPBRT_FALSE; }
 
+		const tpbrt_char_t* first = buf;
+			while ((*first == ' ' || *first == '\t') && first != buf + MAX_BUFFER_SIZE) { ++first; }
+			if (*first == '-' || first == buf + MAX_BUFFER_SIZE) { return TPBRT_FALSE; }
+
 		tpbrt_char_t* end;
-		*out_val = (tpbrt_uint_t)strtoul(buf, &end, UINT_RANIX);
-		return end != buf;
+		const tpbrt_ulonglong_t parsed = strtoull(buf, &end, UINT_RANIX);
+			if (end == buf || parsed > (tpbrt_ulonglong_t)TPBRT_UINT_MAX) { return TPBRT_FALSE; }
+		*out_val = (tpbrt_uint_t)parsed;
+		return TPBRT_TRUE;
 	}
 
 #pragma endregion

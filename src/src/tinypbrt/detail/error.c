@@ -77,7 +77,7 @@ extern "C" {
 
 			if (buffer == TPBRT_NULL || buffer_size == 0) { return 0; }
 
-		const tpbrt_size_t error_idx = min(error, TPBRT_ERROR_MAX_NUM);
+		const tpbrt_size_t error_idx = TPBRT_MIN(error, TPBRT_ERROR_MAX_NUM);
 		tpbrt_size_t size			 = 0;
 		const tpbrt_error_t err		 = tpbrt_string_copy_to(TPBRT_ERROR_MSGS[error_idx], buffer, buffer_size, &size);
 		return err == TPBRT_ERROR_NONE ? size : 0;

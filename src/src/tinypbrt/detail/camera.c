@@ -279,33 +279,19 @@ extern "C" {
 		tpbrt_params_list_free(&info->params);
 	}
 
-	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* const info, tpbrt_transforms_list_t* const transforms,
-	  const tpbrt_film_t* const film, tpbrt_camera_t* const camera) {
-			if (camera == TPBRT_NULL || film == TPBRT_NULL || info == TPBRT_NULL || transforms == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* const info, const tpbrt_film_t* const film,
+	  tpbrt_camera_t* const camera) {
+			if (camera == TPBRT_NULL || film == TPBRT_NULL || info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		camera->interior_media_handle = info->interior_media_handle;
-		camera->exterior_media_handle = info->exterior_media_handle;
-		camera->type				  = info->type;
-
-		tpbrt_error_t err =
-		  tpbrt_transforms_list_append(transforms, &info->camera_to_world.start, &camera->transform.start_transform);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_camera_free(camera);
-				return err;
-			}
-
-		err = tpbrt_transforms_list_append(transforms, &info->camera_to_world.end, &camera->transform.end_transform);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_camera_free(camera);
-				return err;
-			}
+		camera->interior_media_handle				 = info->interior_media_handle;
+		camera->exterior_media_handle				 = info->exterior_media_handle;
+		camera->type								 = info->type;
+		camera->transform							 = info->camera_transform;
 
 		static const tpbrt_string_t SHUTTER_OPEN_STR = TPBRT_STRING("shutteropen");
-		err = tpbrt_params_list_get_float(info->params, SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
+		tpbrt_error_t err = tpbrt_params_list_get_float(info->params, SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_camera_free(camera);
 				return err;
