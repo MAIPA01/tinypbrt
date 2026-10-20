@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 #define TPBRT_VEC2(x_val, y_val)                  \
-	(tpbrt_vec3_t) { .x = (x_val), .y = (y_val) }
+	(tpbrt_vec2_t) { .x = (x_val), .y = (y_val) }
 #define TPBRT_VEC3(x_val, y_val, z_val)                         \
 	(tpbrt_vec3_t) { .x = (x_val), .y = (y_val), .z = (z_val) }
 
@@ -38,6 +38,7 @@ extern "C" {
 	void tpbrt_mat4_multiply(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 	void tpbrt_mat4_inverse(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
 	void tpbrt_mat4_transpose(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* in_m);
+	tpbrt_uint_t tpbrt_mat4_hash(const tpbrt_mat4_t* m);
 	tpbrt_bool_t tpbrt_mat4_equals(const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 
 #define TPBRT_EMPTY_BOOL_ARRAY	(tpbrt_bool_array_t) { .data = TPBRT_NULL, .count = 0 }

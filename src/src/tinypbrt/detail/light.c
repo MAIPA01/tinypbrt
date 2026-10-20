@@ -65,8 +65,8 @@ extern "C" {
 		static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
 		static const tpbrt_string_t I_STR		  = TPBRT_STRING("I");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &goniometric->file_name);
-			if (err != TPBRT_ERROR_NONE || tpbrt_string_empty(goniometric->file_name) == TPBRT_TRUE) { return err; }
+		tpbrt_error_t err = tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &goniometric->file_name);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err =
 		  tpbrt_params_list_get_spectrum(params, I_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &goniometric->i);
@@ -134,7 +134,7 @@ extern "C" {
 		err									   = tpbrt_params_list_get_float(params, FOV_STR, FOV_DEFAULT, &projection->fov);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		return tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &projection->file_name);
+		return tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &projection->file_name);
 	}
 
 	static tpbrt_error_t tpbrt_light_source_read_spot(tpbrt_light_source_spot_params_t* const spot,

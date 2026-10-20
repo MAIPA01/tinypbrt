@@ -20,17 +20,8 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_transforms_list_append(tpbrt_transforms_list_t* const transforms_list,
 	  const tpbrt_mat4_t* const transform, tpbrt_transform_handle_t* const out_handle) {
-			if (transforms_list == TPBRT_NULL || transform == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
-
-			if (out_handle != TPBRT_NULL) { *out_handle = TPBRT_TRANSFORM_HANDLE_INVALID; }
-
-			if (transforms_list->count > 0u) {
-					for (tpbrt_size_t i = 0u; i < transforms_list->count; ++i) {
-							if (tpbrt_mat4_equals(transforms_list->transforms + i, transform) == TPBRT_TRUE) {
-								out_handle->transform_idx = i;
-								return TPBRT_ERROR_NONE;
-							}
-					}
+			if (transforms_list == TPBRT_NULL || transform == TPBRT_NULL || out_handle == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
 		const tpbrt_size_t new_count = transforms_list->count + 1;
@@ -49,7 +40,7 @@ extern "C" {
 	  const tpbrt_transform_handle_t transform_handle, const tpbrt_mat4_t** const transform) {
 			if (transform == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (transform_handle.transform_idx == TPBRT_MEDIA_IDX_INVALID ||
+			if (transform_handle.transform_idx == TPBRT_TRANSFORM_IDX_INVALID ||
 				transform_handle.transform_idx >= transforms_list.count) {
 				*transform = TPBRT_NULL;
 				return TPBRT_ERROR_INVALID_HANDLE;
@@ -68,6 +59,99 @@ extern "C" {
 
 	tpbrt_bool_t tpbrt_transforms_list_empty(const tpbrt_transforms_list_t transforms_list) {
 		return transforms_list.transforms == TPBRT_NULL || transforms_list.count == 0u;
+	}
+
+#pragma endregion
+
+#pragma region TRANSFORMS_LIST_BUILDER
+
+	tpbrt_error_t tpbrt_transforms_list_builder_init(tpbrt_transforms_list_builder_t* const builder,
+	  tpbrt_transforms_list_t* const list) {
+			if (builder == TPBRT_NULL || list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		*builder = (tpbrt_transforms_list_builder_t) { .list = list, .capacity = 0u, .buckets = TPBRT_NULL, .buckets_count = 0u };
+		return TPBRT_ERROR_NONE;
+	}
+
+	static tpbrt_error_t tpbrt_transforms_list_builder_rehash(tpbrt_transforms_list_builder_t* const builder,
+	  const tpbrt_size_t new_capacity) {
+			if (builder == TPBRT_NULL || builder->list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_uint_t* const new_buckets = realloc(builder->buckets, new_capacity * sizeof(tpbrt_uint_t));
+			if (new_buckets == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+			for (tpbrt_size_t i = builder->capacity; i < new_capacity; ++i) { new_buckets[i] = TPBRT_TRANSFORM_IDX_INVALID; }
+
+		builder->buckets  = new_buckets;
+		builder->capacity = new_capacity;
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_transforms_list_builder_append(tpbrt_transforms_list_builder_t* const builder,
+	  const tpbrt_mat4_t* const transform, tpbrt_transform_handle_t* const out_handle) {
+			if (builder == TPBRT_NULL || builder->list == TPBRT_NULL || transform == TPBRT_NULL || out_handle == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+		*out_handle							= TPBRT_TRANSFORM_HANDLE_INVALID;
+		tpbrt_transforms_list_t* const list = builder->list;
+
+			if ((list->count + 1u) * 2u > builder->buckets_count) {
+				const tpbrt_size_t n	= builder->buckets_count == 0u ? 64u : builder->buckets_count;
+				const tpbrt_error_t err = tpbrt_transforms_list_builder_rehash(builder, n);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+			}
+
+		const tpbrt_size_t mask = builder->buckets_count - 1u;
+		tpbrt_size_t slot		= tpbrt_mat4_hash(transform) & mask;
+			while (builder->buckets[slot] != TPBRT_TRANSFORM_IDX_INVALID) {
+				const tpbrt_transform_idx_t idx = builder->buckets[slot];
+					if (tpbrt_mat4_equals(list->transforms + idx, transform) == TPBRT_TRUE) {
+						out_handle->transform_idx = idx;
+						return TPBRT_ERROR_NONE;
+					}
+				slot = (slot + 1u) & mask;
+			}
+
+			if (list->count >= (tpbrt_size_t)TPBRT_TRANSFORM_IDX_INVALID) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+			if (list->count == builder->capacity) {
+				const tpbrt_size_t cap	= builder->capacity == 0u ? 16u : builder->capacity * 2u;
+				tpbrt_mat4_t* const tmp = realloc(list->transforms, cap * sizeof(tpbrt_mat4_t));
+					if (tmp == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+				list->transforms  = tmp;
+				builder->capacity = cap;
+			}
+
+		const tpbrt_transform_idx_t idx = (tpbrt_transform_idx_t)list->count++;
+		list->transforms[idx]			= *transform;
+		builder->buckets[slot]			= idx;
+		out_handle->transform_idx		= idx;
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_transforms_list_builder_append_animated(tpbrt_transforms_list_builder_t* const builder,
+	  const tpbrt_mat4_animated_t* const transform, tpbrt_transform_animated_t* const out_transform) {
+			if (builder == TPBRT_NULL || builder->list == TPBRT_NULL || transform == TPBRT_NULL || out_transform == TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_POINTER;
+			}
+
+		const tpbrt_error_t err =
+		  tpbrt_transforms_list_builder_append(builder, &transform->start, &out_transform->start_transform);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_transforms_list_builder_append(builder, &transform->end, &out_transform->end_transform);
+	}
+
+	void tpbrt_transforms_list_builder_finish(tpbrt_transforms_list_builder_t* const builder) {
+			if (builder == TPBRT_NULL || builder->list == TPBRT_NULL) { return; }
+
+		tpbrt_mat4_t* const tmp = realloc(builder->list->transforms, builder->list->count * sizeof(tpbrt_mat4_t));
+			if (tmp == TPBRT_NULL) { return; }
+
+		builder->list->transforms = tmp;
+
+		free(builder->buckets);
+		*builder =
+		  (tpbrt_transforms_list_builder_t) { .list = TPBRT_NULL, .capacity = 0u, .buckets = TPBRT_NULL, .buckets_count = 0u };
 	}
 
 #pragma endregion

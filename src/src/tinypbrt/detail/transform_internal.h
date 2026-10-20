@@ -21,6 +21,24 @@ extern "C" {
 	tpbrt_bool_t tpbrt_transforms_list_empty(tpbrt_transforms_list_t transforms_list);
 #pragma endregion
 
+#pragma region TRANSFORMS_LIST_BUILDER
+
+	typedef struct tpbrt_transforms_list_builder_t {
+		tpbrt_transforms_list_t* list;
+		tpbrt_size_t capacity;
+		tpbrt_transform_idx_t* buckets;
+		tpbrt_size_t buckets_count;
+	} tpbrt_transforms_list_builder_t;
+
+	tpbrt_error_t tpbrt_transforms_list_builder_init(tpbrt_transforms_list_builder_t* builder, tpbrt_transforms_list_t* list);
+	tpbrt_error_t tpbrt_transforms_list_builder_append(tpbrt_transforms_list_builder_t* builder, const tpbrt_mat4_t* transform,
+	  tpbrt_transform_handle_t* out_handle);
+	tpbrt_error_t tpbrt_transforms_list_builder_append_animated(tpbrt_transforms_list_builder_t* builder,
+	  const tpbrt_mat4_animated_t* transform, tpbrt_transform_animated_t* out_transform);
+	void tpbrt_transforms_list_builder_finish(tpbrt_transforms_list_builder_t* builder);
+
+#pragma endregion
+
 #ifdef __cplusplus
 }
 #endif

@@ -131,6 +131,20 @@ extern "C" {
 		return err;
 	}
 
+	static tpbrt_error_t tpbrt_scene_create_camera(tpbrt_camera_create_info_t* const info,
+	  tpbrt_transforms_list_builder_t* const transforms_list_builder, tpbrt_scene_t* const scene) {
+			if (info->camera_transform.start_transform.transform_idx == TPBRT_TRANSFORM_IDX_INVALID) {
+				tpbrt_mat4_animated_t identity;
+				tpbrt_mat4_identity(&identity.start);
+				tpbrt_mat4_identity(&identity.end);
+				const tpbrt_error_t err =
+				  tpbrt_transforms_list_builder_append_animated(transforms_list_builder, &identity, &info->camera_transform);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+			}
+		tpbrt_camera_free(&scene->camera);
+		return tpbrt_camera_init(info, &scene->film, &scene->camera);
+	}
+
 	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* const data, const tpbrt_char_t* const working_directory,
 	  tpbrt_scene_t* const out_scene) {
 			if (data == TPBRT_NULL || working_directory == TPBRT_NULL || out_scene == TPBRT_NULL) {
@@ -251,6 +265,13 @@ extern "C" {
 
 		tpbrt_coord_system_map_t named_coord_systems;
 		err = tpbrt_coord_system_map_init(&named_coord_systems);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_scene_free(out_scene);
+				return err;
+			}
+
+		tpbrt_transforms_list_builder_t transforms_list_builder;
+		err = tpbrt_transforms_list_builder_init(&transforms_list_builder, &out_scene->transforms);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_scene_free(out_scene);
 				return err;
@@ -506,15 +527,19 @@ extern "C" {
 							tpbrt_mat4_inverse(&camera_to_world.start, &current_state.ctm.start);
 							tpbrt_mat4_inverse(&camera_to_world.end, &current_state.ctm.end);
 
+							tpbrt_transform_animated_t transform;
+							last_error = tpbrt_transforms_list_builder_append_animated(&transforms_list_builder, &camera_to_world,
+							  &transform);
+								if (last_error != TPBRT_ERROR_NONE) { break; }
+
 							tpbrt_camera_create_info_free(&camera_create_info);
 							last_error = tpbrt_camera_create_info_init(element.as.generic_with_params.type_name,
-							  element.as.generic_with_params.params, &camera_to_world, current_state.current_inside_medium,
+							  element.as.generic_with_params.params, transform, current_state.current_inside_medium,
 							  current_state.current_outside_medium, &camera_create_info);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							static const tpbrt_string_t CAM_STR = TPBRT_STRING("camera");
-							last_error =
-							  tpbrt_coord_system_map_insert(&named_coord_systems, CAM_STR, &camera_create_info.camera_to_world);
+							last_error = tpbrt_coord_system_map_insert(&named_coord_systems, CAM_STR, &camera_to_world);
 							break;
 						}
 						case TPBRT_DIRECTIVE_SAMPLER: {
@@ -582,9 +607,7 @@ extern "C" {
 									break;
 								}
 
-							tpbrt_camera_free(&out_scene->camera);
-							last_error = tpbrt_camera_init(&camera_create_info, &out_scene->transforms, &out_scene->film,
-							  &out_scene->camera);
+							last_error = tpbrt_scene_create_camera(&camera_create_info, &transforms_list_builder, out_scene);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 							camera_created = TPBRT_TRUE;
 
@@ -662,12 +685,8 @@ extern "C" {
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_transform_animated_t transform;
-							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start,
-							  &transform.start_transform);
-								if (last_error != TPBRT_ERROR_NONE) { break; }
-
-							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.end,
-							  &transform.end_transform);
+							last_error = tpbrt_transforms_list_builder_append_animated(&transforms_list_builder,
+							  &current_state.ctm, &transform);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_shape_t shape;
@@ -737,12 +756,8 @@ extern "C" {
 								}
 
 							tpbrt_transform_animated_t transform;
-							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start,
-							  &transform.start_transform);
-								if (last_error != TPBRT_ERROR_NONE) { break; }
-
-							last_error = tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.end,
-							  &transform.end_transform);
+							last_error = tpbrt_transforms_list_builder_append_animated(&transforms_list_builder,
+							  &current_state.ctm, &transform);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_object_instance_t inst;
@@ -765,8 +780,8 @@ extern "C" {
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_transform_handle_t transform;
-							last_error =
-							  tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start, &transform);
+							last_error = tpbrt_transforms_list_builder_append(&transforms_list_builder, &current_state.ctm.start,
+							  &transform);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_light_source_t light;
@@ -857,8 +872,8 @@ extern "C" {
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_transform_handle_t transform;
-							last_error =
-							  tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start, &transform);
+							last_error = tpbrt_transforms_list_builder_append(&transforms_list_builder, &current_state.ctm.start,
+							  &transform);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_texture_t tex;
@@ -877,8 +892,8 @@ extern "C" {
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_transform_handle_t transform;
-							last_error =
-							  tpbrt_transforms_list_append(&out_scene->transforms, &current_state.ctm.start, &transform);
+							last_error = tpbrt_transforms_list_builder_append(&transforms_list_builder, &current_state.ctm.start,
+							  &transform);
 								if (last_error != TPBRT_ERROR_NONE) { break; }
 
 							tpbrt_media_t media;
@@ -919,10 +934,11 @@ extern "C" {
 			}
 
 			if (last_error == TPBRT_ERROR_NONE && camera_created == TPBRT_FALSE) {
-				last_error = tpbrt_camera_init(&camera_create_info, &out_scene->transforms, &out_scene->film, &out_scene->camera);
+				last_error = tpbrt_scene_create_camera(&camera_create_info, &transforms_list_builder, out_scene);
 			}
 		tpbrt_camera_create_info_free(&camera_create_info);
 		tpbrt_string_array_free(&includes);
+		tpbrt_transforms_list_builder_finish(&transforms_list_builder);
 
 			if (current_state.active_object != TPBRT_NULL) {
 				tpbrt_object_free(current_state.active_object);
@@ -951,6 +967,7 @@ extern "C" {
 		tpbrt_medias_list_free(&scene->medias);
 		tpbrt_objects_list_free(&scene->objects);
 		tpbrt_objects_instances_list_free(&scene->instances);
+		tpbrt_transforms_list_free(&scene->transforms);
 
 		tpbrt_shapes_list_free(&scene->shapes);
 	}

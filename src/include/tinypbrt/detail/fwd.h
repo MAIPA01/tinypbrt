@@ -23,6 +23,7 @@ extern "C" {
 
 #pragma region COMMON
 	typedef char tpbrt_char_t;
+	typedef unsigned char tpbrt_uchar_t;
 	typedef struct tpbrt_string_t tpbrt_string_t;
 
 	typedef struct tpbrt_string_array_t tpbrt_string_array_t;

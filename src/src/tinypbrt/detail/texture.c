@@ -395,9 +395,8 @@ extern "C" {
 		static const tpbrt_string_t SCALE_STR		   = TPBRT_STRING("scale");
 		static const tpbrt_string_t INVERT_STR		   = TPBRT_STRING("invert");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &image_map->file_name);
+		tpbrt_error_t err = tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &image_map->file_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
-			if (tpbrt_string_empty(image_map->file_name) == TPBRT_TRUE) { return TPBRT_ERROR_NOT_FOUND; }
 
 		tpbrt_string_t temp_str;
 		err = tpbrt_params_list_get_string(params, WRAP_STR, TPBRT_EMPTY_STRING, &temp_str);

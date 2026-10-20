@@ -1171,12 +1171,27 @@ extern "C" {
 		const tpbrt_param_t* param;
 		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
 
-			if (err == TPBRT_ERROR_NOT_FOUND) {
-				*out_val = default_val;
-				return TPBRT_ERROR_NONE;
+			if (err == TPBRT_ERROR_NOT_FOUND) { return tpbrt_string_copy(out_val, default_val); }
+
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = TPBRT_EMPTY_STRING;
+				return err;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+		return tpbrt_param_as_string(param, out_val);
+	}
+
+	tpbrt_error_t tpbrt_params_list_get_string_required(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
+	  tpbrt_string_t* const out_val) {
+			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		const tpbrt_param_t* param;
+		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
+
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = TPBRT_EMPTY_STRING;
+				return err;
+			}
 
 		return tpbrt_param_as_string(param, out_val);
 	}
@@ -1227,7 +1242,10 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = TPBRT_FALSE;
+				return err;
+			}
 
 		return tpbrt_param_as_bool(param, out_val);
 	}
@@ -1278,7 +1296,10 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = 0.0f;
+				return err;
+			}
 
 		return tpbrt_param_as_float(param, out_val);
 	}
@@ -1351,7 +1372,10 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = 0;
+				return err;
+			}
 
 		return tpbrt_param_as_int(param, out_val);
 	}
@@ -1402,7 +1426,10 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = 0u;
+				return err;
+			}
 
 		return tpbrt_param_as_uint(param, out_val);
 	}
@@ -1476,7 +1503,25 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = TPBRT_SPECTRUM_CONSTANT(0.0f);
+				return err;
+			}
+
+		return tpbrt_param_as_spectrum(param, out_val);
+	}
+
+	tpbrt_error_t tpbrt_params_list_get_spectrum_required(const tpbrt_params_list_t params_list, const tpbrt_string_t param_name,
+	  tpbrt_spectrum_t* const out_val) {
+			if (out_val == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		const tpbrt_param_t* param;
+		const tpbrt_error_t err = tpbrt_params_list_get_const(params_list, param_name, &param);
+
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = TPBRT_SPECTRUM_CONSTANT(0.0f);
+				return err;
+			}
 
 		return tpbrt_param_as_spectrum(param, out_val);
 	}
@@ -1527,7 +1572,10 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = TPBRT_VEC2(0.0f, 0.0f);
+				return err;
+			}
 
 		return tpbrt_param_as_vec2(param, out_val);
 	}
@@ -1593,7 +1641,10 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (err != TPBRT_ERROR_NONE) { return err; }
+			if (err != TPBRT_ERROR_NONE) {
+				*out_val = TPBRT_VEC3(0.0f, 0.0f, 0.0f);
+				return err;
+			}
 
 		return tpbrt_param_as_vec3(param, out_val);
 	}

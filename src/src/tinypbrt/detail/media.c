@@ -287,14 +287,10 @@ extern "C" {
 		tpbrt_bool_t owns_temp_string = TPBRT_FALSE;
 			if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) {
 				static const tpbrt_string_t TYPE_STR = TPBRT_STRING("type");
-				err = tpbrt_params_list_get_string(params, TYPE_STR, TPBRT_EMPTY_STRING, &temp_string);
+				err									 = tpbrt_params_list_get_string_required(params, TYPE_STR, &temp_string);
 					if (err != TPBRT_ERROR_NONE) {
 						tpbrt_media_free(media);
 						return err;
-					}
-					if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) {
-						tpbrt_media_free(media);
-						return TPBRT_ERROR_NOT_FOUND;
 					}
 				owns_temp_string = TPBRT_TRUE;
 			}

@@ -14,7 +14,7 @@ extern "C" {
 
 	typedef struct tpbrt_camera_create_info_t {
 		tpbrt_params_list_t params;
-		tpbrt_mat4_animated_t camera_to_world;
+		tpbrt_transform_animated_t camera_transform;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
 		tpbrt_camera_type_t type : 3;
@@ -31,13 +31,12 @@ extern "C" {
 	tpbrt_error_t tpbrt_camera_create_info_init_default(tpbrt_camera_create_info_t* info);
 
 	tpbrt_error_t tpbrt_camera_create_info_init(tpbrt_string_t type_str, tpbrt_params_list_t params,
-	  const tpbrt_mat4_animated_t* camera_to_world, tpbrt_media_handle_t interior_media_handle,
+	  tpbrt_transform_animated_t transform, tpbrt_media_handle_t interior_media_handle,
 	  tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_create_info_t* info);
 
 	void tpbrt_camera_create_info_free(tpbrt_camera_create_info_t* info);
 
-	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* info, tpbrt_transforms_list_t* transforms,
-	  const tpbrt_film_t* film, tpbrt_camera_t* camera);
+	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* info, const tpbrt_film_t* film, tpbrt_camera_t* camera);
 
 	void tpbrt_camera_free(tpbrt_camera_t* camera);
 

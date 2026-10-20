@@ -308,7 +308,7 @@ extern "C" {
 		static const tpbrt_string_t DISPLACEMENT_STR = TPBRT_STRING("displacement");
 		static const tpbrt_string_t EDGE_LENGTH_STR	 = TPBRT_STRING("edgelength");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &ply_mesh->file_name);
+		tpbrt_error_t err = tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &ply_mesh->file_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_texture(params, DISPLACEMENT_STR, textures, TPBRT_TEXTURE_HANDLE_INVALID,

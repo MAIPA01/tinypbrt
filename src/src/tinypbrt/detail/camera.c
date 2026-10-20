@@ -232,18 +232,18 @@ extern "C" {
 		const tpbrt_error_t err = tpbrt_params_list_init(&info->params);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		tpbrt_mat4_identity(&info->camera_to_world.start);
-		tpbrt_mat4_identity(&info->camera_to_world.end);
-		info->interior_media_handle = TPBRT_MEDIA_HANDLE_INVALID;
-		info->exterior_media_handle = TPBRT_MEDIA_HANDLE_INVALID;
+		info->camera_transform.start_transform = TPBRT_TRANSFORM_HANDLE_INVALID;
+		info->camera_transform.end_transform   = TPBRT_TRANSFORM_HANDLE_INVALID;
+		info->interior_media_handle			   = TPBRT_MEDIA_HANDLE_INVALID;
+		info->exterior_media_handle			   = TPBRT_MEDIA_HANDLE_INVALID;
 
 		return TPBRT_ERROR_NONE;
 	}
 
 	tpbrt_error_t tpbrt_camera_create_info_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
-	  const tpbrt_mat4_animated_t* const camera_to_world, const tpbrt_media_handle_t interior_media_handle,
+	  const tpbrt_transform_animated_t transform, const tpbrt_media_handle_t interior_media_handle,
 	  const tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_create_info_t* const info) {
-			if (info == TPBRT_NULL || camera_to_world == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+			if (info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(info, 0, sizeof(tpbrt_camera_create_info_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -258,7 +258,7 @@ extern "C" {
 				return err;
 			}
 
-		info->camera_to_world		= *camera_to_world;
+		info->camera_transform		= transform;
 		info->interior_media_handle = interior_media_handle;
 		info->exterior_media_handle = exterior_media_handle;
 

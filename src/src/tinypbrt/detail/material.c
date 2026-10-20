@@ -62,7 +62,7 @@ extern "C" {
 		err = tpbrt_params_list_get_string(params, NORMAL_MAP_STR, TPBRT_EMPTY_STRING, &bump_map->as.normal_map);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-			if (err == TPBRT_ERROR_NONE && tpbrt_string_empty(bump_map->as.normal_map) == TPBRT_FALSE) {
+			if (tpbrt_string_empty(bump_map->as.normal_map) == TPBRT_FALSE) {
 				bump_map->type = TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP;
 				return TPBRT_ERROR_NONE;
 			}
@@ -196,12 +196,10 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, THICKNESS_STR, 0.01f, &coated_conductor->thickness);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err =
-		  tpbrt_params_list_get_spectrum(params, REFLECTANCE_STR, TPBRT_SPECTRUM_FILE_NAME, &coated_conductor->as.reflectance);
-			if (err != TPBRT_ERROR_NONE) { return err; }
+		err = tpbrt_params_list_get_spectrum_required(params, REFLECTANCE_STR, &coated_conductor->as.reflectance);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-			if (coated_conductor->as.reflectance.type == TPBRT_SPECTRUM_TYPE_FILE &&
-				tpbrt_string_empty(coated_conductor->as.reflectance.as.file_name) == TPBRT_TRUE) {
+			if (err == TPBRT_ERROR_NOT_FOUND) {
 				coated_conductor->value_type = TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_ETA_K;
 
 				err							 = tpbrt_params_list_get_spectrum(params, CONDUCTOR_ETA_STR,
@@ -374,7 +372,7 @@ extern "C" {
 		const tpbrt_error_t err					  = tpbrt_material_read_bump_map(&measured->bump_map, params, textures);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		return tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &measured->file_name);
+		return tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &measured->file_name);
 	}
 
 	static tpbrt_error_t tpbrt_material_read_mix(tpbrt_material_mix_params_t* const mix, const tpbrt_params_list_t params,
@@ -556,9 +554,8 @@ extern "C" {
 		static const tpbrt_string_t TYPE_STR = TPBRT_STRING("type");
 
 		tpbrt_string_t type_str;
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, TYPE_STR, TPBRT_EMPTY_STRING, &type_str);
+		tpbrt_error_t err = tpbrt_params_list_get_string_required(params, TYPE_STR, &type_str);
 			if (err != TPBRT_ERROR_NONE) { return err; }
-			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_NOT_FOUND; }
 
 		err = tpbrt_material_init(type_str, params, textures, materials, material);
 		tpbrt_string_free(&type_str);

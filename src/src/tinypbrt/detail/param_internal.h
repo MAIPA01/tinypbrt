@@ -181,6 +181,8 @@ extern "C" {
 	  tpbrt_size_t desired_size, tpbrt_string_array_t* out_vals);
 	tpbrt_error_t tpbrt_params_list_get_string(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_string_t default_val, tpbrt_string_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_string_required(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
+	  tpbrt_string_t* out_val);
 #pragma endregion
 
 #pragma region BOOL
@@ -240,6 +242,8 @@ extern "C" {
 #pragma region SPECTRUM
 	tpbrt_error_t tpbrt_params_list_get_spectrum(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
 	  tpbrt_spectrum_t default_val, tpbrt_spectrum_t* out_val);
+	tpbrt_error_t tpbrt_params_list_get_spectrum_required(tpbrt_params_list_t params_list, tpbrt_string_t param_name,
+	  tpbrt_spectrum_t* out_val);
 #pragma endregion
 
 #pragma region VEC2

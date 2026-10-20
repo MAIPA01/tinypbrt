@@ -228,6 +228,21 @@ extern "C" {
 			}
 	}
 
+	tpbrt_uint_t tpbrt_mat4_hash(const tpbrt_mat4_t* const m) {
+			if (m == TPBRT_NULL) { return 0; }
+		const tpbrt_uchar_t* const bytes = (const tpbrt_uchar_t*)m;
+		/* clang-format off */
+		tpbrt_uint_t hash				 = 2166136261u;
+		/* clang-format on */
+			for (tpbrt_size_t i = 0u; i < sizeof(tpbrt_mat4_t); ++i) {
+				hash ^= bytes[i];
+				/* clang-format off */
+				hash *= 16777619u;
+				/* clang-format on */
+			}
+		return hash;
+	}
+
 	tpbrt_bool_t tpbrt_mat4_equals(const tpbrt_mat4_t* const a, const tpbrt_mat4_t* const b) {
 			if (a == TPBRT_NULL || b == TPBRT_NULL) { return TPBRT_FALSE; }
 		return memcmp(a, b, sizeof(tpbrt_mat4_t)) == 0 ? TPBRT_TRUE : TPBRT_FALSE;
