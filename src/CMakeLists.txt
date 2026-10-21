@@ -31,10 +31,10 @@ if (TINYPBRT_ENABLE_CLANG_TIDY)
     disable_clang_tidy_for_file(${CMAKE_CURRENT_SOURCE_DIR}/src/${C_TARGET_NAME}/pch.h)
     enable_clang_tidy(
             TARGET ${C_TARGET_NAME}
-            CONFIG "${CMAKE_SOURCE_DIR}/.clang-tidy"
+            CONFIG "${PROJECT_SOURCE_DIR}/.clang-tidy"
             CXX_STANDARD ${CLANG_TIDY_C_STANDARD}
             HEADER_FILTER "^${CMAKE_CURRENT_SOURCE_DIR}[\\\\\/\\\\].*"
-            EXCLUDE_HEADER_FILTER "^${CMAKE_SOURCE_DIR}[\\\\\/\\\\]third_party[\\\\\/\\\\].*"
+            EXCLUDE_HEADER_FILTER "^${PROJECT_SOURCE_DIR}[\\\\\/\\\\]third_party[\\\\\/\\\\].*"
     )
 endif()
 # endregion
@@ -57,12 +57,11 @@ target_compile_definitions(${C_TARGET_NAME} PRIVATE $<BUILD_INTERFACE:
 # endregion
 
 # region COMPILE_OPTIONS
-target_compile_options(${C_TARGET_NAME} INTERFACE
+target_compile_options(${C_TARGET_NAME} PRIVATE
         # MSVC/clang with MSVC frontend
         $<$<OR:$<C_COMPILER_ID:MSVC>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:MSVC>>>:
             $<$<CONFIG:Release>:
                 /O2
-                /GL
                 /fp:fast
             >
             $<$<CONFIG:Debug>:
@@ -70,47 +69,41 @@ target_compile_options(${C_TARGET_NAME} INTERFACE
                 /Zi
             >
             /Zc:preprocessor
-            /Zc:__cplusplus
             /W4
-            /WX
+            $<$<BOOL:${TINYPBRT_WARNINGS_AS_ERRORS}>:/WX>
         >
         # GCC/clang with GNU frontend
         $<$<OR:$<C_COMPILER_ID:GNU>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>>>:
             $<$<CONFIG:Release>:
                 -O3
-                -flto
             >
             -Wall
             -Wextra
-            -Werror
+            $<$<BOOL:${TINYPBRT_WARNINGS_AS_ERRORS}>:-Werror>
             -fno-strict-aliasing
         >
-        $<BUILD_INTERFACE:$<$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
+        $<$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
             --coverage
             -fcoverage-mcdc
             -fprofile-instr-generate
             -fcoverage-mapping
-        >>
+        >
 )
 # endregion
 
 # region LINK_OPTIONS
 target_link_options(${C_TARGET_NAME} INTERFACE
-        # MSVC/clang with MSVC frontend
-        $<$<OR:$<C_COMPILER_ID:MSVC>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:MSVC>>>:
-            $<$<CONFIG:Release>:/LTCG>
-            $<$<CONFIG:Debug>:/DEBUG>
-        >
-        # GCC/clang with GNU frontend
-        $<$<OR:$<C_COMPILER_ID:GNU>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>>>:
-            $<$<CONFIG:Release>:-flto>
-            $<$<NOT:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>>:-static>
-        >
         $<BUILD_INTERFACE:$<$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
             --coverage
             -fprofile-instr-generate
         >>
 )
+# endregion
+
+# region LINK_LIBRARIES
+if (NOT WIN32 AND NOT APPLE)
+    target_link_libraries(${C_TARGET_NAME} PUBLIC m)
+endif()
 # endregion
 
 # region SANITIZERS
@@ -143,7 +136,7 @@ if(TINYPBRT_INSTALL)
 
     set(C_TARGET_INSTALL_CONFIG ${C_TARGET_NAME}Config)
     configure_package_config_file(
-            "${CMAKE_SOURCE_DIR}/cmake/${C_TARGET_INSTALL_CONFIG}.cmake.in"
+            "${PROJECT_SOURCE_DIR}/cmake/${C_TARGET_INSTALL_CONFIG}.cmake.in"
             "${CMAKE_CURRENT_BINARY_DIR}/${C_TARGET_INSTALL_CONFIG}.cmake"
             INSTALL_DESTINATION cmake
     )

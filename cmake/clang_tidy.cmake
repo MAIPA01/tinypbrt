@@ -23,7 +23,7 @@ function(enable_clang_tidy)
     endif()
 
     if(NOT DEFINED CLANG_TIDY_CONFIG)
-        set(CLANG_TIDY_CONFIG ${CMAKE_SOURCE_DIR}/.clang-tidy)
+        set(CLANG_TIDY_CONFIG ${PROJECT_SOURCE_DIR}/.clang-tidy)
         message(NOTICE "No .clang-tidy config file provided using default path ${CLANG_TIDY_CONFIG}")
     endif()
 

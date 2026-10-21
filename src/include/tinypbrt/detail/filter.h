@@ -22,8 +22,8 @@ extern "C" {
 	} tpbrt_filter_gaussian_params_t;
 
 	typedef struct tpbrt_filter_mitchell_params_t {
-		tpbrt_float_t B;
-		tpbrt_float_t C;
+		tpbrt_float_t b;
+		tpbrt_float_t c;
 	} tpbrt_filter_mitchell_params_t;
 
 	typedef struct tpbrt_filter_sinc_params_t {

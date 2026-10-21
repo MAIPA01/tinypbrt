@@ -70,8 +70,8 @@ TEST(scene_media, homogeneous_defaults) {
 	ASSERT_EQ(m.as.homogeneous.sigma_a.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
 	EXPECT_FLOAT_EQ(m.as.homogeneous.sigma_a.as.constant, 1.0f);
 	EXPECT_FLOAT_EQ(m.as.homogeneous.sigma_s.as.constant, 1.0f);
-	ASSERT_EQ(m.as.homogeneous.Le.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
-	EXPECT_FLOAT_EQ(m.as.homogeneous.Le.as.constant, 0.0f);
+	ASSERT_EQ(m.as.homogeneous.le.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
+	EXPECT_FLOAT_EQ(m.as.homogeneous.le.as.constant, 0.0f);
 }
 
 TEST(scene_media, legacy_type_argument) {

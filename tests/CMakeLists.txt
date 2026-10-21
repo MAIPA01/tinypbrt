@@ -9,7 +9,7 @@ if (TINYPBRT_INSTALL_TEST)
     message(STATUS TESTING_INSTALL)
 
     find_package(tinypbrt REQUIRED
-            HINTS "${CMAKE_SOURCE_DIR}/dist"
+            HINTS "${PROJECT_SOURCE_DIR}/dist"
     )
 
     add_library(tinypbrt::all INTERFACE IMPORTED)
@@ -26,6 +26,20 @@ target_compile_features(${C_TARGET_TEST} PRIVATE cxx_std_17)
 
 tinypbrt_enable_sanitizers(${C_TARGET_TEST})
 tinypbrt_set_sanitizers_test_environment(${C_TARGET_TEST}_TEST)
+
+# region C_API_TEST
+set(C_TARGET_C_API_TEST ${PROJECT_NAME}-c-api-tests)
+add_executable(${C_TARGET_C_API_TEST} ${CMAKE_CURRENT_SOURCE_DIR}/c_api/c_api_test.c)
+add_test(NAME ${C_TARGET_C_API_TEST}_TEST COMMAND ${C_TARGET_C_API_TEST})
+set_target_properties(${C_TARGET_C_API_TEST} PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON C_EXTENSIONS OFF)
+target_link_libraries(${C_TARGET_C_API_TEST} PRIVATE $<IF:$<BOOL:${TINYPBRT_INSTALL_TEST}>, tinypbrt::all, tinypbrt::tinypbrt>)
+target_compile_options(${C_TARGET_C_API_TEST} PRIVATE
+    $<$<OR:$<C_COMPILER_ID:MSVC>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:MSVC>>>:/W4 /WX>
+    $<$<OR:$<C_COMPILER_ID:GNU>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>>>:-Wall -Wextra -Werror>
+)
+tinypbrt_enable_sanitizers(${C_TARGET_C_API_TEST})
+tinypbrt_set_sanitizers_test_environment(${C_TARGET_C_API_TEST}_TEST)
+# endregion
 
 target_link_libraries(${C_TARGET_TEST} PRIVATE   $<IF:$<BOOL:${TINYPBRT_INSTALL_TEST}>, tinypbrt::all, tinypbrt::tinypbrt>
         gtest_main

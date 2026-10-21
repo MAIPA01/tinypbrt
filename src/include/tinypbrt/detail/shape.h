@@ -46,14 +46,14 @@ extern "C" {
 
 	typedef struct tpbrt_shape_bilinear_mesh_params_t {
 		tpbrt_uint_array_t indices;
-		tpbrt_point3_array_t P;
-		tpbrt_normal_array_t N;
+		tpbrt_point3_array_t p;
+		tpbrt_normal_array_t n;
 		tpbrt_point2_array_t uv;
 	} tpbrt_shape_bilinear_mesh_params_t;
 
 	typedef struct tpbrt_shape_curve_params_t {
-		tpbrt_point3_t P[4];
-		tpbrt_normal_t N[2];
+		tpbrt_point3_t p[4];
+		tpbrt_normal_t n[2];
 		tpbrt_float_t width;
 		tpbrt_opt_float_t width0;
 		tpbrt_opt_float_t width1;
@@ -86,9 +86,9 @@ extern "C" {
 
 	typedef struct tpbrt_shape_triangle_mesh_params_t {
 		tpbrt_uint_array_t indices;
-		tpbrt_point3_array_t P;
-		tpbrt_normal_array_t N;
-		tpbrt_vec3_array_t S;
+		tpbrt_point3_array_t p;
+		tpbrt_normal_array_t n;
+		tpbrt_vec3_array_t s;
 		tpbrt_point2_array_t uv;
 	} tpbrt_shape_triangle_mesh_params_t;
 
@@ -100,7 +100,7 @@ extern "C" {
 
 	typedef struct tpbrt_shape_loop_subdiv_params_t {
 		tpbrt_uint_array_t indices;
-		tpbrt_point_array_t P;
+		tpbrt_point_array_t p;
 		tpbrt_uint_t levels;
 	} tpbrt_shape_loop_subdiv_params_t;
 

@@ -2,10 +2,6 @@
 #ifndef _TINYPBRT_FWD_H_
 #define _TINYPBRT_FWD_H_
 
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
-#endif
-
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -21,11 +17,14 @@ extern "C" {
 #define TPBRT_TRUE	1
 
 #define TPBRT_INFINITY INFINITY
-#define TPBRT_PI	   M_PI
+#define TPBRT_PI	   3.14159265358979323846f
 #define TPBRT_EPSILON  1e-6
 
+#define TPBRT_INT_MIN  INT32_MIN
 #define TPBRT_INT_MAX  INT32_MAX
 #define TPBRT_UINT_MAX UINT32_MAX
+
+#define TPBRT_MAT4_ARRAY_SIZE 16u
 #pragma endregion
 
 #pragma region COMMON

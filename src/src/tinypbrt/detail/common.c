@@ -90,7 +90,9 @@ extern "C" {
 
 		tpbrt_char_t* end;
 		const tpbrt_longlong_t parsed = strtoll(buf, &end, INT_RANIX);
-			if (end == buf || parsed > (tpbrt_longlong_t)TPBRT_INT_MAX) { return TPBRT_FALSE; }
+			if (end == buf || parsed > (tpbrt_longlong_t)TPBRT_INT_MAX || parsed < (tpbrt_longlong_t)TPBRT_INT_MIN) {
+				return TPBRT_FALSE;
+			}
 		*out_val = (tpbrt_int_t)parsed;
 		return end != buf;
 	}

@@ -30,6 +30,50 @@ extern "C" {
 		return has_token;
 	}
 
+	static tpbrt_string_t tpbrt_tokenizer_process_string(tpbrt_tokenizer_t* const tokenizer, const tpbrt_size_t start) {
+			if (tokenizer == TPBRT_NULL) { return TPBRT_EMPTY_STRING; }
+
+			while (tokenizer->offset < tokenizer->str.size) {
+				const tpbrt_char_t c = tokenizer->str.data[tokenizer->offset++];
+
+					if (c == '\\') {
+							if (tokenizer->offset < tokenizer->str.size) { tokenizer->offset++; }
+						continue;
+					}
+
+					if (c == '"') { break; }
+			}
+		return (tpbrt_string_t) {
+			.data = tokenizer->str.data + start,
+			.size = tokenizer->offset - start,
+		};
+	}
+
+	static void tpbrt_tokenizer_process_comment(tpbrt_tokenizer_t* const tokenizer) {
+			if (tokenizer == TPBRT_NULL) { return; }
+
+			while (tokenizer->offset < tokenizer->str.size) {
+				const char c = tokenizer->str.data[tokenizer->offset];
+					if (c == '\r' || c == '\n') { break; }
+				tokenizer->offset++;
+			}
+	}
+
+	static tpbrt_string_t tpbrt_tokenizer_process_text(tpbrt_tokenizer_t* const tokenizer, const tpbrt_size_t start) {
+			if (tokenizer == TPBRT_NULL) { return TPBRT_EMPTY_STRING; }
+
+			while (tokenizer->offset < tokenizer->str.size) {
+				const char c = tokenizer->str.data[tokenizer->offset];
+					if (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '"' || c == '[' || c == ']') { break; }
+				tokenizer->offset++;
+			}
+
+		return (tpbrt_string_t) {
+			.data = tokenizer->str.data + start,
+			.size = tokenizer->offset - start,
+		};
+	}
+
 	tpbrt_bool_t tpbrt_tokenizer_next(tpbrt_tokenizer_t* const tokenizer, tpbrt_token_t* const out_token) {
 			if (tokenizer == TPBRT_NULL || out_token == TPBRT_NULL || tokenizer->str.data == TPBRT_NULL) { return TPBRT_FALSE; }
 
@@ -51,43 +95,16 @@ extern "C" {
 					case '\t':
 					case '\r':	  continue;
 						case '"': {
-								while (tokenizer->offset < tokenizer->str.size) {
-									const tpbrt_char_t c = tokenizer->str.data[tokenizer->offset++];
-
-										if (c == '\\') {
-												if (tokenizer->offset < tokenizer->str.size) { tokenizer->offset++; }
-											continue;
-										}
-
-										if (c == '"') { break; }
-								}
-							const tpbrt_string_t view = {
-								.data = tokenizer->str.data + start,
-								.size = tokenizer->offset - start,
-							};
+							const tpbrt_string_t view = tpbrt_tokenizer_process_string(tokenizer, start);
 							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}
 						case '#': {
-								while (tokenizer->offset < tokenizer->str.size) {
-									const char c = tokenizer->str.data[tokenizer->offset];
-										if (c == '\r' || c == '\n') { break; }
-									tokenizer->offset++;
-								}
+							tpbrt_tokenizer_process_comment(tokenizer);
 							continue;
 						}
 						default: {
-								while (tokenizer->offset < tokenizer->str.size) {
-									const char c = tokenizer->str.data[tokenizer->offset];
-										if (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '"' || c == '[' || c == ']') {
-											break;
-										}
-									tokenizer->offset++;
-								}
-							const tpbrt_string_t view = {
-								.data = tokenizer->str.data + start,
-								.size = tokenizer->offset - start,
-							};
+							const tpbrt_string_t view = tpbrt_tokenizer_process_text(tokenizer, start);
 							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}

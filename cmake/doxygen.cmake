@@ -1,12 +1,12 @@
 find_package(Doxygen)
 
 if (DOXYGEN_FOUND)
-    #configure_file(${CMAKE_SOURCE_DIR}/Doxyfile
-    #               ${CMAKE_SOURCE_DIR}/Doxyfile @ONLY)
+    #configure_file(${PROJECT_SOURCE_DIR}/Doxyfile
+    #               ${PROJECT_SOURCE_DIR}/Doxyfile @ONLY)
 
     add_custom_target(documentation_${PROJECT_NAME}
-                      COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
-                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                      COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_SOURCE_DIR}/Doxyfile
+                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                       COMMENT "Generating documentation..."
                       VERBATIM)
 else()

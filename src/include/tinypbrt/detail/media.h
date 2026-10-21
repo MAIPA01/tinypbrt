@@ -36,8 +36,8 @@ extern "C" {
 
 	typedef struct tpbrt_media_homogeneous_params_t {
 		tpbrt_float_t g;
-		tpbrt_float_t Le_scale;
-		tpbrt_spectrum_t Le;
+		tpbrt_float_t le_scale;
+		tpbrt_spectrum_t le;
 		tpbrt_string_t preset;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
@@ -46,7 +46,7 @@ extern "C" {
 
 	typedef struct tpbrt_media_nano_vdb_params_t {
 		tpbrt_float_t g;
-		tpbrt_float_t Le_scale;
+		tpbrt_float_t le_scale;
 		tpbrt_spectrum_t sigma_a;
 		tpbrt_spectrum_t sigma_s;
 		tpbrt_string_t file_name;
@@ -56,9 +56,9 @@ extern "C" {
 	} tpbrt_media_nano_vdb_params_t;
 
 	typedef struct tpbrt_media_rgb_grid_params_t {
-		tpbrt_rgb_array_t Le;
+		tpbrt_rgb_array_t le;
 		tpbrt_point3_t p0;
-		tpbrt_float_t Le_scale;
+		tpbrt_float_t le_scale;
 		tpbrt_point3_t p1;
 		tpbrt_float_t g;
 		tpbrt_rgb_array_t sigma_a;
@@ -71,9 +71,9 @@ extern "C" {
 
 	typedef struct tpbrt_media_uniform_grid_params_t {
 		tpbrt_float_array_t density;
-		tpbrt_spectrum_t Le;
+		tpbrt_spectrum_t le;
 		tpbrt_point3_t p0;
-		tpbrt_float_t Le_scale;
+		tpbrt_float_t le_scale;
 		tpbrt_point3_t p1;
 		tpbrt_uint_t nx;
 		tpbrt_uint_t ny;

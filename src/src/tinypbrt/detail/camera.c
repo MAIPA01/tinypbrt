@@ -88,11 +88,12 @@ extern "C" {
 			}
 
 		static const tpbrt_string_t FRAME_ASPECT_RATIO_STR = TPBRT_STRING("frameaspectratio");
-		const tpbrt_float_t default_aspect_ratio	   = (tpbrt_float_t)film->x_resolution / (tpbrt_float_t)film->y_resolution;
+		static const tpbrt_string_t SCREEN_WINDOW_STR	   = TPBRT_STRING("screenwindow");
+		static const tpbrt_string_t LENS_RADIUS_STR		   = TPBRT_STRING("lensradius");
+		static const tpbrt_string_t FOCAL_DISTANCE_STR	   = TPBRT_STRING("focaldistance");
 
-		static const tpbrt_string_t SCREEN_WINDOW_STR  = TPBRT_STRING("screenwindow");
-		static const tpbrt_string_t LENS_RADIUS_STR	   = TPBRT_STRING("lensradius");
-		static const tpbrt_string_t FOCAL_DISTANCE_STR = TPBRT_STRING("focaldistance");
+		const tpbrt_float_t default_aspect_ratio		  = (tpbrt_float_t)film->x_resolution / (tpbrt_float_t)film->y_resolution;
+		static const tpbrt_float_t FOCAL_DISTANCE_DEFAULT = 1e+30f;
 
 		tpbrt_error_t err = tpbrt_params_list_get_float(params, FRAME_ASPECT_RATIO_STR, default_aspect_ratio, frame_aspect_ratio);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -127,7 +128,6 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, LENS_RADIUS_STR, 0.0f, lens_radius);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_float_t FOCAL_DISTANCE_DEFAULT = 1e+30f;
 		return tpbrt_params_list_get_float(params, FOCAL_DISTANCE_STR, FOCAL_DISTANCE_DEFAULT, focal_distance);
 	}
 
@@ -144,6 +144,7 @@ extern "C" {
 			if (perspective_params == TPBRT_NULL || film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t FOV_STR	   = TPBRT_STRING("fov");
+
 		static const tpbrt_float_t FOV_DEFAULT = 90.0f;
 
 		const tpbrt_error_t err				   = tpbrt_camera_read_image(&perspective_params->frame_aspect_ratio,
@@ -157,23 +158,28 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (realistic_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t LENS_FILE_STR		  = TPBRT_STRING("lensfile");
-		static const tpbrt_string_t APERTURE_DIAMETER_STR = TPBRT_STRING("aperturediameter");
-		static const tpbrt_string_t FOCUS_DISTANCE_STR	  = TPBRT_STRING("focusdistance");
-		static const tpbrt_string_t APERTURE_STR		  = TPBRT_STRING("aperture");
+		static const tpbrt_string_t LENS_FILE_STR			 = TPBRT_STRING("lensfile");
+		static const tpbrt_string_t APERTURE_DIAMETER_STR	 = TPBRT_STRING("aperturediameter");
+		static const tpbrt_string_t FOCUS_DISTANCE_STR		 = TPBRT_STRING("focusdistance");
+		static const tpbrt_string_t APERTURE_STR			 = TPBRT_STRING("aperture");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, LENS_FILE_STR, TPBRT_EMPTY_STRING, &realistic_params->lens_file);
+		static const tpbrt_string_t LENS_FILE_DEFAULT		 = TPBRT_EMPTY_STRING;
+		static const tpbrt_float_t APERTURE_DIAMETER_DEFAULT = 1.0f;
+		static const tpbrt_float_t FOCUS_DISTANCE_DEFAULT	 = 10.0f;
+		static const tpbrt_string_t APERTURE_DEFAULT		 = TPBRT_EMPTY_STRING;
+
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, LENS_FILE_STR, LENS_FILE_DEFAULT, &realistic_params->lens_file);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_float(params, APERTURE_DIAMETER_STR, 1.0f, &realistic_params->aperture_diameter);
+		err = tpbrt_params_list_get_float(params, APERTURE_DIAMETER_STR, APERTURE_DIAMETER_DEFAULT,
+		  &realistic_params->aperture_diameter);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_float_t FOCUS_DISTANCE_DEFAULT = 10.0f;
 		err = tpbrt_params_list_get_float(params, FOCUS_DISTANCE_STR, FOCUS_DISTANCE_DEFAULT, &realistic_params->focus_distance);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		tpbrt_string_t aperture_val;
-		err = tpbrt_params_list_get_string(params, APERTURE_STR, TPBRT_EMPTY_STRING, &aperture_val);
+		err = tpbrt_params_list_get_string(params, APERTURE_STR, APERTURE_DEFAULT, &aperture_val);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 			if (tpbrt_string_empty(aperture_val) == TPBRT_TRUE) {
@@ -201,10 +207,12 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (spherical_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t MAPPING_STR = TPBRT_STRING("mapping");
+		static const tpbrt_string_t MAPPING_STR		= TPBRT_STRING("mapping");
+
+		static const tpbrt_string_t MAPPING_DEFAULT = TPBRT_EMPTY_STRING;
 
 		tpbrt_string_t mapping_val;
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, MAPPING_STR, TPBRT_EMPTY_STRING, &mapping_val);
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, MAPPING_STR, MAPPING_DEFAULT, &mapping_val);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 			if (tpbrt_string_empty(mapping_val) == TPBRT_TRUE) {

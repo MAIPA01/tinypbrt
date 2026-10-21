@@ -29,108 +29,157 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
+	static tpbrt_error_t tpbrt_options_apply_disable_pixel_jitter(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_bool_t disable_pixel_jitter;
+		const tpbrt_error_t err		  = tpbrt_param_as_bool(param, &disable_pixel_jitter);
+		options->disable_pixel_jitter = disable_pixel_jitter;
+		return err;
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_disable_texture_filtering(tpbrt_options_t* const options,
+	  const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_bool_t disable_texture_filtering;
+		const tpbrt_error_t err			   = tpbrt_param_as_bool(param, &disable_texture_filtering);
+		options->disable_texture_filtering = disable_texture_filtering;
+		return err;
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_disable_wave_length_jitter(tpbrt_options_t* const options,
+	  const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_bool_t disable_wave_length_jitter;
+		const tpbrt_error_t err				= tpbrt_param_as_bool(param, &disable_wave_length_jitter);
+		options->disable_wave_length_jitter = disable_wave_length_jitter;
+		return err;
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_displacement_edge_scale(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		return tpbrt_param_as_float(param, &options->displacement_edge_scale);
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_mse_reference_image(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		return tpbrt_param_as_string(param, &options->mse_reference_image);
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_mse_reference_out(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		return tpbrt_param_as_string(param, &options->mse_reference_out);
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_render_coord_sys(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_string_t coord_str;
+		tpbrt_error_t err = tpbrt_param_as_string(param, &coord_str);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		tpbrt_coord_system_type_t render_coord_sys;
+		err = tpbrt_coord_system_type_from_string(coord_str, &render_coord_sys);
+		tpbrt_string_free(&coord_str);
+		options->render_coord_sys = render_coord_sys;
+		return err;
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_seed(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		return tpbrt_param_as_int(param, &options->seed);
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_force_diffuse(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_bool_t force_diffuse;
+		const tpbrt_error_t err = tpbrt_param_as_bool(param, &force_diffuse);
+		options->force_diffuse	= force_diffuse;
+		return err;
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_pixel_stats(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_bool_t pixel_stats;
+		const tpbrt_error_t err = tpbrt_param_as_bool(param, &pixel_stats);
+		options->pixel_stats	= pixel_stats;
+		return err;
+	}
+
+	static tpbrt_error_t tpbrt_options_apply_wavefront(tpbrt_options_t* const options, const tpbrt_param_t* param) {
+			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_bool_t wavefront;
+		const tpbrt_error_t err = tpbrt_param_as_bool(param, &wavefront);
+		options->wavefront		= wavefront;
+		return err;
+	}
+
 	tpbrt_error_t tpbrt_options_apply(tpbrt_options_t* const options, const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t DISABLE_PIXEL_JITTER = TPBRT_STRING("disablepixeljitter");
-			if (tpbrt_string_equals(param->name, DISABLE_PIXEL_JITTER)) {
-				tpbrt_bool_t disable_pixel_jitter;
-				const tpbrt_error_t err = tpbrt_param_as_bool(param, &disable_pixel_jitter);
-
-					if (err != TPBRT_ERROR_NONE) { return err; }
-
-				options->disable_pixel_jitter = disable_pixel_jitter;
-				return TPBRT_ERROR_NONE;
-			}
-
-		static const tpbrt_string_t DISABLE_TEXTURE_FILTERING = TPBRT_STRING("disabletexturefiltering");
-			if (tpbrt_string_equals(param->name, DISABLE_TEXTURE_FILTERING)) {
-				tpbrt_bool_t disable_texture_filtering;
-				const tpbrt_error_t err = tpbrt_param_as_bool(param, &disable_texture_filtering);
-
-					if (err != TPBRT_ERROR_NONE) { return err; }
-
-				options->disable_texture_filtering = disable_texture_filtering;
-				return TPBRT_ERROR_NONE;
-			}
-
+		static const tpbrt_string_t DISABLE_PIXEL_JITTER	   = TPBRT_STRING("disablepixeljitter");
+		static const tpbrt_string_t DISABLE_TEXTURE_FILTERING  = TPBRT_STRING("disabletexturefiltering");
 		static const tpbrt_string_t DISABLE_WAVE_LENGTH_JITTER = TPBRT_STRING("disablewavelengthjitter");
+		static const tpbrt_string_t DISPLACEMENT_EDGE_SCALE	   = TPBRT_STRING("displacementedgescale");
+		static const tpbrt_string_t MSE_REFERENCE_IMAGE		   = TPBRT_STRING("msereferenceimage");
+		static const tpbrt_string_t MSE_REFERENCE_OUT		   = TPBRT_STRING("msereferenceout");
+		static const tpbrt_string_t RENDER_COORD_SYS		   = TPBRT_STRING("rendercoordsys");
+		static const tpbrt_string_t SEED					   = TPBRT_STRING("seed");
+		static const tpbrt_string_t FORCE_DIFFUSE			   = TPBRT_STRING("forcediffuse");
+		static const tpbrt_string_t PIXEL_STATS				   = TPBRT_STRING("pixelstats");
+		static const tpbrt_string_t WAVEFRONT				   = TPBRT_STRING("wavefront");
+
+			if (tpbrt_string_equals(param->name, DISABLE_PIXEL_JITTER)) {
+				return tpbrt_options_apply_disable_pixel_jitter(options, param);
+			}
+
+			if (tpbrt_string_equals(param->name, DISABLE_TEXTURE_FILTERING)) {
+				return tpbrt_options_apply_disable_texture_filtering(options, param);
+			}
+
 			if (tpbrt_string_equals(param->name, DISABLE_WAVE_LENGTH_JITTER)) {
-				tpbrt_bool_t disable_wave_length_jitter;
-				const tpbrt_error_t err = tpbrt_param_as_bool(param, &disable_wave_length_jitter);
-
-					if (err != TPBRT_ERROR_NONE) { return err; }
-
-				options->disable_wave_length_jitter = disable_wave_length_jitter;
-				return TPBRT_ERROR_NONE;
+				return tpbrt_options_apply_disable_wave_length_jitter(options, param);
 			}
 
-		static const tpbrt_string_t DISPLACEMENT_EDGE_SCALE = TPBRT_STRING("displacementedgescale");
 			if (tpbrt_string_equals(param->name, DISPLACEMENT_EDGE_SCALE)) {
-				return tpbrt_param_as_float(param, &options->displacement_edge_scale);
+				return tpbrt_options_apply_displacement_edge_scale(options, param);
 			}
 
-		static const tpbrt_string_t MSE_REFERENCE_IMAGE = TPBRT_STRING("msereferenceimage");
+
 			if (tpbrt_string_equals(param->name, MSE_REFERENCE_IMAGE)) {
-				return tpbrt_param_as_string(param, &options->mse_reference_image);
+				return tpbrt_options_apply_mse_reference_image(options, param);
 			}
 
-		static const tpbrt_string_t MSE_REFERENCE_OUT = TPBRT_STRING("msereferenceout");
+
 			if (tpbrt_string_equals(param->name, MSE_REFERENCE_OUT)) {
-				return tpbrt_param_as_string(param, &options->mse_reference_out);
+				return tpbrt_options_apply_mse_reference_out(options, param);
 			}
 
-		static const tpbrt_string_t RENDER_COORD_SYS = TPBRT_STRING("rendercoordsys");
+
 			if (tpbrt_string_equals(param->name, RENDER_COORD_SYS)) {
-				tpbrt_string_t coord_str;
-				tpbrt_error_t err = tpbrt_param_as_string(param, &coord_str);
-					if (err != TPBRT_ERROR_NONE) { return err; }
-
-				tpbrt_coord_system_type_t render_coord_sys;
-				err = tpbrt_coord_system_type_from_string(coord_str, &render_coord_sys);
-				tpbrt_string_free(&coord_str);
-
-					if (err != TPBRT_ERROR_NONE) { return err; }
-
-				options->render_coord_sys = render_coord_sys;
-				return TPBRT_ERROR_NONE;
+				return tpbrt_options_apply_render_coord_sys(options, param);
 			}
 
-		static const tpbrt_string_t SEED = TPBRT_STRING("seed");
-			if (tpbrt_string_equals(param->name, SEED)) { return tpbrt_param_as_int(param, &options->seed); }
 
-		static const tpbrt_string_t FORCE_DIFFUSE = TPBRT_STRING("forcediffuse");
-			if (tpbrt_string_equals(param->name, FORCE_DIFFUSE)) {
-				tpbrt_bool_t force_diffuse;
-				const tpbrt_error_t err = tpbrt_param_as_bool(param, &force_diffuse);
+			if (tpbrt_string_equals(param->name, SEED)) { return tpbrt_options_apply_seed(options, param); }
 
-					if (err != TPBRT_ERROR_NONE) { return err; }
 
-				options->force_diffuse = force_diffuse;
-				return TPBRT_ERROR_NONE;
-			}
+			if (tpbrt_string_equals(param->name, FORCE_DIFFUSE)) { return tpbrt_options_apply_force_diffuse(options, param); }
 
-		static const tpbrt_string_t PIXEL_STATS = TPBRT_STRING("pixelstats");
-			if (tpbrt_string_equals(param->name, PIXEL_STATS)) {
-				tpbrt_bool_t pixel_stats;
-				const tpbrt_error_t err = tpbrt_param_as_bool(param, &pixel_stats);
 
-					if (err != TPBRT_ERROR_NONE) { return err; }
+			if (tpbrt_string_equals(param->name, PIXEL_STATS)) { return tpbrt_options_apply_pixel_stats(options, param); }
 
-				options->pixel_stats = pixel_stats;
-				return TPBRT_ERROR_NONE;
-			}
 
-		static const tpbrt_string_t WAVEFRONT = TPBRT_STRING("wavefront");
-			if (tpbrt_string_equals(param->name, WAVEFRONT)) {
-				tpbrt_bool_t wavefront;
-				const tpbrt_error_t err = tpbrt_param_as_bool(param, &wavefront);
-
-					if (err != TPBRT_ERROR_NONE) { return err; }
-
-				options->wavefront = wavefront;
-				return TPBRT_ERROR_NONE;
-			}
+			if (tpbrt_string_equals(param->name, WAVEFRONT)) { return tpbrt_options_apply_wavefront(options, param); }
 
 		return TPBRT_ERROR_INVALID_OPTION;
 	}

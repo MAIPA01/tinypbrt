@@ -102,8 +102,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_states_stack_push(tpbrt_states_stack_t* const stack, const tpbrt_state_t* const state) {
 			if (stack == TPBRT_NULL || state == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
+		static const tpbrt_uint_t MIN_CAPACITY = 8u;
+
 			if (stack->count >= stack->capacity) {
-				stack->capacity = stack->capacity == 0 ? 8 : stack->capacity * 2;
+				stack->capacity = stack->capacity == 0 ? MIN_CAPACITY : stack->capacity * 2u;
 				stack->states	= realloc(stack->states, stack->capacity * sizeof(tpbrt_state_t));
 			}
 		stack->states[stack->count++] = *state;

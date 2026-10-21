@@ -25,12 +25,9 @@ extern "C" {
 			}
 
 		err = tpbrt_string_copy(&object->name, name);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_object_free(object);
-				return err;
-			}
+			if (err != TPBRT_ERROR_NONE) { tpbrt_object_free(object); }
 
-		return TPBRT_ERROR_NONE;
+		return err;
 	}
 
 	tpbrt_error_t tpbrt_object_add_shape(tpbrt_object_t* const object, const tpbrt_shape_t* const shape) {

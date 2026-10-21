@@ -30,7 +30,7 @@ extern "C" {
 	tpbrt_bool_t tpbrt_vec3_equals(tpbrt_vec3_t a, tpbrt_vec3_t b);
 
 	void tpbrt_mat4_identity(tpbrt_mat4_t* m);
-	void tpbrt_mat4_from_array(tpbrt_mat4_t* m, const tpbrt_float_t arr[16]);
+	void tpbrt_mat4_from_array(tpbrt_mat4_t* m, const tpbrt_float_t arr[TPBRT_MAT4_ARRAY_SIZE]);
 	void tpbrt_mat4_from_translation(tpbrt_mat4_t* m, tpbrt_vec3_t vec);
 	void tpbrt_mat4_from_scale(tpbrt_mat4_t* m, tpbrt_vec3_t vec);
 	void tpbrt_mat4_from_axis_angle(tpbrt_mat4_t* m, tpbrt_vec3_t axis, tpbrt_float_t angle);

@@ -41,21 +41,21 @@ extern "C" {
 	  const tpbrt_params_list_t params, const tpbrt_spectrum_builtin_t current_color_space_illuminant) {
 			if (distant == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t L_STR	 = TPBRT_STRING("L");
-		static const tpbrt_string_t FROM_STR = TPBRT_STRING("from");
-		static const tpbrt_string_t TO_STR	 = TPBRT_STRING("to");
+		static const tpbrt_string_t L_STR	   = TPBRT_STRING("L");
+		static const tpbrt_string_t FROM_STR   = TPBRT_STRING("from");
+		static const tpbrt_string_t TO_STR	   = TPBRT_STRING("to");
 
-		tpbrt_error_t err =
-		  tpbrt_params_list_get_spectrum(params, L_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &distant->l);
+		const tpbrt_spectrum_t l_default	   = TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant);
+		static const tpbrt_vec3_t FROM_DEFAULT = TPBRT_VEC3(0.0f, 0.0f, 0.0f);
+		static const tpbrt_vec3_t TO_DEFAULT   = TPBRT_VEC3(0.0f, 0.0f, 1.0f);
+
+		tpbrt_error_t err					   = tpbrt_params_list_get_spectrum(params, L_STR, l_default, &distant->l);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point(params, FROM_STR, TPBRT_VEC3(0.0f, 0.0f, 0.0f), &distant->from);
+		err = tpbrt_params_list_get_point(params, FROM_STR, FROM_DEFAULT, &distant->from);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point(params, TO_STR, TPBRT_VEC3(0.0f, 0.0f, 1.0f), &distant->to);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-
-		return TPBRT_ERROR_NONE;
+		return tpbrt_params_list_get_point(params, TO_STR, TO_DEFAULT, &distant->to);
 	}
 
 	static tpbrt_error_t tpbrt_light_source_read_goniometric(tpbrt_light_source_goniometric_params_t* const goniometric,
@@ -65,25 +65,26 @@ extern "C" {
 		static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
 		static const tpbrt_string_t I_STR		  = TPBRT_STRING("I");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &goniometric->file_name);
+		const tpbrt_spectrum_t i_default		  = TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant);
+
+		const tpbrt_error_t err = tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &goniometric->file_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err =
-		  tpbrt_params_list_get_spectrum(params, I_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &goniometric->i);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-
-		return TPBRT_ERROR_NONE;
+		return tpbrt_params_list_get_spectrum(params, I_STR, i_default, &goniometric->i);
 	}
 
 	static tpbrt_error_t tpbrt_light_source_read_infinite(tpbrt_light_source_infinite_params_t* const infinite,
 	  const tpbrt_params_list_t params, const tpbrt_spectrum_builtin_t current_color_space_illuminant) {
 			if (infinite == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
-		static const tpbrt_string_t PORTAL_STR	  = TPBRT_STRING("portal");
-		static const tpbrt_string_t L_STR		  = TPBRT_STRING("L");
+		static const tpbrt_string_t FILE_NAME_STR	  = TPBRT_STRING("filename");
+		static const tpbrt_string_t PORTAL_STR		  = TPBRT_STRING("portal");
+		static const tpbrt_string_t L_STR			  = TPBRT_STRING("L");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &infinite->file_name);
+		static const tpbrt_string_t FILE_NAME_DEFAULT = TPBRT_EMPTY_STRING;
+		const tpbrt_spectrum_t l_default			  = TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant);
+
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, FILE_NAME_DEFAULT, &infinite->file_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		tpbrt_point3_array_t points;
@@ -95,27 +96,23 @@ extern "C" {
 				tpbrt_vec3_array_free(&points);
 			}
 
-		err = tpbrt_params_list_get_spectrum(params, L_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &infinite->l);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-
-		return TPBRT_ERROR_NONE;
+		return tpbrt_params_list_get_spectrum(params, L_STR, l_default, &infinite->l);
 	}
 
 	static tpbrt_error_t tpbrt_light_source_read_point(tpbrt_light_source_point_params_t* const point,
 	  const tpbrt_params_list_t params, const tpbrt_spectrum_builtin_t current_color_space_illuminant) {
 			if (point == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t I_STR	 = TPBRT_STRING("I");
-		static const tpbrt_string_t FROM_STR = TPBRT_STRING("from");
+		static const tpbrt_string_t I_STR	   = TPBRT_STRING("I");
+		static const tpbrt_string_t FROM_STR   = TPBRT_STRING("from");
 
-		tpbrt_error_t err =
-		  tpbrt_params_list_get_spectrum(params, I_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &point->i);
+		const tpbrt_spectrum_t i_default	   = TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant);
+		static const tpbrt_vec3_t FROM_DEFAULT = TPBRT_VEC3(0.0f, 0.0f, 0.0f);
+
+		const tpbrt_error_t err				   = tpbrt_params_list_get_spectrum(params, I_STR, i_default, &point->i);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point(params, FROM_STR, TPBRT_VEC3(0.0f, 0.0f, 0.0f), &point->from);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-
-		return TPBRT_ERROR_NONE;
+		return tpbrt_params_list_get_point(params, FROM_STR, FROM_DEFAULT, &point->from);
 	}
 
 	static tpbrt_error_t tpbrt_light_source_read_projection(tpbrt_light_source_projection_params_t* const projection,
@@ -126,12 +123,13 @@ extern "C" {
 		static const tpbrt_string_t FOV_STR		  = TPBRT_STRING("fov");
 		static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
 
-		tpbrt_error_t err =
-		  tpbrt_params_list_get_spectrum(params, I_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &projection->i);
+		const tpbrt_spectrum_t i_default		  = TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant);
+		static const tpbrt_float_t FOV_DEFAULT	  = 90.0f;
+
+		tpbrt_error_t err						  = tpbrt_params_list_get_spectrum(params, I_STR, i_default, &projection->i);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_float_t FOV_DEFAULT = 90.0f;
-		err									   = tpbrt_params_list_get_float(params, FOV_STR, FOV_DEFAULT, &projection->fov);
+		err = tpbrt_params_list_get_float(params, FOV_STR, FOV_DEFAULT, &projection->fov);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		return tpbrt_params_list_get_string_required(params, FILE_NAME_STR, &projection->file_name);
@@ -141,27 +139,30 @@ extern "C" {
 	  const tpbrt_params_list_t params, const tpbrt_spectrum_builtin_t current_color_space_illuminant) {
 			if (spot == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t I_STR				 = TPBRT_STRING("I");
-		static const tpbrt_string_t FROM_STR			 = TPBRT_STRING("from");
-		static const tpbrt_string_t TO_STR				 = TPBRT_STRING("to");
-		static const tpbrt_string_t CONE_ANGLE_STR		 = TPBRT_STRING("coneangle");
-		static const tpbrt_string_t CONE_DELTA_ANGLE_STR = TPBRT_STRING("conedeltaangle");
+		static const tpbrt_string_t I_STR					= TPBRT_STRING("I");
+		static const tpbrt_string_t FROM_STR				= TPBRT_STRING("from");
+		static const tpbrt_string_t TO_STR					= TPBRT_STRING("to");
+		static const tpbrt_string_t CONE_ANGLE_STR			= TPBRT_STRING("coneangle");
+		static const tpbrt_string_t CONE_DELTA_ANGLE_STR	= TPBRT_STRING("conedeltaangle");
 
-		tpbrt_error_t err =
-		  tpbrt_params_list_get_spectrum(params, I_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &spot->i);
+		const tpbrt_spectrum_t i_default					= TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant);
+		static const tpbrt_vec3_t FROM_DEFAULT				= TPBRT_VEC3(0.0f, 0.0f, 0.0f);
+		static const tpbrt_vec3_t TO_DEFAULT				= TPBRT_VEC3(0.0f, 0.0f, 1.0f);
+		static const tpbrt_float_t CONE_ANGLE_DEFAULT		= 30.0f;
+		static const tpbrt_float_t CONE_DELTA_ANGLE_DEFAULT = 5.0f;
+
+		tpbrt_error_t err									= tpbrt_params_list_get_spectrum(params, I_STR, i_default, &spot->i);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point(params, FROM_STR, TPBRT_VEC3(0.0f, 0.0f, 0.0f), &spot->from);
+		err = tpbrt_params_list_get_point(params, FROM_STR, FROM_DEFAULT, &spot->from);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_point(params, TO_STR, TPBRT_VEC3(0.0f, 0.0f, 1.0f), &spot->to);
+		err = tpbrt_params_list_get_point(params, TO_STR, TO_DEFAULT, &spot->to);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_float_t CONE_ANGLE_DEFAULT = 30.0f;
 		err = tpbrt_params_list_get_float(params, CONE_ANGLE_STR, CONE_ANGLE_DEFAULT, &spot->cone_angle);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_float_t CONE_DELTA_ANGLE_DEFAULT = 5.0f;
 		return tpbrt_params_list_get_float(params, CONE_DELTA_ANGLE_STR, CONE_DELTA_ANGLE_DEFAULT, &spot->cone_delta_angle);
 	}
 
@@ -189,6 +190,8 @@ extern "C" {
 		static const tpbrt_string_t ILLUMINANCE_STR = TPBRT_STRING("illuminance");
 		static const tpbrt_string_t SCALE_STR		= TPBRT_STRING("scale");
 
+		static const tpbrt_float_t SCALE_DEFAULT	= 1.0f;
+
 		err = tpbrt_params_list_get_opt_float(params, POWER_STR, &light_source->power_illuminance);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_light_source_free(light_source);
@@ -203,7 +206,7 @@ extern "C" {
 					}
 			}
 
-		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &light_source->scale);
+		err = tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &light_source->scale);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_light_source_free(light_source);
 				return err;
@@ -338,22 +341,25 @@ extern "C" {
 	  const tpbrt_params_list_t params, const tpbrt_spectrum_builtin_t current_color_space_illuminant) {
 			if (diffuse == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t FILE_NAME_STR = TPBRT_STRING("filename");
-		static const tpbrt_string_t L_STR		  = TPBRT_STRING("L");
-		static const tpbrt_string_t TWO_SIDED_STR = TPBRT_STRING("twosided");
+		static const tpbrt_string_t FILE_NAME_STR	  = TPBRT_STRING("filename");
+		static const tpbrt_string_t L_STR			  = TPBRT_STRING("L");
+		static const tpbrt_string_t TWO_SIDED_STR	  = TPBRT_STRING("twosided");
 
-		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, TPBRT_EMPTY_STRING, &diffuse->file_name);
+		static const tpbrt_string_t FILE_NAME_DEFAULT = TPBRT_EMPTY_STRING;
+		const tpbrt_spectrum_t l_default			  = TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant);
+		static const tpbrt_bool_t TWO_SIDED_DEFAULT	  = TPBRT_FALSE;
+
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, FILE_NAME_STR, FILE_NAME_DEFAULT, &diffuse->file_name);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_spectrum(params, L_STR, TPBRT_SPECTRUM_BUILTIN(current_color_space_illuminant), &diffuse->l);
+		err = tpbrt_params_list_get_spectrum(params, L_STR, l_default, &diffuse->l);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		tpbrt_bool_t two_sided;
-		err = tpbrt_params_list_get_bool(params, TWO_SIDED_STR, TPBRT_FALSE, &two_sided);
-			if (err != TPBRT_ERROR_NONE) { return err; }
+		err				   = tpbrt_params_list_get_bool(params, TWO_SIDED_STR, TWO_SIDED_DEFAULT, &two_sided);
 		diffuse->two_sided = two_sided;
 
-		return TPBRT_ERROR_NONE;
+		return err;
 	}
 
 	tpbrt_error_t tpbrt_area_light_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
@@ -368,18 +374,20 @@ extern "C" {
 				tpbrt_area_light_free(area_light);
 				return err;
 			}
-		area_light->type					  = area_light_type;
+		area_light->type						 = area_light_type;
 
-		static const tpbrt_string_t POWER_STR = TPBRT_STRING("power");
-		static const tpbrt_string_t SCALE_STR = TPBRT_STRING("scale");
+		static const tpbrt_string_t POWER_STR	 = TPBRT_STRING("power");
+		static const tpbrt_string_t SCALE_STR	 = TPBRT_STRING("scale");
 
-		err									  = tpbrt_params_list_get_opt_float(params, POWER_STR, &area_light->power);
+		static const tpbrt_float_t SCALE_DEFAULT = 1.0f;
+
+		err										 = tpbrt_params_list_get_opt_float(params, POWER_STR, &area_light->power);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_area_light_free(area_light);
 				return err;
 			}
 
-		err = tpbrt_params_list_get_float(params, SCALE_STR, 1.0f, &area_light->scale);
+		err = tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &area_light->scale);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_area_light_free(area_light);
 				return err;

@@ -19,12 +19,9 @@ extern "C" {
 		instance->transform		= transform;
 
 		const tpbrt_error_t err = tpbrt_objects_list_get_handle(objects, object_name, &instance->object);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_object_instance_free(instance);
-				return err;
-			}
+			if (err != TPBRT_ERROR_NONE) { tpbrt_object_instance_free(instance); }
 
-		return TPBRT_ERROR_NONE;
+		return err;
 	}
 
 	void tpbrt_object_instance_free(tpbrt_object_instance_t* const instance) {

@@ -44,10 +44,10 @@ TEST(scene_shapes, trianglemesh) {
 	/* clang-format on */
 	ASSERT_TRUE(s.ok()) << s.error();
 	const tpbrt_shape_triangle_mesh_params_t& m = s->shapes.shapes[0].as.triangle_mesh;
-	EXPECT_EQ(m.P.count, 4u);
+	EXPECT_EQ(m.p.count, 4u);
 	EXPECT_EQ(m.indices.count, 6u);
 	EXPECT_EQ(m.uv.count, 4u);
-	EXPECT_EQ(m.N.count, 4u);
+	EXPECT_EQ(m.n.count, 4u);
 	EXPECT_EQ(m.indices.data[5], 3u);
 }
 
@@ -84,7 +84,7 @@ TEST(scene_shapes, bilinearmesh) {
 	/* clang-format on */
 	ASSERT_TRUE(s.ok()) << s.error();
 	const tpbrt_shape_bilinear_mesh_params_t& m = s->shapes.shapes[0].as.bilinear_mesh;
-	EXPECT_EQ(m.P.count, 6u);
+	EXPECT_EQ(m.p.count, 6u);
 	EXPECT_EQ(m.indices.count, 8u);
 }
 
@@ -104,7 +104,7 @@ TEST(scene_shapes, curve_defaults) {
 	const tpbrt_shape_curve_params_t& c = s->shapes.shapes[0].as.curve;
 	EXPECT_EQ(c.basis, TPBRT_SHAPE_CURVE_BASIS_BEZIER);
 	EXPECT_EQ(c.type, TPBRT_SHAPE_CURVE_TYPE_FLAT);
-	EXPECT_FLOAT_EQ(c.P[3].x, 3.0f);
+	EXPECT_FLOAT_EQ(c.p[3].x, 3.0f);
 }
 
 TEST(scene_shapes, curve_explicit_basis_and_type) {

@@ -75,7 +75,7 @@ extern "C" {
 	} tpbrt_vec3_array_t;
 
 	typedef struct tpbrt_mat4_t {
-		tpbrt_float_t m[16];
+		tpbrt_float_t m[TPBRT_MAT4_ARRAY_SIZE];
 	} tpbrt_mat4_t;
 
 	typedef struct tpbrt_mat4_animated_t {

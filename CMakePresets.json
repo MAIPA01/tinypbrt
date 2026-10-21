@@ -2,7 +2,7 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "cpp-base",
+      "name": "base",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang.exe",
@@ -24,7 +24,7 @@
     {
       "name": "windows-base",
       "description": "System Windows ze środowiskiem programistycznym programu Visual Studio jako element docelowy.",
-      "inherits": "cpp-base",
+      "inherits": "base",
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
@@ -46,13 +46,6 @@
       "hidden": true,
       "cacheVariables": {
         "CMAKE_C_STANDARD": "11"
-      }
-    },
-    {
-      "name": "cpp11",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "11"
       }
     },
     {
@@ -102,46 +95,22 @@
       "inherits": ["windows-base", "c11", "x64", "debug"]
     },
     {
-      "name": "x64-debug-cpp11",
-      "displayName": "x64 Debug C++11",
-      "description": "Docelowy system Windows (64-bitowy). (Debug)",
-      "inherits": ["windows-base", "cpp11", "x64", "debug"]
-    },
-    {
       "name": "x64-release-c11",
       "displayName": "x64 Release C11",
       "description": "Docelowy system Windows (64-bitowy). (RelWithDebInfo)",
       "inherits": ["release", "x64-debug-c11"]
     },
     {
-      "name": "x64-release-cpp11",
-      "displayName": "x64 Release C++11",
-      "description": "Docelowy system Windows (64-bitowy). (RelWithDebInfo)",
-      "inherits": ["release", "x64-debug-cpp11"]
-    },
-    {
       "name": "x86-debug-c11",
-      "displayName": "x86 Debug C++11",
+      "displayName": "x86 Debug C11",
       "description": "Docelowy system Windows (32-bitowy). (Debug)",
       "inherits": ["windows-base", "x86", "c11", "debug"]
-    },
-    {
-      "name": "x86-debug-cpp11",
-      "displayName": "x86 Debug C++11",
-      "description": "Docelowy system Windows (32-bitowy). (Debug)",
-      "inherits": ["windows-base", "x86", "cpp11", "debug"]
     },
     {
       "name": "x86-release-c11",
       "displayName": "x86 Release C11",
       "description": "Docelowy systemu Windows (32-bitowy). (RelWithDebInfo)",
       "inherits": ["release", "x86-debug-c11"]
-    },
-    {
-      "name": "x86-release-cpp11",
-      "displayName": "x86 Release C++11",
-      "description": "Docelowy systemu Windows (32-bitowy). (RelWithDebInfo)",
-      "inherits": ["release", "x86-debug-cpp11"]
     },
     {
       "name": "sanitizers",
@@ -162,7 +131,7 @@
     {
       "name": "linux-base",
       "hidden": true,
-      "inherits": "cpp-base",
+      "inherits": "base",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {

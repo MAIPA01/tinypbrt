@@ -51,8 +51,9 @@ extern "C" {
 			}
 
 			if (map->count >= map->capacity) {
-				map->capacity = map->capacity == 0 ? 8 : map->capacity * 2;
-				map->entries  = realloc(map->entries, map->capacity * sizeof(tpbrt_coord_system_map_entry_t));
+				static const tpbrt_uint_t DEFAULT_MIN_CAPACITY = 8u;
+				map->capacity								   = map->capacity == 0 ? DEFAULT_MIN_CAPACITY : map->capacity * 2u;
+				map->entries = realloc(map->entries, map->capacity * sizeof(tpbrt_coord_system_map_entry_t));
 			}
 		map->entries[map->count++] = entry;
 

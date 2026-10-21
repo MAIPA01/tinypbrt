@@ -84,27 +84,32 @@ extern "C" {
 
 		token->value = value;
 		tpbrt_directive_t directive;
-			if (tpbrt_directive_from_string(value, &directive) == TPBRT_ERROR_NONE) { token->type = TPBRT_TOKEN_TYPE_DIRECTIVE; }
+			if (tpbrt_directive_from_string(value, &directive) == TPBRT_ERROR_NONE) {
+				token->type		 = TPBRT_TOKEN_TYPE_DIRECTIVE;
+				token->directive = directive;
+			}
 			else if (value.size >= 2 && value.data[0] == '\"' && value.data[value.size - 1] == '\"') {
 				token->type = TPBRT_TOKEN_TYPE_QUOTED_STRING;
 			}
 			else { token->type = TPBRT_TOKEN_TYPE_SINGLE; }
-		token->directive = directive;
 		return TPBRT_ERROR_NONE;
 	}
 
 	tpbrt_size_t tpbrt_token_size(const tpbrt_token_t* const token) { return token != TPBRT_NULL ? token->value.size : 0u; }
 
 	tpbrt_bool_t tpbrt_token_is_quoted_string(const tpbrt_token_t* const token) {
-		return token != TPBRT_NULL ? (token->type == TPBRT_TOKEN_TYPE_QUOTED_STRING ? TPBRT_TRUE : TPBRT_FALSE) : TPBRT_FALSE;
+			if (token == TPBRT_NULL) { return TPBRT_FALSE; }
+		return token->type == TPBRT_TOKEN_TYPE_QUOTED_STRING ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
 	tpbrt_bool_t tpbrt_token_is_directive(const tpbrt_token_t* const token) {
-		return token != TPBRT_NULL ? (token->type == TPBRT_TOKEN_TYPE_DIRECTIVE ? TPBRT_TRUE : TPBRT_FALSE) : TPBRT_FALSE;
+			if (token == TPBRT_NULL) { return TPBRT_FALSE; }
+		return token->type == TPBRT_TOKEN_TYPE_DIRECTIVE ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
 	tpbrt_bool_t tpbrt_token_is_single(const tpbrt_token_t* const token) {
-		return token != TPBRT_NULL ? (token->type == TPBRT_TOKEN_TYPE_SINGLE ? TPBRT_TRUE : TPBRT_FALSE) : TPBRT_FALSE;
+			if (token == TPBRT_NULL) { return TPBRT_FALSE; }
+		return token->type == TPBRT_TOKEN_TYPE_SINGLE ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
 	tpbrt_bool_t tpbrt_token_is_open_brace(const tpbrt_token_t* const token) {

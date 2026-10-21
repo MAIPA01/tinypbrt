@@ -66,7 +66,7 @@ TEST(scene_basic, spec_example) {
 
 	const tpbrt_shape_t& mesh = s->shapes.shapes[1];
 	ASSERT_EQ(mesh.type, TPBRT_SHAPE_TYPE_BILINEAR_MESH);
-	EXPECT_EQ(mesh.as.bilinear_mesh.P.count, 4u);
+	EXPECT_EQ(mesh.as.bilinear_mesh.p.count, 4u);
 	EXPECT_EQ(mesh.as.bilinear_mesh.indices.count, 4u);
 	EXPECT_EQ(mesh.as.bilinear_mesh.uv.count, 4u);
 	TPBRT_EXPECT_VEC3_NEAR(origin(*s, mesh.transform.start_transform), 0.0f, 0.0f, -1.0f);
