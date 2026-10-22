@@ -15,22 +15,22 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_param_type_from_string(const tpbrt_string_t type_str, tpbrt_param_type_t* const type_out) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_PARAM_TYPE_MAX_NUM] = {
-			TPBRT_STRING("integer"),
-			TPBRT_STRING("float"),
-			TPBRT_STRING("point2"),
-			TPBRT_STRING("vector2"),
-			TPBRT_STRING("point3"),
-			TPBRT_STRING("point"),
-			TPBRT_STRING("vector3"),
-			TPBRT_STRING("vector"),
-			TPBRT_STRING("normal3"),
-			TPBRT_STRING("normal"),
-			TPBRT_STRING("spectrum"),
-			TPBRT_STRING("rgb"),
-			TPBRT_STRING("blackbody"),
-			TPBRT_STRING("bool"),
-			TPBRT_STRING("string"),
-			TPBRT_STRING("texture"),
+			TPBRT_STRING_INIT("integer"),
+			TPBRT_STRING_INIT("float"),
+			TPBRT_STRING_INIT("point2"),
+			TPBRT_STRING_INIT("vector2"),
+			TPBRT_STRING_INIT("point3"),
+			TPBRT_STRING_INIT("point"),
+			TPBRT_STRING_INIT("vector3"),
+			TPBRT_STRING_INIT("vector"),
+			TPBRT_STRING_INIT("normal3"),
+			TPBRT_STRING_INIT("normal"),
+			TPBRT_STRING_INIT("spectrum"),
+			TPBRT_STRING_INIT("rgb"),
+			TPBRT_STRING_INIT("blackbody"),
+			TPBRT_STRING_INIT("bool"),
+			TPBRT_STRING_INIT("string"),
+			TPBRT_STRING_INIT("texture"),
 		};
 
 			if (type_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -54,7 +54,7 @@ extern "C" {
 			if (memset(param, 0, sizeof(tpbrt_param_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			// declaration -> "type name"
-			if (tpbrt_string_empty(declaration)) { return TPBRT_ERROR_INVALID_PARAM_TYPE; }
+			if (tpbrt_string_empty(declaration) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_PARAM_TYPE; }
 
 		tpbrt_string_t token		  = declaration;
 		const tpbrt_char_t* end		  = declaration.data + declaration.size;
@@ -85,8 +85,7 @@ extern "C" {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_STRING_ARRAY;
 				return TPBRT_ERROR_INVALID_PARAM_TYPE;
 			}
 
@@ -100,8 +99,7 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_STRING_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
@@ -178,7 +176,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_bools(const tpbrt_param_t* const param, tpbrt_bool_array_t* const out_vals) {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				*out_vals = TPBRT_EMPTY_BOOL_ARRAY;
+				return TPBRT_ERROR_INVALID_OBJECT_TYPE;
+			}
 
 		tpbrt_size_t count		= 0;
 		tpbrt_string_t token	= param->value;
@@ -190,8 +191,7 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_BOOL_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
@@ -199,11 +199,10 @@ extern "C" {
 			if (out_vals->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 		out_vals->count	 = count;
 
-
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_bool_value(token, &out_vals->data[idx])) {
+					if (tpbrt_read_bool_value(token, &out_vals->data[idx]) == TPBRT_FALSE) {
 						tpbrt_bool_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_BOOL;
 					}
@@ -254,7 +253,7 @@ extern "C" {
 
 		const tpbrt_string_t token = tpbrt_next_value(param->value.data, param->value.data + param->value.size);
 			if (token.data == TPBRT_NULL) { return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER; }
-			if (!tpbrt_read_bool_value(token, out_val)) { return TPBRT_ERROR_PARSE_BOOL; }
+			if (tpbrt_read_bool_value(token, out_val) == TPBRT_FALSE) { return TPBRT_ERROR_PARSE_BOOL; }
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -265,7 +264,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_floats(const tpbrt_param_t* const param, tpbrt_float_array_t* const out_vals) {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				*out_vals = TPBRT_EMPTY_FLOAT_ARRAY;
+				return TPBRT_ERROR_INVALID_OBJECT_TYPE;
+			}
 
 		tpbrt_size_t count		= 0;
 		tpbrt_string_t token	= param->value;
@@ -277,8 +279,7 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_FLOAT_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
@@ -289,7 +290,7 @@ extern "C" {
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx])) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx]) == TPBRT_FALSE) {
 						tpbrt_float_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_FLOAT;
 					}
@@ -340,7 +341,7 @@ extern "C" {
 
 		const tpbrt_string_t token = tpbrt_next_value(param->value.data, param->value.data + param->value.size);
 			if (token.data == TPBRT_NULL) { return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER; }
-			if (!tpbrt_read_float_value(token, out_val)) { return TPBRT_ERROR_PARSE_FLOAT; }
+			if (tpbrt_read_float_value(token, out_val) == TPBRT_FALSE) { return TPBRT_ERROR_PARSE_FLOAT; }
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -351,7 +352,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_ints(const tpbrt_param_t* const param, tpbrt_int_array_t* const out_vals) {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				*out_vals = TPBRT_EMPTY_INT_ARRAY;
+				return TPBRT_ERROR_INVALID_OBJECT_TYPE;
+			}
 
 		tpbrt_size_t count		= 0;
 		tpbrt_string_t token	= param->value;
@@ -363,8 +367,7 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_INT_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
@@ -375,7 +378,7 @@ extern "C" {
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_int_value(token, &out_vals->data[idx])) {
+					if (tpbrt_read_int_value(token, &out_vals->data[idx]) == TPBRT_FALSE) {
 						tpbrt_int_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_INT;
 					}
@@ -426,7 +429,7 @@ extern "C" {
 
 		const tpbrt_string_t token = tpbrt_next_value(param->value.data, param->value.data + param->value.size);
 			if (token.data == TPBRT_NULL) { return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER; }
-			if (!tpbrt_read_int_value(token, out_val)) { return TPBRT_ERROR_PARSE_INT; }
+			if (tpbrt_read_int_value(token, out_val) == TPBRT_FALSE) { return TPBRT_ERROR_PARSE_INT; }
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -437,7 +440,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_uints(const tpbrt_param_t* const param, tpbrt_uint_array_t* const out_vals) {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				*out_vals = TPBRT_EMPTY_UINT_ARRAY;
+				return TPBRT_ERROR_INVALID_OBJECT_TYPE;
+			}
 
 		tpbrt_size_t count		= 0;
 		tpbrt_string_t token	= param->value;
@@ -449,8 +455,7 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_UINT_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
@@ -461,7 +466,7 @@ extern "C" {
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_uint_value(token, &out_vals->data[idx])) {
+					if (tpbrt_read_uint_value(token, &out_vals->data[idx]) == TPBRT_FALSE) {
 						tpbrt_uint_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_UINT;
 					}
@@ -512,7 +517,7 @@ extern "C" {
 
 		const tpbrt_string_t token = tpbrt_next_value(param->value.data, param->value.data + param->value.size);
 			if (token.data == TPBRT_NULL) { return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER; }
-			if (!tpbrt_read_uint_value(token, out_val)) { return TPBRT_ERROR_PARSE_UINT; }
+			if (tpbrt_read_uint_value(token, out_val) == TPBRT_FALSE) { return TPBRT_ERROR_PARSE_UINT; }
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -540,7 +545,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_wavelengths(const tpbrt_param_t* const param, tpbrt_wavelength_array_t* const out_vals) {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				*out_vals = TPBRT_EMPTY_WAVELENGTHS_ARRAY;
+				return TPBRT_ERROR_INVALID_OBJECT_TYPE;
+			}
 
 		tpbrt_size_t count		= 0;
 		tpbrt_string_t token	= param->value;
@@ -552,14 +560,12 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_WAVELENGTHS_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
 			if (count % 2 != 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_WAVELENGTHS_ARRAY;
 				return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 			}
 
@@ -672,7 +678,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_vec2s(const tpbrt_param_t* const param, tpbrt_vec2_array_t* const out_vals) {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				*out_vals = TPBRT_EMPTY_VEC2_ARRAY;
+				return TPBRT_ERROR_INVALID_OBJECT_TYPE;
+			}
 
 		tpbrt_size_t count		= 0;
 		tpbrt_string_t token	= param->value;
@@ -684,14 +693,12 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_VEC2_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
 			if (count % 2 != 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_VEC2_ARRAY;
 				return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 			}
 
@@ -704,14 +711,14 @@ extern "C" {
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx].x)) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx].x) == TPBRT_FALSE) {
 						tpbrt_vec2_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_FLOAT;
 					}
 				token.data += token.size;
 
 				token = tpbrt_next_value(token.data, end);
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx].y)) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx].y) == TPBRT_FALSE) {
 						tpbrt_vec2_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_FLOAT;
 					}
@@ -778,7 +785,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_param_as_vec3s(const tpbrt_param_t* const param, tpbrt_vec3_array_t* const out_vals) {
 			if (param == TPBRT_NULL || out_vals == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
+			if (param->value_type != TPBRT_PARAM_VALUE_TYPE_ARRAY) {
+				*out_vals = TPBRT_EMPTY_VEC3_ARRAY;
+				return TPBRT_ERROR_INVALID_OBJECT_TYPE;
+			}
 
 		tpbrt_size_t count		= 0;
 		tpbrt_string_t token	= param->value;
@@ -790,14 +800,12 @@ extern "C" {
 			}
 
 			if (count == 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_VEC3_ARRAY;
 				return TPBRT_ERROR_NONE;
 			}
 
 			if (count % 3 != 0) {
-				out_vals->data	= TPBRT_NULL;
-				out_vals->count = 0;
+				*out_vals = TPBRT_EMPTY_VEC3_ARRAY;
 				return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
 			}
 
@@ -810,21 +818,21 @@ extern "C" {
 		token.data		 = param->value.data;
 		tpbrt_size_t idx = 0;
 			while ((token = tpbrt_next_value(token.data, end)).data != TPBRT_NULL) {
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx].x)) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx].x) == TPBRT_FALSE) {
 						tpbrt_vec3_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_FLOAT;
 					}
 				token.data += token.size;
 
 				token = tpbrt_next_value(token.data, end);
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx].y)) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx].y) == TPBRT_FALSE) {
 						tpbrt_vec3_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_FLOAT;
 					}
 				token.data += token.size;
 
 				token = tpbrt_next_value(token.data, end);
-					if (!tpbrt_read_float_value(token, &out_vals->data[idx].z)) {
+					if (tpbrt_read_float_value(token, &out_vals->data[idx].z) == TPBRT_FALSE) {
 						tpbrt_vec3_array_free(out_vals);
 						return TPBRT_ERROR_PARSE_FLOAT;
 					}
@@ -1101,10 +1109,10 @@ extern "C" {
 	  tpbrt_param_t** const param) {
 			if (param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(param_name)) { return TPBRT_ERROR_INVALID_PARAM_NAME; }
+			if (tpbrt_string_empty(param_name) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_PARAM_NAME; }
 
 			for (tpbrt_size_t i = 0; i < params_list.count; i++) {
-					if (tpbrt_string_equals(params_list.params[i].name, param_name)) {
+					if (tpbrt_string_equals(params_list.params[i].name, param_name) == TPBRT_TRUE) {
 						*param = &params_list.params[i];
 						return TPBRT_ERROR_NONE;
 					}

@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_error_t : uint8_t {
+	typedef enum tpbrt_error_t {
 		TPBRT_ERROR_NONE									  = 0,
 		TPBRT_ERROR_END_OF_FILE								  = 1,
 		TPBRT_ERROR_INVALID_TOKEN							  = 2,

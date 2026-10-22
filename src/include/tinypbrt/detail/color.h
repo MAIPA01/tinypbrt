@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_color_space_t : uint8_t {
+	typedef enum tpbrt_color_space_t {
 		TPBRT_COLOR_SPACE_ACES_2065_1 = 0,
 		TPBRT_COLOR_SPACE_REC_2020	  = 1,
 		TPBRT_COLOR_SPACE_DCI_P3	  = 2,
@@ -19,7 +19,7 @@ extern "C" {
 		TPBRT_COLOR_SPACE_MAX_NUM	  = 4,
 	} tpbrt_color_space_t;
 
-	typedef enum tpbrt_spectrum_type_t : uint8_t {
+	typedef enum tpbrt_spectrum_type_t {
 		TPBRT_SPECTRUM_TYPE_WAVELENGTHS = 0,
 		TPBRT_SPECTRUM_TYPE_RGB			= 1,
 		TPBRT_SPECTRUM_TYPE_BLACKBODY	= 2,
@@ -39,7 +39,7 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_wavelength_array_t;
 
-	typedef enum tpbrt_spectrum_builtin_t : uint8_t {
+	typedef enum tpbrt_spectrum_builtin_t {
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BK7	   = 0,
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BAF10	   = 1,
 		TPBRT_SPECTRUM_BUILTIN_GLASS_FK51A	   = 2,
@@ -86,11 +86,11 @@ extern "C" {
 			tpbrt_rgb_t rgb;
 			tpbrt_blackbody_t blackbody;
 			tpbrt_string_t file_name;
-			tpbrt_spectrum_builtin_t builtin : 6;
+			tpbrt_spectrum_builtin_t builtin : 7;
 			tpbrt_float_t constant;
 		} as;
 
-		tpbrt_spectrum_type_t type : 3;
+		tpbrt_spectrum_type_t type : 4;
 	} tpbrt_spectrum_t;
 
 #ifdef __cplusplus

@@ -13,9 +13,9 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_coord_system_type_from_string(const tpbrt_string_t coord_str, tpbrt_coord_system_type_t* const coord) {
 		static const tpbrt_string_t COORDS_STRS[TPBRT_COORD_SYSTEM_TYPE_MAX_NUM] = {
-			TPBRT_STRING("cameraworld"),
-			TPBRT_STRING("camera"),
-			TPBRT_STRING("world"),
+			TPBRT_STRING_INIT("cameraworld"),
+			TPBRT_STRING_INIT("camera"),
+			TPBRT_STRING_INIT("world"),
 		};
 
 			if (coord == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }

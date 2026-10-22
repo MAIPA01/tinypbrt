@@ -42,8 +42,8 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_read_bool_value(const tpbrt_string_t value_str, tpbrt_bool_t* const out_val) {
-		static const tpbrt_string_t TRUE_STR  = TPBRT_STRING("true");
-		static const tpbrt_string_t FALSE_STR = TPBRT_STRING("false");
+		static const tpbrt_string_t TRUE_STR  = TPBRT_STRING_INIT("true");
+		static const tpbrt_string_t FALSE_STR = TPBRT_STRING_INIT("false");
 
 			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 4u || out_val == TPBRT_NULL) {
 				return TPBRT_FALSE;

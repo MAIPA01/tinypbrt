@@ -22,8 +22,8 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_texture_type_from_string(const tpbrt_string_t type_str, tpbrt_texture_type_t* const type_out) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_TEXTURE_TYPE_MAX_NUM] = {
-			TPBRT_STRING("float"),
-			TPBRT_STRING("spectrum"),
+			TPBRT_STRING_INIT("float"),
+			TPBRT_STRING_INIT("spectrum"),
 		};
 
 			if (type_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -42,19 +42,19 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_texture_class_from_string(const tpbrt_string_t class_str, tpbrt_texture_class_t* const class_out) {
 		static const tpbrt_string_t CLASSES_STRS[TPBRT_TEXTURE_CLASS_MAX_NUM] = {
-			TPBRT_STRING("bilerp"),
-			TPBRT_STRING("checkerboard"),
-			TPBRT_STRING("constant"),
-			TPBRT_STRING("directionmix"),
-			TPBRT_STRING("dots"),
-			TPBRT_STRING("fbm"),
-			TPBRT_STRING("imagemap"),
-			TPBRT_STRING("marble"),
-			TPBRT_STRING("mix"),
-			TPBRT_STRING("ptex"),
-			TPBRT_STRING("scale"),
-			TPBRT_STRING("windy"),
-			TPBRT_STRING("wrinkled"),
+			TPBRT_STRING_INIT("bilerp"),
+			TPBRT_STRING_INIT("checkerboard"),
+			TPBRT_STRING_INIT("constant"),
+			TPBRT_STRING_INIT("directionmix"),
+			TPBRT_STRING_INIT("dots"),
+			TPBRT_STRING_INIT("fbm"),
+			TPBRT_STRING_INIT("imagemap"),
+			TPBRT_STRING_INIT("marble"),
+			TPBRT_STRING_INIT("mix"),
+			TPBRT_STRING_INIT("ptex"),
+			TPBRT_STRING_INIT("scale"),
+			TPBRT_STRING_INIT("windy"),
+			TPBRT_STRING_INIT("wrinkled"),
 		};
 
 			if (class_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -73,9 +73,9 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_texture_wrap_from_string(const tpbrt_string_t wrap_str, tpbrt_texture_wrap_t* const wrap_out) {
 		static const tpbrt_string_t WRAPS_STRS[TPBRT_TEXTURE_WRAP_MAX_NUM] = {
-			TPBRT_STRING("repeat"),
-			TPBRT_STRING("black"),
-			TPBRT_STRING("clamp"),
+			TPBRT_STRING_INIT("repeat"),
+			TPBRT_STRING_INIT("black"),
+			TPBRT_STRING_INIT("clamp"),
 		};
 
 			if (wrap_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -94,10 +94,10 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_texture_filter_from_string(const tpbrt_string_t filter_str, tpbrt_texture_filter_t* const filter_out) {
 		static const tpbrt_string_t FILTERS_STRS[TPBRT_TEXTURE_FILTER_MAX_NUM] = {
-			TPBRT_STRING("bilinear"),
-			TPBRT_STRING("ewa"),
-			TPBRT_STRING("trilinear"),
-			TPBRT_STRING("point"),
+			TPBRT_STRING_INIT("bilinear"),
+			TPBRT_STRING_INIT("ewa"),
+			TPBRT_STRING_INIT("trilinear"),
+			TPBRT_STRING_INIT("point"),
 		};
 
 			if (filter_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -117,10 +117,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_texture_encoding_from_string(const tpbrt_string_t encoding_str,
 	  tpbrt_texture_encoding_t* const encoding_out, tpbrt_opt_float_t* const gamma_val_out) {
 		static const tpbrt_string_t ENCODINGS_STRS[TPBRT_TEXTURE_ENCODING_MAX_NUM - 1] = {
-			TPBRT_STRING("sRGB"),
-			TPBRT_STRING("linear"),
+			TPBRT_STRING_INIT("sRGB"),
+			TPBRT_STRING_INIT("linear"),
 		};
-		static const tpbrt_string_t GAMMA_STR = TPBRT_STRING("gamma");
+		static const tpbrt_string_t GAMMA_STR = TPBRT_STRING_INIT("gamma");
 
 			if (encoding_out == TPBRT_NULL || gamma_val_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -158,10 +158,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_texture_mapping_from_string(const tpbrt_string_t mapping_str,
 	  tpbrt_texture_mapping_t* const mapping_out) {
 		static const tpbrt_string_t MAPPINGS_STRS[TPBRT_TEXTURE_MAPPING_MAX_NUM] = {
-			TPBRT_STRING("uv"),
-			TPBRT_STRING("spherical"),
-			TPBRT_STRING("cylindrical"),
-			TPBRT_STRING("planar"),
+			TPBRT_STRING_INIT("uv"),
+			TPBRT_STRING_INIT("spherical"),
+			TPBRT_STRING_INIT("cylindrical"),
+			TPBRT_STRING_INIT("planar"),
 		};
 
 			if (mapping_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -182,10 +182,10 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (uv == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t U_SCALE_STR	   = TPBRT_STRING("uscale");
-		static const tpbrt_string_t V_SCALE_STR	   = TPBRT_STRING("vscale");
-		static const tpbrt_string_t U_DELTA_STR	   = TPBRT_STRING("udelta");
-		static const tpbrt_string_t V_DELTA_STR	   = TPBRT_STRING("vdelta");
+		static const tpbrt_string_t U_SCALE_STR	   = TPBRT_STRING_INIT("uscale");
+		static const tpbrt_string_t V_SCALE_STR	   = TPBRT_STRING_INIT("vscale");
+		static const tpbrt_string_t U_DELTA_STR	   = TPBRT_STRING_INIT("udelta");
+		static const tpbrt_string_t V_DELTA_STR	   = TPBRT_STRING_INIT("vdelta");
 
 		static const tpbrt_float_t U_SCALE_DEFAULT = 1.0f;
 		static const tpbrt_float_t V_SCALE_DEFAULT = 1.0f;
@@ -226,15 +226,15 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (planar == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t U_DELTA_STR	   = TPBRT_STRING("udelta");
-		static const tpbrt_string_t V_DELTA_STR	   = TPBRT_STRING("vdelta");
-		static const tpbrt_string_t V1_STR		   = TPBRT_STRING("v1");
-		static const tpbrt_string_t V2_STR		   = TPBRT_STRING("v2");
+		static const tpbrt_string_t U_DELTA_STR	   = TPBRT_STRING_INIT("udelta");
+		static const tpbrt_string_t V_DELTA_STR	   = TPBRT_STRING_INIT("vdelta");
+		static const tpbrt_string_t V1_STR		   = TPBRT_STRING_INIT("v1");
+		static const tpbrt_string_t V2_STR		   = TPBRT_STRING_INIT("v2");
 
 		static const tpbrt_float_t U_DELTA_DEFAULT = 0.0f;
 		static const tpbrt_float_t V_DELTA_DEFAULT = 0.0f;
-		static const tpbrt_vec3_t V1_DEFAULT	   = TPBRT_VEC3(1.0f, 0.0f, 0.0f);
-		static const tpbrt_vec3_t V2_DEFAULT	   = TPBRT_VEC3(0.0f, 1.0f, 0.0f);
+		static const tpbrt_vec3_t V1_DEFAULT	   = TPBRT_VEC3_INIT(1.0f, 0.0f, 0.0f);
+		static const tpbrt_vec3_t V2_DEFAULT	   = TPBRT_VEC3_INIT(0.0f, 1.0f, 0.0f);
 
 		tpbrt_error_t err = tpbrt_params_list_get_float(params, U_DELTA_STR, U_DELTA_DEFAULT, &planar->u_delta);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -252,15 +252,15 @@ extern "C" {
 	  const tpbrt_textures_list_t textures, const tpbrt_texture_type_t type) {
 			if (bilerp == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t V00_STR				= TPBRT_STRING("v00");
-		static const tpbrt_string_t V01_STR				= TPBRT_STRING("v01");
-		static const tpbrt_string_t V10_STR				= TPBRT_STRING("v10");
-		static const tpbrt_string_t V11_STR				= TPBRT_STRING("v11");
+		static const tpbrt_string_t V00_STR				= TPBRT_STRING_INIT("v00");
+		static const tpbrt_string_t V01_STR				= TPBRT_STRING_INIT("v01");
+		static const tpbrt_string_t V10_STR				= TPBRT_STRING_INIT("v10");
+		static const tpbrt_string_t V11_STR				= TPBRT_STRING_INIT("v11");
 
-		static const tpbrt_texture_handle_t V00_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(0.0f);
-		static const tpbrt_texture_handle_t V01_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
-		static const tpbrt_texture_handle_t V10_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(0.0f);
-		static const tpbrt_texture_handle_t V11_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
+		static const tpbrt_texture_handle_t V00_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.0f);
+		static const tpbrt_texture_handle_t V01_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
+		static const tpbrt_texture_handle_t V10_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.0f);
+		static const tpbrt_texture_handle_t V11_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
 
 		tpbrt_error_t err = tpbrt_params_list_get_texture_of_type(params, V00_STR, textures, type, V00_DEFAULT, &bilerp->v00);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -278,13 +278,13 @@ extern "C" {
 	  const tpbrt_params_list_t params, const tpbrt_textures_list_t textures, const tpbrt_texture_type_t type) {
 			if (checkerboard == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t DIMENSION_STR		 = TPBRT_STRING("dimension");
-		static const tpbrt_string_t TEX1_STR			 = TPBRT_STRING("tex1");
-		static const tpbrt_string_t TEX2_STR			 = TPBRT_STRING("tex2");
+		static const tpbrt_string_t DIMENSION_STR		 = TPBRT_STRING_INIT("dimension");
+		static const tpbrt_string_t TEX1_STR			 = TPBRT_STRING_INIT("tex1");
+		static const tpbrt_string_t TEX2_STR			 = TPBRT_STRING_INIT("tex2");
 
 		static const tpbrt_uint_t DIMENSION_DEFAULT		 = 2u;
-		static const tpbrt_texture_handle_t TEX1_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
-		static const tpbrt_texture_handle_t TEX2_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(0.0f);
+		static const tpbrt_texture_handle_t TEX1_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
+		static const tpbrt_texture_handle_t TEX2_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.0f);
 
 		tpbrt_error_t err = tpbrt_params_list_get_uint(params, DIMENSION_STR, DIMENSION_DEFAULT, &checkerboard->dimension);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -299,9 +299,9 @@ extern "C" {
 	  const tpbrt_params_list_t params, const tpbrt_textures_list_t textures, const tpbrt_texture_type_t type) {
 			if (constant == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t VALUE_STR			  = TPBRT_STRING("value");
+		static const tpbrt_string_t VALUE_STR			  = TPBRT_STRING_INIT("value");
 
-		static const tpbrt_texture_handle_t VALUE_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
+		static const tpbrt_texture_handle_t VALUE_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
 
 		return tpbrt_params_list_get_texture_of_type(params, VALUE_STR, textures, type, VALUE_DEFAULT, &constant->value);
 	}
@@ -310,13 +310,13 @@ extern "C" {
 	  const tpbrt_params_list_t params, const tpbrt_textures_list_t textures, const tpbrt_texture_type_t type) {
 			if (direction_mix == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t TEX1_STR			 = TPBRT_STRING("tex1");
-		static const tpbrt_string_t TEX2_STR			 = TPBRT_STRING("tex2");
-		static const tpbrt_string_t DIR_STR				 = TPBRT_STRING("dir");
+		static const tpbrt_string_t TEX1_STR			 = TPBRT_STRING_INIT("tex1");
+		static const tpbrt_string_t TEX2_STR			 = TPBRT_STRING_INIT("tex2");
+		static const tpbrt_string_t DIR_STR				 = TPBRT_STRING_INIT("dir");
 
-		static const tpbrt_texture_handle_t TEX1_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(0.0f);
-		static const tpbrt_texture_handle_t TEX2_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
-		static const tpbrt_vec3_t DIR_DEFAULT			 = TPBRT_VEC3(0.0f, 1.0f, 0.0f);
+		static const tpbrt_texture_handle_t TEX1_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.0f);
+		static const tpbrt_texture_handle_t TEX2_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
+		static const tpbrt_vec3_t DIR_DEFAULT			 = TPBRT_VEC3_INIT(0.0f, 1.0f, 0.0f);
 
 		tpbrt_error_t err =
 		  tpbrt_params_list_get_texture_of_type(params, TEX1_STR, textures, type, TEX1_DEFAULT, &direction_mix->tex1);
@@ -332,11 +332,11 @@ extern "C" {
 	  const tpbrt_textures_list_t textures, const tpbrt_texture_type_t type) {
 			if (dots == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t INSIDE_STR				= TPBRT_STRING("inside");
-		static const tpbrt_string_t OUTSIDE_STR				= TPBRT_STRING("outside");
+		static const tpbrt_string_t INSIDE_STR				= TPBRT_STRING_INIT("inside");
+		static const tpbrt_string_t OUTSIDE_STR				= TPBRT_STRING_INIT("outside");
 
-		static const tpbrt_texture_handle_t INSIDE_DEFAULT	= TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
-		static const tpbrt_texture_handle_t OUTSIDE_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(0.0f);
+		static const tpbrt_texture_handle_t INSIDE_DEFAULT	= TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
+		static const tpbrt_texture_handle_t OUTSIDE_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.0f);
 
 		const tpbrt_error_t err =
 		  tpbrt_params_list_get_texture_of_type(params, INSIDE_STR, textures, type, INSIDE_DEFAULT, &dots->inside);
@@ -349,8 +349,8 @@ extern "C" {
 	  const tpbrt_transform_handle_t transform) {
 			if (fbm == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t OCTAVES_STR		 = TPBRT_STRING("octaves");
-		static const tpbrt_string_t ROUGHNESS_STR	 = TPBRT_STRING("roughness");
+		static const tpbrt_string_t OCTAVES_STR		 = TPBRT_STRING_INIT("octaves");
+		static const tpbrt_string_t ROUGHNESS_STR	 = TPBRT_STRING_INIT("roughness");
 
 		static const tpbrt_uint_t OCTAVES_DEFAULT	 = 8u;
 		static const tpbrt_float_t ROUGHNESS_DEFAULT = 0.5f;
@@ -378,7 +378,7 @@ extern "C" {
 	}
 
 	static tpbrt_bool_t tpbrt_texture_has_png_extension(const tpbrt_string_t file_name) {
-		static const tpbrt_string_t PNG_EXTENSION = TPBRT_STRING(".png");
+		static const tpbrt_string_t PNG_EXTENSION = TPBRT_STRING_INIT(".png");
 
 			if (file_name.data == TPBRT_NULL || file_name.size < PNG_EXTENSION.size) { return TPBRT_FALSE; }
 
@@ -393,18 +393,18 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (image_map == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t FILE_NAME_STR		  = TPBRT_STRING("filename");
-		static const tpbrt_string_t WRAP_STR			  = TPBRT_STRING("wrap");
-		static const tpbrt_string_t MAX_ANISOTROPY_STR	  = TPBRT_STRING("maxanisotropy");
-		static const tpbrt_string_t FILTER_STR			  = TPBRT_STRING("filter");
-		static const tpbrt_string_t ENCODING_STR		  = TPBRT_STRING("encoding");
-		static const tpbrt_string_t SCALE_STR			  = TPBRT_STRING("scale");
-		static const tpbrt_string_t INVERT_STR			  = TPBRT_STRING("invert");
+		static const tpbrt_string_t FILE_NAME_STR		  = TPBRT_STRING_INIT("filename");
+		static const tpbrt_string_t WRAP_STR			  = TPBRT_STRING_INIT("wrap");
+		static const tpbrt_string_t MAX_ANISOTROPY_STR	  = TPBRT_STRING_INIT("maxanisotropy");
+		static const tpbrt_string_t FILTER_STR			  = TPBRT_STRING_INIT("filter");
+		static const tpbrt_string_t ENCODING_STR		  = TPBRT_STRING_INIT("encoding");
+		static const tpbrt_string_t SCALE_STR			  = TPBRT_STRING_INIT("scale");
+		static const tpbrt_string_t INVERT_STR			  = TPBRT_STRING_INIT("invert");
 
-		static const tpbrt_string_t WRAP_DEFAULT		  = TPBRT_EMPTY_STRING;
+		static const tpbrt_string_t WRAP_DEFAULT		  = TPBRT_EMPTY_STRING_INIT;
 		static const tpbrt_float_t MAX_ANISOTROPY_DEFAULT = 8.0f;
-		static const tpbrt_string_t FILTER_DEFAULT		  = TPBRT_EMPTY_STRING;
-		static const tpbrt_string_t ENCODING_DEFAULT	  = TPBRT_EMPTY_STRING;
+		static const tpbrt_string_t FILTER_DEFAULT		  = TPBRT_EMPTY_STRING_INIT;
+		static const tpbrt_string_t ENCODING_DEFAULT	  = TPBRT_EMPTY_STRING_INIT;
 		static const tpbrt_float_t SCALE_DEFAULT		  = 1.0f;
 		static const tpbrt_bool_t INVERT_DEFAULT		  = TPBRT_FALSE;
 
@@ -470,10 +470,10 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (marble == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t OCTAVES_STR		 = TPBRT_STRING("octaves");
-		static const tpbrt_string_t ROUGHNESS_STR	 = TPBRT_STRING("roughness");
-		static const tpbrt_string_t SCALE_STR		 = TPBRT_STRING("scale");
-		static const tpbrt_string_t VARIATION_STR	 = TPBRT_STRING("variation");
+		static const tpbrt_string_t OCTAVES_STR		 = TPBRT_STRING_INIT("octaves");
+		static const tpbrt_string_t ROUGHNESS_STR	 = TPBRT_STRING_INIT("roughness");
+		static const tpbrt_string_t SCALE_STR		 = TPBRT_STRING_INIT("scale");
+		static const tpbrt_string_t VARIATION_STR	 = TPBRT_STRING_INIT("variation");
 
 		static const tpbrt_uint_t OCTAVES_DEFAULT	 = 8u;
 		static const tpbrt_float_t ROUGHNESS_DEFAULT = 0.5f;
@@ -497,13 +497,13 @@ extern "C" {
 	  const tpbrt_textures_list_t textures, const tpbrt_texture_type_t type) {
 			if (mix == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t TEX1_STR			   = TPBRT_STRING("tex1");
-		static const tpbrt_string_t TEX2_STR			   = TPBRT_STRING("tex2");
-		static const tpbrt_string_t AMOUNT_STR			   = TPBRT_STRING("amount");
+		static const tpbrt_string_t TEX1_STR			   = TPBRT_STRING_INIT("tex1");
+		static const tpbrt_string_t TEX2_STR			   = TPBRT_STRING_INIT("tex2");
+		static const tpbrt_string_t AMOUNT_STR			   = TPBRT_STRING_INIT("amount");
 
-		static const tpbrt_texture_handle_t TEX1_DEFAULT   = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(0.0f);
-		static const tpbrt_texture_handle_t TEX2_DEFAULT   = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
-		static const tpbrt_texture_handle_t AMOUNT_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(0.5f);
+		static const tpbrt_texture_handle_t TEX1_DEFAULT   = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.0f);
+		static const tpbrt_texture_handle_t TEX2_DEFAULT   = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
+		static const tpbrt_texture_handle_t AMOUNT_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.5f);
 
 		tpbrt_error_t err = tpbrt_params_list_get_texture_of_type(params, TEX1_STR, textures, type, TEX1_DEFAULT, &mix->tex1);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -518,13 +518,13 @@ extern "C" {
 	static tpbrt_error_t tpbrt_texture_read_ptex(tpbrt_texture_ptex_params_t* const ptex, const tpbrt_params_list_t params) {
 			if (ptex == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t ENCODING_STR	  = TPBRT_STRING("encoding");
-		static const tpbrt_string_t FILE_NAME_STR	  = TPBRT_STRING("filename");
-		static const tpbrt_string_t SCALE_STR		  = TPBRT_STRING("scale");
+		static const tpbrt_string_t ENCODING_STR	  = TPBRT_STRING_INIT("encoding");
+		static const tpbrt_string_t FILE_NAME_STR	  = TPBRT_STRING_INIT("filename");
+		static const tpbrt_string_t SCALE_STR		  = TPBRT_STRING_INIT("scale");
 
-		static const tpbrt_string_t ENCODING_DEFAULT  = TPBRT_EMPTY_STRING;
-		static const tpbrt_opt_float_t GAMMA_DEFAULT  = TPBRT_OPT_FLOAT_VALUE(2.2f);
-		static const tpbrt_string_t FILE_NAME_DEFAULT = TPBRT_EMPTY_STRING;
+		static const tpbrt_string_t ENCODING_DEFAULT  = TPBRT_EMPTY_STRING_INIT;
+		static const tpbrt_opt_float_t GAMMA_DEFAULT  = TPBRT_OPT_FLOAT_VALUE_INIT(2.2f);
+		static const tpbrt_string_t FILE_NAME_DEFAULT = TPBRT_EMPTY_STRING_INIT;
 		static const tpbrt_float_t SCALE_DEFAULT	  = 1.0f;
 
 		tpbrt_string_t temp_str;
@@ -553,11 +553,11 @@ extern "C" {
 	  const tpbrt_textures_list_t textures, const tpbrt_texture_type_t type) {
 			if (scale == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t TEX_STR				  = TPBRT_STRING("tex");
-		static const tpbrt_string_t SCALE_STR			  = TPBRT_STRING("scale");
+		static const tpbrt_string_t TEX_STR				  = TPBRT_STRING_INIT("tex");
+		static const tpbrt_string_t SCALE_STR			  = TPBRT_STRING_INIT("scale");
 
-		static const tpbrt_texture_handle_t TEX_DEFAULT	  = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
-		static const tpbrt_texture_handle_t SCALE_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(1.0f);
+		static const tpbrt_texture_handle_t TEX_DEFAULT	  = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
+		static const tpbrt_texture_handle_t SCALE_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
 
 		const tpbrt_error_t err =
 		  tpbrt_params_list_get_texture_of_type(params, TEX_STR, textures, type, TEX_DEFAULT, &scale->tex);
@@ -598,9 +598,9 @@ extern "C" {
 			}
 		texture->tex_class							= tex_class;
 
-		static const tpbrt_string_t MAPPING_STR		= TPBRT_STRING("mapping");
+		static const tpbrt_string_t MAPPING_STR		= TPBRT_STRING_INIT("mapping");
 
-		static const tpbrt_string_t MAPPING_DEFAULT = TPBRT_EMPTY_STRING;
+		static const tpbrt_string_t MAPPING_DEFAULT = TPBRT_EMPTY_STRING_INIT;
 
 		tpbrt_string_t mapping_str;
 		err = tpbrt_params_list_get_string(params, MAPPING_STR, MAPPING_DEFAULT, &mapping_str);

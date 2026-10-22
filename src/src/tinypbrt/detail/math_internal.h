@@ -10,15 +10,19 @@
 extern "C" {
 #endif
 
-#define TPBRT_VEC2(x_val, y_val)                  \
-	(tpbrt_vec2_t) { .x = (x_val), .y = (y_val) }
-#define TPBRT_VEC3(x_val, y_val, z_val)                         \
-	(tpbrt_vec3_t) { .x = (x_val), .y = (y_val), .z = (z_val) }
+#define TPBRT_VEC2_INIT(x_val, y_val) { .x = (x_val), .y = (y_val) }
+#define TPBRT_VEC2(x_val, y_val)	  (tpbrt_vec2_t) TPBRT_VEC2_INIT(x_val, y_val)
 
-#define TPBRT_OPT_FLOAT_VALUE(float_value)                                  \
-	(tpbrt_opt_float_t) { .value = (float_value), .has_value = TPBRT_TRUE }
-#define TPBRT_OPT_FLOAT_NONE                                        \
-	(tpbrt_opt_float_t) { .value = 0.0f, .has_value = TPBRT_FALSE }
+#define TPBRT_VEC3_INIT(x_val, y_val, z_val) { .x = (x_val), .y = (y_val), .z = (z_val) }
+#define TPBRT_VEC3(x_val, y_val, z_val)		 (tpbrt_vec3_t) TPBRT_VEC3_INIT(x_val, y_val, z_val)
+
+#define TPBRT_VEC4(x_val, y_val, z_val, w_val)                                \
+	(tpbrt_vec4_t) { .x = (x_val), .y = (y_val), .z = (z_val), .w = (w_val) }
+
+#define TPBRT_OPT_FLOAT_VALUE_INIT(float_value) { .value = (float_value), .has_value = TPBRT_TRUE }
+#define TPBRT_OPT_FLOAT_VALUE(float_value)		(tpbrt_opt_float_t) TPBRT_OPT_FLOAT_VALUE_INIT(float_value)
+#define TPBRT_OPT_FLOAT_NONE_INIT				{ .value = 0.0f, .has_value = TPBRT_FALSE }
+#define TPBRT_OPT_FLOAT_NONE					(tpbrt_opt_float_t) TPBRT_OPT_FLOAT_NONE_INIT
 
 	tpbrt_uint_t tpbrt_next_power_of_two(tpbrt_uint_t n);
 
@@ -41,12 +45,21 @@ extern "C" {
 	tpbrt_uint_t tpbrt_mat4_hash(const tpbrt_mat4_t* m);
 	tpbrt_bool_t tpbrt_mat4_equals(const tpbrt_mat4_t* a, const tpbrt_mat4_t* b);
 
-#define TPBRT_EMPTY_BOOL_ARRAY	(tpbrt_bool_array_t) { .data = TPBRT_NULL, .count = 0 }
-#define TPBRT_EMPTY_INT_ARRAY	(tpbrt_int_array_t) { .data = TPBRT_NULL, .count = 0 }
-#define TPBRT_EMPTY_UINT_ARRAY	(tpbrt_uint_array_t) { .data = TPBRT_NULL, .count = 0 }
-#define TPBRT_EMPTY_FLOAT_ARRAY (tpbrt_float_array_t) { .data = TPBRT_NULL, .count = 0 }
-#define TPBRT_EMPTY_VEC2_ARRAY	(tpbrt_vec2_array_t) { .data = TPBRT_NULL, .count = 0 }
-#define TPBRT_EMPTY_VEC3_ARRAY	(tpbrt_vec3_array_t) { .data = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_ARRAY_INIT { .data = TPBRT_NULL, .count = 0u }
+
+#define TPBRT_EMPTY_BOOL_ARRAY_INIT	 TPBRT_EMPTY_ARRAY_INIT
+#define TPBRT_EMPTY_INT_ARRAY_INIT	 TPBRT_EMPTY_ARRAY_INIT
+#define TPBRT_EMPTY_UINT_ARRAY_INIT	 TPBRT_EMPTY_ARRAY_INIT
+#define TPBRT_EMPTY_FLOAT_ARRAY_INIT TPBRT_EMPTY_ARRAY_INIT
+#define TPBRT_EMPTY_VEC2_ARRAY_INIT	 TPBRT_EMPTY_ARRAY_INIT
+#define TPBRT_EMPTY_VEC3_ARRAY_INIT	 TPBRT_EMPTY_ARRAY_INIT
+
+#define TPBRT_EMPTY_BOOL_ARRAY	(tpbrt_bool_array_t) TPBRT_EMPTY_BOOL_ARRAY_INIT
+#define TPBRT_EMPTY_INT_ARRAY	(tpbrt_int_array_t) TPBRT_EMPTY_INT_ARRAY_INIT
+#define TPBRT_EMPTY_UINT_ARRAY	(tpbrt_uint_array_t) TPBRT_EMPTY_UINT_ARRAY_INIT
+#define TPBRT_EMPTY_FLOAT_ARRAY (tpbrt_float_array_t) TPBRT_EMPTY_FLOAT_ARRAY_INIT
+#define TPBRT_EMPTY_VEC2_ARRAY	(tpbrt_vec2_array_t) TPBRT_EMPTY_VEC2_ARRAY_INIT
+#define TPBRT_EMPTY_VEC3_ARRAY	(tpbrt_vec3_array_t) TPBRT_EMPTY_VEC3_ARRAY_INIT
 
 	void tpbrt_bool_array_free(tpbrt_bool_array_t* array);
 	void tpbrt_int_array_free(tpbrt_int_array_t* array);

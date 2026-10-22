@@ -29,7 +29,9 @@ if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
 - [Using the scene](#using-the-scene)
 - [Error handling](#error-handling)
 - [CMake options](#cmake-options)
+- [Examples](#examples)
 - [Building and testing tinypbrt](#building-and-testing-tinypbrt)
+- [Benchmarks](#benchmarks)
 - [License](#license)
 
 ## Features
@@ -72,7 +74,7 @@ if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
 
 ## Requirements
 
-- a C11 compiler (tested with GCC 13 and Clang 18; the Windows presets use Clang)
+- an ISO C11 compiler: the library builds warning-free with `-Wpedantic` (tested with GCC 13 and Clang 18; the Windows presets use Clang)
 - CMake 3.30 or newer
 - no runtime dependencies (only the C standard library; `libm` is linked automatically where needed)
 
@@ -227,7 +229,7 @@ int main(int argc, char** argv) {
 			  object_to_world->m[11]);
 		}
 		else if (shape->type == TPBRT_SHAPE_TYPE_TRIANGLE_MESH) {
-			printf("triangle mesh: %zu vertices, %zu triangles\n", shape->as.triangle_mesh.P.count,
+			printf("triangle mesh: %zu vertices, %zu triangles\n", shape->as.triangle_mesh.p.count,
 			  shape->as.triangle_mesh.indices.count / 3);
 		}
 		(void)material;
@@ -312,6 +314,7 @@ tpbrt_get_error_message(err, message, sizeof(message));
 | `TINYPBRT_BUILD_COVERAGE` | top-level only | coverage instrumentation (Clang) |
 | `TINYPBRT_ENABLE_CLANG_TIDY` | top-level only | run clang-tidy while building |
 | `TINYPBRT_WARNINGS_AS_ERRORS` | top-level only | treat compiler warnings as errors when building tinypbrt |
+| `TINYPBRT_ENABLE_PEDANTIC` | `ON` | build tinypbrt with `-Wpedantic` (GCC/Clang): only ISO C11, no compiler extensions |
 | `TINYPBRT_ENABLE_SANITIZERS` | `OFF` | build the library and tests with sanitizers |
 | `TINYPBRT_SANITIZERS` | `address;undefined` | sanitizers to use (`address`, `undefined`, `leak`, `memory`, `thread`) |
 | `TINYPBRT_INSTALL` | top-level only | generate install rules |
@@ -320,6 +323,28 @@ Compiler warnings and optimization flags used to build tinypbrt are private to t
 not added to your targets. Link-time optimization and static linking are left to your project
 (e.g. `CMAKE_INTERPROCEDURAL_OPTIMIZATION`).
 
+
+## Examples
+
+[`examples/`](examples) contains small C11 programs built on the public API (`-DTINYPBRT_BUILD_EXAMPLES=ON`,
+on by default when tinypbrt is the top-level project), together with two scenes in `examples/scenes`:
+
+| Example | Shows |
+|---|---|
+| `quickstart` | the program from [Quick start](#quick-start) |
+| `scene_info` | camera, film, sampler, integrator, filter and accelerator settings; shapes, materials, textures and media |
+| `load_from_memory` | parsing from memory, `Include` relative to a working directory, error codes and messages |
+| `materials` | shape → material → texture handles, inline values vs. texture references, lookup by name |
+| `lights` | light sources in world space (`from`/`to` transformed by the light's CTM), area lights on shapes |
+| `export_obj` | converting meshes, spheres, cylinders, disks and object instances to a Wavefront OBJ file |
+
+```sh
+./build/examples/tinypbrt-example-scene_info examples/scenes/forest.pbrt
+./build/examples/tinypbrt-example-export_obj examples/scenes/forest.pbrt forest.obj
+```
+
+[`examples/cpm_project`](examples/cpm_project) is a standalone CMake project that pulls tinypbrt with CPM,
+exactly as described above. Pass `-DCPM_tinypbrt_SOURCE=/path/to/tinypbrt` to build it against a local checkout.
 
 ## Building and testing tinypbrt
 
@@ -357,6 +382,27 @@ ctest --test-dir build --output-on-failure
 The test suite (`tinypbrt-tests`, GoogleTest, C++17) covers the parser, parameter handling, every
 directive and object type, error paths and memory safety under the sanitizers; `tinypbrt-c-api-tests`
 checks that the public headers compile and work as strict C11.
+
+## Benchmarks
+
+`tinypbrt-benchmark` (Google Benchmark, `-DTINYPBRT_BUILD_BENCHMARK=ON`) loads generated scenes of growing
+size, each stressing a different part of the parser: many shapes with their own transforms, one large
+triangle mesh (number parsing), named materials and textures (name lookups), object instances, shared
+transforms (matrix deduplication), deeply nested attributes and a mixed scene. It also measures handle
+resolution and `tpbrt_get_material_by_name` on a loaded scene. Use a Release build:
+
+```sh
+cmake --preset linux-release
+cmake --build build/linux-release
+./build/linux-release/benchmark/tinypbrt-benchmark
+./build/linux-release/benchmark/tinypbrt-benchmark --benchmark_filter=triangle_mesh
+./build/linux-release/benchmark/tinypbrt-benchmark my_scene.pbrt other.pbrt   # also time your own files
+./build/linux-release/benchmark/tinypbrt-benchmark --benchmark_format=json > before.json
+```
+
+`bytes_per_second` is the parser throughput, `items_per_second` the number of scene elements (shapes,
+vertices, instances...) per second. Compare two JSON runs with
+[`tools/compare.py`](https://github.com/google/benchmark/blob/main/docs/tools.md) from Google Benchmark.
 
 ## License
 

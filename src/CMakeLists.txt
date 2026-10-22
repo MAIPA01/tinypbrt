@@ -75,6 +75,7 @@ function(tinypbrt_configure_library TARGET)
                 >
                 /Zc:preprocessor
                 /W4
+                $<$<AND:$<C_COMPILER_ID:Clang>,$<BOOL:${TINYPBRT_ENABLE_PEDANTIC}>>:-Wpedantic>
                 $<$<BOOL:${TINYPBRT_WARNINGS_AS_ERRORS}>:/WX>
             >
             # GCC/clang with GNU frontend
@@ -85,6 +86,7 @@ function(tinypbrt_configure_library TARGET)
                 -Wall
                 -Wextra
                 -Wvla
+                $<$<BOOL:${TINYPBRT_ENABLE_PEDANTIC}>:-Wpedantic>
                 $<$<BOOL:${TINYPBRT_WARNINGS_AS_ERRORS}>:-Werror>
                 -fno-strict-aliasing
             >

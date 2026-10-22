@@ -12,38 +12,37 @@
 extern "C" {
 #endif
 
-#define TPBRT_TEXTURE_HANDLE_TEXTURE(idx)                                                                           \
-	(tpbrt_texture_handle_t) { .as.texture_idx = (idx), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX }
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM(spectrum_val)                                                                    \
-	(tpbrt_texture_handle_t) { .as.spectrum = (spectrum_val), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM }
+#define TPBRT_TEXTURE_HANDLE_TEXTURE_INIT(idx)                                             \
+	{ .as.texture_idx = (idx), .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX }
+#define TPBRT_TEXTURE_HANDLE_TEXTURE(idx) (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_TEXTURE_INIT(idx)
 
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM_WAVELENGTHS \
-	(tpbrt_texture_handle_t) {                    \
-		.as.spectrum = { .as.wavelengths = { .data = TPBRT_NULL, .count = 0u }, .type = TPBRT_SPECTRUM_TYPE_WAVELENGTHS }, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM                                         \
-	}
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB(r_val, g_val, b_val) \
-	(tpbrt_texture_handle_t) {                                 \
-		.as.spectrum = { .as.rgb = { .r = (r_val), .g = (g_val), .b = (b_val) }, .type = TPBRT_SPECTRUM_TYPE_RGB }, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM                                                      \
-	}
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BLACKBODY(value)                                     \
-	(tpbrt_texture_handle_t) {                                                             \
-		.as.spectrum = { .as.blackbody = (value), .type = TPBRT_SPECTRUM_TYPE_BLACKBODY }, \
-		.value_type	 = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM                            \
-	}
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM_FILE_NAME \
-	(tpbrt_texture_handle_t) {                  \
-		.as.spectrum = { .as.file_name = { .data = TPBRT_NULL, .size = 0u }, .type = TPBRT_SPECTRUM_TYPE_FILE }, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM                                       \
-	}
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BUILTIN(builtin_value)                                   \
-	(tpbrt_texture_handle_t) {                                                                 \
-		.as.spectrum = { .as.builtin = (builtin_value), .type = TPBRT_SPECTRUM_TYPE_BUILTIN }, \
-		.value_type	 = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM                                \
-	}
-#define TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(value)                                    \
-	(tpbrt_texture_handle_t) {                                                           \
-		.as.spectrum = { .as.constant = (value), .type = TPBRT_SPECTRUM_TYPE_CONSTANT }, \
-		.value_type	 = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM                          \
-	}
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(spectrum_val)                                    \
+	{ .as.spectrum = spectrum_val, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM }
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM(spectrum_val) (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(spectrum_val)
+
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_WAVELENGTHS_INIT TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(TPBRT_SPECTRUM_WAVELENGTHS_INIT)
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_WAVELENGTHS	   (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_SPECTRUM_WAVELENGTHS_INIT
+
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(r_val, g_val, b_val)                  \
+	TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(TPBRT_SPECTRUM_RGB_INIT(r_val, g_val, b_val))
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB(r_val, g_val, b_val)                           \
+	(tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(r_val, g_val, b_val)
+
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BLACKBODY_INIT(value)                  \
+	TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(TPBRT_SPECTRUM_BLACKBODY_INIT(value))
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BLACKBODY(value)                           \
+	(tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_SPECTRUM_BLACKBODY_INIT(value)
+
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_FILE_NAME_INIT TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(TPBRT_SPECTRUM_FILE_NAME_INIT)
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_FILE_NAME		 (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_SPECTRUM_FILE_NAME_INIT
+
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BUILTIN_INIT(builtin_value)                  \
+	TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(TPBRT_SPECTRUM_BUILTIN_INIT(builtin_value))
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_BUILTIN(builtin_value)                           \
+	(tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_SPECTRUM_BUILTIN_INIT(builtin_value)
+
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(value) TPBRT_TEXTURE_HANDLE_SPECTRUM_INIT(TPBRT_SPECTRUM_CONSTANT_INIT(value))
+#define TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT(value) (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(value)
 
 #pragma region TEXTURE
 

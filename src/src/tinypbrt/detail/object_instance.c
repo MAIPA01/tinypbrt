@@ -32,7 +32,8 @@ extern "C" {
 #pragma endregion
 
 #pragma region OBJECT_INSTANCES_LIST
-#define TPBRT_EMPTY_OBJECTS_INSTANCES_LIST (tpbrt_objects_instances_list_t) { .instances = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_OBJECTS_INSTANCES_LIST_INIT { .instances = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_OBJECTS_INSTANCES_LIST (tpbrt_objects_instances_list_t) TPBRT_EMPTY_OBJECTS_INSTANCES_LIST_INIT
 
 	tpbrt_error_t tpbrt_objects_instances_list_init(tpbrt_objects_instances_list_t* const instances_list) {
 			if (instances_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }

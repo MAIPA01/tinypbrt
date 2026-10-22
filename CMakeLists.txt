@@ -12,6 +12,7 @@ option(TINYPBRT_BUILD_EXAMPLES				"Build examples"				${PROJECT_IS_TOP_LEVEL})
 option(TINYPBRT_ENABLE_CLANG_TIDY 			"Enables clang-tidy checks" 	${PROJECT_IS_TOP_LEVEL})
 
 option(TINYPBRT_WARNINGS_AS_ERRORS 			"Treat warnings as errors when building tinypbrt" 	${PROJECT_IS_TOP_LEVEL})
+option(TINYPBRT_ENABLE_PEDANTIC 			"Warn about everything that is not ISO C11 (-Wpedantic) when building tinypbrt" 	ON)
 
 option(TINYPBRT_ENABLE_SANITIZERS 			"Build tinypbrt and its tests with sanitizers" OFF)
 set(TINYPBRT_SANITIZERS "address;undefined" CACHE STRING "Sanitizers used when TINYPBRT_ENABLE_SANITIZERS=ON (address, undefined, leak, memory, thread)")
@@ -44,7 +45,7 @@ if (TINYPBRT_BUILD_TESTS OR TINYPBRT_BUILD_COVERAGE)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
 endif()
 
-if (TINYPBRT_BUILD_COVERAGE OR TINYPBRT_BUILD_BENCHMARK)
+if (TINYPBRT_BUILD_BENCHMARK)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/benchmark)
 endif()
 

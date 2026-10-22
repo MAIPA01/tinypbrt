@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_light_source_type_t : uint8_t {
+	typedef enum tpbrt_light_source_type_t {
 		TPBRT_LIGHT_SOURCE_TYPE_DISTANT		= 0,
 		TPBRT_LIGHT_SOURCE_TYPE_GONIOMETRIC = 1,
 		TPBRT_LIGHT_SOURCE_TYPE_INFINITE	= 2,
@@ -62,6 +62,7 @@ extern "C" {
 
 	typedef struct tpbrt_light_source_t {
 		tpbrt_transform_handle_t transform;
+		tpbrt_float_t scale;
 		tpbrt_opt_float_t power_illuminance;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
@@ -75,11 +76,10 @@ extern "C" {
 			tpbrt_light_source_spot_params_t spot;
 		} as;
 
-		tpbrt_float_t scale;
-		tpbrt_light_source_type_t type : 3;
+		tpbrt_light_source_type_t type : 4;
 	} tpbrt_light_source_t;
 
-	typedef enum tpbrt_area_light_type_t : uint8_t {
+	typedef enum tpbrt_area_light_type_t {
 		TPBRT_AREA_LIGHT_TYPE_DIFFUSE = 0,
 		TPBRT_AREA_LIGHT_TYPE_MAX_NUM = 1,
 	} tpbrt_area_light_type_t;
@@ -92,22 +92,22 @@ extern "C" {
 
 	typedef struct tpbrt_area_light_t {
 		tpbrt_area_light_idx_t idx;
-		tpbrt_area_light_type_t type : 1;
-
-		union {
-			tpbrt_area_light_diffuse_params_t diffuse;
-		} as;
-
 		tpbrt_float_t scale;
 		tpbrt_opt_float_t power;
+		
+		union {
+			tpbrt_area_light_diffuse_params_t diffuse;
+		} as;		
+		
+		tpbrt_area_light_type_t type : 2;
 	} tpbrt_area_light_t;
 
 	typedef struct tpbrt_area_light_handle_t {
 		tpbrt_area_light_idx_t area_light_idx;
 	} tpbrt_area_light_handle_t;
 
-#define TPBRT_AREA_LIGHT_HANDLE_INVALID                                            \
-	(tpbrt_area_light_handle_t) { .area_light_idx = TPBRT_AREA_LIGHT_IDX_INVALID }
+#define TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT { .area_light_idx = TPBRT_AREA_LIGHT_IDX_INVALID }
+#define TPBRT_AREA_LIGHT_HANDLE_INVALID		 (tpbrt_area_light_handle_t) TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT
 
 	typedef struct tpbrt_lights_sources_list_t {
 		tpbrt_light_source_t* lights;
@@ -124,8 +124,8 @@ extern "C" {
 		tpbrt_area_lights_list_t area_lights;
 	} tpbrt_lights_list_t;
 
-	TPBRT_API tpbrt_error_t tpbrt_get_area_light_by_handle(tpbrt_area_lights_list_t area_lights_list, tpbrt_area_light_handle_t handle,
-	  const tpbrt_area_light_t** area_light);
+	TPBRT_API tpbrt_error_t tpbrt_get_area_light_by_handle(tpbrt_area_lights_list_t area_lights_list,
+	  tpbrt_area_light_handle_t handle, const tpbrt_area_light_t** area_light);
 
 #ifdef __cplusplus
 }

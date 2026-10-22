@@ -35,7 +35,7 @@ set_target_properties(${C_TARGET_C_API_TEST} PROPERTIES C_STANDARD 11 C_STANDARD
 target_link_libraries(${C_TARGET_C_API_TEST} PRIVATE $<IF:$<BOOL:${TINYPBRT_INSTALL_TEST}>, tinypbrt::all, tinypbrt::tinypbrt>)
 target_compile_options(${C_TARGET_C_API_TEST} PRIVATE
     $<$<OR:$<C_COMPILER_ID:MSVC>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:MSVC>>>:/W4 /WX>
-    $<$<OR:$<C_COMPILER_ID:GNU>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>>>:-Wall -Wextra -Werror>
+    $<$<OR:$<C_COMPILER_ID:GNU>,$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>>>:-Wall -Wextra -Wpedantic -Werror>
 )
 tinypbrt_enable_sanitizers(${C_TARGET_C_API_TEST})
 tinypbrt_set_sanitizers_test_environment(${C_TARGET_C_API_TEST}_TEST)

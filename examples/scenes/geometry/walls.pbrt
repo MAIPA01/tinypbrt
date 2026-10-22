@@ -1,0 +1,21 @@
+AttributeBegin
+    NamedMaterial "floor"
+    Shape "bilinearmesh" "point3 P" [ -1 0 -1   1 0 -1   -1 0 1   1 0 1 ]
+        "point2 uv" [ 0 0  1 0  0 1  1 1 ]
+AttributeEnd
+
+AttributeBegin
+    NamedMaterial "white"
+    Shape "trianglemesh" "point3 P" [ -1 2 -1   1 2 -1   1 2 1   -1 2 1 ] "integer indices" [ 0 1 2  0 2 3 ]
+    Shape "trianglemesh" "point3 P" [ -1 0 -1   1 0 -1   1 2 -1   -1 2 -1 ] "integer indices" [ 0 1 2  0 2 3 ]
+AttributeEnd
+
+AttributeBegin
+    NamedMaterial "red"
+    Shape "trianglemesh" "point3 P" [ -1 0 -1   -1 0 1   -1 2 1   -1 2 -1 ] "integer indices" [ 0 1 2  0 2 3 ]
+AttributeEnd
+
+AttributeBegin
+    NamedMaterial "green"
+    Shape "trianglemesh" "point3 P" [ 1 0 -1   1 2 -1   1 2 1   1 0 1 ] "integer indices" [ 0 1 2  0 2 3 ]
+AttributeEnd

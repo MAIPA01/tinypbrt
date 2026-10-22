@@ -12,12 +12,12 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_sampler_type_from_string(const tpbrt_string_t type_str, tpbrt_sampler_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_SAMPLER_TYPE_MAX_NUM] = {
-			TPBRT_STRING("halton"),
-			TPBRT_STRING("independent"),
-			TPBRT_STRING("paddedsobol"),
-			TPBRT_STRING("sobol"),
-			TPBRT_STRING("stratified"),
-			TPBRT_STRING("zsobol"),
+			TPBRT_STRING_INIT("halton"),
+			TPBRT_STRING_INIT("independent"),
+			TPBRT_STRING_INIT("paddedsobol"),
+			TPBRT_STRING_INIT("sobol"),
+			TPBRT_STRING_INIT("stratified"),
+			TPBRT_STRING_INIT("zsobol"),
 		};
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -36,10 +36,10 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_sampler_random_from_string(const tpbrt_string_t random_str, tpbrt_sampler_random_t* const random) {
 		static const tpbrt_string_t RANDOMS_STRS[TPBRT_SAMPLER_RANDOM_MAX_NUM] = {
-			TPBRT_STRING("none"),
-			TPBRT_STRING("permutedigits"),
-			TPBRT_STRING("owen"),
-			TPBRT_STRING("fastowen"),
+			TPBRT_STRING_INIT("none"),
+			TPBRT_STRING_INIT("permutedigits"),
+			TPBRT_STRING_INIT("owen"),
+			TPBRT_STRING_INIT("fastowen"),
 		};
 
 			if (random == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -59,7 +59,7 @@ extern "C" {
 	static tpbrt_error_t tpbrt_sampler_read_pixel_samples(tpbrt_uint_t* const pixel_samples, const tpbrt_params_list_t params) {
 			if (pixel_samples == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t PIXEL_SAMPLES_STR	= TPBRT_STRING("pixelsamples");
+		static const tpbrt_string_t PIXEL_SAMPLES_STR	= TPBRT_STRING_INIT("pixelsamples");
 
 		static const tpbrt_uint_t PIXEL_SAMPLES_DEFAULT = 16u;
 
@@ -70,9 +70,9 @@ extern "C" {
 	  const tpbrt_params_list_t params, const tpbrt_sampler_random_t default_random) {
 			if (randomization == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t RANDOMIZATION_STR	  = TPBRT_STRING("randomization");
+		static const tpbrt_string_t RANDOMIZATION_STR	  = TPBRT_STRING_INIT("randomization");
 
-		static const tpbrt_string_t RANDOMIZATION_DEFAULT = TPBRT_EMPTY_STRING;
+		static const tpbrt_string_t RANDOMIZATION_DEFAULT = TPBRT_EMPTY_STRING_INIT;
 
 		tpbrt_string_t random_str;
 		tpbrt_error_t err = tpbrt_params_list_get_string(params, RANDOMIZATION_STR, RANDOMIZATION_DEFAULT, &random_str);
@@ -148,9 +148,9 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (stratified == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t JITTER_STR		= TPBRT_STRING("jitter");
-		static const tpbrt_string_t X_SAMPLES_STR	= TPBRT_STRING("xsamples");
-		static const tpbrt_string_t Y_SAMPLES_STR	= TPBRT_STRING("ysamples");
+		static const tpbrt_string_t JITTER_STR		= TPBRT_STRING_INIT("jitter");
+		static const tpbrt_string_t X_SAMPLES_STR	= TPBRT_STRING_INIT("xsamples");
+		static const tpbrt_string_t Y_SAMPLES_STR	= TPBRT_STRING_INIT("ysamples");
 
 		static const tpbrt_bool_t JITTER_DEFAULT	= TPBRT_TRUE;
 		static const tpbrt_uint_t X_SAMPLES_DEFAULT = 4u;
@@ -204,7 +204,7 @@ extern "C" {
 
 			if (memset(sampler, 0, sizeof(tpbrt_sampler_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t SEED_STR  = TPBRT_STRING("seed");
+		static const tpbrt_string_t SEED_STR  = TPBRT_STRING_INIT("seed");
 
 		static const tpbrt_int_t SEED_DEFAULT = 0;
 

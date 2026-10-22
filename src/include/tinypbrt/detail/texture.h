@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_texture_handle_value_type_t : uint8_t {
+	typedef enum tpbrt_texture_handle_value_type_t {
 		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX = 0,
 		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM	= 1,
 		TPBRT_TEXTURE_HANDLE_VALUE_TYPE_MAX_NUM		= 2,
@@ -26,21 +26,20 @@ extern "C" {
 			tpbrt_spectrum_t spectrum;
 		} as;
 
-		tpbrt_texture_handle_value_type_t value_type : 2;
+		tpbrt_texture_handle_value_type_t value_type : 3;
 	} tpbrt_texture_handle_t;
 
-#define TPBRT_TEXTURE_HANDLE_INVALID                                                                           \
-	(tpbrt_texture_handle_t) {                                                                                 \
-		.as.texture_idx = TPBRT_TEXTURE_IDX_INVALID, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX \
-	}
+#define TPBRT_TEXTURE_HANDLE_INVALID_INIT                                                                      \
+	{ .as.texture_idx = TPBRT_TEXTURE_IDX_INVALID, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX }
+#define TPBRT_TEXTURE_HANDLE_INVALID (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_INVALID_INIT
 
-	typedef enum tpbrt_texture_type_t : uint8_t {
+	typedef enum tpbrt_texture_type_t {
 		TPBRT_TEXTURE_TYPE_FLOAT	= 0,
 		TPBRT_TEXTURE_TYPE_SPECTRUM = 1,
 		TPBRT_TEXTURE_TYPE_MAX_NUM	= 2,
 	} tpbrt_texture_type_t;
 
-	typedef enum tpbrt_texture_class_t : uint8_t {
+	typedef enum tpbrt_texture_class_t {
 		TPBRT_TEXTURE_CLASS_BILERP		  = 0,
 		TPBRT_TEXTURE_CLASS_CHECKER_BOARD = 1,
 		TPBRT_TEXTURE_CLASS_CONSTANT	  = 2,
@@ -94,14 +93,14 @@ extern "C" {
 	typedef tpbrt_texture_fbm_params_t tpbrt_texture_wrinkled_params_t;
 	typedef tpbrt_texture_fbm_params_t tpbrt_texture_windy_params_t;
 
-	typedef enum tpbrt_texture_wrap_t : uint8_t {
+	typedef enum tpbrt_texture_wrap_t {
 		TPBRT_TEXTURE_WRAP_REPEAT  = 0,
 		TPBRT_TEXTURE_WRAP_BLACK   = 1,
 		TPBRT_TEXTURE_WRAP_CLAMP   = 2,
 		TPBRT_TEXTURE_WRAP_MAX_NUM = 3,
 	} tpbrt_texture_wrap_t;
 
-	typedef enum tpbrt_texture_filter_t : uint8_t {
+	typedef enum tpbrt_texture_filter_t {
 		TPBRT_TEXTURE_FILTER_BILINEAR  = 0,
 		TPBRT_TEXTURE_FILTER_EWA	   = 1,
 		TPBRT_TEXTURE_FILTER_TRILINEAR = 2,
@@ -109,7 +108,7 @@ extern "C" {
 		TPBRT_TEXTURE_FILTER_MAX_NUM   = 4,
 	} tpbrt_texture_filter_t;
 
-	typedef enum tpbrt_texture_encoding_t : uint8_t {
+	typedef enum tpbrt_texture_encoding_t {
 		TPBRT_TEXTURE_ENCODING_SRGB	   = 0,
 		TPBRT_TEXTURE_ENCODING_LINEAR  = 1,
 		TPBRT_TEXTURE_ENCODING_GAMMA   = 2,
@@ -121,9 +120,9 @@ extern "C" {
 		tpbrt_float_t max_anisotropy;
 		tpbrt_float_t scale;
 		tpbrt_opt_float_t gamma;
-		tpbrt_texture_wrap_t wrap		  : 2;
-		tpbrt_texture_filter_t filter	  : 3;
-		tpbrt_texture_encoding_t encoding : 2;
+		tpbrt_texture_wrap_t wrap		  : 3;
+		tpbrt_texture_filter_t filter	  : 4;
+		tpbrt_texture_encoding_t encoding : 3;
 		tpbrt_bool_t invert				  : 1;
 	} tpbrt_texture_image_map_params_t;
 
@@ -144,7 +143,7 @@ extern "C" {
 		tpbrt_opt_float_t gamma;
 		tpbrt_string_t file_name;
 		tpbrt_float_t scale;
-		tpbrt_texture_encoding_t encoding : 2;
+		tpbrt_texture_encoding_t encoding : 3;
 	} tpbrt_texture_ptex_params_t;
 
 	typedef struct tpbrt_texture_scale_params_t {
@@ -152,7 +151,7 @@ extern "C" {
 		tpbrt_texture_handle_t scale;
 	} tpbrt_texture_scale_params_t;
 
-	typedef enum tpbrt_texture_mapping_t : uint8_t {
+	typedef enum tpbrt_texture_mapping_t {
 		TPBRT_TEXTURE_MAPPING_UV		  = 0,
 		TPBRT_TEXTURE_MAPPING_SPHERICAL	  = 1,
 		TPBRT_TEXTURE_MAPPING_CYLINDRICAL = 2,
@@ -184,9 +183,9 @@ extern "C" {
 
 	typedef struct tpbrt_texture_t {
 		tpbrt_texture_idx_t idx;
-		tpbrt_texture_type_t type		: 2;
-		tpbrt_texture_class_t tex_class : 4;
-		tpbrt_texture_mapping_t mapping : 3;
+		tpbrt_texture_type_t type		: 3;
+		tpbrt_texture_class_t tex_class : 5;
+		tpbrt_texture_mapping_t mapping : 4;
 		tpbrt_string_t name;
 
 		union {
@@ -218,7 +217,8 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_textures_list_t;
 
-	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_name(tpbrt_textures_list_t textures, tpbrt_string_t name, const tpbrt_texture_t** texture);
+	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_name(tpbrt_textures_list_t textures, tpbrt_string_t name,
+	  const tpbrt_texture_t** texture);
 	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_handle(tpbrt_textures_list_t textures, tpbrt_texture_handle_t handle,
 	  const tpbrt_texture_t** texture);
 

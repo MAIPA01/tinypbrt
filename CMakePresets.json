@@ -166,6 +166,16 @@
       "inherits": ["sanitizers", "linux-base", "c11", "debug"]
     },
     {
+      "name": "linux-release",
+      "displayName": "Linux/macOS Release (benchmark, examples)",
+      "inherits": ["linux-base", "c11", "release"],
+      "cacheVariables": {
+        "TINYPBRT_BUILD_COVERAGE": "OFF",
+        "TINYPBRT_BUILD_BENCHMARK": "ON",
+        "TINYPBRT_BUILD_EXAMPLES": "ON"
+      }
+    },
+    {
       "name": "linux-debug-shared-sanitizers",
       "displayName": "Linux/macOS Debug (.so/.dylib) + ASan/UBSan/LSan",
       "inherits": ["shared", "linux-debug-sanitizers"]
@@ -185,6 +195,11 @@
     {
       "name": "x64-debug-c11-shared",
       "configurePreset": "x64-debug-c11-shared",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
       "output": { "outputOnFailure": true }
     },
     {

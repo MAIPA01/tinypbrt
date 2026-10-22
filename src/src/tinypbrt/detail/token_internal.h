@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_directive_t : uint8_t {
+	typedef enum tpbrt_directive_t {
 		TPBRT_DIRECTIVE_IDENTITY			= 0,
 		TPBRT_DIRECTIVE_TRANSLATE			= 1,
 		TPBRT_DIRECTIVE_SCALE				= 2,
@@ -69,7 +69,7 @@ extern "C" {
 		TPBRT_DIRECTIVE_MAX_NUM				= 40,
 	} tpbrt_directive_t;
 
-	typedef enum tpbrt_token_type_t : uint8_t {
+	typedef enum tpbrt_token_type_t {
 		TPBRT_TOKEN_TYPE_SINGLE		   = 0,
 		TPBRT_TOKEN_TYPE_QUOTED_STRING = 1,
 		TPBRT_TOKEN_TYPE_DIRECTIVE	   = 2,
@@ -78,8 +78,8 @@ extern "C" {
 
 	typedef struct tpbrt_token_t {
 		tpbrt_string_t value;
-		tpbrt_token_type_t type		: 2;
-		tpbrt_directive_t directive : 6;
+		tpbrt_token_type_t type		: 3;
+		tpbrt_directive_t directive : 7;
 	} tpbrt_token_t;
 
 	tpbrt_error_t tpbrt_directive_from_string(tpbrt_string_t directive_str, tpbrt_directive_t* directive_out);

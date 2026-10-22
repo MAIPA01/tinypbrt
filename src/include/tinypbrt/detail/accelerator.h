@@ -8,13 +8,13 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_accelerator_type_t : uint8_t {
+	typedef enum tpbrt_accelerator_type_t {
 		TPBRT_ACCELERATOR_TYPE_BVH	   = 0,
 		TPBRT_ACCELERATOR_TYPE_KD_TREE = 1,
 		TPBRT_ACCELERATOR_TYPE_MAX_NUM = 2,
 	} tpbrt_accelerator_type_t;
 
-	typedef enum tpbrt_accelerator_bvh_split_method_t : uint8_t {
+	typedef enum tpbrt_accelerator_bvh_split_method_t {
 		TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_SAH	   = 0,
 		TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MIDDLE  = 1,
 		TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_EQUAL   = 2,
@@ -24,7 +24,7 @@ extern "C" {
 
 	typedef struct tpbrt_accelerator_bvh_params_t {
 		tpbrt_uint_t max_node_prims;
-		tpbrt_accelerator_bvh_split_method_t split_method : 3;
+		tpbrt_accelerator_bvh_split_method_t split_method : 4;
 	} tpbrt_accelerator_bvh_params_t;
 
 	typedef struct tpbrt_accelerator_kd_tree_params_t {
@@ -41,7 +41,7 @@ extern "C" {
 			tpbrt_accelerator_kd_tree_params_t kd_tree;
 		} as;
 
-		tpbrt_accelerator_type_t type : 2;
+		tpbrt_accelerator_type_t type : 3;
 	} tpbrt_accelerator_t;
 
 #ifdef __cplusplus

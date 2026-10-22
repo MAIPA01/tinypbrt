@@ -17,7 +17,7 @@ extern "C" {
 		tpbrt_transform_animated_t camera_transform;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
-		tpbrt_camera_type_t type : 3;
+		tpbrt_camera_type_t type : 4;
 	} tpbrt_camera_create_info_t;
 
 	tpbrt_error_t tpbrt_camera_type_from_string(tpbrt_string_t type_str, tpbrt_camera_type_t* type);

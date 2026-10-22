@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_film_type_t : uint8_t {
+	typedef enum tpbrt_film_type_t {
 		TPBRT_FILM_TYPE_RGB		 = 0,
 		TPBRT_FILM_TYPE_GBUFFER	 = 1,
 		TPBRT_FILM_TYPE_SPECTRAL = 2,
@@ -28,7 +28,7 @@ extern "C" {
 		tpbrt_float_t lambda_max;
 	} tpbrt_film_spectral_params_t;
 
-	typedef enum tpbrt_film_sensor_t : uint8_t {
+	typedef enum tpbrt_film_sensor_t {
 		TPBRT_FILM_SENSOR_CIE_1931			  = 0,
 		TPBRT_FILM_SENSOR_CANON_EOS_100D	  = 1,
 		TPBRT_FILM_SENSOR_CANON_EOS_1DX_MKII  = 2,
@@ -66,9 +66,9 @@ extern "C" {
 			tpbrt_film_spectral_params_t spectral;
 		} as;
 
+		tpbrt_film_type_t type : 3;
+		tpbrt_film_sensor_t sensor : 6;
 		tpbrt_bool_t save_fp16	   : 1;
-		tpbrt_film_type_t type	   : 2;
-		tpbrt_film_sensor_t sensor : 5;
 	} tpbrt_film_t;
 
 #ifdef __cplusplus

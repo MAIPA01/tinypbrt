@@ -341,9 +341,9 @@ extern "C" {
 	  const tpbrt_element_t* const element) {
 			if (current_state == TPBRT_NULL || element == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t START_TIME_STR = TPBRT_STRING("StartTime");
-		static const tpbrt_string_t END_TIME_STR   = TPBRT_STRING("EndTime");
-		static const tpbrt_string_t ALL_STR		   = TPBRT_STRING("All");
+		static const tpbrt_string_t START_TIME_STR = TPBRT_STRING_INIT("StartTime");
+		static const tpbrt_string_t END_TIME_STR   = TPBRT_STRING_INIT("EndTime");
+		static const tpbrt_string_t ALL_STR		   = TPBRT_STRING_INIT("All");
 
 			if (tpbrt_string_equals(element->as.single_string.type_name, START_TIME_STR)) {
 				current_state->active_ctm = TPBRT_ACTIVE_CTM_START_TIME;
@@ -435,7 +435,7 @@ extern "C" {
 		  transform, current_state->current_inside_medium, current_state->current_outside_medium, camera_create_info);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_string_t CAM_STR = TPBRT_STRING("camera");
+		static const tpbrt_string_t CAM_STR = TPBRT_STRING_INIT("camera");
 		return tpbrt_coord_system_map_insert(named_coord_systems, CAM_STR, &camera_to_world);
 	}
 
@@ -557,11 +557,11 @@ extern "C" {
 	  const tpbrt_element_t* const element) {
 			if (current_state == TPBRT_NULL || element == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t SHAPE_STR	 = TPBRT_STRING("shape");
-		static const tpbrt_string_t LIGHT_STR	 = TPBRT_STRING("light");
-		static const tpbrt_string_t MATERIAL_STR = TPBRT_STRING("material");
-		static const tpbrt_string_t TEXTURE_STR	 = TPBRT_STRING("texture");
-		static const tpbrt_string_t MEDIUM_STR	 = TPBRT_STRING("medium");
+		static const tpbrt_string_t SHAPE_STR	 = TPBRT_STRING_INIT("shape");
+		static const tpbrt_string_t LIGHT_STR	 = TPBRT_STRING_INIT("light");
+		static const tpbrt_string_t MATERIAL_STR = TPBRT_STRING_INIT("material");
+		static const tpbrt_string_t TEXTURE_STR	 = TPBRT_STRING_INIT("texture");
+		static const tpbrt_string_t MEDIUM_STR	 = TPBRT_STRING_INIT("medium");
 
 			if (tpbrt_string_equals(element->as.attribute.target, SHAPE_STR)) {
 				return tpbrt_params_list_extend(&current_state->shape_params, element->as.attribute.params);

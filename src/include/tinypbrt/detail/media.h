@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_media_type_t : uint8_t {
+	typedef enum tpbrt_media_type_t {
 		TPBRT_MEDIA_TYPE_CLOUD		  = 0,
 		TPBRT_MEDIA_TYPE_HOMOGENEOUS  = 1,
 		TPBRT_MEDIA_TYPE_NANO_VDB	  = 2,
@@ -90,9 +90,8 @@ extern "C" {
 
 	typedef struct tpbrt_media_t {
 		tpbrt_media_idx_t idx;
-		tpbrt_media_type_t type : 3;
-		tpbrt_string_t name;
 		tpbrt_transform_handle_t transform;
+		tpbrt_string_t name;
 
 		union {
 			tpbrt_media_cloud_params_t cloud;
@@ -101,14 +100,16 @@ extern "C" {
 			tpbrt_media_rgb_grid_params_t rgb_grid;
 			tpbrt_media_nano_vdb_params_t nano_vdb;
 		} as;
+
+		tpbrt_media_type_t type : 4;
 	} tpbrt_media_t;
 
 	typedef struct tpbrt_media_handle_t {
 		tpbrt_media_idx_t media_idx;
 	} tpbrt_media_handle_t;
 
-#define TPBRT_MEDIA_HANDLE_INVALID                                  \
-	(tpbrt_media_handle_t) { .media_idx = TPBRT_MEDIA_IDX_INVALID }
+#define TPBRT_MEDIA_HANDLE_INVALID_INIT { .media_idx = TPBRT_MEDIA_IDX_INVALID }
+#define TPBRT_MEDIA_HANDLE_INVALID		(tpbrt_media_handle_t) TPBRT_MEDIA_HANDLE_INVALID_INIT
 
 	typedef struct tpbrt_medias_list_t {
 		tpbrt_media_t* medias;
@@ -116,7 +117,8 @@ extern "C" {
 	} tpbrt_medias_list_t;
 
 	TPBRT_API tpbrt_error_t tpbrt_get_media_by_name(tpbrt_medias_list_t medias, tpbrt_string_t name, const tpbrt_media_t** media);
-	TPBRT_API tpbrt_error_t tpbrt_get_media_by_handle(tpbrt_medias_list_t medias, tpbrt_media_handle_t handle, const tpbrt_media_t** media);
+	TPBRT_API tpbrt_error_t tpbrt_get_media_by_handle(tpbrt_medias_list_t medias, tpbrt_media_handle_t handle,
+	  const tpbrt_media_t** media);
 
 #ifdef __cplusplus
 }

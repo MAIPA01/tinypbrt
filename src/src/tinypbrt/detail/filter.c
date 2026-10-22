@@ -11,11 +11,11 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_filter_type_from_string(const tpbrt_string_t type_str, tpbrt_filter_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_FILTER_TYPE_MAX_NUM] = {
-			TPBRT_STRING("box"),
-			TPBRT_STRING("gaussian"),
-			TPBRT_STRING("mitchell"),
-			TPBRT_STRING("sinc"),
-			TPBRT_STRING("triangle"),
+			TPBRT_STRING_INIT("box"),
+			TPBRT_STRING_INIT("gaussian"),
+			TPBRT_STRING_INIT("mitchell"),
+			TPBRT_STRING_INIT("sinc"),
+			TPBRT_STRING_INIT("triangle"),
 		};
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -61,7 +61,7 @@ extern "C" {
 	  const tpbrt_params_list_t params, tpbrt_float_t* const default_radius) {
 			if (gaussian == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t SIGMA_STR	   = TPBRT_STRING("sigma");
+		static const tpbrt_string_t SIGMA_STR	   = TPBRT_STRING_INIT("sigma");
 
 		static const tpbrt_float_t GAUSSIAN_RADIUS = 1.5f;
 		static const tpbrt_float_t SIGMA_DEFAULT   = 0.5f;
@@ -75,8 +75,8 @@ extern "C" {
 	  const tpbrt_params_list_t params, tpbrt_float_t* const default_radius) {
 			if (mitchell == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t B_STR		   = TPBRT_STRING("B");
-		static const tpbrt_string_t C_STR		   = TPBRT_STRING("C");
+		static const tpbrt_string_t B_STR		   = TPBRT_STRING_INIT("B");
+		static const tpbrt_string_t C_STR		   = TPBRT_STRING_INIT("C");
 
 		static const tpbrt_float_t MITCHELL_RADIUS = 2.f;
 		static const tpbrt_float_t B_DEFAULT	   = 1.f / 3.f;
@@ -94,7 +94,7 @@ extern "C" {
 	  tpbrt_float_t* const default_radius) {
 			if (sinc == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t TAU_STR	   = TPBRT_STRING("tau");
+		static const tpbrt_string_t TAU_STR	   = TPBRT_STRING_INIT("tau");
 
 		static const tpbrt_float_t SINC_RADIUS = 4.f;
 		static const tpbrt_float_t TAU_DEFAULT = 3.f;
@@ -118,8 +118,8 @@ extern "C" {
 
 			if (memset(filter, 0, sizeof(tpbrt_filter_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t X_RADIUS_STR = TPBRT_STRING("xradius");
-		static const tpbrt_string_t Y_RADIUS_STR = TPBRT_STRING("yradius");
+		static const tpbrt_string_t X_RADIUS_STR = TPBRT_STRING_INIT("xradius");
+		static const tpbrt_string_t Y_RADIUS_STR = TPBRT_STRING_INIT("yradius");
 
 		tpbrt_filter_type_t filter_type;
 		tpbrt_error_t err = tpbrt_filter_type_from_string(type, &filter_type);

@@ -1,0 +1,58 @@
+TransformTimes 0 1
+ActiveTransform StartTime
+LookAt 0 8 -30   0 2 0   0 1 0
+ActiveTransform EndTime
+LookAt 1 8 -30   0 2 0   0 1 0
+ActiveTransform All
+Camera "perspective" "float fov" 50 "float shutteropen" 0 "float shutterclose" 1
+Film "rgb" "integer xresolution" 800 "integer yresolution" 450 "string filename" "forest.exr"
+Sampler "halton" "integer pixelsamples" 64
+
+WorldBegin
+
+MakeNamedMedium "haze" "string type" "homogeneous" "rgb sigma_a" [ .002 .002 .002 ] "rgb sigma_s" [ .02 .02 .02 ]
+MediumInterface "" "haze"
+
+LightSource "distant" "point3 from" [ 0 10 0 ] "point3 to" [ 0 0 0 ] "blackbody L" 5500 "float scale" 3
+LightSource "infinite" "rgb L" [ .3 .4 .6 ]
+AttributeBegin
+    Translate 0 6 0
+    LightSource "point" "spectrum I" "stdillum-D65" "float power" 500
+AttributeEnd
+LightSource "spot" "point3 from" [ 0 10 -10 ] "point3 to" [ 0 0 0 ] "float coneangle" 25 "rgb I" [ 50 50 40 ]
+
+Texture "bark" "spectrum" "fbm" "integer octaves" 6
+MakeNamedMaterial "trunk" "string type" "diffuse" "texture reflectance" "bark"
+MakeNamedMaterial "leaves" "string type" "diffusetransmission"
+    "rgb reflectance" [ .1 .4 .1 ] "rgb transmittance" [ .05 .3 .05 ]
+
+ObjectBegin "tree"
+    AttributeBegin
+        NamedMaterial "trunk"
+        Rotate -90 1 0 0
+        Shape "cylinder" "float radius" .15 "float zmin" 0 "float zmax" 2
+    AttributeEnd
+    AttributeBegin
+        NamedMaterial "leaves"
+        Translate 0 2.5 0
+        Shape "sphere" "float radius" 1
+    AttributeEnd
+ObjectEnd
+
+AttributeBegin
+    Translate -6 0 0
+    ObjectInstance "tree"
+AttributeEnd
+AttributeBegin
+    Translate 0 0 4
+    Scale 1.5 1.5 1.5
+    ObjectInstance "tree"
+AttributeEnd
+AttributeBegin
+    Translate 6 0 1
+    Rotate 30 0 1 0
+    ObjectInstance "tree"
+AttributeEnd
+
+Material "coateddiffuse" "rgb reflectance" [ .3 .25 .2 ] "float roughness" .3
+Shape "bilinearmesh" "point3 P" [ -50 0 -50  50 0 -50  -50 0 50  50 0 50 ]

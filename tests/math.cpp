@@ -24,7 +24,7 @@ TEST(math, identity) {
 	tpbrt_mat4_t m;
 	tpbrt_mat4_identity(&m);
 		for (int r = 0; r < 4; ++r) {
-				for (int c = 0; c < 4; ++c) { EXPECT_EQ(m.m[r * 4 + c], r == c ? 1.0f : 0.0f); }
+				for (int c = 0; c < 4; ++c) { EXPECT_EQ(m.rows[r].v[c], r == c ? 1.0f : 0.0f); }
 		}
 }
 
@@ -38,7 +38,6 @@ TEST(math, translation_is_row_major) {
 }
 
 TEST(math, multiply_applies_right_operand_first) {
-	// pbrt: CTM = CTM * T, więc T działa na punkt jako pierwsza
 	tpbrt_mat4_t translate, scale, ts;
 	tpbrt_mat4_from_translation(&translate, vec3(5.0f, 0.0f, 0.0f));
 	tpbrt_mat4_from_scale(&scale, vec3(2.0f, 2.0f, 2.0f));

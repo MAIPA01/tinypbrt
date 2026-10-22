@@ -126,17 +126,17 @@ extern "C" {
 	tpbrt_error_t tpbrt_options_apply(tpbrt_options_t* const options, const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t DISABLE_PIXEL_JITTER	   = TPBRT_STRING("disablepixeljitter");
-		static const tpbrt_string_t DISABLE_TEXTURE_FILTERING  = TPBRT_STRING("disabletexturefiltering");
-		static const tpbrt_string_t DISABLE_WAVE_LENGTH_JITTER = TPBRT_STRING("disablewavelengthjitter");
-		static const tpbrt_string_t DISPLACEMENT_EDGE_SCALE	   = TPBRT_STRING("displacementedgescale");
-		static const tpbrt_string_t MSE_REFERENCE_IMAGE		   = TPBRT_STRING("msereferenceimage");
-		static const tpbrt_string_t MSE_REFERENCE_OUT		   = TPBRT_STRING("msereferenceout");
-		static const tpbrt_string_t RENDER_COORD_SYS		   = TPBRT_STRING("rendercoordsys");
-		static const tpbrt_string_t SEED					   = TPBRT_STRING("seed");
-		static const tpbrt_string_t FORCE_DIFFUSE			   = TPBRT_STRING("forcediffuse");
-		static const tpbrt_string_t PIXEL_STATS				   = TPBRT_STRING("pixelstats");
-		static const tpbrt_string_t WAVEFRONT				   = TPBRT_STRING("wavefront");
+		static const tpbrt_string_t DISABLE_PIXEL_JITTER	   = TPBRT_STRING_INIT("disablepixeljitter");
+		static const tpbrt_string_t DISABLE_TEXTURE_FILTERING  = TPBRT_STRING_INIT("disabletexturefiltering");
+		static const tpbrt_string_t DISABLE_WAVE_LENGTH_JITTER = TPBRT_STRING_INIT("disablewavelengthjitter");
+		static const tpbrt_string_t DISPLACEMENT_EDGE_SCALE	   = TPBRT_STRING_INIT("displacementedgescale");
+		static const tpbrt_string_t MSE_REFERENCE_IMAGE		   = TPBRT_STRING_INIT("msereferenceimage");
+		static const tpbrt_string_t MSE_REFERENCE_OUT		   = TPBRT_STRING_INIT("msereferenceout");
+		static const tpbrt_string_t RENDER_COORD_SYS		   = TPBRT_STRING_INIT("rendercoordsys");
+		static const tpbrt_string_t SEED					   = TPBRT_STRING_INIT("seed");
+		static const tpbrt_string_t FORCE_DIFFUSE			   = TPBRT_STRING_INIT("forcediffuse");
+		static const tpbrt_string_t PIXEL_STATS				   = TPBRT_STRING_INIT("pixelstats");
+		static const tpbrt_string_t WAVEFRONT				   = TPBRT_STRING_INIT("wavefront");
 
 			if (tpbrt_string_equals(param->name, DISABLE_PIXEL_JITTER)) {
 				return tpbrt_options_apply_disable_pixel_jitter(options, param);

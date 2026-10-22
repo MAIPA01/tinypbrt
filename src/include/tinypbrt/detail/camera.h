@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_camera_type_t : uint8_t {
+	typedef enum tpbrt_camera_type_t {
 		TPBRT_CAMERA_TYPE_ORTHOGRAPHIC = 0,
 		TPBRT_CAMERA_TYPE_PERSPECTIVE  = 1,
 		TPBRT_CAMERA_TYPE_REALISTIC	   = 2,
@@ -35,23 +35,23 @@ extern "C" {
 		tpbrt_float_t fov;
 	} tpbrt_camera_perspective_params_t;
 
-	typedef enum tpbrt_camera_spherical_mapping_t : uint8_t {
-		TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA			= 0,
-		TPBRT_CAMERA_SPHERICAL_MAPPING_NOT_EQUI_RECTANGULAR = 1,
-		TPBRT_CAMERA_SPHERICAL_MAPPING_MAX_NUM				= 2,
+	typedef enum tpbrt_camera_spherical_mapping_t {
+		TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA		= 0,
+		TPBRT_CAMERA_SPHERICAL_MAPPING_EQUI_RECTANGULAR = 1,
+		TPBRT_CAMERA_SPHERICAL_MAPPING_MAX_NUM			= 2,
 	} tpbrt_camera_spherical_mapping_t;
 
 	typedef struct tpbrt_camera_spherical_params_t {
-		tpbrt_camera_spherical_mapping_t mapping : 2;
+		tpbrt_camera_spherical_mapping_t mapping : 3;
 	} tpbrt_camera_spherical_params_t;
 
-	typedef enum tpbrt_camera_realistic_aperture_type_t : uint8_t {
+	typedef enum tpbrt_camera_realistic_aperture_type_t {
 		TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_FILE_NAME = 0,
 		TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN   = 1,
 		TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_MAX_NUM   = 2,
 	} tpbrt_camera_realistic_aperture_type_t;
 
-	typedef enum tpbrt_camera_realistic_aperture_builtin_t : uint8_t {
+	typedef enum tpbrt_camera_realistic_aperture_builtin_t {
 		TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_CIRCULAR = 0,
 		TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_GAUSSIAN = 1,
 		TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_SQUARE	 = 2,
@@ -62,11 +62,11 @@ extern "C" {
 
 	typedef struct tpbrt_camera_realistic_aperture_t {
 		union {
-			tpbrt_camera_realistic_aperture_builtin_t builtin : 3;
+			tpbrt_camera_realistic_aperture_builtin_t builtin : 4;
 			tpbrt_string_t file_name;
 		} as;
 
-		tpbrt_camera_realistic_aperture_type_t type : 2;
+		tpbrt_camera_realistic_aperture_type_t type : 3;
 	} tpbrt_camera_realistic_aperture_t;
 
 	typedef struct tpbrt_camera_realistic_params_t {
@@ -90,7 +90,7 @@ extern "C" {
 			tpbrt_camera_realistic_params_t realistic;
 		} as;
 
-		tpbrt_camera_type_t type : 3;
+		tpbrt_camera_type_t type : 4;
 	} tpbrt_camera_t;
 
 #ifdef __cplusplus

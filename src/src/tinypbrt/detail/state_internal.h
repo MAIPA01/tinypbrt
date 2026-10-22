@@ -16,14 +16,14 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_active_ctm_t : uint8_t {
+	typedef enum tpbrt_active_ctm_t {
 		TPBRT_ACTIVE_CTM_ALL		= 0,
 		TPBRT_ACTIVE_CTM_START_TIME = 1,
 		TPBRT_ACTIVE_CTM_END_TIME	= 2,
 		TPBRT_ACTIVE_CTM_MAX_NUM	= 3,
 	} tpbrt_active_ctm_t;
 
-	typedef enum tpbrt_state_type_t : uint8_t {
+	typedef enum tpbrt_state_type_t {
 		TPBRT_STATE_TYPE_GLOBAL	   = 0,
 		TPBRT_STATE_TYPE_OBJECT	   = 1,
 		TPBRT_STATE_TYPE_ATTRIBUTE = 2,
@@ -49,9 +49,9 @@ extern "C" {
 		tpbrt_params_list_t texture_params;
 
 		tpbrt_bool_t reverse_orientation		: 1;
-		tpbrt_active_ctm_t active_ctm			: 2;
-		tpbrt_color_space_t current_color_space : 3;
-		tpbrt_state_type_t type					: 2;
+		tpbrt_active_ctm_t active_ctm			: 3;
+		tpbrt_color_space_t current_color_space : 4;
+		tpbrt_state_type_t type					: 3;
 	} tpbrt_state_t;
 
 	tpbrt_error_t tpbrt_state_init(tpbrt_state_t* state);

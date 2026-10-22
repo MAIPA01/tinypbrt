@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_integrator_type_t : uint8_t {
+	typedef enum tpbrt_integrator_type_t {
 		TPBRT_INTEGRATOR_TYPE_AMBIENT_OCCLUSION = 0,
 		TPBRT_INTEGRATOR_TYPE_BDPT				= 1,
 		TPBRT_INTEGRATOR_TYPE_LIGHT_PATH		= 2,
@@ -22,7 +22,7 @@ extern "C" {
 		TPBRT_INTEGRATOR_TYPE_MAX_NUM			= 10,
 	} tpbrt_integrator_type_t;
 
-	typedef enum tpbrt_integrator_light_sampler_t : uint8_t {
+	typedef enum tpbrt_integrator_light_sampler_t {
 		TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH	   = 0,
 		TPBRT_INTEGRATOR_LIGHT_SAMPLER_UNIFORM = 1,
 		TPBRT_INTEGRATOR_LIGHT_SAMPLER_POWER   = 2,
@@ -57,7 +57,7 @@ extern "C" {
 
 	typedef struct tpbrt_integrator_path_params_t {
 		tpbrt_uint_t max_depth;
-		tpbrt_integrator_light_sampler_t light_sampler : 2;
+		tpbrt_integrator_light_sampler_t light_sampler : 3;
 		tpbrt_bool_t regularize						   : 1;
 	} tpbrt_integrator_path_params_t;
 
@@ -84,7 +84,7 @@ extern "C" {
 
 	typedef struct tpbrt_integrator_vol_path_params_t {
 		tpbrt_uint_t max_depth;
-		tpbrt_integrator_light_sampler_t light_sampler : 2;
+		tpbrt_integrator_light_sampler_t light_sampler : 3;
 		tpbrt_bool_t regularize						   : 1;
 	} tpbrt_integrator_vol_path_params_t;
 
@@ -102,7 +102,7 @@ extern "C" {
 			tpbrt_integrator_vol_path_params_t vol_path;
 		} as;
 
-		tpbrt_integrator_type_t type : 4;
+		tpbrt_integrator_type_t type : 5;
 	} tpbrt_integrator_t;
 
 #ifdef __cplusplus

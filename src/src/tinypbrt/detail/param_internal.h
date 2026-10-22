@@ -14,7 +14,7 @@ extern "C" {
 
 #pragma region PARAM
 
-	typedef enum tpbrt_param_type_t : uint8_t {
+	typedef enum tpbrt_param_type_t {
 		TPBRT_PARAM_TYPE_INTEGER   = 0,
 		TPBRT_PARAM_TYPE_FLOAT	   = 1,
 		TPBRT_PARAM_TYPE_POINT2	   = 2,
@@ -34,7 +34,7 @@ extern "C" {
 		TPBRT_PARAM_TYPE_MAX_NUM   = 16,
 	} tpbrt_param_type_t;
 
-	typedef enum tpbrt_param_value_type_t : uint8_t {
+	typedef enum tpbrt_param_value_type_t {
 		TPBRT_PARAM_VALUE_TYPE_SINGLE = 0,
 		TPBRT_PARAM_VALUE_TYPE_ARRAY  = 1,
 		TPBRT_PARAM_VALUE_TYPE_STRING = 2,
@@ -43,8 +43,8 @@ extern "C" {
 	typedef struct tpbrt_param_t {
 		tpbrt_string_t name;
 		tpbrt_string_t value;
-		tpbrt_param_type_t type				: 5;
-		tpbrt_param_value_type_t value_type : 2;
+		tpbrt_param_type_t type				: 6;
+		tpbrt_param_value_type_t value_type : 3;
 	} tpbrt_param_t;
 
 	tpbrt_error_t tpbrt_param_type_from_string(tpbrt_string_t type_str, tpbrt_param_type_t* type_out);

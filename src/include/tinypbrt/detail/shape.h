@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_shape_type_t : uint8_t {
+	typedef enum tpbrt_shape_type_t {
 		TPBRT_SHAPE_TYPE_BILINEAR_MESH = 0,
 		TPBRT_SHAPE_TYPE_CURVE		   = 1,
 		TPBRT_SHAPE_TYPE_CYLINDER	   = 2,
@@ -26,18 +26,18 @@ extern "C" {
 		TPBRT_SHAPE_TYPE_MAX_NUM	   = 8,
 	} tpbrt_shape_type_t;
 
-	typedef enum tpbrt_shape_curve_basis_t : uint8_t {
+	typedef enum tpbrt_shape_curve_basis_t {
 		TPBRT_SHAPE_CURVE_BASIS_BEZIER	= 0,
 		TPBRT_SHAPE_CURVE_BASIS_BSPLINE = 1,
 		TPBRT_SHAPE_CURVE_BASIS_MAX_NUM = 2,
 	} tpbrt_shape_curve_basis_t;
 
-	typedef enum tpbrt_shape_curve_degree_t : uint8_t {
+	typedef enum tpbrt_shape_curve_degree_t {
 		TPBRT_SHAPE_CURVE_DEGREE_2 = 2,
 		TPBRT_SHAPE_CURVE_DEGREE_3 = 3,
 	} tpbrt_shape_curve_degree_t;
 
-	typedef enum tpbrt_shape_curve_type_t : uint8_t {
+	typedef enum tpbrt_shape_curve_type_t {
 		TPBRT_SHAPE_CURVE_TYPE_FLAT		= 0,
 		TPBRT_SHAPE_CURVE_TYPE_CYLINDER = 1,
 		TPBRT_SHAPE_CURVE_TYPE_RIBBON	= 2,
@@ -58,9 +58,9 @@ extern "C" {
 		tpbrt_opt_float_t width0;
 		tpbrt_opt_float_t width1;
 		tpbrt_uint_t split_depth;
-		tpbrt_shape_curve_basis_t basis	  : 2;
-		tpbrt_shape_curve_degree_t degree : 2;
-		tpbrt_shape_curve_type_t type	  : 2;
+		tpbrt_shape_curve_basis_t basis	  : 3;
+		tpbrt_shape_curve_degree_t degree : 3;
+		tpbrt_shape_curve_type_t type	  : 3;
 	} tpbrt_shape_curve_params_t;
 
 	typedef struct tpbrt_shape_cylinder_params_t {
@@ -111,7 +111,7 @@ extern "C" {
 		tpbrt_area_light_handle_t area_light;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
-		tpbrt_shape_type_t type			 : 4;
+		tpbrt_shape_type_t type			 : 5;
 		tpbrt_bool_t reverse_orientation : 1;
 
 		union {

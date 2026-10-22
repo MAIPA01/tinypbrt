@@ -13,8 +13,8 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_accelerator_type_from_string(const tpbrt_string_t type_str, tpbrt_accelerator_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_ACCELERATOR_TYPE_MAX_NUM] = {
-			TPBRT_STRING("bvh"),
-			TPBRT_STRING("kdtree"),
+			TPBRT_STRING_INIT("bvh"),
+			TPBRT_STRING_INIT("kdtree"),
 		};
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -34,10 +34,10 @@ extern "C" {
 	tpbrt_error_t tpbrt_accelerator_bvh_split_method_from_string(const tpbrt_string_t method_str,
 	  tpbrt_accelerator_bvh_split_method_t* const method) {
 		static const tpbrt_string_t METHODS_STRS[TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM] = {
-			TPBRT_STRING("sah"),
-			TPBRT_STRING("middle"),
-			TPBRT_STRING("equal"),
-			TPBRT_STRING("hlbvh"),
+			TPBRT_STRING_INIT("sah"),
+			TPBRT_STRING_INIT("middle"),
+			TPBRT_STRING_INIT("equal"),
+			TPBRT_STRING_INIT("hlbvh"),
 		};
 
 			if (method == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -58,11 +58,11 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (bvh_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t MAX_NODES_PRIMS_STR	  = TPBRT_STRING("maxnodeprims");
-		static const tpbrt_string_t SPLIT_METHOD_STR	  = TPBRT_STRING("splitmethod");
+		static const tpbrt_string_t MAX_NODES_PRIMS_STR	  = TPBRT_STRING_INIT("maxnodeprims");
+		static const tpbrt_string_t SPLIT_METHOD_STR	  = TPBRT_STRING_INIT("splitmethod");
 
 		static const tpbrt_uint_t MAX_NODES_PRIMS_DEFAULT = 4u;
-		static const tpbrt_string_t SPLIT_METHOD_DEFAULT  = TPBRT_EMPTY_STRING;
+		static const tpbrt_string_t SPLIT_METHOD_DEFAULT  = TPBRT_EMPTY_STRING_INIT;
 
 		tpbrt_error_t err =
 		  tpbrt_params_list_get_uint(params, MAX_NODES_PRIMS_STR, MAX_NODES_PRIMS_DEFAULT, &bvh_params->max_node_prims);
@@ -89,11 +89,11 @@ extern "C" {
 	  const tpbrt_params_list_t params) {
 			if (kd_tree_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		static const tpbrt_string_t INTERSECT_COST_STR	 = TPBRT_STRING("intersectcost");
-		static const tpbrt_string_t TRAVERSAL_COST_STR	 = TPBRT_STRING("traversalcost");
-		static const tpbrt_string_t EMPTY_BONUS_STR		 = TPBRT_STRING("emptybonus");
-		static const tpbrt_string_t MAX_PRIMS_STR		 = TPBRT_STRING("maxprims");
-		static const tpbrt_string_t MAX_DEPTH_STR		 = TPBRT_STRING("maxdepth");
+		static const tpbrt_string_t INTERSECT_COST_STR	 = TPBRT_STRING_INIT("intersectcost");
+		static const tpbrt_string_t TRAVERSAL_COST_STR	 = TPBRT_STRING_INIT("traversalcost");
+		static const tpbrt_string_t EMPTY_BONUS_STR		 = TPBRT_STRING_INIT("emptybonus");
+		static const tpbrt_string_t MAX_PRIMS_STR		 = TPBRT_STRING_INIT("maxprims");
+		static const tpbrt_string_t MAX_DEPTH_STR		 = TPBRT_STRING_INIT("maxdepth");
 
 		static const tpbrt_uint_t INTERSECT_COST_DEFAULT = 5u;
 		static const tpbrt_uint_t TRAVERSAL_COST_DEFAULT = 1u;

@@ -36,8 +36,13 @@ extern "C" {
 	typedef struct tpbrt_vec2_t {
 		union {
 			struct {
-				tpbrt_float_t x;
-				tpbrt_float_t y;
+				union {
+					tpbrt_float_t x, r;
+				};
+
+				union {
+					tpbrt_float_t y, b;
+				};
 			};
 
 			tpbrt_float_t v[2];
@@ -64,6 +69,30 @@ extern "C" {
 		};
 	} tpbrt_vec3_t;
 
+	typedef struct tpbrt_vec4_t {
+		union {
+			struct {
+				union {
+					tpbrt_float_t x, r;
+				};
+
+				union {
+					tpbrt_float_t y, g;
+				};
+
+				union {
+					tpbrt_float_t z, b;
+				};
+
+				union {
+					tpbrt_float_t w, a;
+				};
+			};
+
+			tpbrt_float_t v[4];
+		};
+	} tpbrt_vec4_t;
+
 	typedef struct tpbrt_vec2_array_t {
 		tpbrt_vec2_t* data;
 		tpbrt_size_t count;
@@ -75,7 +104,25 @@ extern "C" {
 	} tpbrt_vec3_array_t;
 
 	typedef struct tpbrt_mat4_t {
-		tpbrt_float_t m[TPBRT_MAT4_ARRAY_SIZE];
+		union {
+			struct {
+				tpbrt_mat4_row_t row0;
+				tpbrt_mat4_row_t row1;
+				tpbrt_mat4_row_t row2;
+				tpbrt_mat4_row_t row3;
+			};
+
+			tpbrt_mat4_row_t rows[4];
+
+			struct {
+				tpbrt_float_t m00, m01, m02, m03;
+				tpbrt_float_t m10, m11, m12, m13;
+				tpbrt_float_t m20, m21, m22, m23;
+				tpbrt_float_t m30, m31, m32, m33;
+			};
+
+			tpbrt_float_t m[TPBRT_MAT4_ARRAY_SIZE];
+		};
 	} tpbrt_mat4_t;
 
 	typedef struct tpbrt_mat4_animated_t {

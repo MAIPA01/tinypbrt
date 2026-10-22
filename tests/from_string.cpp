@@ -37,8 +37,8 @@ TEST(from_string, camera_type) {
 
 TEST(from_string, camera_spherical_mapping) {
 	static constexpr FromStringCase<tpbrt_camera_spherical_mapping_t> CASES[] = {
-		{ .text = "equalarea",	   .value = TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA			  },
-		{ .text = "equirectangular", .value = TPBRT_CAMERA_SPHERICAL_MAPPING_NOT_EQUI_RECTANGULAR },
+		{ .text = "equalarea",	   .value = TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA		  },
+		{ .text = "equirectangular", .value = TPBRT_CAMERA_SPHERICAL_MAPPING_EQUI_RECTANGULAR },
 	};
 	check_from_string<tpbrt_camera_spherical_mapping_t>(tpbrt_camera_spherical_mapping_from_string, CASES,
 	  TPBRT_ERROR_INVALID_CAMERA_SPHERICAL_MAPPING, TPBRT_CAMERA_SPHERICAL_MAPPING_MAX_NUM);

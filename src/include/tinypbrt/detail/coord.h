@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_coord_system_type_t : uint8_t {
+	typedef enum tpbrt_coord_system_type_t {
 		TPBRT_COORD_SYSTEM_TYPE_CAMERA_WORLD = 0,
 		TPBRT_COORD_SYSTEM_TYPE_CAMERA		 = 1,
 		TPBRT_COORD_SYSTEM_TYPE_WORLD		 = 2,

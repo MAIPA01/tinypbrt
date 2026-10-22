@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_material_type_t : uint8_t {
+	typedef enum tpbrt_material_type_t {
 		TPBRT_MATERIAL_TYPE_COATED_DIFFUSE		 = 0,
 		TPBRT_MATERIAL_TYPE_COATED_CONDUCTOR	 = 1,
 		TPBRT_MATERIAL_TYPE_CONDUCTOR			 = 2,
@@ -33,10 +33,10 @@ extern "C" {
 		tpbrt_material_idx_t material_idx;
 	} tpbrt_material_handle_t;
 
-#define TPBRT_MATERIAL_HANDLE_INVALID                                        \
-	(tpbrt_material_handle_t) { .material_idx = TPBRT_MATERIAL_IDX_INVALID }
+#define TPBRT_MATERIAL_HANDLE_INVALID_INIT { .material_idx = TPBRT_MATERIAL_IDX_INVALID }
+#define TPBRT_MATERIAL_HANDLE_INVALID	   (tpbrt_material_handle_t) TPBRT_MATERIAL_HANDLE_INVALID_INIT
 
-	typedef enum tpbrt_material_bump_map_type_t : uint8_t {
+	typedef enum tpbrt_material_bump_map_type_t {
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_NONE		  = 0,
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_DISPLACEMENT = 1,
 		TPBRT_MATERIAL_BUMP_MAP_TYPE_NORMAL_MAP	  = 2,
@@ -49,7 +49,7 @@ extern "C" {
 			tpbrt_string_t normal_map;
 		} as;
 
-		tpbrt_material_bump_map_type_t type : 2;
+		tpbrt_material_bump_map_type_t type : 3;
 	} tpbrt_material_bump_map_params_t;
 
 	typedef struct tpbrt_material_roughness_params_t {
@@ -71,7 +71,7 @@ extern "C" {
 		tpbrt_float_t thickness;
 	} tpbrt_material_coated_diffuse_params_t;
 
-	typedef enum tpbrt_material_conductor_value_type_t : uint8_t {
+	typedef enum tpbrt_material_conductor_value_type_t {
 		TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_ETA_K		= 0,
 		TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_REFLECTANCE = 1,
 		TPBRT_MATERIAL_CONDUCTOR_VALUE_TYPE_MAX_NUM		= 2,
@@ -96,7 +96,7 @@ extern "C" {
 		tpbrt_material_roughness_params_t conductor_roughness_params;
 		tpbrt_material_roughness_params_t interface_roughness_params;
 		tpbrt_float_t thickness;
-		tpbrt_material_conductor_value_type_t value_type : 2;
+		tpbrt_material_conductor_value_type_t value_type : 3;
 	} tpbrt_material_coated_conductor_params_t;
 
 	typedef struct tpbrt_material_conductor_params_t {
@@ -112,7 +112,7 @@ extern "C" {
 		} as;
 
 		tpbrt_material_roughness_params_t roughness_params;
-		tpbrt_material_conductor_value_type_t value_type : 2;
+		tpbrt_material_conductor_value_type_t value_type : 3;
 	} tpbrt_material_conductor_params_t;
 
 	typedef struct tpbrt_material_dielectric_params_t {
@@ -191,7 +191,7 @@ extern "C" {
 			tpbrt_material_thin_dielectric_params_t thin_dielectric;
 		} as;
 
-		tpbrt_material_type_t type : 4;
+		tpbrt_material_type_t type : 5;
 	} tpbrt_material_t;
 
 	typedef struct tpbrt_materials_list_t {

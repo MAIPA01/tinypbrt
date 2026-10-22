@@ -107,7 +107,7 @@ extern "C" {
 			} medium_interface;
 		} as;
 
-		tpbrt_directive_t type : 6;
+		tpbrt_directive_t type : 7;
 	} tpbrt_element_t;
 
 	typedef struct tpbrt_parser_t {

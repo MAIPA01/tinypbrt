@@ -24,8 +24,10 @@ extern "C" {
 #pragma endregion
 
 #pragma region STRING
-#define TPBRT_STRING(value) (tpbrt_string_t) { .data = (value), .size = sizeof((value)) - 1u }
-#define TPBRT_EMPTY_STRING	(tpbrt_string_t) { .data = TPBRT_NULL, .size = 0u }
+#define TPBRT_STRING_INIT(value) { .data = (value), .size = sizeof((value)) - 1u }
+#define TPBRT_STRING(value)		 (tpbrt_string_t) TPBRT_STRING_INIT(value)
+#define TPBRT_EMPTY_STRING_INIT	 { .data = TPBRT_NULL, .size = 0u }
+#define TPBRT_EMPTY_STRING		 (tpbrt_string_t) TPBRT_EMPTY_STRING_INIT
 
 	tpbrt_error_t tpbrt_copy_chars(tpbrt_char_t* dst, tpbrt_size_t dst_size, const tpbrt_char_t* src, tpbrt_size_t n);
 
@@ -44,7 +46,8 @@ extern "C" {
 #pragma endregion
 
 #pragma region STRING_ARRAY
-#define TPBRT_EMPTY_STRING_ARRAY (tpbrt_string_array_t) { .data = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_STRING_ARRAY_INIT { .data = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_STRING_ARRAY	  (tpbrt_string_array_t) TPBRT_EMPTY_STRING_ARRAY_INIT
 
 	void tpbrt_string_array_free(tpbrt_string_array_t* array);
 #pragma endregion

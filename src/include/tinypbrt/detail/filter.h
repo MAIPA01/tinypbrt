@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_filter_type_t : uint8_t {
+	typedef enum tpbrt_filter_type_t {
 		TPBRT_FILTER_TYPE_BOX	   = 0,
 		TPBRT_FILTER_TYPE_GAUSSIAN = 1,
 		TPBRT_FILTER_TYPE_MITCHELL = 2,
@@ -40,7 +40,7 @@ extern "C" {
 			tpbrt_filter_sinc_params_t sinc;
 		} as;
 
-		tpbrt_filter_type_t type : 3;
+		tpbrt_filter_type_t type : 4;
 	} tpbrt_filter_t;
 
 #ifdef __cplusplus

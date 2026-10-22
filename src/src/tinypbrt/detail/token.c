@@ -10,57 +10,57 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_directive_from_string(const tpbrt_string_t directive_str, tpbrt_directive_t* directive_out) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_DIRECTIVE_MAX_NUM] = {
-			TPBRT_STRING("Identity"),
-			TPBRT_STRING("Translate"),
-			TPBRT_STRING("Scale"),
-			TPBRT_STRING("Rotate"),
-			TPBRT_STRING("LookAt"),
-			TPBRT_STRING("CoordinateSystem"),
-			TPBRT_STRING("CoordSysTransform"),
-			TPBRT_STRING("Transform"),
-			TPBRT_STRING("ConcatTransform"),
-			TPBRT_STRING("TransformTimes"),
-			TPBRT_STRING("ActiveTransform"),
+			TPBRT_STRING_INIT("Identity"),
+			TPBRT_STRING_INIT("Translate"),
+			TPBRT_STRING_INIT("Scale"),
+			TPBRT_STRING_INIT("Rotate"),
+			TPBRT_STRING_INIT("LookAt"),
+			TPBRT_STRING_INIT("CoordinateSystem"),
+			TPBRT_STRING_INIT("CoordSysTransform"),
+			TPBRT_STRING_INIT("Transform"),
+			TPBRT_STRING_INIT("ConcatTransform"),
+			TPBRT_STRING_INIT("TransformTimes"),
+			TPBRT_STRING_INIT("ActiveTransform"),
 
-			TPBRT_STRING("Include"),
-			TPBRT_STRING("Import"),
+			TPBRT_STRING_INIT("Include"),
+			TPBRT_STRING_INIT("Import"),
 
-			TPBRT_STRING("Option"),
+			TPBRT_STRING_INIT("Option"),
 
-			TPBRT_STRING("Camera"),
-			TPBRT_STRING("Sampler"),
-			TPBRT_STRING("ColorSpace"),
-			TPBRT_STRING("Film"),
-			TPBRT_STRING("PixelFilter"),
-			TPBRT_STRING("Integrator"),
-			TPBRT_STRING("Accelerator"),
+			TPBRT_STRING_INIT("Camera"),
+			TPBRT_STRING_INIT("Sampler"),
+			TPBRT_STRING_INIT("ColorSpace"),
+			TPBRT_STRING_INIT("Film"),
+			TPBRT_STRING_INIT("PixelFilter"),
+			TPBRT_STRING_INIT("Integrator"),
+			TPBRT_STRING_INIT("Accelerator"),
 
-			TPBRT_STRING("WorldBegin"),
+			TPBRT_STRING_INIT("WorldBegin"),
 
-			TPBRT_STRING("AttributeBegin"),
-			TPBRT_STRING("AttributeEnd"),
-			TPBRT_STRING("Attribute"),
+			TPBRT_STRING_INIT("AttributeBegin"),
+			TPBRT_STRING_INIT("AttributeEnd"),
+			TPBRT_STRING_INIT("Attribute"),
 
-			TPBRT_STRING("ReverseOrientation"),
-			TPBRT_STRING("Shape"),
-			TPBRT_STRING("ObjectBegin"),
-			TPBRT_STRING("ObjectEnd"),
-			TPBRT_STRING("ObjectInstance"),
+			TPBRT_STRING_INIT("ReverseOrientation"),
+			TPBRT_STRING_INIT("Shape"),
+			TPBRT_STRING_INIT("ObjectBegin"),
+			TPBRT_STRING_INIT("ObjectEnd"),
+			TPBRT_STRING_INIT("ObjectInstance"),
 
-			TPBRT_STRING("LightSource"),
-			TPBRT_STRING("AreaLightSource"),
+			TPBRT_STRING_INIT("LightSource"),
+			TPBRT_STRING_INIT("AreaLightSource"),
 
-			TPBRT_STRING("Material"),
-			TPBRT_STRING("MakeNamedMaterial"),
-			TPBRT_STRING("NamedMaterial"),
+			TPBRT_STRING_INIT("Material"),
+			TPBRT_STRING_INIT("MakeNamedMaterial"),
+			TPBRT_STRING_INIT("NamedMaterial"),
 
-			TPBRT_STRING("Texture"),
+			TPBRT_STRING_INIT("Texture"),
 
-			TPBRT_STRING("MakeNamedMedium"),
-			TPBRT_STRING("MediumInterface"),
+			TPBRT_STRING_INIT("MakeNamedMedium"),
+			TPBRT_STRING_INIT("MediumInterface"),
 
-			TPBRT_STRING("TransformBegin"),
-			TPBRT_STRING("TransformEnd"),
+			TPBRT_STRING_INIT("TransformBegin"),
+			TPBRT_STRING_INIT("TransformEnd"),
 		};
 
 			if (directive_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -130,16 +130,16 @@ extern "C" {
 			if (token == TPBRT_NULL || token->value.size == 0u) { return TPBRT_FALSE; }
 
 			if (token->value.size >= 1u) {
-				const tpbrt_bool_t starts_with_quote = token->value.data[0] == '\"';
-				const tpbrt_bool_t ends_with_quote	 = token->value.data[token->value.size - 1] == '\"';
+				const tpbrt_bool_t starts_with_quote = token->value.data[0] == '\"' ? TPBRT_TRUE : TPBRT_FALSE;
+				const tpbrt_bool_t ends_with_quote = token->value.data[token->value.size - 1] == '\"' ? TPBRT_TRUE : TPBRT_FALSE;
 
-					if (starts_with_quote || ends_with_quote) {
+					if (starts_with_quote == TPBRT_TRUE || ends_with_quote == TPBRT_TRUE) {
 							if (starts_with_quote != ends_with_quote) { return TPBRT_FALSE; }
 
 							if (token->value.size < 2u) { return TPBRT_FALSE; }
 					}
 
-					if (!starts_with_quote) {
+					if (starts_with_quote == TPBRT_FALSE) {
 							for (tpbrt_size_t i = 0u; i < token->value.size; ++i) {
 									if (token->value.data[i] == ' ') { return TPBRT_FALSE; }
 							}

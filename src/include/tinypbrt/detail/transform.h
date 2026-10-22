@@ -15,8 +15,8 @@ extern "C" {
 		tpbrt_transform_idx_t transform_idx;
 	} tpbrt_transform_handle_t;
 
-#define TPBRT_TRANSFORM_HANDLE_INVALID                                          \
-	(tpbrt_transform_handle_t) { .transform_idx = TPBRT_TRANSFORM_IDX_INVALID }
+#define TPBRT_TRANSFORM_HANDLE_INVALID_INIT { .transform_idx = TPBRT_TRANSFORM_IDX_INVALID }
+#define TPBRT_TRANSFORM_HANDLE_INVALID		(tpbrt_transform_handle_t) TPBRT_TRANSFORM_HANDLE_INVALID_INIT
 
 	typedef struct tpbrt_transform_animated_t {
 		tpbrt_transform_handle_t start_transform;

@@ -68,6 +68,8 @@ extern "C" {
 	typedef tpbrt_vec3_t tpbrt_normal3_t;
 	typedef tpbrt_normal3_t tpbrt_normal_t;
 
+	typedef struct tpbrt_vec4_t tpbrt_vec4_t;
+
 	typedef struct tpbrt_vec2_array_t tpbrt_vec2_array_t;
 	typedef tpbrt_vec2_array_t tpbrt_point2_array_t;
 
@@ -78,6 +80,7 @@ extern "C" {
 	typedef tpbrt_vec3_array_t tpbrt_normal3_array_t;
 	typedef tpbrt_normal3_array_t tpbrt_normal_array_t;
 
+	typedef tpbrt_vec4_t tpbrt_mat4_row_t;
 	typedef struct tpbrt_mat4_t tpbrt_mat4_t;
 	typedef struct tpbrt_mat4_animated_t tpbrt_mat4_animated_t;
 #pragma endregion
