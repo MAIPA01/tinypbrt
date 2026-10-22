@@ -41,9 +41,30 @@ tinypbrt_enable_sanitizers(${C_TARGET_C_API_TEST})
 tinypbrt_set_sanitizers_test_environment(${C_TARGET_C_API_TEST}_TEST)
 # endregion
 
-target_link_libraries(${C_TARGET_TEST} PRIVATE   $<IF:$<BOOL:${TINYPBRT_INSTALL_TEST}>, tinypbrt::all, tinypbrt::tinypbrt>
-        gtest_main
-)
+if (TARGET tinypbrt_static)
+    set(C_TARGET_TEST_TINYPBRT tinypbrt_static)
+elseif (TINYPBRT_INSTALL_TEST)
+    set(C_TARGET_TEST_TINYPBRT tinypbrt::all)
+else()
+    set(C_TARGET_TEST_TINYPBRT tinypbrt::tinypbrt)
+endif()
+target_link_libraries(${C_TARGET_TEST} PRIVATE ${C_TARGET_TEST_TINYPBRT} gtest_main)
+
+if (WIN32)
+    set(C_TARGET_TESTS_WITH_DLLS)
+    if (TINYPBRT_BUILD_SHARED)
+        list(APPEND C_TARGET_TESTS_WITH_DLLS ${C_TARGET_C_API_TEST})
+    endif()
+    if (BUILD_SHARED_LIBS)
+        list(APPEND C_TARGET_TESTS_WITH_DLLS ${C_TARGET_TEST})
+    endif()
+    foreach(TEST_EXE ${C_TARGET_TESTS_WITH_DLLS})
+        add_custom_command(TARGET ${TEST_EXE} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${TEST_EXE}> $<TARGET_FILE_DIR:${TEST_EXE}>
+            COMMAND_EXPAND_LISTS
+        )
+    endforeach()
+endif()
 
 if(TINYPBRT_INSTALL_TEST)
     get_target_property(TINYPBRT_SOURCE_DIR tinypbrt::all SOURCE_DIR)
@@ -101,7 +122,7 @@ target_link_options(${C_TARGET_TEST} PRIVATE
     # GCC/clang with GNU frontend
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>>>:
         $<$<CONFIG:Release>:-flto>
-        $<$<NOT:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>>:-static>
+        $<$<NOT:$<OR:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>,$<BOOL:${BUILD_SHARED_LIBS}>,$<PLATFORM_ID:Darwin>>>:-static>
     >
     $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
         --coverage

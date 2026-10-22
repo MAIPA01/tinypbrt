@@ -25,10 +25,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_LIGHT_SOURCE_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_LIGHT_SOURCE_TYPE; }
 
 			for (tpbrt_light_source_type_t t = 0; t < TPBRT_LIGHT_SOURCE_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -325,10 +325,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_AREA_LIGHT_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_AREA_LIGHT_TYPE; }
 
 			for (tpbrt_area_light_type_t t = 0; t < TPBRT_AREA_LIGHT_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -355,9 +355,9 @@ extern "C" {
 		err = tpbrt_params_list_get_spectrum(params, L_STR, l_default, &diffuse->l);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		tpbrt_bool_t two_sided;
-		err				   = tpbrt_params_list_get_bool(params, TWO_SIDED_STR, TWO_SIDED_DEFAULT, &two_sided);
-		diffuse->two_sided = two_sided;
+		tpbrt_bool_t two_sided = TWO_SIDED_DEFAULT;
+		err					   = tpbrt_params_list_get_bool(params, TWO_SIDED_STR, TWO_SIDED_DEFAULT, &two_sided);
+		diffuse->two_sided	   = two_sided;
 
 		return err;
 	}

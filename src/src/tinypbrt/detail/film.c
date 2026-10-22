@@ -30,10 +30,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_FILM_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_FILM_TYPE; }
 
 			for (tpbrt_film_type_t t = 0; t < TPBRT_FILM_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -66,10 +66,10 @@ extern "C" {
 
 			if (sensor == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_FILM_SENSOR; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_FILM_SENSOR; }
 
 			for (tpbrt_film_sensor_t s = 0; s < TPBRT_FILM_SENSOR_MAX_NUM; ++s) {
-					if (tpbrt_string_equals(type_str, SENSORS_STRS[s])) {
+					if (tpbrt_string_equals(type_str, SENSORS_STRS[s]) == TPBRT_TRUE) {
 						*sensor = s;
 						return TPBRT_ERROR_NONE;
 					}
@@ -122,7 +122,7 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-		tpbrt_coord_system_type_t coordinate_system;
+		tpbrt_coord_system_type_t coordinate_system = TPBRT_COORD_SYSTEM_TYPE_MAX_NUM;
 		err = tpbrt_coord_system_type_from_string(coordinate_system_str, &coordinate_system);
 		tpbrt_string_free(&coordinate_system_str);
 		gbuffer->coordinate_system = coordinate_system;
@@ -171,9 +171,9 @@ extern "C" {
 		tpbrt_error_t err											   = TPBRT_ERROR_NONE;
 		film->type													   = TPBRT_FILM_TYPE_RGB;
 			if (tpbrt_string_empty(type_str) == TPBRT_FALSE) {
-				tpbrt_film_type_t type;
-				err		   = tpbrt_film_type_from_string(type_str, &type);
-				film->type = type;
+				tpbrt_film_type_t type = TPBRT_FILM_TYPE_MAX_NUM;
+				err					   = tpbrt_film_type_from_string(type_str, &type);
+				film->type			   = type;
 			}
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_film_free(film);
@@ -290,8 +290,8 @@ extern "C" {
 		err = tpbrt_params_list_get_string(params, TPBRT_FILM_SENSOR_STR, TPBRT_EMPTY_STRING, &sensor_str);
 			if (tpbrt_string_empty(sensor_str) == TPBRT_TRUE) { film->sensor = tpbrt_film_sensor_default; }
 			else if (err == TPBRT_ERROR_NONE) {
-				tpbrt_film_sensor_t sensor;
-				err = tpbrt_film_sensor_from_string(sensor_str, &sensor);
+				tpbrt_film_sensor_t sensor = TPBRT_FILM_SENSOR_MAX_NUM;
+				err						   = tpbrt_film_sensor_from_string(sensor_str, &sensor);
 				tpbrt_string_free(&sensor_str);
 				film->sensor = sensor;
 			}

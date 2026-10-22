@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(tinypbrt VERSION 1.0.0 LANGUAGES C CXX)
 
 option(BUILD_SHARED_LIBS 					"Build shared library" 			OFF)
+option(TINYPBRT_BUILD_SHARED 				"Build tinypbrt as a shared library" 	${BUILD_SHARED_LIBS})
 option(TINYPBRT_BUILD_TESTS 				"Build tests"			 		${PROJECT_IS_TOP_LEVEL})
 option(TINYPBRT_BUILD_BENCHMARK  			"Build benchmark" 				${PROJECT_IS_TOP_LEVEL})
 option(TINYPBRT_BUILD_COVERAGE 				"Enable coverage reporting" 	${PROJECT_IS_TOP_LEVEL})
@@ -21,12 +22,6 @@ option(TINYPBRT_INSTALL_TEST				"This is only to test if installation of tinypbr
 option(TINYPBRT_DISABLE_ASSERT_ON_RELEASE 		"Disables assert on release builds" 				OFF)
 
 message(STATUS "TINYPBRT_DISABLE_ASSERT_ON_RELEASE: ${TINYPBRT_DISABLE_ASSERT_ON_RELEASE}")
-
-if(${BUILD_SHARED_LIBS})
-	set(BUILD_STATIC_LIBS OFF)
-else()
-	set(BUILD_STATIC_LIBS ON)
-endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sanitizers.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cpm.cmake)

@@ -35,10 +35,10 @@ extern "C" {
 
 			if (type_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_PARAM_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_PARAM_TYPE; }
 
 			for (tpbrt_param_type_t t = 0; t < TPBRT_PARAM_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type_out = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -646,8 +646,8 @@ extern "C" {
 						if (param->value_type != TPBRT_PARAM_VALUE_TYPE_STRING) { return TPBRT_ERROR_INVALID_OBJECT_TYPE; }
 
 					// builtin
-					tpbrt_spectrum_builtin_t builtin;
-					err = tpbrt_spectrum_builtin_from_string(param->value, &builtin);
+					tpbrt_spectrum_builtin_t builtin = TPBRT_SPECTRUM_BUILTIN_MAX_NUM;
+					err								 = tpbrt_spectrum_builtin_from_string(param->value, &builtin);
 						// possible error: UNKNOWN_SPECTRUM_BUILTIN
 						if (err == TPBRT_ERROR_NONE) {
 							out_val->type		= TPBRT_SPECTRUM_TYPE_BUILTIN;

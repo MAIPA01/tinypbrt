@@ -109,7 +109,7 @@ extern "C" {
 		tpbrt_error_t err = tpbrt_read_file(filepath, &file_data);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_uint_t WORKING_DIRECTORY_MAX_LENGTH = 1024u;
+		enum { WORKING_DIRECTORY_MAX_LENGTH = 1024 };
 
 		tpbrt_char_t working_directory[WORKING_DIRECTORY_MAX_LENGTH];
 		working_directory[0]				  = '\0';
@@ -373,7 +373,7 @@ extern "C" {
 
 			if (*parsers_count >= TPBRT_MAX_INCLUDE_DEPTH) { return TPBRT_ERROR_INCLUDES_STACK_OVERFLOW; }
 
-		static const tpbrt_uint_t MAX_PATH_LENGTH = 4096u;
+		enum { MAX_PATH_LENGTH = 4096 };
 
 		tpbrt_char_t path[MAX_PATH_LENGTH];
 		tpbrt_error_t err = tpbrt_resolve_include_path(working_directory, element->as.include_import.path, path, MAX_PATH_LENGTH);
@@ -452,7 +452,7 @@ extern "C" {
 	  const tpbrt_element_t* const element) {
 			if (current_state == TPBRT_NULL || element == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_color_space_t color_space;
+		tpbrt_color_space_t color_space	   = TPBRT_COLOR_SPACE_MAX_NUM;
 		const tpbrt_error_t err			   = tpbrt_color_space_from_string(element->as.single_string.type_name, &color_space);
 		current_state->current_color_space = color_space;
 		return err;

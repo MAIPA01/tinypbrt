@@ -129,6 +129,19 @@
       "inherits": ["sanitizers", "x64-debug-c11"]
     },
     {
+      "name": "shared",
+      "hidden": true,
+      "cacheVariables": {
+        "TINYPBRT_BUILD_SHARED": "ON"
+      }
+    },
+    {
+      "name": "x64-debug-c11-shared",
+      "displayName": "x64 Debug C11 (DLL)",
+      "description": "Docelowy system Windows (64-bitowy). (Debug, tinypbrt.dll)",
+      "inherits": ["shared", "x64-debug-c11"]
+    },
+    {
       "name": "linux-base",
       "hidden": true,
       "inherits": "base",
@@ -151,6 +164,11 @@
       "name": "linux-debug-sanitizers",
       "displayName": "Linux/macOS Debug + ASan/UBSan/LSan",
       "inherits": ["sanitizers", "linux-base", "c11", "debug"]
+    },
+    {
+      "name": "linux-debug-shared-sanitizers",
+      "displayName": "Linux/macOS Debug (.so/.dylib) + ASan/UBSan/LSan",
+      "inherits": ["shared", "linux-debug-sanitizers"]
     }
   ],
   "testPresets": [
@@ -162,6 +180,16 @@
     {
       "name": "linux-debug-sanitizers",
       "configurePreset": "linux-debug-sanitizers",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "x64-debug-c11-shared",
+      "configurePreset": "x64-debug-c11-shared",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-debug-shared-sanitizers",
+      "configurePreset": "linux-debug-shared-sanitizers",
       "output": { "outputOnFailure": true }
     }
   ]

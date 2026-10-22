@@ -20,10 +20,10 @@ extern "C" {
 
 			if (coord == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(coord_str)) { return TPBRT_ERROR_INVALID_COORD_SYSTEM_TYPE; }
+			if (tpbrt_string_empty(coord_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_COORD_SYSTEM_TYPE; }
 
 			for (tpbrt_coord_system_type_t c = 0; c < TPBRT_COORD_SYSTEM_TYPE_MAX_NUM; ++c) {
-					if (tpbrt_string_equals(coord_str, COORDS_STRS[c])) {
+					if (tpbrt_string_equals(coord_str, COORDS_STRS[c]) == TPBRT_TRUE) {
 						*coord = c;
 						return TPBRT_ERROR_NONE;
 					}

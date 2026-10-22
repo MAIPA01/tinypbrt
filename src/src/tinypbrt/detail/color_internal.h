@@ -18,14 +18,14 @@ extern "C" {
 #define TPBRT_EMPTY_RGB_ARRAY		  (tpbrt_rgb_array_t) { .data = TPBRT_NULL, .count = 0 }
 #define TPBRT_EMPTY_WAVELENGTHS_ARRAY (tpbrt_wavelength_array_t) { .data = TPBRT_NULL, .count = 0 }
 
-#define TPBRT_SPECTRUM_WAVELENGTHS                                                                                   \
-	(tpbrt_spectrum_t) { .as.wavelengths = (TPBRT_EMPTY_WAVELENGTHS_ARRAY), .type = TPBRT_SPECTRUM_TYPE_WAVELENGTH }
-#define TPBRT_SPECTRUM_RGB(r_val, g_val, b_val)                                                        \
-	(tpbrt_spectrum_t) { .as.rgb = (TPBRT_RGB(r_val, g_val, b_val)), .type = TPBRT_SPECTRUM_TYPE_RGB }
+#define TPBRT_SPECTRUM_WAVELENGTHS                                                                                        \
+	(tpbrt_spectrum_t) { .as.wavelengths = { .data = TPBRT_NULL, .count = 0u }, .type = TPBRT_SPECTRUM_TYPE_WAVELENGTHS }
+#define TPBRT_SPECTRUM_RGB(r_val, g_val, b_val)                                                                    \
+	(tpbrt_spectrum_t) { .as.rgb = { .r = (r_val), .g = (g_val), .b = (b_val) }, .type = TPBRT_SPECTRUM_TYPE_RGB }
 #define TPBRT_SPECTRUM_BLACKBODY(value)                                                   \
 	(tpbrt_spectrum_t) { .as.blackbody = (value), .type = TPBRT_SPECTRUM_TYPE_BLACKBODY }
-#define TPBRT_SPECTRUM_FILE_NAME                                                                  \
-	(tpbrt_spectrum_t) { .as.file_name = (TPBRT_EMPTY_STRING), .type = TPBRT_SPECTRUM_TYPE_FILE }
+#define TPBRT_SPECTRUM_FILE_NAME                                                                                \
+	(tpbrt_spectrum_t) { .as.file_name = { .data = TPBRT_NULL, .size = 0u }, .type = TPBRT_SPECTRUM_TYPE_FILE }
 #define TPBRT_SPECTRUM_BUILTIN(builtin_value)                                                 \
 	(tpbrt_spectrum_t) { .as.builtin = (builtin_value), .type = TPBRT_SPECTRUM_TYPE_BUILTIN }
 #define TPBRT_SPECTRUM_CONSTANT(value)                                                  \

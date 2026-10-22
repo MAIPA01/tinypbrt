@@ -22,10 +22,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_SAMPLER_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SAMPLER_TYPE; }
 
 			for (tpbrt_sampler_type_t t = 0; t < TPBRT_SAMPLER_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -44,10 +44,10 @@ extern "C" {
 
 			if (random == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(random_str)) { return TPBRT_ERROR_INVALID_SAMPLER_RANDOM; }
+			if (tpbrt_string_empty(random_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SAMPLER_RANDOM; }
 
 			for (tpbrt_sampler_random_t r = 0; r < TPBRT_SAMPLER_RANDOM_MAX_NUM; ++r) {
-					if (tpbrt_string_equals(random_str, RANDOMS_STRS[r])) {
+					if (tpbrt_string_equals(random_str, RANDOMS_STRS[r]) == TPBRT_TRUE) {
 						*random = r;
 						return TPBRT_ERROR_NONE;
 					}
@@ -97,9 +97,9 @@ extern "C" {
 		tpbrt_error_t err = tpbrt_sampler_read_pixel_samples(&halton->pixel_samples, params);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		tpbrt_sampler_random_t randomization;
-		err					  = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
-		halton->randomization = randomization;
+		tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
+		err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+		halton->randomization				 = randomization;
 
 		return err;
 	}
@@ -119,11 +119,11 @@ extern "C" {
 
 		tpbrt_error_t err = tpbrt_sampler_read_pixel_samples(&padded_sobol->pixel_samples, params);
 			if (err != TPBRT_ERROR_NONE) { return err; }
-		padded_sobol->pixel_samples = tpbrt_next_power_of_two(padded_sobol->pixel_samples);
+		padded_sobol->pixel_samples			 = tpbrt_next_power_of_two(padded_sobol->pixel_samples);
 
-		tpbrt_sampler_random_t randomization;
-		err							= tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
-		padded_sobol->randomization = randomization;
+		tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
+		err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+		padded_sobol->randomization			 = randomization;
 
 		return err;
 	}
@@ -135,11 +135,11 @@ extern "C" {
 
 		tpbrt_error_t err = tpbrt_sampler_read_pixel_samples(&sobol->pixel_samples, params);
 			if (err != TPBRT_ERROR_NONE) { return err; }
-		sobol->pixel_samples = tpbrt_next_power_of_two(sobol->pixel_samples);
+		sobol->pixel_samples				 = tpbrt_next_power_of_two(sobol->pixel_samples);
 
-		tpbrt_sampler_random_t randomization;
-		err					 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
-		sobol->randomization = randomization;
+		tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
+		err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+		sobol->randomization				 = randomization;
 
 		return err;
 	}
@@ -175,11 +175,11 @@ extern "C" {
 
 		tpbrt_error_t err = tpbrt_sampler_read_pixel_samples(&z_sobol->pixel_samples, params);
 			if (err != TPBRT_ERROR_NONE) { return err; }
-		z_sobol->pixel_samples = tpbrt_next_power_of_two(z_sobol->pixel_samples);
+		z_sobol->pixel_samples				 = tpbrt_next_power_of_two(z_sobol->pixel_samples);
 
-		tpbrt_sampler_random_t randomization;
-		err					   = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
-		z_sobol->randomization = randomization;
+		tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
+		err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+		z_sobol->randomization				 = randomization;
 
 		return err;
 	}

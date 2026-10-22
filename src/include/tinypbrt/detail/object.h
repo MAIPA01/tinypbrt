@@ -30,8 +30,8 @@ extern "C" {
 #define TPBRT_OBJECT_HANDLE_INVALID                                    \
 	(tpbrt_object_handle_t) { .object_idx = TPBRT_OBJECT_IDX_INVALID }
 
-	tpbrt_error_t tpbrt_get_object_by_name(tpbrt_objects_list_t objects, tpbrt_string_t name, const tpbrt_object_t** object);
-	tpbrt_error_t tpbrt_get_object_by_handle(tpbrt_objects_list_t objects, tpbrt_object_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_object_by_name(tpbrt_objects_list_t objects, tpbrt_string_t name, const tpbrt_object_t** object);
+	TPBRT_API tpbrt_error_t tpbrt_get_object_by_handle(tpbrt_objects_list_t objects, tpbrt_object_handle_t handle,
 	  const tpbrt_object_t** object);
 
 #ifdef __cplusplus

@@ -19,10 +19,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_ACCELERATOR_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_ACCELERATOR_TYPE; }
 
 			for (tpbrt_accelerator_type_t t = 0; t < TPBRT_ACCELERATOR_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -42,10 +42,10 @@ extern "C" {
 
 			if (method == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(method_str)) { return TPBRT_ERROR_INVALID_ACCELERATOR_BVH_SPLIT_METHOD; }
+			if (tpbrt_string_empty(method_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_ACCELERATOR_BVH_SPLIT_METHOD; }
 
 			for (tpbrt_accelerator_bvh_split_method_t m = 0; m < TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM; ++m) {
-					if (tpbrt_string_equals(method_str, METHODS_STRS[m])) {
+					if (tpbrt_string_equals(method_str, METHODS_STRS[m]) == TPBRT_TRUE) {
 						*method = m;
 						return TPBRT_ERROR_NONE;
 					}
@@ -77,7 +77,7 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-		tpbrt_accelerator_bvh_split_method_t split_method;
+		tpbrt_accelerator_bvh_split_method_t split_method = TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM;
 		err = tpbrt_accelerator_bvh_split_method_from_string(method_str, &split_method);
 		tpbrt_string_free(&method_str);
 		bvh_params->split_method = split_method;

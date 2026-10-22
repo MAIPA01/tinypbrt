@@ -20,10 +20,10 @@ extern "C" {
 
 			if (color_space_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(color_space_str)) { return TPBRT_ERROR_INVALID_COLOR_SPACE; }
+			if (tpbrt_string_empty(color_space_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_COLOR_SPACE; }
 
 			for (tpbrt_color_space_t cs = 0; cs < TPBRT_COLOR_SPACE_MAX_NUM; ++cs) {
-					if (tpbrt_string_equals(color_space_str, COLOR_SPACES_STRS[cs])) {
+					if (tpbrt_string_equals(color_space_str, COLOR_SPACES_STRS[cs]) == TPBRT_TRUE) {
 						*color_space_out = cs;
 						return TPBRT_ERROR_NONE;
 					}
@@ -76,10 +76,10 @@ extern "C" {
 
 			if (builtin_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(builtin_str)) { return TPBRT_ERROR_INVALID_SPECTRUM_BUILTIN; }
+			if (tpbrt_string_empty(builtin_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SPECTRUM_BUILTIN; }
 
 			for (tpbrt_spectrum_builtin_t b = 0; b < TPBRT_SPECTRUM_BUILTIN_MAX_NUM; ++b) {
-					if (tpbrt_string_equals(builtin_str, BUILTINS_STRS[b])) {
+					if (tpbrt_string_equals(builtin_str, BUILTINS_STRS[b]) == TPBRT_TRUE) {
 						*builtin_out = b;
 						return TPBRT_ERROR_NONE;
 					}

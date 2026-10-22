@@ -2,6 +2,8 @@
 #ifndef _TINYPBRT_FWD_H_
 #define _TINYPBRT_FWD_H_
 
+#include <tinypbrt/detail/export.h>
+
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>

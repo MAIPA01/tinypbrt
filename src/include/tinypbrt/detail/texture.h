@@ -218,8 +218,8 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_textures_list_t;
 
-	tpbrt_error_t tpbrt_get_texture_by_name(tpbrt_textures_list_t textures, tpbrt_string_t name, const tpbrt_texture_t** texture);
-	tpbrt_error_t tpbrt_get_texture_by_handle(tpbrt_textures_list_t textures, tpbrt_texture_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_name(tpbrt_textures_list_t textures, tpbrt_string_t name, const tpbrt_texture_t** texture);
+	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_handle(tpbrt_textures_list_t textures, tpbrt_texture_handle_t handle,
 	  const tpbrt_texture_t** texture);
 
 #ifdef __cplusplus

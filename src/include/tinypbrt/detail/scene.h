@@ -48,10 +48,10 @@ extern "C" {
 		tpbrt_transforms_list_t transforms;
 	} tpbrt_scene_t;
 
-	tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene);
-	tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* data, const tpbrt_char_t* working_directory,
+	TPBRT_API tpbrt_error_t tpbrt_scene_load_from_file(const tpbrt_char_t* filepath, tpbrt_scene_t* out_scene);
+	TPBRT_API tpbrt_error_t tpbrt_scene_load_from_memory(const tpbrt_char_t* data, const tpbrt_char_t* working_directory,
 	  tpbrt_scene_t* out_scene);
-	void tpbrt_scene_free(tpbrt_scene_t* scene);
+	TPBRT_API void tpbrt_scene_free(tpbrt_scene_t* scene);
 
 #ifdef __cplusplus
 }

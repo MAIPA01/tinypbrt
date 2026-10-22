@@ -59,6 +59,32 @@ TEST(scene_textures, imagemap) {
 	EXPECT_EQ(to_std(s->textures.textures[0].as.image_map.file_name), "textures\\wood \"1\".png");
 }
 
+TEST(scene_textures, imagemap_defaults_follow_pbrt_v4) {
+	/* clang-format off */
+	const Scene s("WorldBegin\n"
+				  "Texture \"png\" \"spectrum\" \"imagemap\" \"string filename\" \"a.png\"\n"
+				  "Texture \"PNG\" \"spectrum\" \"imagemap\" \"string filename\" \"A.PNG\"\n"
+				  "Texture \"exr\" \"spectrum\" \"imagemap\" \"string filename\" \"a.exr\"\n"
+				  "Texture \"forced\" \"float\" \"imagemap\" \"string filename\" \"a.exr\" \"string encoding\" \"sRGB\"\n"
+				  "Texture \"ptex\" \"float\" \"ptex\" \"string filename\" \"a.ptx\"\n");
+	/* clang-format on */
+	ASSERT_TRUE(s.ok()) << s.error();
+	ASSERT_EQ(s->textures.count, 5u);
+	const tpbrt_texture_image_map_params_t& png = s->textures.textures[0].as.image_map;
+	EXPECT_EQ(png.encoding, TPBRT_TEXTURE_ENCODING_SRGB);
+	EXPECT_EQ(png.wrap, TPBRT_TEXTURE_WRAP_REPEAT);
+	EXPECT_EQ(png.filter, TPBRT_TEXTURE_FILTER_BILINEAR);
+	EXPECT_FLOAT_EQ(png.max_anisotropy, 8.0f);
+	EXPECT_FLOAT_EQ(png.scale, 1.0f);
+	EXPECT_EQ(s->textures.textures[1].as.image_map.encoding, TPBRT_TEXTURE_ENCODING_SRGB);
+	EXPECT_EQ(s->textures.textures[2].as.image_map.encoding, TPBRT_TEXTURE_ENCODING_LINEAR);
+	EXPECT_EQ(s->textures.textures[3].as.image_map.encoding, TPBRT_TEXTURE_ENCODING_SRGB);
+	const tpbrt_texture_ptex_params_t& ptex = s->textures.textures[4].as.ptex;
+	EXPECT_EQ(ptex.encoding, TPBRT_TEXTURE_ENCODING_GAMMA); // ptex: "gamma 2.2"
+	EXPECT_EQ(ptex.gamma.has_value, TPBRT_TRUE);
+	EXPECT_FLOAT_EQ(ptex.gamma.value, 2.2f);
+}
+
 TEST(scene_textures, mappings) {
 	const Scene s("WorldBegin\nTranslate 1 2 3\nTexture \"s\" \"float\" \"checkerboard\" \"string mapping\" \"spherical\"\n");
 	ASSERT_TRUE(s.ok()) << s.error();

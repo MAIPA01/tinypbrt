@@ -63,7 +63,7 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_read_float_value(const tpbrt_string_t value_str, tpbrt_float_t* const out_val) {
-		static const tpbrt_size_t MAX_BUFFER_SIZE = 64u;
+		enum { MAX_BUFFER_SIZE = 64 };
 
 			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 1u || out_val == TPBRT_NULL) {
 				return TPBRT_FALSE;
@@ -78,8 +78,9 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_read_int_value(const tpbrt_string_t value_str, tpbrt_int_t* const out_val) {
-		static const tpbrt_size_t MAX_BUFFER_SIZE = 64u;
-		static const tpbrt_int_t INT_RANIX		  = 10;
+		enum { MAX_BUFFER_SIZE = 64 };
+
+		static const tpbrt_int_t INT_RANIX = 10;
 
 			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 1u || out_val == TPBRT_NULL) {
 				return TPBRT_FALSE;
@@ -98,8 +99,9 @@ extern "C" {
 	}
 
 	tpbrt_bool_t tpbrt_read_uint_value(const tpbrt_string_t value_str, tpbrt_uint_t* const out_val) {
-		static const tpbrt_size_t MAX_BUFFER_SIZE = 64u;
-		static const tpbrt_int_t UINT_RANIX		  = 10;
+		enum { MAX_BUFFER_SIZE = 64 };
+
+		static const tpbrt_int_t UINT_RANIX = 10;
 
 			if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 1u || out_val == TPBRT_NULL) {
 				return TPBRT_FALSE;
@@ -238,7 +240,10 @@ extern "C" {
 
 	tpbrt_bool_t tpbrt_string_equals(const tpbrt_string_t a, const tpbrt_string_t b) {
 			if (a.size != b.size) { return TPBRT_FALSE; }
-		return strncmp(a.data, b.data, a.size) == 0 ? TPBRT_TRUE : TPBRT_FALSE;
+			if (a.size == 0u) { return TPBRT_TRUE; }
+			if (a.data == b.data && a.data == TPBRT_NULL) { return TPBRT_TRUE; }
+			if (a.data != b.data && (a.data == TPBRT_NULL || b.data == TPBRT_NULL)) { return TPBRT_FALSE; }
+		return memcmp(a.data, b.data, a.size) == 0 ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
 	void tpbrt_string_free(tpbrt_string_t* str) {

@@ -23,6 +23,8 @@ if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
   - [CPM.cmake (recommended)](#cpmcmake-recommended)
   - [FetchContent](#fetchcontent)
   - [add_subdirectory](#add_subdirectory)
+  - [Installed package (find_package)](#installed-package-find_package)
+  - [Static or shared library](#static-or-shared-library)
 - [Quick start](#quick-start)
 - [Using the scene](#using-the-scene)
 - [Error handling](#error-handling)
@@ -105,7 +107,7 @@ CPMAddPackage(
     GITHUB_REPOSITORY MAIPA01/tinypbrt
     GIT_TAG main            # branch, tag or commit hash
     OPTIONS
-        "BUILD_SHARED_LIBS OFF"
+        "TINYPBRT_BUILD_SHARED ON"   # optional: build tinypbrt as a .dll/.so (default: static)
 )
 ```
 
@@ -141,6 +143,47 @@ target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
 add_subdirectory(external/tinypbrt)
 target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
 ```
+
+### Installed package (find_package)
+
+```sh
+cmake -S tinypbrt -B build -DCMAKE_BUILD_TYPE=Release -DTINYPBRT_BUILD_TESTS=OFF
+cmake --build build
+cmake --install build --prefix /opt/tinypbrt
+```
+
+```cmake
+find_package(tinypbrt 1.0 REQUIRED CONFIG)   # -DCMAKE_PREFIX_PATH=/opt/tinypbrt
+target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
+```
+
+### Static or shared library
+
+tinypbrt is a static library by default. Set `TINYPBRT_BUILD_SHARED=ON` (or the global
+`BUILD_SHARED_LIBS=ON`) to build `tinypbrt.dll` / `libtinypbrt.so` / `libtinypbrt.dylib` instead.
+Nothing changes in your code: linking `tinypbrt::tinypbrt` adds the `TINYPBRT_SHARED_LIBS` definition
+for you, and the public functions are declared with `TPBRT_API`:
+
+| | building tinypbrt | using tinypbrt |
+|---|---|---|
+| Windows (MSVC, clang-cl, Clang, MinGW) | `__declspec(dllexport)` | `__declspec(dllimport)` |
+| Linux / macOS (GCC, Clang) | `__attribute__((visibility("default")))` | same |
+| static library | *(empty)* | *(empty)* |
+
+Only the public API (`tpbrt_scene_load_*`, `tpbrt_scene_free`, `tpbrt_get_*`) is exported; everything
+else is hidden. On Windows the DLL has to be found at run time - for example copy it next to your
+executable:
+
+```cmake
+if (WIN32)
+    add_custom_command(TARGET my_renderer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:my_renderer> $<TARGET_FILE_DIR:my_renderer>
+        COMMAND_EXPAND_LISTS)
+endif()
+```
+
+If you build tinypbrt without CMake, define `TINYPBRT_SHARED_LIBS` everywhere and `TINYPBRT_EXPORTS`
+only while compiling the library.
 
 ## Quick start
 
@@ -260,7 +303,8 @@ tpbrt_get_error_message(err, message, sizeof(message));
 
 | Option | Default | Description |
 |---|---|---|
-| `BUILD_SHARED_LIBS` | `OFF` | build tinypbrt as a shared library (see the note below) |
+| `TINYPBRT_BUILD_SHARED` | `BUILD_SHARED_LIBS` | build tinypbrt as a shared library ([details](#static-or-shared-library)) |
+| `BUILD_SHARED_LIBS` | `OFF` | CMake's global default for all libraries (also GoogleTest in this repository) |
 | `TINYPBRT_BUILD_TESTS` | top-level only | build the GoogleTest suite and the C API test |
 | `TINYPBRT_BUILD_BENCHMARK` | top-level only | build benchmarks |
 | `TINYPBRT_BUILD_EXAMPLES` | top-level only | build examples |
@@ -276,8 +320,6 @@ Compiler warnings and optimization flags used to build tinypbrt are private to t
 not added to your targets. Link-time optimization and static linking are left to your project
 (e.g. `CMAKE_INTERPROCEDURAL_OPTIMIZATION`).
 
-> **Shared library on Windows:** the public API is not annotated with `__declspec(dllexport)` yet,
-> so on Windows use the default static build.
 
 ## Building and testing tinypbrt
 
@@ -299,6 +341,10 @@ cmake --preset x64-debug-c11-sanitizers
 cmake --build build/x64-debug-c11-sanitizers
 ctest --preset x64-debug-c11-sanitizers
 ```
+
+The shared-library build has its own presets: `linux-debug-shared-sanitizers` and
+`x64-debug-c11-shared` (the GoogleTest suite then links a static copy of the library, because it
+also tests internal functions; `tinypbrt-c-api-tests` runs against the DLL / `.so`).
 
 Without presets:
 

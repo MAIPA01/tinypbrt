@@ -27,10 +27,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_SHAPE_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SHAPE_TYPE; }
 
 			for (tpbrt_shape_type_t t = 0; t < TPBRT_SHAPE_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -47,10 +47,10 @@ extern "C" {
 
 			if (basis == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(basis_str)) { return TPBRT_ERROR_INVALID_SHAPE_CURVE_BASIS; }
+			if (tpbrt_string_empty(basis_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SHAPE_CURVE_BASIS; }
 
 			for (tpbrt_shape_curve_basis_t b = 0; b < TPBRT_SHAPE_CURVE_BASIS_MAX_NUM; ++b) {
-					if (tpbrt_string_equals(basis_str, BASIS_STRS[b])) {
+					if (tpbrt_string_equals(basis_str, BASIS_STRS[b]) == TPBRT_TRUE) {
 						*basis = b;
 						return TPBRT_ERROR_NONE;
 					}
@@ -68,10 +68,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_SHAPE_CURVE_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SHAPE_CURVE_TYPE; }
 
 			for (tpbrt_shape_curve_type_t t = 0; t < TPBRT_SHAPE_CURVE_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -154,8 +154,8 @@ extern "C" {
 
 			if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) { curve->basis = TPBRT_SHAPE_CURVE_BASIS_BEZIER; }
 			else {
-				tpbrt_shape_curve_basis_t basis;
-				err = tpbrt_shape_curve_basis_from_string(temp_string, &basis);
+				tpbrt_shape_curve_basis_t basis = TPBRT_SHAPE_CURVE_BASIS_MAX_NUM;
+				err								= tpbrt_shape_curve_basis_from_string(temp_string, &basis);
 				tpbrt_string_free(&temp_string);
 				curve->basis = basis;
 			}
@@ -174,8 +174,8 @@ extern "C" {
 
 			if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) { curve->type = TPBRT_SHAPE_CURVE_TYPE_FLAT; }
 			else {
-				tpbrt_shape_curve_type_t type;
-				err = tpbrt_shape_curve_type_from_string(temp_string, &type);
+				tpbrt_shape_curve_type_t type = TPBRT_SHAPE_CURVE_TYPE_MAX_NUM;
+				err							  = tpbrt_shape_curve_type_from_string(temp_string, &type);
 				tpbrt_string_free(&temp_string);
 				curve->type = type;
 			}

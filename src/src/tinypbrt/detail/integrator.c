@@ -25,10 +25,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_INTEGRATOR_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_INTEGRATOR_TYPE; }
 
 			for (tpbrt_integrator_type_t t = 0; t < TPBRT_INTEGRATOR_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -47,10 +47,10 @@ extern "C" {
 
 			if (sampler == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(sampler_str)) { return TPBRT_ERROR_INVALID_INTEGRATOR_LIGHT_SAMPLER; }
+			if (tpbrt_string_empty(sampler_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_INTEGRATOR_LIGHT_SAMPLER; }
 
 			for (tpbrt_integrator_light_sampler_t s = 0; s < TPBRT_INTEGRATOR_LIGHT_SAMPLER_MAX_NUM; ++s) {
-					if (tpbrt_string_equals(sampler_str, SAMPLERS_STRS[s])) {
+					if (tpbrt_string_equals(sampler_str, SAMPLERS_STRS[s]) == TPBRT_TRUE) {
 						*sampler = s;
 						return TPBRT_ERROR_NONE;
 					}
@@ -289,9 +289,9 @@ extern "C" {
 			if (err != TPBRT_ERROR_NONE) { return err; }
 		vol_path->light_sampler = light_sampler;
 
-		tpbrt_bool_t regularize;
-		err					 = tpbrt_integrator_read_regularize(&regularize, params);
-		vol_path->regularize = regularize;
+		tpbrt_bool_t regularize = TPBRT_FALSE;
+		err						= tpbrt_integrator_read_regularize(&regularize, params);
+		vol_path->regularize	= regularize;
 
 		return err;
 	}

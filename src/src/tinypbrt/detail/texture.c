@@ -28,10 +28,10 @@ extern "C" {
 
 			if (type_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_TEXTURE_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_TEXTURE_TYPE; }
 
 			for (tpbrt_texture_type_t t = 0; t < TPBRT_TEXTURE_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type_out = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -59,10 +59,10 @@ extern "C" {
 
 			if (class_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(class_str)) { return TPBRT_ERROR_INVALID_TEXTURE_CLASS; }
+			if (tpbrt_string_empty(class_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_TEXTURE_CLASS; }
 
 			for (tpbrt_texture_class_t c = 0; c < TPBRT_TEXTURE_CLASS_MAX_NUM; ++c) {
-					if (tpbrt_string_equals(class_str, CLASSES_STRS[c])) {
+					if (tpbrt_string_equals(class_str, CLASSES_STRS[c]) == TPBRT_TRUE) {
 						*class_out = c;
 						return TPBRT_ERROR_NONE;
 					}
@@ -80,10 +80,10 @@ extern "C" {
 
 			if (wrap_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(wrap_str)) { return TPBRT_ERROR_INVALID_TEXTURE_WRAP; }
+			if (tpbrt_string_empty(wrap_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_TEXTURE_WRAP; }
 
 			for (tpbrt_texture_wrap_t w = 0; w < TPBRT_TEXTURE_WRAP_MAX_NUM; ++w) {
-					if (tpbrt_string_equals(wrap_str, WRAPS_STRS[w])) {
+					if (tpbrt_string_equals(wrap_str, WRAPS_STRS[w]) == TPBRT_TRUE) {
 						*wrap_out = w;
 						return TPBRT_ERROR_NONE;
 					}
@@ -102,10 +102,10 @@ extern "C" {
 
 			if (filter_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(filter_str)) { return TPBRT_ERROR_INVALID_TEXTURE_FILTER; }
+			if (tpbrt_string_empty(filter_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_TEXTURE_FILTER; }
 
 			for (tpbrt_texture_filter_t f = 0; f < TPBRT_TEXTURE_FILTER_MAX_NUM; ++f) {
-					if (tpbrt_string_equals(filter_str, FILTERS_STRS[f])) {
+					if (tpbrt_string_equals(filter_str, FILTERS_STRS[f]) == TPBRT_TRUE) {
 						*filter_out = f;
 						return TPBRT_ERROR_NONE;
 					}
@@ -124,41 +124,33 @@ extern "C" {
 
 			if (encoding_out == TPBRT_NULL || gamma_val_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(encoding_str)) { return TPBRT_ERROR_INVALID_TEXTURE_ENCODING; }
+			if (tpbrt_string_empty(encoding_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_TEXTURE_ENCODING; }
 
 			for (tpbrt_texture_encoding_t e = 0; e < TPBRT_TEXTURE_ENCODING_MAX_NUM - 1; ++e) {
-					if (tpbrt_string_equals(encoding_str, ENCODINGS_STRS[e])) {
+					if (tpbrt_string_equals(encoding_str, ENCODINGS_STRS[e]) == TPBRT_TRUE) {
 						*encoding_out			 = e;
 						gamma_val_out->has_value = TPBRT_FALSE;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		tpbrt_string_t token;
-			if ((token.data = strstr(encoding_str.data, GAMMA_STR.data)) == TPBRT_NULL) {
-				gamma_val_out->has_value = TPBRT_FALSE;
-				return TPBRT_ERROR_INVALID_TEXTURE_ENCODING;
-			}
+		const tpbrt_char_t* const end = encoding_str.data + encoding_str.size;
 
-			if ((tpbrt_size_t)(token.data - encoding_str.data) >= GAMMA_STR.size) {
-				gamma_val_out->has_value = TPBRT_FALSE;
-				return TPBRT_ERROR_INVALID_TEXTURE_ENCODING;
-			}
+		const tpbrt_string_t keyword  = tpbrt_next_value(encoding_str.data, end);
+			if (tpbrt_string_equals(keyword, GAMMA_STR) == TPBRT_FALSE) { return TPBRT_ERROR_INVALID_TEXTURE_ENCODING; }
 
-		token.data += GAMMA_STR.size;
-
-
-			if ((token = tpbrt_next_value(token.data, encoding_str.data + encoding_str.size)).data == TPBRT_NULL) {
-				gamma_val_out->has_value = TPBRT_FALSE;
+		const tpbrt_string_t value_str = tpbrt_next_value(keyword.data + keyword.size, end);
+		tpbrt_float_t gamma			   = 0.0f;
+			if (value_str.data == TPBRT_NULL || tpbrt_read_float_value(value_str, &gamma) == TPBRT_FALSE || gamma == 0.0f) {
 				return TPBRT_ERROR_PARSE_FLOAT;
 			}
 
-			if (!tpbrt_read_float_value(token, &gamma_val_out->value)) {
-				gamma_val_out->has_value = TPBRT_FALSE;
-				return TPBRT_ERROR_PARSE_FLOAT;
+			if (tpbrt_next_value(value_str.data + value_str.size, end).data != TPBRT_NULL) {
+				return TPBRT_ERROR_INVALID_TEXTURE_ENCODING;
 			}
 
 		gamma_val_out->has_value = TPBRT_TRUE;
+		gamma_val_out->value	 = gamma;
 		*encoding_out			 = TPBRT_TEXTURE_ENCODING_GAMMA;
 		return TPBRT_ERROR_NONE;
 	}
@@ -174,10 +166,10 @@ extern "C" {
 
 			if (mapping_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(mapping_str)) { return TPBRT_ERROR_INVALID_TEXTURE_MAPPING; }
+			if (tpbrt_string_empty(mapping_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_TEXTURE_MAPPING; }
 
 			for (tpbrt_texture_mapping_t m = 0; m < TPBRT_TEXTURE_MAPPING_MAX_NUM; ++m) {
-					if (tpbrt_string_equals(mapping_str, MAPPINGS_STRS[m])) {
+					if (tpbrt_string_equals(mapping_str, MAPPINGS_STRS[m]) == TPBRT_TRUE) {
 						*mapping_out = m;
 						return TPBRT_ERROR_NONE;
 					}
@@ -385,6 +377,18 @@ extern "C" {
 		return tpbrt_texture_read_fbm(windy, params, transform);
 	}
 
+	static tpbrt_bool_t tpbrt_texture_has_png_extension(const tpbrt_string_t file_name) {
+		static const tpbrt_string_t PNG_EXTENSION = TPBRT_STRING(".png");
+
+			if (file_name.data == TPBRT_NULL || file_name.size < PNG_EXTENSION.size) { return TPBRT_FALSE; }
+
+		const tpbrt_char_t* const extension = file_name.data + (file_name.size - PNG_EXTENSION.size);
+			for (tpbrt_size_t i = 0u; i < PNG_EXTENSION.size; ++i) {
+					if (tolower((unsigned char)extension[i]) != PNG_EXTENSION.data[i]) { return TPBRT_FALSE; }
+			}
+		return TPBRT_TRUE;
+	}
+
 	static tpbrt_error_t tpbrt_texture_read_image_map(tpbrt_texture_image_map_params_t* const image_map,
 	  const tpbrt_params_list_t params) {
 			if (image_map == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -412,8 +416,8 @@ extern "C" {
 
 			if (tpbrt_string_empty(temp_str) == TPBRT_TRUE) { image_map->wrap = TPBRT_TEXTURE_WRAP_REPEAT; }
 			else {
-				tpbrt_texture_wrap_t wrap;
-				err = tpbrt_texture_wrap_from_string(temp_str, &wrap);
+				tpbrt_texture_wrap_t wrap = TPBRT_TEXTURE_WRAP_MAX_NUM;
+				err						  = tpbrt_texture_wrap_from_string(temp_str, &wrap);
 				tpbrt_string_free(&temp_str);
 				image_map->wrap = wrap;
 			}
@@ -427,8 +431,8 @@ extern "C" {
 
 			if (tpbrt_string_empty(temp_str) == TPBRT_TRUE) { image_map->filter = TPBRT_TEXTURE_FILTER_BILINEAR; }
 			else {
-				tpbrt_texture_filter_t filter;
-				err = tpbrt_texture_filter_from_string(temp_str, &filter);
+				tpbrt_texture_filter_t filter = TPBRT_TEXTURE_FILTER_MAX_NUM;
+				err							  = tpbrt_texture_filter_from_string(temp_str, &filter);
 				tpbrt_string_free(&temp_str);
 				image_map->filter = filter;
 			}
@@ -437,10 +441,15 @@ extern "C" {
 
 		err = tpbrt_params_list_get_string(params, ENCODING_STR, ENCODING_DEFAULT, &temp_str);
 
-			if (tpbrt_string_empty(temp_str) == TPBRT_TRUE) { image_map->encoding = TPBRT_TEXTURE_ENCODING_SRGB; }
+			if (tpbrt_string_empty(temp_str) == TPBRT_TRUE) {
+				image_map->encoding		   = tpbrt_texture_has_png_extension(image_map->file_name) == TPBRT_TRUE ?
+											   TPBRT_TEXTURE_ENCODING_SRGB :
+											   TPBRT_TEXTURE_ENCODING_LINEAR;
+				image_map->gamma.has_value = TPBRT_FALSE;
+			}
 			else {
-				tpbrt_texture_encoding_t encoding;
-				err = tpbrt_texture_encoding_from_string(temp_str, &encoding, &image_map->gamma);
+				tpbrt_texture_encoding_t encoding = TPBRT_TEXTURE_ENCODING_MAX_NUM;
+				err								  = tpbrt_texture_encoding_from_string(temp_str, &encoding, &image_map->gamma);
 				tpbrt_string_free(&temp_str);
 				image_map->encoding = encoding;
 			}
@@ -450,9 +459,9 @@ extern "C" {
 		err = tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &image_map->scale);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		tpbrt_bool_t invert;
-		err				  = tpbrt_params_list_get_bool(params, INVERT_STR, INVERT_DEFAULT, &invert);
-		image_map->invert = invert;
+		tpbrt_bool_t invert = TPBRT_FALSE;
+		err					= tpbrt_params_list_get_bool(params, INVERT_STR, INVERT_DEFAULT, &invert);
+		image_map->invert	= invert;
 
 		return err;
 	}
@@ -526,8 +535,8 @@ extern "C" {
 				ptex->gamma	   = GAMMA_DEFAULT;
 			}
 			else {
-				tpbrt_texture_encoding_t encoding;
-				err = tpbrt_texture_encoding_from_string(temp_str, &encoding, &ptex->gamma);
+				tpbrt_texture_encoding_t encoding = TPBRT_TEXTURE_ENCODING_MAX_NUM;
+				err								  = tpbrt_texture_encoding_from_string(temp_str, &encoding, &ptex->gamma);
 				tpbrt_string_free(&temp_str);
 				ptex->encoding = encoding;
 			}
@@ -598,8 +607,8 @@ extern "C" {
 
 			if (tpbrt_string_empty(mapping_str) == TPBRT_TRUE) { texture->mapping = TPBRT_TEXTURE_MAPPING_UV; }
 			else {
-				tpbrt_texture_mapping_t mapping;
-				err = tpbrt_texture_mapping_from_string(mapping_str, &mapping);
+				tpbrt_texture_mapping_t mapping = TPBRT_TEXTURE_MAPPING_MAX_NUM;
+				err								= tpbrt_texture_mapping_from_string(mapping_str, &mapping);
 				tpbrt_string_free(&mapping_str);
 				texture->mapping = mapping;
 			}

@@ -22,10 +22,10 @@ extern "C" {
 
 			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str)) { return TPBRT_ERROR_INVALID_CAMERA_TYPE; }
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_CAMERA_TYPE; }
 
 			for (tpbrt_camera_type_t t = 0; t < TPBRT_CAMERA_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS[t])) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
@@ -43,10 +43,10 @@ extern "C" {
 
 			if (mapping == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(mapping_str)) { return TPBRT_ERROR_INVALID_CAMERA_SPHERICAL_MAPPING; }
+			if (tpbrt_string_empty(mapping_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_CAMERA_SPHERICAL_MAPPING; }
 
 			for (tpbrt_camera_spherical_mapping_t m = 0; m < TPBRT_CAMERA_SPHERICAL_MAPPING_MAX_NUM; ++m) {
-					if (tpbrt_string_equals(mapping_str, MAPPINGS_STRS[m])) {
+					if (tpbrt_string_equals(mapping_str, MAPPINGS_STRS[m]) == TPBRT_TRUE) {
 						*mapping = m;
 						return TPBRT_ERROR_NONE;
 					}
@@ -67,10 +67,10 @@ extern "C" {
 
 			if (builtin == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(builtin_str)) { return TPBRT_ERROR_INVALID_CAMERA_REALISTIC_APERTURE_BUILTIN; }
+			if (tpbrt_string_empty(builtin_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_CAMERA_REALISTIC_APERTURE_BUILTIN; }
 
 			for (tpbrt_camera_realistic_aperture_builtin_t b = 0; b < TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_MAX_NUM; ++b) {
-					if (tpbrt_string_equals(builtin_str, BUILTINS_STRS[b])) {
+					if (tpbrt_string_equals(builtin_str, BUILTINS_STRS[b]) == TPBRT_TRUE) {
 						*builtin = b;
 						return TPBRT_ERROR_NONE;
 					}
@@ -188,7 +188,7 @@ extern "C" {
 				return TPBRT_ERROR_NONE;
 			}
 
-		tpbrt_camera_realistic_aperture_builtin_t builtin;
+		tpbrt_camera_realistic_aperture_builtin_t builtin = TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_MAX_NUM;
 		err = tpbrt_camera_realistic_aperture_builtin_from_string(aperture_val, &builtin);
 			if (err == TPBRT_ERROR_NONE) {
 				tpbrt_string_free(&aperture_val);

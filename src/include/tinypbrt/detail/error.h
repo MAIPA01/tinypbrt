@@ -72,7 +72,7 @@ extern "C" {
 		TPBRT_ERROR_MAX_NUM									  = 60,
 	} tpbrt_error_t;
 
-	tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);
+	TPBRT_API tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);
 
 #ifdef __cplusplus
 }

@@ -124,7 +124,7 @@ extern "C" {
 		tpbrt_area_lights_list_t area_lights;
 	} tpbrt_lights_list_t;
 
-	tpbrt_error_t tpbrt_get_area_light_by_handle(tpbrt_area_lights_list_t area_lights_list, tpbrt_area_light_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_area_light_by_handle(tpbrt_area_lights_list_t area_lights_list, tpbrt_area_light_handle_t handle,
 	  const tpbrt_area_light_t** area_light);
 
 #ifdef __cplusplus

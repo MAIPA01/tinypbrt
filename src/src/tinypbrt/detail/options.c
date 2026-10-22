@@ -32,9 +32,9 @@ extern "C" {
 	static tpbrt_error_t tpbrt_options_apply_disable_pixel_jitter(tpbrt_options_t* const options, const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_bool_t disable_pixel_jitter;
-		const tpbrt_error_t err		  = tpbrt_param_as_bool(param, &disable_pixel_jitter);
-		options->disable_pixel_jitter = disable_pixel_jitter;
+		tpbrt_bool_t disable_pixel_jitter = TPBRT_FALSE;
+		const tpbrt_error_t err			  = tpbrt_param_as_bool(param, &disable_pixel_jitter);
+		options->disable_pixel_jitter	  = disable_pixel_jitter;
 		return err;
 	}
 
@@ -42,9 +42,9 @@ extern "C" {
 	  const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_bool_t disable_texture_filtering;
-		const tpbrt_error_t err			   = tpbrt_param_as_bool(param, &disable_texture_filtering);
-		options->disable_texture_filtering = disable_texture_filtering;
+		tpbrt_bool_t disable_texture_filtering = TPBRT_FALSE;
+		const tpbrt_error_t err				   = tpbrt_param_as_bool(param, &disable_texture_filtering);
+		options->disable_texture_filtering	   = disable_texture_filtering;
 		return err;
 	}
 
@@ -52,9 +52,9 @@ extern "C" {
 	  const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_bool_t disable_wave_length_jitter;
-		const tpbrt_error_t err				= tpbrt_param_as_bool(param, &disable_wave_length_jitter);
-		options->disable_wave_length_jitter = disable_wave_length_jitter;
+		tpbrt_bool_t disable_wave_length_jitter = TPBRT_FALSE;
+		const tpbrt_error_t err					= tpbrt_param_as_bool(param, &disable_wave_length_jitter);
+		options->disable_wave_length_jitter		= disable_wave_length_jitter;
 		return err;
 	}
 
@@ -83,8 +83,8 @@ extern "C" {
 		tpbrt_error_t err = tpbrt_param_as_string(param, &coord_str);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		tpbrt_coord_system_type_t render_coord_sys;
-		err = tpbrt_coord_system_type_from_string(coord_str, &render_coord_sys);
+		tpbrt_coord_system_type_t render_coord_sys = TPBRT_COORD_SYSTEM_TYPE_MAX_NUM;
+		err										   = tpbrt_coord_system_type_from_string(coord_str, &render_coord_sys);
 		tpbrt_string_free(&coord_str);
 		options->render_coord_sys = render_coord_sys;
 		return err;
@@ -99,25 +99,25 @@ extern "C" {
 	static tpbrt_error_t tpbrt_options_apply_force_diffuse(tpbrt_options_t* const options, const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_bool_t force_diffuse;
-		const tpbrt_error_t err = tpbrt_param_as_bool(param, &force_diffuse);
-		options->force_diffuse	= force_diffuse;
+		tpbrt_bool_t force_diffuse = TPBRT_FALSE;
+		const tpbrt_error_t err	   = tpbrt_param_as_bool(param, &force_diffuse);
+		options->force_diffuse	   = force_diffuse;
 		return err;
 	}
 
 	static tpbrt_error_t tpbrt_options_apply_pixel_stats(tpbrt_options_t* const options, const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_bool_t pixel_stats;
-		const tpbrt_error_t err = tpbrt_param_as_bool(param, &pixel_stats);
-		options->pixel_stats	= pixel_stats;
+		tpbrt_bool_t pixel_stats = TPBRT_FALSE;
+		const tpbrt_error_t err	 = tpbrt_param_as_bool(param, &pixel_stats);
+		options->pixel_stats	 = pixel_stats;
 		return err;
 	}
 
 	static tpbrt_error_t tpbrt_options_apply_wavefront(tpbrt_options_t* const options, const tpbrt_param_t* param) {
 			if (options == TPBRT_NULL || param == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tpbrt_bool_t wavefront;
+		tpbrt_bool_t wavefront	= TPBRT_FALSE;
 		const tpbrt_error_t err = tpbrt_param_as_bool(param, &wavefront);
 		options->wavefront		= wavefront;
 		return err;
