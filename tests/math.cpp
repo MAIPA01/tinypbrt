@@ -16,6 +16,7 @@ namespace {
 	}
 
 	void expect_mat_near(const tpbrt_mat4_t& a, const tpbrt_mat4_t& b) {
+		// NOLINTNEXTLINE(readability-magic-numbers)
 			for (int i = 0; i < 16; ++i) { EXPECT_NEAR(a.m[i], b.m[i], EPS) << "element " << i; }
 	}
 } // namespace
@@ -30,6 +31,7 @@ TEST(math, identity) {
 
 TEST(math, translation_is_row_major) {
 	tpbrt_mat4_t t;
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	tpbrt_mat4_from_translation(&t, vec3(5.0f, 6.0f, 7.0f));
 	EXPECT_EQ(t.m[3], 5.0f);
 	EXPECT_EQ(t.m[7], 6.0f);
@@ -38,8 +40,12 @@ TEST(math, translation_is_row_major) {
 }
 
 TEST(math, multiply_applies_right_operand_first) {
-	tpbrt_mat4_t translate, scale, ts;
+	tpbrt_mat4_t translate;
+	tpbrt_mat4_t scale;
+	tpbrt_mat4_t ts;
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	tpbrt_mat4_from_translation(&translate, vec3(5.0f, 0.0f, 0.0f));
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	tpbrt_mat4_from_scale(&scale, vec3(2.0f, 2.0f, 2.0f));
 	tpbrt_mat4_multiply(&ts, &translate, &scale);
 	TPBRT_EXPECT_VEC3_NEAR(transform_point(ts, 1.0f, 0.0f, 0.0f), 7.0f, 0.0f, 0.0f);
@@ -51,14 +57,22 @@ TEST(math, multiply_applies_right_operand_first) {
 
 TEST(math, rotation_uses_degrees) {
 	tpbrt_mat4_t r;
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	tpbrt_mat4_from_axis_angle(&r, vec3(0.0f, 0.0f, 1.0f), 90.0f);
 	TPBRT_EXPECT_VEC3_NEAR(transform_point(r, 1.0f, 0.0f, 0.0f), 0.0f, 1.0f, 0.0f);
 }
 
 TEST(math, inverse) {
-	tpbrt_mat4_t a, b, ab, inv, product, identity;
+	tpbrt_mat4_t a;
+	tpbrt_mat4_t b;
+	tpbrt_mat4_t ab;
+	tpbrt_mat4_t inv;
+	tpbrt_mat4_t product;
+	tpbrt_mat4_t identity;
+	// NOLINTBEGIN(readability-magic-numbers)
 	tpbrt_mat4_from_translation(&a, vec3(1.0f, -2.0f, 3.0f));
 	tpbrt_mat4_from_axis_angle(&b, vec3(0.0f, 1.0f, 0.0f), 30.0f);
+	// NOLINTEND(readability-magic-numbers)
 	tpbrt_mat4_multiply(&ab, &a, &b);
 	tpbrt_mat4_inverse(&inv, &ab);
 	tpbrt_mat4_multiply(&product, &ab, &inv);
@@ -67,19 +81,25 @@ TEST(math, inverse) {
 }
 
 TEST(math, transpose) {
-	tpbrt_mat4_t m, t;
+	tpbrt_mat4_t m;
+	tpbrt_mat4_t t;
+	// NOLINTNEXTLINE(readability-magic-numbers)
 		for (int i = 0; i < 16; ++i) { m.m[i] = static_cast<float>(i); }
 	tpbrt_mat4_transpose(&t, &m);
 		for (int r = 0; r < 4; ++r) {
-				for (int c = 0; c < 4; ++c) { EXPECT_EQ(t.m[r * 4 + c], m.m[c * 4 + r]); }
+				for (int c = 0; c < 4; ++c) { EXPECT_EQ(t.rows[r].v[c], m.rows[c].v[r]); }
 		}
 }
 
 TEST(math, equals_and_hash) {
-	tpbrt_mat4_t a, b, c;
+	tpbrt_mat4_t a;
+	tpbrt_mat4_t b;
+	tpbrt_mat4_t c;
+	// NOLINTBEGIN(readability-magic-numbers)
 	tpbrt_mat4_from_translation(&a, vec3(1.0f, 2.0f, 3.0f));
 	tpbrt_mat4_from_translation(&b, vec3(1.0f, 2.0f, 3.0f));
 	tpbrt_mat4_from_translation(&c, vec3(1.0f, 2.0f, 3.5f));
+	// NOLINTEND(readability-magic-numbers)
 
 	EXPECT_EQ(tpbrt_mat4_equals(&a, &b), TPBRT_TRUE);
 	EXPECT_EQ(tpbrt_mat4_hash(&a), tpbrt_mat4_hash(&b));

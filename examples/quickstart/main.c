@@ -33,8 +33,8 @@ int main(const int argc, char** argv) {
 			tpbrt_get_material_by_handle(&scene.materials, shape->material, &material);
 
 				if (shape->type == TPBRT_SHAPE_TYPE_SPHERE) {
-					printf("sphere r=%g at (%g %g %g)\n", shape->as.sphere.radius, object_to_world->m[3], object_to_world->m[7],
-					  object_to_world->m[11]); // NOLINT(readability-magic-numbers)
+					printf("sphere r=%g at (%g %g %g)\n", shape->as.sphere.radius, object_to_world->m03, object_to_world->m13,
+					  object_to_world->m23);
 				}
 				else if (shape->type == TPBRT_SHAPE_TYPE_TRIANGLE_MESH) {
 					printf("triangle mesh: %zu vertices, %zu triangles\n", shape->as.triangle_mesh.p.count,

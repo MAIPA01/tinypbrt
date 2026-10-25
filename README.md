@@ -33,6 +33,7 @@ if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
 - [Building and testing tinypbrt](#building-and-testing-tinypbrt)
 - [Benchmarks](#benchmarks)
 - [Coverage](#coverage)
+- [clang-tidy](#clang-tidy)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -323,7 +324,7 @@ error (`TPBRT_ERROR_DUPLICATE_*`), like in pbrt-v4; `float` and `spectrum` textu
 | `TINYPBRT_BUILD_EXAMPLES`      | top-level only      | build examples                                                                         |
 | `TINYPBRT_BUILD_DOCUMENTATION` | top-level only      | Doxygen documentation: `docs` target ([details](#documentation))                       |
 | `TINYPBRT_BUILD_COVERAGE`      | top-level only      | LLVM coverage instrumentation and the `coverage` target (Clang) ([details](#coverage)) |
-| `TINYPBRT_ENABLE_CLANG_TIDY`   | top-level only      | run clang-tidy while building                                                          |
+| `TINYPBRT_ENABLE_CLANG_TIDY`   | top-level only      | `clang_tidy_*` targets ([details](#clang-tidy))                                        |
 | `TINYPBRT_WARNINGS_AS_ERRORS`  | top-level only      | treat compiler warnings as errors when building tinypbrt                               |
 | `TINYPBRT_ENABLE_PEDANTIC`     | `ON`                | build tinypbrt with `-Wpedantic` (GCC/Clang): only ISO C11, no compiler extensions     |
 | `TINYPBRT_ENABLE_SANITIZERS`   | `OFF`               | build the library and tests with sanitizers                                            |
@@ -428,6 +429,28 @@ cmake --build build/linux-debug-coverage --target coverage
 
 `llvm-profdata`/`llvm-cov` matching the Clang version are found next to the compiler. Tests, examples, benchmarks and
 third-party code are excluded from the report.
+
+## clang-tidy
+
+With `TINYPBRT_ENABLE_CLANG_TIDY=ON` every checked target gets two targets: `clang_tidy_<target>` checks only the files
+that changed (or still had warnings) since the last run, `clang_tidy_<target>_full` checks everything. Targets added
+with the same `GROUP` share one configuration and one run, `clang_tidy_<group>` / `clang_tidy_<group>_full`:
+
+```cmake
+enable_clang_tidy(TARGET tinypbrt-example-utils GROUP examples
+                  CONFIG "${PROJECT_SOURCE_DIR}/.clang-tidy" CXX_STANDARD c11 HEADER_FILTER "...")
+enable_clang_tidy(TARGET tinypbrt-example-quickstart GROUP examples)   # settings inherited from the group
+```
+
+```sh
+cmake --build build --target clang_tidy_tinypbrt     # library
+cmake --build build --target clang_tidy_examples     # all examples in one run
+```
+
+The first target of a group sets `CONFIG`, `CXX_STANDARD` and the header filters; later targets may omit them or must
+pass the same values (a different value is a configuration error). clang-tidy reads the compile flags from
+`compile_commands.json`, so it needs a Ninja or Makefile generator; `EXCLUDE_HEADER_FILTER` requires clang-tidy 19+ and
+is skipped for older versions.
 
 ## Documentation
 

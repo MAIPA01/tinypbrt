@@ -93,7 +93,7 @@ int main(const int argc, char** argv) {
 			printf(" scale=%g twosided=%s", area->scale, area->as.diffuse.two_sided ? "true" : "false");
 				if (area->power.has_value) { printf(" power=%g", area->power.value); }
 				if (object_to_world != TPBRT_NULL) {
-					printf(" origin=(%g %g %g)", object_to_world->m[3], object_to_world->m[7], object_to_world->m[11]);
+					printf(" origin=(%g %g %g)", object_to_world->m03, object_to_world->m13, object_to_world->m23);
 				}
 			printf("\n");
 		}

@@ -1,3 +1,4 @@
+// NOLINTNEXTLINE
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <example_utils.h>
 

@@ -55,6 +55,7 @@ TEST(param_types, textured_parameters_accept_values_and_references) {
 }
 
 TEST(param_types, error_message_names_the_problem) {
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	char message[160] = {};
 	ASSERT_GT(tpbrt_get_error_message(TPBRT_ERROR_PARAM_TYPE_MISMATCH, message, sizeof(message)), 0u);
 	EXPECT_NE(std::string(message).find("different type"), std::string::npos) << message;

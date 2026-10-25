@@ -1,3 +1,4 @@
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 #include <stdio.h>
 #include <string.h>
 
@@ -27,6 +28,7 @@ static const char* const scene_str = "LookAt 0 0 -5  0 0 0  0 1 0\n"
 /* clang-format on */
 
 static void print_error(const tpbrt_error_t err) {
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	char message[128];
 	tpbrt_get_error_message(err, message, sizeof(message));
 	fprintf(stderr, "tinypbrt error %d: %s\n", (int)err, message);
@@ -41,6 +43,7 @@ int main(void) {
 		}
 
 	CHECK(scene.camera.type == TPBRT_CAMERA_TYPE_PERSPECTIVE);
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	CHECK(scene.camera.as.perspective.fov == 45.0f);
 	CHECK(scene.film.x_resolution == 400u);
 	CHECK(scene.lights.lights_sources.count == 1u);
@@ -49,13 +52,16 @@ int main(void) {
 		if (scene.shapes.count == 1u) {
 			const tpbrt_shape_t* const shape = &scene.shapes.shapes[0];
 			CHECK(shape->type == TPBRT_SHAPE_TYPE_SPHERE);
+			// NOLINTNEXTLINE(readability-magic-numbers)
 			CHECK(shape->as.sphere.radius == 0.5f);
 
 			const tpbrt_mat4_t* object_to_world = NULL;
 			CHECK(tpbrt_get_transform(&scene.transforms, shape->transform.start_transform, &object_to_world) == TPBRT_ERROR_NONE);
 				if (object_to_world != NULL) {
 					CHECK(object_to_world->m[3] == 1.0f);
+					// NOLINTNEXTLINE(readability-magic-numbers)
 					CHECK(object_to_world->m[7] == 2.0f);
+					// NOLINTNEXTLINE(readability-magic-numbers)
 					CHECK(object_to_world->m[11] == 3.0f);
 				}
 
@@ -70,6 +76,7 @@ int main(void) {
 	CHECK(tpbrt_scene_load_from_memory("WorldBegin\nShape \"torus\"\n", ".", &broken) == TPBRT_ERROR_INVALID_SHAPE_TYPE);
 	CHECK(tpbrt_scene_load_from_file("this/file/does/not/exist.pbrt", &broken) == TPBRT_ERROR_FILE_NOT_FOUND);
 
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	char message[64];
 	CHECK(tpbrt_get_error_message(TPBRT_ERROR_FILE_NOT_FOUND, message, sizeof(message)) > 0u);
 	CHECK(strcmp(message, "File could not be opened or found") == 0);
@@ -81,3 +88,5 @@ int main(void) {
 	printf("c_api_test: OK\n");
 	return 0;
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)

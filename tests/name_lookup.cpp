@@ -1,3 +1,4 @@
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 #include <pch.hpp>
 
 #include <test_helpers.hpp>
@@ -129,7 +130,7 @@ TEST(name_lookup, lists_are_shrunk_to_their_size) {
 	ASSERT_TRUE(s.ok()) << s.error();
 	EXPECT_EQ(s->materials.names.count, 37u);
 	EXPECT_GE(s->materials.names.capacity, 37u);
-	EXPECT_LE(s->materials.names.capacity, 37u + 37u / 3u + 1u); // ~1,33 slotu na nazwę
+	EXPECT_LE(s->materials.names.capacity, 37u + (37u / 3u) + 1u); // ~1,33 slotu na nazwę
 	EXPECT_EQ(s->textures.names.count, 74u);
 
 	const Scene small("WorldBegin\nMakeNamedMaterial \"a\" \"string type\" \"diffuse\"\n");
@@ -137,3 +138,5 @@ TEST(name_lookup, lists_are_shrunk_to_their_size) {
 	EXPECT_EQ(small->materials.names.capacity, 0u);
 	EXPECT_EQ(small->materials.names.slots, nullptr);
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)

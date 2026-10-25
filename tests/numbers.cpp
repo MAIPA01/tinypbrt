@@ -1,3 +1,4 @@
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 #include <pch.hpp>
 
 #include <test_helpers.hpp>
@@ -58,6 +59,7 @@ TEST(numbers, float_rejects_non_numbers) {
 }
 
 TEST(numbers, float_matches_strtof) {
+	// NOLINTBEGIN(readability-magic-numbers)
 	std::mt19937 rng(12345u);
 	std::uniform_real_distribution<float> unit(-1.0f, 1.0f);
 	std::uniform_int_distribution<int> exponent(-30, 30);
@@ -72,6 +74,7 @@ TEST(numbers, float_matches_strtof) {
 				if (std::memcmp(&ours, &expected, sizeof(float)) != 0) { ++mismatches; }
 		}
 	EXPECT_EQ(mismatches, 0);
+	// NOLINTEND(readability-magic-numbers)
 }
 
 TEST(numbers, float_does_not_depend_on_locale) {
@@ -111,3 +114,4 @@ TEST(numbers, scene_errors) {
 	EXPECT_EQ(Scene("WorldBegin\nShape \"sphere\" \"float radius\" 1.5abc\n").error(), TPBRT_ERROR_PARSE_FLOAT);
 	EXPECT_EQ(Scene("Film \"rgb\" \"integer xresolution\" 640.5\nWorldBegin\n").error(), TPBRT_ERROR_PARSE_UINT);
 }
+// NOLINTEND(readability-function-cognitive-complexity)

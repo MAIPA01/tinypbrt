@@ -36,7 +36,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_string_from_cstr(const tpbrt_char_t* cstr, tpbrt_string_t* out_val);
 
-	inline tpbrt_bool_t tpbrt_string_empty(const tpbrt_string_t str) {
+	static inline tpbrt_bool_t tpbrt_string_empty(const tpbrt_string_t str) {
 		return str.data == TPBRT_NULL || str.size == 0u ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
@@ -46,7 +46,7 @@ extern "C" {
 
 	tpbrt_bool_t tpbrt_string_equals_cstr(tpbrt_string_t a, const tpbrt_char_t* cstr);
 
-	inline tpbrt_bool_t tpbrt_string_equals(const tpbrt_string_t a, const tpbrt_string_t b) {
+	static inline tpbrt_bool_t tpbrt_string_equals(const tpbrt_string_t a, const tpbrt_string_t b) {
 			if (a.size != b.size) { return TPBRT_FALSE; }
 			if (a.size == 0u) { return TPBRT_TRUE; }
 			if (a.data == TPBRT_NULL || b.data == TPBRT_NULL) { return a.data == b.data ? TPBRT_TRUE : TPBRT_FALSE; }

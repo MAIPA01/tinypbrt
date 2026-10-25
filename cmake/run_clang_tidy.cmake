@@ -17,7 +17,13 @@ endif()
 file(READ ${CACHE_FILE} CACHE_CONTENT)
 string(REPLACE "\n" ";" CACHE_LINES "${CACHE_CONTENT}")
 
-separate_arguments(SOURCES NATIVE_COMMAND "${SOURCES}")
+if(DEFINED SOURCES_FILE)
+	file(STRINGS "${SOURCES_FILE}" SOURCES)
+else()
+	separate_arguments(SOURCES NATIVE_COMMAND "${SOURCES}")
+endif()
+list(REMOVE_ITEM SOURCES "")
+list(REMOVE_DUPLICATES SOURCES)
 separate_arguments(CLANG_TIDY_ARGS NATIVE_COMMAND "${CLANG_TIDY_ARGS}")
 
 set(FILES_TO_TIDY)
@@ -69,8 +75,8 @@ if(FILES_TO_TIDY)
 	foreach(F ${FILES_TO_TIDY})
 		message(STATUS " ${F}")
 	endforeach()
-	
-	set(YAML_FILE "${CMAKE_BINARY_DIR}/clang_tidy_fixes.yaml")
+
+	set(YAML_FILE "${CACHE_FILE}.fixes.yaml")
 
 	# Execute clang-tidy
 	execute_process(

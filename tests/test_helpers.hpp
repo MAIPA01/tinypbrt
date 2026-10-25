@@ -1,3 +1,4 @@
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 #pragma once
 #ifndef _TINYPBRT_TESTS_TEST_HELPERS_HPP_
 #define _TINYPBRT_TESTS_TEST_HELPERS_HPP_
@@ -182,3 +183,4 @@ namespace tpbrt_test {
 } // namespace tpbrt_test
 
 #endif // _TINYPBRT_TESTS_TEST_HELPERS_HPP_
+// NOLINTEND(readability-function-cognitive-complexity)

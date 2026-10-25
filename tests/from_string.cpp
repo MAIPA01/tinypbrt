@@ -447,7 +447,7 @@ TEST(from_string, texture_encoding_named) {
 	tpbrt_texture_encoding_t e = TPBRT_TEXTURE_ENCODING_MAX_NUM;
 	tpbrt_opt_float_t gamma;
 	gamma.has_value = TPBRT_TRUE;
-	gamma.value		= 7.0f;
+	gamma.value		= 7.0f; // NOLINT(readability-magic-numbers)
 
 	ASSERT_EQ(encoding("sRGB", &e, &gamma), TPBRT_ERROR_NONE);
 	EXPECT_EQ(e, TPBRT_TEXTURE_ENCODING_SRGB);
@@ -478,7 +478,7 @@ TEST(from_string, texture_encoding_gamma) {
 		const std::string buffer = "gamma 2.5";
 		tpbrt_string_t s;
 		s.data = buffer.c_str();
-		s.size = 7u;
+		s.size = 7u; // NOLINT(readability-magic-numbers)
 		ASSERT_EQ(tpbrt_texture_encoding_from_string(s, &e, &gamma), TPBRT_ERROR_NONE);
 		EXPECT_FLOAT_EQ(gamma.value, 2.0f);
 	}

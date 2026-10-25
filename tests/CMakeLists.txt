@@ -122,3 +122,26 @@ target_link_options(${C_TARGET_TEST} PRIVATE
 
 tinypbrt_enable_coverage(${C_TARGET_TEST})
 tinypbrt_enable_coverage(${C_TARGET_C_API_TEST})
+
+# region CLANG_TIDY
+if (TINYPBRT_ENABLE_CLANG_TIDY)
+    set(CLANG_TIDY_CPP_STANDARD c++17)
+    set(CLANG_TIDY_C_STANDARD c11)
+
+    enable_clang_tidy(
+            TARGET ${C_TARGET_TEST}
+            CONFIG "${PROJECT_SOURCE_DIR}/.clang-tidy"
+            CXX_STANDARD ${CLANG_TIDY_CPP_STANDARD}
+            HEADER_FILTER "^${CMAKE_CURRENT_SOURCE_DIR}[\\\\\/\\\\].*"
+            EXCLUDE_HEADER_FILTER "^${PROJECT_SOURCE_DIR}[\\\\\/\\\\]third_party[\\\\\/\\\\].*"
+    )
+
+    enable_clang_tidy(
+            TARGET ${C_TARGET_C_API_TEST}
+            CONFIG "${PROJECT_SOURCE_DIR}/.clang-tidy"
+            CXX_STANDARD ${CLANG_TIDY_C_STANDARD}
+            HEADER_FILTER "^${CMAKE_CURRENT_SOURCE_DIR}[\\\\\/\\\\].*"
+            EXCLUDE_HEADER_FILTER "^${PROJECT_SOURCE_DIR}[\\\\\/\\\\]third_party[\\\\\/\\\\].*"
+    )
+endif()
+# endregion

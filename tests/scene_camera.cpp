@@ -21,6 +21,7 @@ TEST(scene_camera, default_screen_window_landscape) {
 	const Scene s("Film \"rgb\" \"integer xresolution\" 1280 \"integer yresolution\" 720\nCamera \"perspective\"\nWorldBegin\n");
 	ASSERT_TRUE(s.ok()) << s.error();
 	EXPECT_NEAR(s->camera.as.perspective.frame_aspect_ratio, 1280.0f / 720.0f, EPS);
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	expect_screen_window(s->camera, -1280.0f / 720.0f, 1280.0f / 720.0f, -1.0f, 1.0f);
 }
 
@@ -32,6 +33,7 @@ TEST(scene_camera, camera_before_film) {
 	/* clang-format on */
 	ASSERT_TRUE(s.ok()) << s.error();
 	EXPECT_FLOAT_EQ(s->camera.as.perspective.fov, 45.0f);
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	expect_screen_window(s->camera, -1.0f, 1.0f, -2.0f, 2.0f);
 }
 
@@ -39,12 +41,14 @@ TEST(scene_camera, only_film) {
 	const Scene s("Film \"rgb\" \"integer xresolution\" 400 \"integer yresolution\" 800\nWorldBegin\n");
 	ASSERT_TRUE(s.ok()) << s.error();
 	EXPECT_FLOAT_EQ(s->camera.as.perspective.fov, 90.0f);
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	expect_screen_window(s->camera, -1.0f, 1.0f, -2.0f, 2.0f);
 }
 
 TEST(scene_camera, explicit_screen_window) {
 	const Scene s("Camera \"perspective\" \"float screenwindow\" [ -2 2 -1 1 ]\nWorldBegin\n");
 	ASSERT_TRUE(s.ok()) << s.error();
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	expect_screen_window(s->camera, -2.0f, 2.0f, -1.0f, 1.0f);
 }
 
@@ -54,6 +58,7 @@ TEST(scene_camera, file_without_world_begin) {
 	);
 	ASSERT_TRUE(s.ok()) << s.error();
 	EXPECT_FLOAT_EQ(s->camera.as.perspective.fov, 30.0f);
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	expect_screen_window(s->camera, -1.0f, 1.0f, -2.0f, 2.0f);
 	TPBRT_EXPECT_VEC3_NEAR(origin(*s, s->camera.transform.start_transform), 0.0f, 0.0f, 0.0f);
 }

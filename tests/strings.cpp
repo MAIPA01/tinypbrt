@@ -1,3 +1,4 @@
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 #include <pch.hpp>
 
 #include <tinypbrt/detail/common_internal.h>
@@ -7,12 +8,12 @@
 using namespace tpbrt_test;
 
 TEST(strings, copy_unescaped_decodes_pbrt_escapes) {
-	struct Case {
+	struct case_t {
 		const char* input;
 		const char* expected;
 	};
 
-	const Case cases[] = {
+	const case_t cases[] = {
 		{ .input = "plain",			.expected = "plain"		},
 		{ .input = "a\\\"b.png",	 .expected = "a\"b.png"	},
 		{ .input = "C:\\\\tex\\\\a", .expected = "C:\\tex\\a" },
@@ -21,7 +22,7 @@ TEST(strings, copy_unescaped_decodes_pbrt_escapes) {
 		{ .input = "\\b\\f\\r",		.expected = "\b\f\r"	 },
 	};
 
-		for (const Case& c : cases) {
+		for (const case_t& c : cases) {
 			tpbrt_string_t out;
 			ASSERT_EQ(tpbrt_string_copy_unescaped(&out, str(c.input)), TPBRT_ERROR_NONE) << c.input;
 			EXPECT_EQ(to_std(out), c.expected) << c.input;
@@ -42,6 +43,7 @@ TEST(strings, copy_unescaped_empty) {
 }
 
 TEST(strings, copy_chars) {
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	char buf[8];
 	ASSERT_EQ(tpbrt_copy_chars(buf, sizeof(buf), "abcdef", 3u), TPBRT_ERROR_NONE);
 	EXPECT_STREQ(buf, "abc");
@@ -71,6 +73,7 @@ TEST(strings, equals) {
 }
 
 TEST(strings, error_message) {
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	char buf[128];
 	EXPECT_GT(tpbrt_get_error_message(TPBRT_ERROR_NONE, buf, sizeof(buf)), 0u);
 	EXPECT_STREQ(buf, "No error");
@@ -86,9 +89,12 @@ TEST(strings, error_message) {
 }
 
 TEST(strings, every_error_has_message) {
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	char buf[128];
 		for (int e = 0; e < TPBRT_ERROR_MAX_NUM; ++e) {
 			ASSERT_GT(tpbrt_get_error_message(static_cast<tpbrt_error_t>(e), buf, sizeof(buf)), 0u) << "error " << e;
 			EXPECT_STRNE(buf, "Undefined error") << "error " << e;
 		}
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)

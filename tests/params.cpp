@@ -7,12 +7,12 @@
 using namespace tpbrt_test;
 
 TEST(params, parse_every_param_type) {
-	struct Case {
+	struct case_t {
 		const char* name;
 		tpbrt_param_type_t type;
 	};
 
-	const Case cases[] = {
+	const case_t cases[] = {
 		{ .name = "integer",	 .type = TPBRT_PARAM_TYPE_INTEGER	  },
 		{ .name = "float",	   .type = TPBRT_PARAM_TYPE_FLOAT	  },
 		{ .name = "point2",	.type = TPBRT_PARAM_TYPE_POINT2	},
@@ -30,7 +30,7 @@ TEST(params, parse_every_param_type) {
 		{ .name = "string",	.type = TPBRT_PARAM_TYPE_STRING	},
 		{ .name = "texture",	 .type = TPBRT_PARAM_TYPE_TEXTURE	  },
 	};
-		for (const Case& c : cases) {
+		for (const case_t& c : cases) {
 			tpbrt_param_type_t type;
 			ASSERT_EQ(tpbrt_param_type_from_string(str(c.name), &type), TPBRT_ERROR_NONE) << c.name;
 			EXPECT_EQ(type, c.type) << c.name;
@@ -139,6 +139,7 @@ TEST(params, point3) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_point3_t def;
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	def.x = def.y = def.z = 9.0f;
 	tpbrt_point3_t v;
 	ASSERT_EQ(tpbrt_params_list_get_point3(&p.list(), TPBRT_STRING("from"), def, &v), TPBRT_ERROR_NONE);
@@ -218,34 +219,34 @@ TEST(params, texture_values) {
 	Params p("\"float r\" 0.3 \"rgb c\" [ 1 0 0 ] \"spectrum s\" [ 400 1 700 1 ] \"texture t\" \"unknown\"");
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
-	constexpr tpbrt_textures_list_t no_textures = {};
+	constexpr tpbrt_textures_list_t NO_TEXTURES = {};
 	const tpbrt_texture_handle_t def			= constant_handle(1.0f);
 	tpbrt_texture_handle_t h;
 
-	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("r"), &no_textures, TPBRT_TEXTURE_TYPE_FLOAT, &def,
+	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("r"), &NO_TEXTURES, TPBRT_TEXTURE_TYPE_FLOAT, &def,
 				&h),
 	  TPBRT_ERROR_NONE);
 	ASSERT_EQ(h.value_type, TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM);
 	ASSERT_EQ(h.as.spectrum.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
 	EXPECT_FLOAT_EQ(h.as.spectrum.as.constant, 0.3f);
 
-	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("c"), &no_textures, TPBRT_TEXTURE_TYPE_FLOAT, &def,
+	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("c"), &NO_TEXTURES, TPBRT_TEXTURE_TYPE_FLOAT, &def,
 				&h),
 	  TPBRT_ERROR_INVALID_TEXTURE_TYPE);
-	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("s"), &no_textures, TPBRT_TEXTURE_TYPE_FLOAT, &def,
+	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("s"), &NO_TEXTURES, TPBRT_TEXTURE_TYPE_FLOAT, &def,
 				&h),
 	  TPBRT_ERROR_INVALID_TEXTURE_TYPE);
 
-	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("s"), &no_textures, TPBRT_TEXTURE_TYPE_SPECTRUM, &def,
+	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("s"), &NO_TEXTURES, TPBRT_TEXTURE_TYPE_SPECTRUM, &def,
 				&h),
 	  TPBRT_ERROR_NONE);
 	ASSERT_EQ(h.value_type, TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM);
 	EXPECT_EQ(h.as.spectrum.type, TPBRT_SPECTRUM_TYPE_WAVELENGTHS);
 	tpbrt_texture_handle_free(&h);
 
-	EXPECT_EQ(tpbrt_params_list_get_texture(&p.list(), TPBRT_STRING("t"), &no_textures, &def, &h), TPBRT_ERROR_NOT_FOUND);
+	EXPECT_EQ(tpbrt_params_list_get_texture(&p.list(), TPBRT_STRING("t"), &NO_TEXTURES, &def, &h), TPBRT_ERROR_NOT_FOUND);
 
-	ASSERT_EQ(tpbrt_params_list_get_texture(&p.list(), TPBRT_STRING("missing"), &no_textures, &def, &h), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_texture(&p.list(), TPBRT_STRING("missing"), &NO_TEXTURES, &def, &h), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(h.as.spectrum.as.constant, 1.0f);
 }
 

@@ -1,3 +1,5 @@
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+
 #include <pch.hpp>
 
 #include <tinypbrt/detail/transform_internal.h>
@@ -17,16 +19,16 @@ namespace {
 		return m;
 	}
 
-	struct Builder {
+	struct builder_t {
 		tpbrt_transforms_list_t list;
 		tpbrt_transforms_list_builder_t builder;
 
-		Builder() {
+		builder_t() {
 			tpbrt_transforms_list_init(&list);
 			EXPECT_EQ(tpbrt_transforms_list_builder_init(&builder, &list), TPBRT_ERROR_NONE);
 		}
 
-		~Builder() {
+		~builder_t() {
 			tpbrt_transforms_list_builder_finish(&builder);
 			tpbrt_transforms_list_free(&list);
 		}
@@ -49,7 +51,7 @@ TEST(transforms, list_init_empty_free) {
 }
 
 TEST(transforms, get_rejects_invalid_handles) {
-	Builder b;
+	builder_t b;
 	const tpbrt_transform_handle_t h = b.add(translation(1, 2, 3));
 
 	const tpbrt_mat4_t* m			 = nullptr;
@@ -67,7 +69,7 @@ TEST(transforms, get_rejects_invalid_handles) {
 }
 
 TEST(transforms, builder_deduplicates) {
-	Builder b;
+	builder_t b;
 	const tpbrt_transform_handle_t a1 = b.add(translation(1, 2, 3));
 	const tpbrt_transform_handle_t c  = b.add(translation(4, 5, 6));
 	const tpbrt_transform_handle_t a2 = b.add(translation(1, 2, 3));
@@ -78,7 +80,7 @@ TEST(transforms, builder_deduplicates) {
 }
 
 TEST(transforms, builder_animated_static_ctm_uses_one_entry) {
-	Builder b;
+	builder_t b;
 	tpbrt_mat4_animated_t ctm;
 	ctm.start = translation(1, 0, 0);
 	ctm.end	  = translation(1, 0, 0);
@@ -96,7 +98,7 @@ TEST(transforms, builder_animated_static_ctm_uses_one_entry) {
 
 TEST(transforms, builder_many_distinct_transforms) {
 	constexpr unsigned N = 10000u;
-	Builder b;
+	builder_t b;
 	std::vector<tpbrt_transform_idx_t> handles;
 	handles.reserve(N);
 		for (unsigned i = 0u; i < N; ++i) { handles.push_back(b.add(translation(static_cast<float>(i), 0, 0)).transform_idx); }
@@ -106,6 +108,7 @@ TEST(transforms, builder_many_distinct_transforms) {
 			ASSERT_LT(handles[i], N);
 			EXPECT_FLOAT_EQ(b.list.transforms[handles[i]].m[3], static_cast<float>(i)) << "transform " << i;
 		}
+	// NOLINTNEXTLINE(readability-magic-numbers)
 		for (unsigned i = 0u; i < N; i += 97u) {
 			EXPECT_EQ(b.add(translation(static_cast<float>(i), 0, 0)).transform_idx, handles[i]) << "transform " << i;
 		}
@@ -118,6 +121,7 @@ TEST(transforms, builder_finish_keeps_list) {
 	tpbrt_transforms_list_builder_t builder;
 	ASSERT_EQ(tpbrt_transforms_list_builder_init(&builder, &list), TPBRT_ERROR_NONE);
 
+	// NOLINTNEXTLINE(readability-magic-numbers)
 		for (int i = 0; i < 17; ++i) {
 			const tpbrt_mat4_t m = translation(static_cast<float>(i), 1, 1);
 			tpbrt_transform_handle_t h;
@@ -141,7 +145,7 @@ TEST(transforms, builder_finish_on_empty_list) {
 }
 
 TEST(transforms, builder_rejects_null) {
-	Builder b;
+	builder_t b;
 	const tpbrt_mat4_t m = translation(0, 0, 0);
 	tpbrt_transform_handle_t h;
 	EXPECT_EQ(tpbrt_transforms_list_builder_append(nullptr, &m, &h), TPBRT_ERROR_INVALID_POINTER);
@@ -167,13 +171,17 @@ TEST(transforms, scene_shares_identical_ctm) {
 
 TEST(transforms, scene_with_many_distinct_transforms) {
 	std::string src = "WorldBegin\n";
+	// NOLINTNEXTLINE(readability-magic-numbers)
 		for (int i = 0; i < 5000; ++i) {
 			src += "AttributeBegin\nTranslate " + std::to_string(i) + " 0 0\nShape \"sphere\"\nAttributeEnd\n";
 		}
 	const Scene s(src);
 	ASSERT_TRUE(s.ok()) << s.error();
 	ASSERT_EQ(s->shapes.count, 5000u);
+	// NOLINTNEXTLINE(readability-magic-numbers)
 		for (int i = 0; i < 5000; i += 499) {
 			TPBRT_EXPECT_VEC3_NEAR(origin(*s, s->shapes.shapes[i].transform.start_transform), static_cast<float>(i), 0.0f, 0.0f);
 		}
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)
