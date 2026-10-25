@@ -18,10 +18,10 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_shape_curve_type_from_string(tpbrt_string_t type_str, tpbrt_shape_curve_type_t* type);
 
-	tpbrt_error_t tpbrt_shape_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_textures_list_t textures,
-	  tpbrt_transform_animated_t transform, tpbrt_material_handle_t material_handle, tpbrt_area_light_handle_t area_light_handle,
-	  tpbrt_media_handle_t interior_media_handle, tpbrt_media_handle_t exterior_media_handle, tpbrt_bool_t reverse_orientation,
-	  tpbrt_shape_t* shape);
+	tpbrt_error_t tpbrt_shape_init(tpbrt_string_t type_str, const tpbrt_params_list_t* params,
+	  const tpbrt_textures_list_t* textures, tpbrt_transform_animated_t transform, tpbrt_material_handle_t material_handle,
+	  tpbrt_area_light_handle_t area_light_handle, tpbrt_media_handle_t interior_media_handle,
+	  tpbrt_media_handle_t exterior_media_handle, tpbrt_bool_t reverse_orientation, tpbrt_shape_t* shape);
 	void tpbrt_shape_free(tpbrt_shape_t* shape);
 
 #pragma endregion
@@ -29,6 +29,7 @@ extern "C" {
 #pragma region SHAPES_LIST
 	tpbrt_error_t tpbrt_shapes_list_init(tpbrt_shapes_list_t* shapes_list);
 	tpbrt_error_t tpbrt_shapes_list_append(tpbrt_shapes_list_t* shapes_list, const tpbrt_shape_t* shape);
+	void tpbrt_shapes_list_shrink_to_fit(tpbrt_shapes_list_t* shapes_list);
 	void tpbrt_shapes_list_free(tpbrt_shapes_list_t* shapes_list);
 
 #pragma endregion

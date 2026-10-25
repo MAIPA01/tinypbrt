@@ -20,7 +20,7 @@ if(DOWNLOAD_BENCHMARK)
     CPMAddPackage(
         NAME benchmark
         GITHUB_REPOSITORY google/benchmark
-        VERSION 1.9.4
+        VERSION 1.9.5
         OPTIONS
             "BENCHMARK_ENABLE_TESTING OFF"
             "BENCHMARK_ENABLE_GTEST_TESTS OFF"

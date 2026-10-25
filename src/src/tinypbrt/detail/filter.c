@@ -58,7 +58,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_filter_read_gaussian(tpbrt_filter_gaussian_params_t* const gaussian,
-	  const tpbrt_params_list_t params, tpbrt_float_t* const default_radius) {
+	  const tpbrt_params_list_t* const params, tpbrt_float_t* const default_radius) {
 			if (gaussian == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t SIGMA_STR	   = TPBRT_STRING_INIT("sigma");
@@ -72,7 +72,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_filter_read_mitchell(tpbrt_filter_mitchell_params_t* const mitchell,
-	  const tpbrt_params_list_t params, tpbrt_float_t* const default_radius) {
+	  const tpbrt_params_list_t* const params, tpbrt_float_t* const default_radius) {
 			if (mitchell == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t B_STR		   = TPBRT_STRING_INIT("B");
@@ -90,7 +90,7 @@ extern "C" {
 		return tpbrt_params_list_get_float(params, C_STR, C_DEFAULT, &mitchell->c);
 	}
 
-	static tpbrt_error_t tpbrt_filter_read_sinc(tpbrt_filter_sinc_params_t* const sinc, const tpbrt_params_list_t params,
+	static tpbrt_error_t tpbrt_filter_read_sinc(tpbrt_filter_sinc_params_t* const sinc, const tpbrt_params_list_t* const params,
 	  tpbrt_float_t* const default_radius) {
 			if (sinc == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -113,7 +113,8 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_filter_init(const tpbrt_string_t type, const tpbrt_params_list_t params, tpbrt_filter_t* const filter) {
+	tpbrt_error_t tpbrt_filter_init(const tpbrt_string_t type, const tpbrt_params_list_t* const params,
+	  tpbrt_filter_t* const filter) {
 			if (filter == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(filter, 0, sizeof(tpbrt_filter_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }

@@ -55,7 +55,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_accelerator_read_bvh(tpbrt_accelerator_bvh_params_t* const bvh_params,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (bvh_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t MAX_NODES_PRIMS_STR	  = TPBRT_STRING_INIT("maxnodeprims");
@@ -86,7 +86,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_accelerator_read_kd_tree(tpbrt_accelerator_kd_tree_params_t* const kd_tree_params,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (kd_tree_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t INTERSECT_COST_STR	 = TPBRT_STRING_INIT("intersectcost");
@@ -130,7 +130,7 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_accelerator_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
+	tpbrt_error_t tpbrt_accelerator_init(const tpbrt_string_t type_str, const tpbrt_params_list_t* const params,
 	  tpbrt_accelerator_t* const accelerator) {
 			if (accelerator == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 

@@ -41,7 +41,7 @@ extern "C" {
 				};
 
 				union {
-					tpbrt_float_t y, b;
+					tpbrt_float_t y, g;
 				};
 			};
 

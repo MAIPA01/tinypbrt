@@ -4,6 +4,8 @@
 
 #include <tinypbrt/detail/fwd_internal.h>
 
+#include <tinypbrt/detail/name_index_internal.h>
+
 #include <tinypbrt/detail/object.h>
 
 #ifdef __cplusplus
@@ -19,11 +21,12 @@ extern "C" {
 #pragma region OBJECTS_LIST
 	tpbrt_error_t tpbrt_objects_list_init(tpbrt_objects_list_t* objects_list);
 	tpbrt_error_t tpbrt_objects_list_append(tpbrt_objects_list_t* objects_list, const tpbrt_object_t* object);
-	tpbrt_error_t tpbrt_objects_list_get(tpbrt_objects_list_t objects_list, tpbrt_string_t object_name,
+	tpbrt_error_t tpbrt_objects_list_get(const tpbrt_objects_list_t* objects_list, tpbrt_string_t object_name,
 	  const tpbrt_object_t** object);
-	tpbrt_error_t tpbrt_objects_list_get_handle(tpbrt_objects_list_t objects_list, tpbrt_string_t object_name,
+	tpbrt_error_t tpbrt_objects_list_get_handle(const tpbrt_objects_list_t* objects_list, tpbrt_string_t object_name,
 	  tpbrt_object_handle_t* object_handle);
-	tpbrt_bool_t tpbrt_objects_list_empty(tpbrt_objects_list_t objects_list);
+	tpbrt_bool_t tpbrt_objects_list_empty(const tpbrt_objects_list_t* objects_list);
+	tpbrt_error_t tpbrt_objects_list_shrink_to_fit(tpbrt_objects_list_t* objects_list);
 	void tpbrt_objects_list_free(tpbrt_objects_list_t* objects_list);
 #pragma endregion
 

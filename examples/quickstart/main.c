@@ -26,11 +26,11 @@ int main(const int argc, char** argv) {
 			const tpbrt_shape_t* shape			= &scene.shapes.shapes[i];
 
 			// object -> world matrix (row-major: m[row * 4 + column])
-			const tpbrt_mat4_t* object_to_world = NULL;
-			tpbrt_get_transform(scene.transforms, shape->transform.start_transform, &object_to_world);
+			const tpbrt_mat4_t* object_to_world = TPBRT_NULL;
+			tpbrt_get_transform(&scene.transforms, shape->transform.start_transform, &object_to_world);
 
-			const tpbrt_material_t* material = NULL;
-			tpbrt_get_material_by_handle(scene.materials, shape->material, &material);
+			const tpbrt_material_t* material = TPBRT_NULL;
+			tpbrt_get_material_by_handle(&scene.materials, shape->material, &material);
 
 				if (shape->type == TPBRT_SHAPE_TYPE_SPHERE) {
 					printf("sphere r=%g at (%g %g %g)\n", shape->as.sphere.radius, object_to_world->m[3], object_to_world->m[7],

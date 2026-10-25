@@ -14,7 +14,7 @@ static int failures = 0;
 	} while (0)
 
 /* clang-format off */
-static const char* const SCENE = "LookAt 0 0 -5  0 0 0  0 1 0\n"
+static const char* const scene_str = "LookAt 0 0 -5  0 0 0  0 1 0\n"
 								 "Camera \"perspective\" \"float fov\" 45\n"
 								 "Film \"rgb\" \"integer xresolution\" 400 \"integer yresolution\" 400\n"
 								 "WorldBegin\n"
@@ -34,7 +34,7 @@ static void print_error(const tpbrt_error_t err) {
 
 int main(void) {
 	tpbrt_scene_t scene;
-	const tpbrt_error_t err = tpbrt_scene_load_from_memory(SCENE, ".", &scene);
+	const tpbrt_error_t err = tpbrt_scene_load_from_memory(scene_str, ".", &scene);
 		if (err != TPBRT_ERROR_NONE) {
 			print_error(err);
 			return 1;
@@ -52,7 +52,7 @@ int main(void) {
 			CHECK(shape->as.sphere.radius == 0.5f);
 
 			const tpbrt_mat4_t* object_to_world = NULL;
-			CHECK(tpbrt_get_transform(scene.transforms, shape->transform.start_transform, &object_to_world) == TPBRT_ERROR_NONE);
+			CHECK(tpbrt_get_transform(&scene.transforms, shape->transform.start_transform, &object_to_world) == TPBRT_ERROR_NONE);
 				if (object_to_world != NULL) {
 					CHECK(object_to_world->m[3] == 1.0f);
 					CHECK(object_to_world->m[7] == 2.0f);
@@ -60,7 +60,7 @@ int main(void) {
 				}
 
 			const tpbrt_material_t* material = NULL;
-			CHECK(tpbrt_get_material_by_handle(scene.materials, shape->material, &material) == TPBRT_ERROR_NONE);
+			CHECK(tpbrt_get_material_by_handle(&scene.materials, shape->material, &material) == TPBRT_ERROR_NONE);
 				if (material != NULL) { CHECK(material->type == TPBRT_MATERIAL_TYPE_DIFFUSE); }
 		}
 

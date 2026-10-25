@@ -114,10 +114,11 @@ extern "C" {
 	typedef struct tpbrt_medias_list_t {
 		tpbrt_media_t* medias;
 		tpbrt_size_t count;
+		tpbrt_name_index_t names;
 	} tpbrt_medias_list_t;
 
-	TPBRT_API tpbrt_error_t tpbrt_get_media_by_name(tpbrt_medias_list_t medias, tpbrt_string_t name, const tpbrt_media_t** media);
-	TPBRT_API tpbrt_error_t tpbrt_get_media_by_handle(tpbrt_medias_list_t medias, tpbrt_media_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_media_by_name(const tpbrt_medias_list_t* medias, tpbrt_string_t name, const tpbrt_media_t** media);
+	TPBRT_API tpbrt_error_t tpbrt_get_media_by_handle(const tpbrt_medias_list_t* medias, tpbrt_media_handle_t handle,
 	  const tpbrt_media_t** media);
 
 #ifdef __cplusplus

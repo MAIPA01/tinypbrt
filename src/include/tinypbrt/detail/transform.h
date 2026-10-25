@@ -28,7 +28,7 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_transforms_list_t;
 
-	TPBRT_API tpbrt_error_t tpbrt_get_transform(tpbrt_transforms_list_t transforms, tpbrt_transform_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_transform(const tpbrt_transforms_list_t* transforms, tpbrt_transform_handle_t handle,
 	  const tpbrt_mat4_t** transform);
 
 #ifdef __cplusplus

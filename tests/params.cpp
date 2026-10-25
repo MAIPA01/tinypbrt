@@ -45,15 +45,15 @@ TEST(params, float_single_array_and_default) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_float_t v = 0.0f;
-	ASSERT_EQ(tpbrt_params_list_get_float(p.list(), TPBRT_STRING("a"), 0.0f, &v), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_float(&p.list(), TPBRT_STRING("a"), 0.0f, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v, 2.5f);
-	ASSERT_EQ(tpbrt_params_list_get_float(p.list(), TPBRT_STRING("b"), 0.0f, &v), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_float(&p.list(), TPBRT_STRING("b"), 0.0f, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v, -1.0f);
 
-	ASSERT_EQ(tpbrt_params_list_get_float(p.list(), TPBRT_STRING("missing"), 7.0f, &v), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_float(&p.list(), TPBRT_STRING("missing"), 7.0f, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v, 7.0f);
 
-	EXPECT_EQ(tpbrt_params_list_get_float(p.list(), TPBRT_STRING("c"), 0.0f, &v), TPBRT_ERROR_TOO_MANY_VALUES);
+	EXPECT_EQ(tpbrt_params_list_get_float(&p.list(), TPBRT_STRING("c"), 0.0f, &v), TPBRT_ERROR_TOO_MANY_VALUES);
 }
 
 TEST(params, floats_array) {
@@ -61,12 +61,12 @@ TEST(params, floats_array) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_float_array_t values;
-	ASSERT_EQ(tpbrt_params_list_get_floats(p.list(), TPBRT_STRING("values"), &values), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_floats(&p.list(), TPBRT_STRING("values"), &values), TPBRT_ERROR_NONE);
 	ASSERT_EQ(values.count, 3u);
 	EXPECT_FLOAT_EQ(values.data[2], 3.5f);
 	tpbrt_float_array_free(&values);
 
-	EXPECT_EQ(tpbrt_params_list_get_floats(p.list(), TPBRT_STRING("missing"), &values), TPBRT_ERROR_NOT_FOUND);
+	EXPECT_EQ(tpbrt_params_list_get_floats(&p.list(), TPBRT_STRING("missing"), &values), TPBRT_ERROR_NOT_FOUND);
 }
 
 TEST(params, int_uint_bool) {
@@ -74,18 +74,18 @@ TEST(params, int_uint_bool) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_int_t i = 0;
-	ASSERT_EQ(tpbrt_params_list_get_int(p.list(), TPBRT_STRING("i"), 0, &i), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_int(&p.list(), TPBRT_STRING("i"), 0, &i), TPBRT_ERROR_NONE);
 	EXPECT_EQ(i, -3);
 
 	tpbrt_uint_t u = 0u;
-	ASSERT_EQ(tpbrt_params_list_get_uint(p.list(), TPBRT_STRING("u"), 0u, &u), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_uint(&p.list(), TPBRT_STRING("u"), 0u, &u), TPBRT_ERROR_NONE);
 	EXPECT_EQ(u, 4u);
-	EXPECT_EQ(tpbrt_params_list_get_uint(p.list(), TPBRT_STRING("i"), 0u, &u), TPBRT_ERROR_PARSE_UINT);
+	EXPECT_EQ(tpbrt_params_list_get_uint(&p.list(), TPBRT_STRING("i"), 0u, &u), TPBRT_ERROR_PARSE_UINT);
 
 	tpbrt_bool_t b = TPBRT_FALSE;
-	ASSERT_EQ(tpbrt_params_list_get_bool(p.list(), TPBRT_STRING("t"), TPBRT_FALSE, &b), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_bool(&p.list(), TPBRT_STRING("t"), TPBRT_FALSE, &b), TPBRT_ERROR_NONE);
 	EXPECT_EQ(b, TPBRT_TRUE);
-	ASSERT_EQ(tpbrt_params_list_get_bool(p.list(), TPBRT_STRING("f"), TPBRT_TRUE, &b), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_bool(&p.list(), TPBRT_STRING("f"), TPBRT_TRUE, &b), TPBRT_ERROR_NONE);
 	EXPECT_EQ(b, TPBRT_FALSE);
 }
 
@@ -94,7 +94,7 @@ TEST(params, string_is_unescaped_and_owned) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_string_t s;
-	ASSERT_EQ(tpbrt_params_list_get_string(p.list(), TPBRT_STRING("filename"), TPBRT_EMPTY_STRING, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_string(&p.list(), TPBRT_STRING("filename"), TPBRT_EMPTY_STRING, &s), TPBRT_ERROR_NONE);
 	EXPECT_EQ(to_std(s), "dir\\a \"b\".png");
 	tpbrt_string_free(&s);
 }
@@ -104,7 +104,7 @@ TEST(params, string_default_is_a_copy) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_string_t s;
-	ASSERT_EQ(tpbrt_params_list_get_string(p.list(), TPBRT_STRING("mapping"), TPBRT_STRING("uv"), &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_string(&p.list(), TPBRT_STRING("mapping"), TPBRT_STRING("uv"), &s), TPBRT_ERROR_NONE);
 	EXPECT_EQ(to_std(s), "uv");
 	tpbrt_string_free(&s);
 }
@@ -114,11 +114,11 @@ TEST(params, string_required) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_string_t s;
-	ASSERT_EQ(tpbrt_params_list_get_string_required(p.list(), TPBRT_STRING("type"), &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_string_required(&p.list(), TPBRT_STRING("type"), &s), TPBRT_ERROR_NONE);
 	EXPECT_EQ(to_std(s), "diffuse");
 	tpbrt_string_free(&s);
 
-	EXPECT_EQ(tpbrt_params_list_get_string_required(p.list(), TPBRT_STRING("filename"), &s), TPBRT_ERROR_NOT_FOUND);
+	EXPECT_EQ(tpbrt_params_list_get_string_required(&p.list(), TPBRT_STRING("filename"), &s), TPBRT_ERROR_NOT_FOUND);
 	EXPECT_EQ(tpbrt_string_empty(s), TPBRT_TRUE);
 }
 
@@ -127,7 +127,7 @@ TEST(params, strings_array) {
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
 	tpbrt_string_array_t names;
-	ASSERT_EQ(tpbrt_params_list_get_strings(p.list(), TPBRT_STRING("materials"), &names), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_strings(&p.list(), TPBRT_STRING("materials"), &names), TPBRT_ERROR_NONE);
 	ASSERT_EQ(names.count, 2u);
 	EXPECT_EQ(to_std(names.data[0]), "a");
 	EXPECT_EQ(to_std(names.data[1]), "b c");
@@ -141,20 +141,20 @@ TEST(params, point3) {
 	tpbrt_point3_t def;
 	def.x = def.y = def.z = 9.0f;
 	tpbrt_point3_t v;
-	ASSERT_EQ(tpbrt_params_list_get_point3(p.list(), TPBRT_STRING("from"), def, &v), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_point3(&p.list(), TPBRT_STRING("from"), def, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v.x, 1.0f);
 	EXPECT_FLOAT_EQ(v.y, 2.0f);
 	EXPECT_FLOAT_EQ(v.z, 3.0f);
 
-	ASSERT_EQ(tpbrt_params_list_get_point3(p.list(), TPBRT_STRING("to"), def, &v), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_point3(&p.list(), TPBRT_STRING("to"), def, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v.x, 9.0f);
 
 	tpbrt_point3_array_t points;
-	ASSERT_EQ(tpbrt_params_list_get_point3s(p.list(), TPBRT_STRING("P"), &points), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_point3s(&p.list(), TPBRT_STRING("P"), &points), TPBRT_ERROR_NONE);
 	EXPECT_EQ(points.count, 3u);
 	tpbrt_vec3_array_free(&points);
 
-	EXPECT_NE(tpbrt_params_list_get_point3s(p.list(), TPBRT_STRING("bad"), &points), TPBRT_ERROR_NONE);
+	EXPECT_NE(tpbrt_params_list_get_point3s(&p.list(), TPBRT_STRING("bad"), &points), TPBRT_ERROR_NONE);
 }
 
 TEST(params, spectrum_variants) {
@@ -169,47 +169,47 @@ TEST(params, spectrum_variants) {
 	const tpbrt_spectrum_t def = constant_spectrum(1.0f);
 	tpbrt_spectrum_t s;
 
-	ASSERT_EQ(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("w"), def, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("w"), &def, &s), TPBRT_ERROR_NONE);
 	ASSERT_EQ(s.type, TPBRT_SPECTRUM_TYPE_WAVELENGTHS);
 	ASSERT_EQ(s.as.wavelengths.count, 3u);
 	EXPECT_FLOAT_EQ(s.as.wavelengths.data[1].wavelength, 400.0f);
 	EXPECT_FLOAT_EQ(s.as.wavelengths.data[1].value, 0.6f);
 	tpbrt_spectrum_free(&s);
 
-	ASSERT_EQ(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("b"), def, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("b"), &def, &s), TPBRT_ERROR_NONE);
 	ASSERT_EQ(s.type, TPBRT_SPECTRUM_TYPE_BUILTIN);
 	EXPECT_EQ(s.as.builtin, TPBRT_SPECTRUM_BUILTIN_METAL_CU_ETA);
 
-	ASSERT_EQ(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("f"), def, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("f"), &def, &s), TPBRT_ERROR_NONE);
 	ASSERT_EQ(s.type, TPBRT_SPECTRUM_TYPE_FILE);
 	EXPECT_EQ(to_std(s.as.file_name), "my.spd");
 	tpbrt_spectrum_free(&s);
 
-	ASSERT_EQ(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("t"), def, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("t"), &def, &s), TPBRT_ERROR_NONE);
 	ASSERT_EQ(s.type, TPBRT_SPECTRUM_TYPE_BLACKBODY);
 	EXPECT_FLOAT_EQ(s.as.blackbody, 3000.0f);
 
-	ASSERT_EQ(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("c"), def, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("c"), &def, &s), TPBRT_ERROR_NONE);
 	ASSERT_EQ(s.type, TPBRT_SPECTRUM_TYPE_RGB);
 	EXPECT_FLOAT_EQ(s.as.rgb.b, 0.3f);
 
-	ASSERT_EQ(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("k"), def, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("k"), &def, &s), TPBRT_ERROR_NONE);
 	ASSERT_EQ(s.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
 	EXPECT_FLOAT_EQ(s.as.constant, 0.5f);
 
-	ASSERT_EQ(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("missing"), def, &s), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("missing"), &def, &s), TPBRT_ERROR_NONE);
 	ASSERT_EQ(s.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
 	EXPECT_FLOAT_EQ(s.as.constant, 1.0f);
 
-	EXPECT_EQ(tpbrt_params_list_get_spectrum_required(p.list(), TPBRT_STRING("missing"), &s), TPBRT_ERROR_NOT_FOUND);
+	EXPECT_EQ(tpbrt_params_list_get_spectrum_required(&p.list(), TPBRT_STRING("missing"), &s), TPBRT_ERROR_NOT_FOUND);
 
-	EXPECT_NE(tpbrt_params_list_get_spectrum(p.list(), TPBRT_STRING("odd"), def, &s), TPBRT_ERROR_NONE);
+	EXPECT_NE(tpbrt_params_list_get_spectrum(&p.list(), TPBRT_STRING("odd"), &def, &s), TPBRT_ERROR_NONE);
 }
 
 TEST(params, spectrum_copy_keeps_constant) {
 	const tpbrt_spectrum_t src = constant_spectrum(0.25f);
 	tpbrt_spectrum_t dst;
-	ASSERT_EQ(tpbrt_spectrum_copy(&dst, src), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_spectrum_copy(&dst, &src), TPBRT_ERROR_NONE);
 	EXPECT_EQ(dst.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
 	EXPECT_FLOAT_EQ(dst.as.constant, 0.25f);
 }
@@ -218,31 +218,34 @@ TEST(params, texture_values) {
 	Params p("\"float r\" 0.3 \"rgb c\" [ 1 0 0 ] \"spectrum s\" [ 400 1 700 1 ] \"texture t\" \"unknown\"");
 	ASSERT_EQ(p.error(), TPBRT_ERROR_NONE);
 
-	constexpr tpbrt_textures_list_t no_textures = { .textures = nullptr, .count = 0u };
+	constexpr tpbrt_textures_list_t no_textures = {};
 	const tpbrt_texture_handle_t def			= constant_handle(1.0f);
 	tpbrt_texture_handle_t h;
 
-	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(p.list(), TPBRT_STRING("r"), no_textures, TPBRT_TEXTURE_TYPE_FLOAT, def, &h),
+	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("r"), &no_textures, TPBRT_TEXTURE_TYPE_FLOAT, &def,
+				&h),
 	  TPBRT_ERROR_NONE);
 	ASSERT_EQ(h.value_type, TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM);
 	ASSERT_EQ(h.as.spectrum.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
 	EXPECT_FLOAT_EQ(h.as.spectrum.as.constant, 0.3f);
 
-	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(p.list(), TPBRT_STRING("c"), no_textures, TPBRT_TEXTURE_TYPE_FLOAT, def, &h),
+	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("c"), &no_textures, TPBRT_TEXTURE_TYPE_FLOAT, &def,
+				&h),
 	  TPBRT_ERROR_INVALID_TEXTURE_TYPE);
-	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(p.list(), TPBRT_STRING("s"), no_textures, TPBRT_TEXTURE_TYPE_FLOAT, def, &h),
+	EXPECT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("s"), &no_textures, TPBRT_TEXTURE_TYPE_FLOAT, &def,
+				&h),
 	  TPBRT_ERROR_INVALID_TEXTURE_TYPE);
 
-	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(p.list(), TPBRT_STRING("s"), no_textures, TPBRT_TEXTURE_TYPE_SPECTRUM, def,
+	ASSERT_EQ(tpbrt_params_list_get_texture_of_type(&p.list(), TPBRT_STRING("s"), &no_textures, TPBRT_TEXTURE_TYPE_SPECTRUM, &def,
 				&h),
 	  TPBRT_ERROR_NONE);
 	ASSERT_EQ(h.value_type, TPBRT_TEXTURE_HANDLE_VALUE_TYPE_SPECTRUM);
 	EXPECT_EQ(h.as.spectrum.type, TPBRT_SPECTRUM_TYPE_WAVELENGTHS);
 	tpbrt_texture_handle_free(&h);
 
-	EXPECT_EQ(tpbrt_params_list_get_texture(p.list(), TPBRT_STRING("t"), no_textures, def, &h), TPBRT_ERROR_NOT_FOUND);
+	EXPECT_EQ(tpbrt_params_list_get_texture(&p.list(), TPBRT_STRING("t"), &no_textures, &def, &h), TPBRT_ERROR_NOT_FOUND);
 
-	ASSERT_EQ(tpbrt_params_list_get_texture(p.list(), TPBRT_STRING("missing"), no_textures, def, &h), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_texture(&p.list(), TPBRT_STRING("missing"), &no_textures, &def, &h), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(h.as.spectrum.as.constant, 1.0f);
 }
 
@@ -256,19 +259,19 @@ TEST(params, extend_overwrites_and_append_missing_keeps) {
 
 	tpbrt_params_list_t extended;
 	tpbrt_params_list_init(&extended);
-	ASSERT_EQ(tpbrt_params_list_extend(&extended, a.list()), TPBRT_ERROR_NONE);
-	ASSERT_EQ(tpbrt_params_list_extend(&extended, b.list()), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_extend(&extended, &a.list()), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_extend(&extended, &b.list()), TPBRT_ERROR_NONE);
 	EXPECT_EQ(extended.count, 3u);
-	ASSERT_EQ(tpbrt_params_list_get_float(extended, TPBRT_STRING("radius"), 0.0f, &v), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_float(&extended, TPBRT_STRING("radius"), 0.0f, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v, 5.0f);
 	tpbrt_params_list_free(&extended);
 
 	tpbrt_params_list_t missing;
 	tpbrt_params_list_init(&missing);
-	ASSERT_EQ(tpbrt_params_list_extend(&missing, a.list()), TPBRT_ERROR_NONE);
-	ASSERT_EQ(tpbrt_params_list_append_missing(&missing, b.list()), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_extend(&missing, &a.list()), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_append_missing(&missing, &b.list()), TPBRT_ERROR_NONE);
 	EXPECT_EQ(missing.count, 3u);
-	ASSERT_EQ(tpbrt_params_list_get_float(missing, TPBRT_STRING("radius"), 0.0f, &v), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_get_float(&missing, TPBRT_STRING("radius"), 0.0f, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v, 1.0f);
 	tpbrt_params_list_free(&missing);
 }

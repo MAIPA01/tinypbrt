@@ -21,6 +21,7 @@ extern "C" {
 	typedef struct tpbrt_objects_list_t {
 		tpbrt_object_t* objects;
 		tpbrt_size_t count;
+		tpbrt_name_index_t names;
 	} tpbrt_objects_list_t;
 
 	typedef struct tpbrt_object_handle_t {
@@ -30,9 +31,9 @@ extern "C" {
 #define TPBRT_OBJECT_HANDLE_INVALID_INIT { .object_idx = TPBRT_OBJECT_IDX_INVALID }
 #define TPBRT_OBJECT_HANDLE_INVALID		 (tpbrt_object_handle_t) TPBRT_OBJECT_HANDLE_INVALID_INIT
 
-	TPBRT_API tpbrt_error_t tpbrt_get_object_by_name(tpbrt_objects_list_t objects, tpbrt_string_t name,
+	TPBRT_API tpbrt_error_t tpbrt_get_object_by_name(const tpbrt_objects_list_t* objects, tpbrt_string_t name,
 	  const tpbrt_object_t** object);
-	TPBRT_API tpbrt_error_t tpbrt_get_object_by_handle(tpbrt_objects_list_t objects, tpbrt_object_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_object_by_handle(const tpbrt_objects_list_t* objects, tpbrt_object_handle_t handle,
 	  const tpbrt_object_t** object);
 
 #ifdef __cplusplus

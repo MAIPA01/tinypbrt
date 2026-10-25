@@ -59,7 +59,8 @@
       "name": "release",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "TINYPBRT_BUILD_COVERAGE": "OFF"
       }
     },
     {
@@ -164,6 +165,16 @@
       "name": "linux-debug-sanitizers",
       "displayName": "Linux/macOS Debug + ASan/UBSan/LSan",
       "inherits": ["sanitizers", "linux-base", "c11", "debug"]
+    },
+    {
+      "name": "linux-debug-coverage",
+      "displayName": "Linux/macOS Debug + coverage (cmake --build --target coverage)",
+      "inherits": ["linux-base", "c11", "debug"],
+      "cacheVariables": {
+        "TINYPBRT_BUILD_COVERAGE": "ON",
+        "TINYPBRT_BUILD_BENCHMARK": "OFF",
+        "TINYPBRT_BUILD_EXAMPLES": "ON"
+      }
     },
     {
       "name": "linux-release",

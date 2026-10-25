@@ -105,7 +105,8 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	static tpbrt_error_t tpbrt_film_read_gbuffer(tpbrt_film_gbuffer_params_t* const gbuffer, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_film_read_gbuffer(tpbrt_film_gbuffer_params_t* const gbuffer,
+	  const tpbrt_params_list_t* const params) {
 			if (gbuffer == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t COORD_SYS_STR				 = TPBRT_STRING_INIT("coordinatesystem");
@@ -131,7 +132,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_film_read_spectral(tpbrt_film_spectral_params_t* const spectral,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (spectral == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t N_BUCKETS_STR	  = TPBRT_STRING_INIT("nbuckets");
@@ -151,7 +152,8 @@ extern "C" {
 		return tpbrt_params_list_get_float(params, LAMBDA_MAX_STR, LAMBDA_MAX_DEFAULT, &spectral->lambda_max);
 	}
 
-	tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params, tpbrt_film_t* const film) {
+	tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_list_t* const params,
+	  tpbrt_film_t* const film) {
 			if (film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(film, 0, sizeof(tpbrt_film_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -256,7 +258,7 @@ extern "C" {
 			}
 
 		err = tpbrt_params_list_get_string(params, TPBRT_FILM_FILE_NAME_STR, TPBRT_EMPTY_STRING, &film->file_name);
-			if (tpbrt_string_empty(film->file_name) == TPBRT_TRUE) {
+			if (err == TPBRT_ERROR_NONE && tpbrt_string_empty(film->file_name) == TPBRT_TRUE) {
 				err = tpbrt_string_copy(&film->file_name, tpbrt_film_file_name_default);
 			}
 

@@ -25,6 +25,7 @@ option(TINYPBRT_DISABLE_ASSERT_ON_RELEASE 		"Disables assert on release builds" 
 message(STATUS "TINYPBRT_DISABLE_ASSERT_ON_RELEASE: ${TINYPBRT_DISABLE_ASSERT_ON_RELEASE}")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sanitizers.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/coverage_report.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cpm.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party.cmake)
 
@@ -53,13 +54,20 @@ if (TINYPBRT_BUILD_EXAMPLES)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples)
 endif()
 
-if (TINYPBRT_BUILD_COVERAGE)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/coverage_report.cmake)
+if (TINYPBRT_BUILD_COVERAGE AND TARGET tinypbrt-tests)
+	# cmake --build <build> --target coverage  -> <build>/coverage_report/index.html
+	set(TINYPBRT_COVERAGE_EXE_TARGETS tinypbrt-c-api-tests)
+	if (TINYPBRT_BUILD_EXAMPLES)
+		foreach(EXAMPLE quickstart scene_info load_from_memory materials lights export_obj)
+			list(APPEND TINYPBRT_COVERAGE_EXE_TARGETS tinypbrt-example-${EXAMPLE})
+		endforeach()
+	endif()
 
-#	setup_coverage_report(
-#			TEST_TARGET tinypbrt-tests
-#			FORMAT html
-#			OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/coverage_report
-#			CLEAN_TEMP
-#	)
+	setup_coverage_report(
+			TEST_TARGET tinypbrt-tests
+			EXE_TARGETS ${TINYPBRT_COVERAGE_EXE_TARGETS}
+			FORMAT html
+			OUTPUT_DIR ${CMAKE_BINARY_DIR}/coverage_report
+			CLEAN_TEMP
+	)
 endif()

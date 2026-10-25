@@ -59,7 +59,7 @@ extern "C" {
 		return TPBRT_ERROR_INVALID_INTEGRATOR_LIGHT_SAMPLER;
 	}
 
-	static tpbrt_error_t tpbrt_integrator_read_max_depth(tpbrt_uint_t* const max_depth, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_integrator_read_max_depth(tpbrt_uint_t* const max_depth, const tpbrt_params_list_t* const params) {
 			if (max_depth == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t MAX_DEPTH_STR	= TPBRT_STRING_INIT("maxdepth");
@@ -69,7 +69,8 @@ extern "C" {
 		return tpbrt_params_list_get_uint(params, MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, max_depth);
 	}
 
-	static tpbrt_error_t tpbrt_integrator_read_regularize(tpbrt_bool_t* const regularize, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_integrator_read_regularize(tpbrt_bool_t* const regularize,
+	  const tpbrt_params_list_t* const params) {
 			if (regularize == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t REGULARIZE_STR	 = TPBRT_STRING_INIT("regularize");
@@ -80,7 +81,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_light_sampler(tpbrt_integrator_light_sampler_t* const light_sampler,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (light_sampler == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t LIGHT_SAMPLER_STR	  = TPBRT_STRING_INIT("lightsampler");
@@ -102,7 +103,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_ambient_occlusion(
-	  tpbrt_integrator_ambient_occlusion_params_t* const ambient_occlusion, const tpbrt_params_list_t params
+	  tpbrt_integrator_ambient_occlusion_params_t* const ambient_occlusion, const tpbrt_params_list_t* const params
 	) {
 			if (ambient_occlusion == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
@@ -121,7 +122,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_bdpt(tpbrt_integrator_bdpt_params_t* const bdpt,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (bdpt == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t VISUALIZE_STRATEGIES_STR   = TPBRT_STRING_INIT("visualizestrategies");
@@ -149,13 +150,14 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_light_path(tpbrt_integrator_light_path_params_t* const light_path,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (light_path == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		return tpbrt_integrator_read_max_depth(&light_path->max_depth, params);
 	}
 
-	static tpbrt_error_t tpbrt_integrator_read_mlt(tpbrt_integrator_mlt_params_t* const mlt, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_integrator_read_mlt(tpbrt_integrator_mlt_params_t* const mlt,
+	  const tpbrt_params_list_t* const params) {
 			if (mlt == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t BOOTSTRAP_SAMPLES_STR		  = TPBRT_STRING_INIT("bootstrapsamples");
@@ -195,7 +197,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_path(tpbrt_integrator_path_params_t* const path,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (path == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		tpbrt_error_t err = tpbrt_integrator_read_max_depth(&path->max_depth, params);
@@ -215,14 +217,14 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_random_walk(tpbrt_integrator_random_walk_params_t* const random_walk,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (random_walk == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		return tpbrt_integrator_read_max_depth(&random_walk->max_depth, params);
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_simple_path(tpbrt_integrator_simple_path_params_t* const simple_path,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (simple_path == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t SAMPLE_BSDF_STR		= TPBRT_STRING_INIT("samplebsdf");
@@ -246,14 +248,14 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_simple_vol_path(tpbrt_integrator_simple_vol_path_params_t* const simple_vol_path,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (simple_vol_path == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		return tpbrt_integrator_read_max_depth(&simple_vol_path->max_depth, params);
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_sppm(tpbrt_integrator_sppm_params_t* const sppm,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (sppm == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t PHOTONS_PER_ITERATION_STR  = TPBRT_STRING_INIT("photonsperiteration");
@@ -278,7 +280,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_integrator_read_vol_path(tpbrt_integrator_vol_path_params_t* const vol_path,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (vol_path == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		tpbrt_error_t err = tpbrt_integrator_read_max_depth(&vol_path->max_depth, params);
@@ -311,7 +313,7 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_integrator_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
+	tpbrt_error_t tpbrt_integrator_init(const tpbrt_string_t type_str, const tpbrt_params_list_t* const params,
 	  tpbrt_integrator_t* integrator) {
 			if (integrator == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 

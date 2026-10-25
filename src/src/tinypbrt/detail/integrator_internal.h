@@ -19,7 +19,8 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_integrator_init_default(tpbrt_integrator_t* integrator);
 
-	tpbrt_error_t tpbrt_integrator_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_integrator_t* integrator);
+	tpbrt_error_t tpbrt_integrator_init(tpbrt_string_t type_str, const tpbrt_params_list_t* params,
+	  tpbrt_integrator_t* integrator);
 
 #ifdef __cplusplus
 }

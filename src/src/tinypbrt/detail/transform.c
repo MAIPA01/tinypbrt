@@ -36,17 +36,17 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_transforms_list_get(const tpbrt_transforms_list_t transforms_list,
+	tpbrt_error_t tpbrt_transforms_list_get(const tpbrt_transforms_list_t* const transforms_list,
 	  const tpbrt_transform_handle_t transform_handle, const tpbrt_mat4_t** const transform) {
 			if (transform == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (transform_handle.transform_idx == TPBRT_TRANSFORM_IDX_INVALID ||
-				transform_handle.transform_idx >= transforms_list.count) {
+				transform_handle.transform_idx >= transforms_list->count) {
 				*transform = TPBRT_NULL;
 				return TPBRT_ERROR_INVALID_HANDLE;
 			}
 
-		*transform = transforms_list.transforms + transform_handle.transform_idx;
+		*transform = transforms_list->transforms + transform_handle.transform_idx;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -57,8 +57,8 @@ extern "C" {
 		*transforms_list = TPBRT_EMPTY_TRANSFORMS_LIST;
 	}
 
-	tpbrt_bool_t tpbrt_transforms_list_empty(const tpbrt_transforms_list_t transforms_list) {
-		return transforms_list.transforms == TPBRT_NULL || transforms_list.count == 0u;
+	tpbrt_bool_t tpbrt_transforms_list_empty(const tpbrt_transforms_list_t* const transforms_list) {
+		return transforms_list->transforms == TPBRT_NULL || transforms_list->count == 0u;
 	}
 
 #pragma endregion
@@ -167,7 +167,7 @@ extern "C" {
 
 #pragma region API
 
-	tpbrt_error_t tpbrt_get_transform(const tpbrt_transforms_list_t transforms, const tpbrt_transform_handle_t handle,
+	tpbrt_error_t tpbrt_get_transform(const tpbrt_transforms_list_t* const transforms, const tpbrt_transform_handle_t handle,
 	  const tpbrt_mat4_t** transform) {
 		return tpbrt_transforms_list_get(transforms, handle, transform);
 	}

@@ -113,36 +113,36 @@ extern "C" {
 		*wavelength_array = TPBRT_EMPTY_WAVELENGTHS_ARRAY;
 	}
 
-	tpbrt_error_t tpbrt_spectrum_copy(tpbrt_spectrum_t* const dst, const tpbrt_spectrum_t src) {
+	tpbrt_error_t tpbrt_spectrum_copy(tpbrt_spectrum_t* const dst, const tpbrt_spectrum_t* const src) {
 			if (dst == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		dst->type = src.type;
+		dst->type = src->type;
 
-			switch (src.type) {
+			switch (src->type) {
 				case TPBRT_SPECTRUM_TYPE_WAVELENGTHS: {
-					const tpbrt_error_t err = tpbrt_wavelengths_array_copy(&dst->as.wavelengths, src.as.wavelengths);
+					const tpbrt_error_t err = tpbrt_wavelengths_array_copy(&dst->as.wavelengths, src->as.wavelengths);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					break;
 				}
 				case TPBRT_SPECTRUM_TYPE_RGB: {
-					dst->as.rgb = src.as.rgb;
+					dst->as.rgb = src->as.rgb;
 					break;
 				}
 				case TPBRT_SPECTRUM_TYPE_BLACKBODY: {
-					dst->as.blackbody = src.as.blackbody;
+					dst->as.blackbody = src->as.blackbody;
 					break;
 				}
 				case TPBRT_SPECTRUM_TYPE_FILE: {
-					const tpbrt_error_t err = tpbrt_string_copy(&dst->as.file_name, src.as.file_name);
+					const tpbrt_error_t err = tpbrt_string_copy(&dst->as.file_name, src->as.file_name);
 						if (err != TPBRT_ERROR_NONE) { return err; }
 					break;
 				}
 				case TPBRT_SPECTRUM_TYPE_BUILTIN: {
-					dst->as.builtin = src.as.builtin;
+					dst->as.builtin = src->as.builtin;
 					break;
 				}
 				case TPBRT_SPECTRUM_TYPE_CONSTANT: {
-					dst->as.constant = src.as.constant;
+					dst->as.constant = src->as.constant;
 					break;
 				}
 				default: {

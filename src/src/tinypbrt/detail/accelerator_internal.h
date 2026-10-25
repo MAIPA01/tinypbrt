@@ -19,7 +19,8 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_accelerator_init_default(tpbrt_accelerator_t* accelerator);
 
-	tpbrt_error_t tpbrt_accelerator_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_accelerator_t* accelerator);
+	tpbrt_error_t tpbrt_accelerator_init(tpbrt_string_t type_str, const tpbrt_params_list_t* params,
+	  tpbrt_accelerator_t* accelerator);
 
 #ifdef __cplusplus
 }

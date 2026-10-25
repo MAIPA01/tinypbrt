@@ -138,8 +138,8 @@ namespace {
 						const tpbrt_shape_t& shape		 = _scene.shapes.shapes[i];
 						const tpbrt_material_t* material = nullptr;
 						const tpbrt_mat4_t* transform	 = nullptr;
-						tpbrt_get_material_by_handle(_scene.materials, shape.material, &material);
-						tpbrt_get_transform(_scene.transforms, shape.transform.start_transform, &transform);
+						tpbrt_get_material_by_handle(&_scene.materials, shape.material, &material);
+						tpbrt_get_transform(&_scene.transforms, shape.transform.start_transform, &transform);
 						benchmark::DoNotOptimize(material);
 						benchmark::DoNotOptimize(transform);
 					}
@@ -164,7 +164,7 @@ namespace {
 				key.data						 = name.c_str();
 				key.size						 = name.size();
 				const tpbrt_material_t* material = nullptr;
-				benchmark::DoNotOptimize(tpbrt_get_material_by_name(_scene.materials, key, &material));
+				benchmark::DoNotOptimize(tpbrt_get_material_by_name(&_scene.materials, key, &material));
 				benchmark::DoNotOptimize(material);
 			}
 		state.SetItemsProcessed(state.iterations());

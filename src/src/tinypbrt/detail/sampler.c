@@ -56,7 +56,8 @@ extern "C" {
 		return TPBRT_ERROR_INVALID_SAMPLER_RANDOM;
 	}
 
-	static tpbrt_error_t tpbrt_sampler_read_pixel_samples(tpbrt_uint_t* const pixel_samples, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_sampler_read_pixel_samples(tpbrt_uint_t* const pixel_samples,
+	  const tpbrt_params_list_t* const params) {
 			if (pixel_samples == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t PIXEL_SAMPLES_STR	= TPBRT_STRING_INIT("pixelsamples");
@@ -67,7 +68,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_sampler_read_randomization(tpbrt_sampler_random_t* const randomization,
-	  const tpbrt_params_list_t params, const tpbrt_sampler_random_t default_random) {
+	  const tpbrt_params_list_t* const params, const tpbrt_sampler_random_t default_random) {
 			if (randomization == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t RANDOMIZATION_STR	  = TPBRT_STRING_INIT("randomization");
@@ -89,7 +90,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_sampler_read_halton(tpbrt_sampler_halton_params_t* const halton,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (halton == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_PERMUTE_DIGITS;
@@ -105,14 +106,14 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_sampler_read_independent(tpbrt_sampler_independent_params_t* const independent,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (independent == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		return tpbrt_sampler_read_pixel_samples(&independent->pixel_samples, params);
 	}
 
 	static tpbrt_error_t tpbrt_sampler_read_padded_sobol(tpbrt_sampler_padded_sobol_params_t* const padded_sobol,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (padded_sobol == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
@@ -128,7 +129,8 @@ extern "C" {
 		return err;
 	}
 
-	static tpbrt_error_t tpbrt_sampler_read_sobol(tpbrt_sampler_sobol_params_t* const sobol, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_sampler_read_sobol(tpbrt_sampler_sobol_params_t* const sobol,
+	  const tpbrt_params_list_t* const params) {
 			if (sobol == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
@@ -145,7 +147,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_sampler_read_stratified(tpbrt_sampler_stratified_params_t* const stratified,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (stratified == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t JITTER_STR		= TPBRT_STRING_INIT("jitter");
@@ -168,7 +170,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_sampler_read_z_sobol(tpbrt_sampler_z_sobol_params_t* const z_sobol,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (z_sobol == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
@@ -199,7 +201,8 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_error_t tpbrt_sampler_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params, tpbrt_sampler_t* sampler) {
+	tpbrt_error_t tpbrt_sampler_init(const tpbrt_string_t type_str, const tpbrt_params_list_t* const params,
+	  tpbrt_sampler_t* sampler) {
 			if (sampler == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (memset(sampler, 0, sizeof(tpbrt_sampler_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }

@@ -197,11 +197,12 @@ extern "C" {
 	typedef struct tpbrt_materials_list_t {
 		tpbrt_material_t* materials;
 		tpbrt_size_t count;
+		tpbrt_name_index_t names;
 	} tpbrt_materials_list_t;
 
-	TPBRT_API tpbrt_error_t tpbrt_get_material_by_name(tpbrt_materials_list_t materials, tpbrt_string_t name,
+	TPBRT_API tpbrt_error_t tpbrt_get_material_by_name(const tpbrt_materials_list_t* materials, tpbrt_string_t name,
 	  const tpbrt_material_t** material);
-	TPBRT_API tpbrt_error_t tpbrt_get_material_by_handle(tpbrt_materials_list_t materials, tpbrt_material_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_material_by_handle(const tpbrt_materials_list_t* materials, tpbrt_material_handle_t handle,
 	  const tpbrt_material_t** material);
 
 #ifdef __cplusplus

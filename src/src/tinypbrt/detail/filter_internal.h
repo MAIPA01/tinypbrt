@@ -16,7 +16,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_filter_init_default(tpbrt_filter_t* filter);
 
-	tpbrt_error_t tpbrt_filter_init(tpbrt_string_t type, tpbrt_params_list_t params, tpbrt_filter_t* filter);
+	tpbrt_error_t tpbrt_filter_init(tpbrt_string_t type, const tpbrt_params_list_t* params, tpbrt_filter_t* filter);
 
 #ifdef __cplusplus
 }

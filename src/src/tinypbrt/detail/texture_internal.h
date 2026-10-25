@@ -4,6 +4,8 @@
 
 #include <tinypbrt/detail/fwd_internal.h>
 
+#include <tinypbrt/detail/name_index_internal.h>
+
 #include <tinypbrt/detail/texture.h>
 
 #include <tinypbrt/detail/color_internal.h>
@@ -62,7 +64,8 @@ extern "C" {
 	tpbrt_error_t tpbrt_texture_mapping_from_string(tpbrt_string_t mapping_str, tpbrt_texture_mapping_t* mapping_out);
 
 	tpbrt_error_t tpbrt_texture_init(tpbrt_string_t name, tpbrt_string_t type_str, tpbrt_string_t class_str,
-	  tpbrt_params_list_t params, tpbrt_textures_list_t textures, tpbrt_transform_handle_t transform, tpbrt_texture_t* texture);
+	  const tpbrt_params_list_t* params, const tpbrt_textures_list_t* textures, tpbrt_transform_handle_t transform,
+	  tpbrt_texture_t* texture);
 	void tpbrt_texture_free(tpbrt_texture_t* texture);
 
 #pragma endregion
@@ -70,15 +73,18 @@ extern "C" {
 #pragma region TEXTURES_LIST
 	tpbrt_error_t tpbrt_textures_list_init(tpbrt_textures_list_t* textures_list);
 	tpbrt_error_t tpbrt_textures_list_append(tpbrt_textures_list_t* textures_list, const tpbrt_texture_t* texture);
-	tpbrt_error_t tpbrt_textures_list_get(tpbrt_textures_list_t textures_list, tpbrt_string_t texture_name,
+	tpbrt_error_t tpbrt_textures_list_get(const tpbrt_textures_list_t* textures_list, tpbrt_string_t texture_name,
 	  const tpbrt_texture_t** texture);
-	tpbrt_error_t tpbrt_textures_list_get_handle(tpbrt_textures_list_t textures_list, tpbrt_string_t texture_name,
+	tpbrt_error_t tpbrt_textures_list_get_handle(const tpbrt_textures_list_t* textures_list, tpbrt_string_t texture_name,
 	  tpbrt_texture_handle_t* texture_handle);
-	tpbrt_error_t tpbrt_textures_list_get_handle_with_type(tpbrt_textures_list_t textures_list, tpbrt_string_t texture_name,
-	  tpbrt_texture_type_t type, tpbrt_texture_handle_t* texture_handle);
+	tpbrt_error_t tpbrt_textures_list_get_handle_with_type(const tpbrt_textures_list_t* textures_list,
+	  tpbrt_string_t texture_name, tpbrt_texture_type_t type, tpbrt_texture_handle_t* texture_handle);
+	tpbrt_bool_t tpbrt_textures_list_contains(const tpbrt_textures_list_t* textures_list, tpbrt_string_t texture_name,
+	  tpbrt_texture_type_t type);
+	tpbrt_error_t tpbrt_textures_list_shrink_to_fit(tpbrt_textures_list_t* textures_list);
 	void tpbrt_textures_list_free(tpbrt_textures_list_t* textures_list);
 
-	tpbrt_bool_t tpbrt_textures_list_empty(tpbrt_textures_list_t textures_list);
+	tpbrt_bool_t tpbrt_textures_list_empty(const tpbrt_textures_list_t* textures_list);
 
 #pragma endregion
 

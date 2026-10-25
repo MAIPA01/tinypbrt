@@ -16,7 +16,7 @@ extern "C" {
 		tpbrt_string_t mse_reference_out;
 		tpbrt_int_t seed;
 		tpbrt_float_t displacement_edge_scale;
-		tpbrt_coord_system_type_t render_coord_sys : 2;
+		tpbrt_coord_system_type_t render_coord_sys : 3;
 		tpbrt_bool_t disable_pixel_jitter		   : 1;
 		tpbrt_bool_t disable_texture_filtering	   : 1;
 		tpbrt_bool_t disable_wave_length_jitter	   : 1;

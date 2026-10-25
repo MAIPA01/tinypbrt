@@ -68,15 +68,15 @@ extern "C" {
 
 		*dest = *src;
 		tpbrt_params_list_init(&dest->shape_params);
-		tpbrt_params_list_extend(&dest->shape_params, src->shape_params);
+		tpbrt_params_list_extend(&dest->shape_params, &src->shape_params);
 		tpbrt_params_list_init(&dest->light_params);
-		tpbrt_params_list_extend(&dest->light_params, src->light_params);
+		tpbrt_params_list_extend(&dest->light_params, &src->light_params);
 		tpbrt_params_list_init(&dest->material_params);
-		tpbrt_params_list_extend(&dest->material_params, src->material_params);
+		tpbrt_params_list_extend(&dest->material_params, &src->material_params);
 		tpbrt_params_list_init(&dest->medium_params);
-		tpbrt_params_list_extend(&dest->medium_params, src->medium_params);
+		tpbrt_params_list_extend(&dest->medium_params, &src->medium_params);
 		tpbrt_params_list_init(&dest->texture_params);
-		tpbrt_params_list_extend(&dest->texture_params, src->texture_params);
+		tpbrt_params_list_extend(&dest->texture_params, &src->texture_params);
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -105,8 +105,11 @@ extern "C" {
 		static const tpbrt_uint_t MIN_CAPACITY = 8u;
 
 			if (stack->count >= stack->capacity) {
-				stack->capacity = stack->capacity == 0 ? MIN_CAPACITY : stack->capacity * 2u;
-				stack->states	= realloc(stack->states, stack->capacity * sizeof(tpbrt_state_t));
+				const tpbrt_uint_t new_capacity = stack->capacity == 0 ? MIN_CAPACITY : stack->capacity * 2u;
+				tpbrt_state_t* const new_states = realloc(stack->states, new_capacity * sizeof(tpbrt_state_t));
+					if (new_states == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+				stack->states	= new_states;
+				stack->capacity = new_capacity;
 			}
 		stack->states[stack->count++] = *state;
 		return TPBRT_ERROR_NONE;

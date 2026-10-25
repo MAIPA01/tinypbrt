@@ -14,11 +14,11 @@ extern "C" {
 	tpbrt_error_t tpbrt_transforms_list_init(tpbrt_transforms_list_t* transforms_list);
 	tpbrt_error_t tpbrt_transforms_list_append(tpbrt_transforms_list_t* transforms_list, const tpbrt_mat4_t* transform,
 	  tpbrt_transform_handle_t* out_handle);
-	tpbrt_error_t tpbrt_transforms_list_get(tpbrt_transforms_list_t transforms_list, tpbrt_transform_handle_t transform_handle,
-	  const tpbrt_mat4_t** transform);
+	tpbrt_error_t tpbrt_transforms_list_get(const tpbrt_transforms_list_t* transforms_list,
+	  tpbrt_transform_handle_t transform_handle, const tpbrt_mat4_t** transform);
 	void tpbrt_transforms_list_free(tpbrt_transforms_list_t* transforms_list);
 
-	tpbrt_bool_t tpbrt_transforms_list_empty(tpbrt_transforms_list_t transforms_list);
+	tpbrt_bool_t tpbrt_transforms_list_empty(const tpbrt_transforms_list_t* transforms_list);
 #pragma endregion
 
 #pragma region TRANSFORMS_LIST_BUILDER

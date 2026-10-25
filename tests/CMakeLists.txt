@@ -106,12 +106,6 @@ target_compile_options(${C_TARGET_TEST} PRIVATE
         -Werror
         -fno-strict-aliasing
     >
-    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
-        --coverage
-        -fcoverage-mcdc
-        -fprofile-instr-generate
-        -fcoverage-mapping
-    >
 )
 
 target_link_options(${C_TARGET_TEST} PRIVATE
@@ -124,8 +118,7 @@ target_link_options(${C_TARGET_TEST} PRIVATE
         $<$<CONFIG:Release>:-flto>
         $<$<NOT:$<OR:$<BOOL:${TINYPBRT_ENABLE_SANITIZERS}>,$<BOOL:${BUILD_SHARED_LIBS}>,$<PLATFORM_ID:Darwin>>>:-static>
     >
-    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
-        --coverage
-        -fprofile-instr-generate
-    >
 )
+
+tinypbrt_enable_coverage(${C_TARGET_TEST})
+tinypbrt_enable_coverage(${C_TARGET_C_API_TEST})

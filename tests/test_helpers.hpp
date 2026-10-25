@@ -88,7 +88,7 @@ namespace tpbrt_test {
 	inline const tpbrt_mat4_t& matrix(const tpbrt_scene_t& scene, const tpbrt_transform_handle_t handle) {
 		static tpbrt_mat4_t invalid;
 		const tpbrt_mat4_t* m	= nullptr;
-		const tpbrt_error_t err = tpbrt_get_transform(scene.transforms, handle, &m);
+		const tpbrt_error_t err = tpbrt_get_transform(&scene.transforms, handle, &m);
 		EXPECT_EQ(err, TPBRT_ERROR_NONE) << "invalid transform handle " << handle.transform_idx;
 			if (err != TPBRT_ERROR_NONE || m == nullptr) {
 				tpbrt_mat4_identity(&invalid);

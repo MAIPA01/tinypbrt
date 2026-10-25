@@ -90,12 +90,6 @@ function(tinypbrt_configure_library TARGET)
                 $<$<BOOL:${TINYPBRT_WARNINGS_AS_ERRORS}>:-Werror>
                 -fno-strict-aliasing
             >
-            $<$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
-                --coverage
-                -fcoverage-mcdc
-                -fprofile-instr-generate
-                -fcoverage-mapping
-            >
     )
     # endregion
 
@@ -108,18 +102,13 @@ function(tinypbrt_configure_library TARGET)
     # region SANITIZERS
     tinypbrt_enable_sanitizers(${TARGET})
     # endregion
+
+    # region COVERAGE (cmake/coverage_report.cmake)
+    tinypbrt_enable_coverage(${TARGET})
+    # endregion
 endfunction()
 
 tinypbrt_configure_library(${C_TARGET_NAME})
-
-# region LINK_OPTIONS
-target_link_options(${C_TARGET_NAME} INTERFACE
-        $<BUILD_INTERFACE:$<$<AND:$<C_COMPILER_ID:Clang>,$<C_COMPILER_FRONTEND_VARIANT:GNU>,$<BOOL:${TINYPBRT_BUILD_COVERAGE}>>:
-            --coverage
-            -fprofile-instr-generate
-        >>
-)
-# endregion
 
 # region SHARED_LIBRARY
 if (TINYPBRT_BUILD_SHARED)

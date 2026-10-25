@@ -25,6 +25,7 @@ extern "C" {
 #define TPBRT_INT_MIN  INT32_MIN
 #define TPBRT_INT_MAX  INT32_MAX
 #define TPBRT_UINT_MAX UINT32_MAX
+#define TPBRT_FLT_MAX  FLT_MAX
 
 #define TPBRT_MAT4_ARRAY_SIZE 16u
 #pragma endregion
@@ -42,6 +43,7 @@ extern "C" {
 	typedef int32_t tpbrt_int_t;
 	typedef uint32_t tpbrt_uint_t;
 	typedef float tpbrt_float_t;
+	typedef double tpbrt_double_t;
 	typedef size_t tpbrt_size_t;
 	typedef long tpbrt_long_t;
 	typedef unsigned long tpbrt_ulong_t;

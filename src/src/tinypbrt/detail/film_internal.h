@@ -18,7 +18,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_film_init_default(tpbrt_film_t* film);
 
-	tpbrt_error_t tpbrt_film_init(tpbrt_string_t type_str, tpbrt_params_list_t params, tpbrt_film_t* film);
+	tpbrt_error_t tpbrt_film_init(tpbrt_string_t type_str, const tpbrt_params_list_t* params, tpbrt_film_t* film);
 
 	void tpbrt_film_free(tpbrt_film_t* film);
 

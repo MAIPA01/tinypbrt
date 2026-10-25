@@ -69,7 +69,10 @@ extern "C" {
 		TPBRT_ERROR_INVALID_COORD_SYSTEM_NAME				  = 57,
 		TPBRT_ERROR_INDEX_OUT_OF_RANGE						  = 58,
 		TPBRT_ERROR_INCLUDES_STACK_OVERFLOW					  = 59,
-		TPBRT_ERROR_MAX_NUM									  = 60,
+		TPBRT_ERROR_PARAM_TYPE_MISMATCH						  = 60,
+		TPBRT_ERROR_DUPLICATE_MATERIAL_NAME					  = 61,
+		TPBRT_ERROR_DUPLICATE_MEDIUM_NAME					  = 62,
+		TPBRT_ERROR_MAX_NUM									  = 63,
 	} tpbrt_error_t;
 
 	TPBRT_API tpbrt_size_t tpbrt_get_error_message(tpbrt_error_t error, tpbrt_char_t* buffer, tpbrt_size_t buffer_size);

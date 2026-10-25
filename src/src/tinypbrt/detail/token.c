@@ -80,22 +80,26 @@ extern "C" {
 	tpbrt_error_t tpbrt_token_init(const tpbrt_string_t value, tpbrt_token_t* const token) {
 			if (token == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (memset(token, 0, sizeof(tpbrt_token_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+		token->value	 = value;
+		token->type		 = TPBRT_TOKEN_TYPE_SINGLE;
+		token->directive = TPBRT_DIRECTIVE_MAX_NUM;
 
-		token->value				= value;
-		tpbrt_directive_t directive = TPBRT_DIRECTIVE_MAX_NUM;
-			if (tpbrt_directive_from_string(value, &directive) == TPBRT_ERROR_NONE) {
-				token->type		 = TPBRT_TOKEN_TYPE_DIRECTIVE;
-				token->directive = directive;
+			if (value.size == 0u || value.data == TPBRT_NULL) { return TPBRT_ERROR_NONE; }
+
+		const tpbrt_char_t first = value.data[0];
+
+			if (first >= 'A' && first <= 'Z') {
+				tpbrt_directive_t directive = TPBRT_DIRECTIVE_MAX_NUM;
+					if (tpbrt_directive_from_string(value, &directive) == TPBRT_ERROR_NONE) {
+						token->type		 = TPBRT_TOKEN_TYPE_DIRECTIVE;
+						token->directive = directive;
+					}
 				return TPBRT_ERROR_NONE;
 			}
 
-			if (value.size >= 2 && value.data[0] == '\"' && value.data[value.size - 1] == '\"') {
+			if (value.size >= 2u && first == '\"' && value.data[value.size - 1u] == '\"') {
 				token->type = TPBRT_TOKEN_TYPE_QUOTED_STRING;
-				return TPBRT_ERROR_NONE;
 			}
-
-		token->type = TPBRT_TOKEN_TYPE_SINGLE;
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -137,12 +141,6 @@ extern "C" {
 							if (starts_with_quote != ends_with_quote) { return TPBRT_FALSE; }
 
 							if (token->value.size < 2u) { return TPBRT_FALSE; }
-					}
-
-					if (starts_with_quote == TPBRT_FALSE) {
-							for (tpbrt_size_t i = 0u; i < token->value.size; ++i) {
-									if (token->value.data[i] == ' ') { return TPBRT_FALSE; }
-							}
 					}
 			}
 

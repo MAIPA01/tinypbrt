@@ -12,7 +12,7 @@ extern "C" {
 
 #pragma region OBJECT_INSTANCE
 
-	tpbrt_error_t tpbrt_object_instance_init(tpbrt_string_t object_name, tpbrt_objects_list_t objects,
+	tpbrt_error_t tpbrt_object_instance_init(tpbrt_string_t object_name, const tpbrt_objects_list_t* objects,
 	  tpbrt_transform_animated_t transform, tpbrt_object_instance_t* instance);
 	void tpbrt_object_instance_free(tpbrt_object_instance_t* instance);
 
@@ -22,6 +22,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_objects_instances_list_init(tpbrt_objects_instances_list_t* instances_list);
 	tpbrt_error_t tpbrt_objects_instances_list_append(tpbrt_objects_instances_list_t* instances_list,
 	  const tpbrt_object_instance_t* instance);
+	void tpbrt_objects_instances_list_shrink_to_fit(tpbrt_objects_instances_list_t* instances_list);
 	void tpbrt_objects_instances_list_free(tpbrt_objects_instances_list_t* instances_list);
 
 #pragma endregion

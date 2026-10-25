@@ -18,6 +18,18 @@ extern "C" {
 		tpbrt_size_t count;
 	} tpbrt_string_array_t;
 
+	/**
+	 * Indeks nazw listy (materiałów, tekstur, mediów, obiektów) - tablica haszująca z adresowaniem otwartym,
+	 * przechowująca tylko indeksy elementów (4 B na slot, ~1,33 slotu na nazwany element po wczytaniu sceny).
+	 * Przy niewielu nazwach (capacity == 0) wyszukiwanie jest liniowe i indeks nie zajmuje pamięci.
+	 * Pole wewnętrzne: używaj funkcji tpbrt_get_*_by_name, nie czytaj go bezpośrednio.
+	 */
+	typedef struct tpbrt_name_index_t {
+		tpbrt_idx_t* slots;
+		tpbrt_uint_t capacity;
+		tpbrt_uint_t count;
+	} tpbrt_name_index_t;
+
 #ifdef __cplusplus
 }
 #endif

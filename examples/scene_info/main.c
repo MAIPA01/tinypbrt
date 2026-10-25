@@ -25,11 +25,11 @@ static void print_camera(const tpbrt_scene_t* const scene) {
 		}
 	printf(" shutter=[%g, %g]\n", camera->shutter_open, camera->shutter_close);
 
-	const tpbrt_mat4_t* start = NULL;
-	const tpbrt_mat4_t* end	  = NULL;
-	tpbrt_get_transform(scene->transforms, camera->transform.start_transform, &start);
-	tpbrt_get_transform(scene->transforms, camera->transform.end_transform, &end);
-		if (start != NULL && end != NULL) {
+	const tpbrt_mat4_t* start = TPBRT_NULL;
+	const tpbrt_mat4_t* end	  = TPBRT_NULL;
+	tpbrt_get_transform(&scene->transforms, camera->transform.start_transform, &start);
+	tpbrt_get_transform(&scene->transforms, camera->transform.end_transform, &end);
+		if (start != TPBRT_NULL && end != TPBRT_NULL) {
 			// NOLINTBEGIN(readability-magic-numbers)
 			printf("             position start=(%g %g %g) end=(%g %g %g)%s\n", start->m[3], start->m[7], start->m[11], end->m[3],
 			  end->m[7], end->m[11], start == end ? "" : " (animated)");

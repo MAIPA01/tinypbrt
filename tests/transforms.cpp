@@ -42,7 +42,7 @@ namespace {
 TEST(transforms, list_init_empty_free) {
 	tpbrt_transforms_list_t list;
 	ASSERT_EQ(tpbrt_transforms_list_init(&list), TPBRT_ERROR_NONE);
-	EXPECT_EQ(tpbrt_transforms_list_empty(list), TPBRT_TRUE);
+	EXPECT_EQ(tpbrt_transforms_list_empty(&list), TPBRT_TRUE);
 	tpbrt_transforms_list_free(&list);
 	tpbrt_transforms_list_free(&list);
 	EXPECT_EQ(tpbrt_transforms_list_init(nullptr), TPBRT_ERROR_INVALID_POINTER);
@@ -53,17 +53,17 @@ TEST(transforms, get_rejects_invalid_handles) {
 	const tpbrt_transform_handle_t h = b.add(translation(1, 2, 3));
 
 	const tpbrt_mat4_t* m			 = nullptr;
-	ASSERT_EQ(tpbrt_get_transform(b.list, h, &m), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_get_transform(&b.list, h, &m), TPBRT_ERROR_NONE);
 	ASSERT_NE(m, nullptr);
 	EXPECT_FLOAT_EQ(m->m[3], 1.0f);
 
-	EXPECT_EQ(tpbrt_get_transform(b.list, TPBRT_TRANSFORM_HANDLE_INVALID, &m), TPBRT_ERROR_INVALID_HANDLE);
+	EXPECT_EQ(tpbrt_get_transform(&b.list, TPBRT_TRANSFORM_HANDLE_INVALID, &m), TPBRT_ERROR_INVALID_HANDLE);
 	EXPECT_EQ(m, nullptr);
 
 	tpbrt_transform_handle_t out_of_range;
 	out_of_range.transform_idx = 1u;
-	EXPECT_EQ(tpbrt_get_transform(b.list, out_of_range, &m), TPBRT_ERROR_INVALID_HANDLE);
-	EXPECT_EQ(tpbrt_get_transform(b.list, h, nullptr), TPBRT_ERROR_INVALID_POINTER);
+	EXPECT_EQ(tpbrt_get_transform(&b.list, out_of_range, &m), TPBRT_ERROR_INVALID_HANDLE);
+	EXPECT_EQ(tpbrt_get_transform(&b.list, h, nullptr), TPBRT_ERROR_INVALID_POINTER);
 }
 
 TEST(transforms, builder_deduplicates) {
@@ -118,7 +118,7 @@ TEST(transforms, builder_finish_keeps_list) {
 	tpbrt_transforms_list_builder_t builder;
 	ASSERT_EQ(tpbrt_transforms_list_builder_init(&builder, &list), TPBRT_ERROR_NONE);
 
-		for (int i = 0; i < 17; ++i) { // 17 > początkowa pojemność 16 -> lista jest przycinana w finish
+		for (int i = 0; i < 17; ++i) {
 			const tpbrt_mat4_t m = translation(static_cast<float>(i), 1, 1);
 			tpbrt_transform_handle_t h;
 			ASSERT_EQ(tpbrt_transforms_list_builder_append(&builder, &m, &h), TPBRT_ERROR_NONE);
@@ -136,7 +136,7 @@ TEST(transforms, builder_finish_on_empty_list) {
 	tpbrt_transforms_list_builder_t builder;
 	ASSERT_EQ(tpbrt_transforms_list_builder_init(&builder, &list), TPBRT_ERROR_NONE);
 	tpbrt_transforms_list_builder_finish(&builder);
-	EXPECT_EQ(tpbrt_transforms_list_empty(list), TPBRT_TRUE);
+	EXPECT_EQ(tpbrt_transforms_list_empty(&list), TPBRT_TRUE);
 	tpbrt_transforms_list_free(&list);
 }
 

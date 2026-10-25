@@ -215,11 +215,12 @@ extern "C" {
 	typedef struct tpbrt_textures_list_t {
 		tpbrt_texture_t* textures;
 		tpbrt_size_t count;
+		tpbrt_name_index_t names;
 	} tpbrt_textures_list_t;
 
-	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_name(tpbrt_textures_list_t textures, tpbrt_string_t name,
+	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_name(const tpbrt_textures_list_t* textures, tpbrt_string_t name,
 	  const tpbrt_texture_t** texture);
-	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_handle(tpbrt_textures_list_t textures, tpbrt_texture_handle_t handle,
+	TPBRT_API tpbrt_error_t tpbrt_get_texture_by_handle(const tpbrt_textures_list_t* textures, const tpbrt_texture_handle_t* handle,
 	  const tpbrt_texture_t** texture);
 
 #ifdef __cplusplus

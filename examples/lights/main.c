@@ -10,11 +10,11 @@ static void print_world_point(const char* const label, const tpbrt_mat4_t* const
 }
 
 static void print_light(const tpbrt_scene_t* const scene, const tpbrt_light_source_t* const light) {
-	const tpbrt_mat4_t* light_to_world = NULL;
-		if (tpbrt_get_transform(scene->transforms, light->transform, &light_to_world) != TPBRT_ERROR_NONE) { return; }
+	const tpbrt_mat4_t* light_to_world = TPBRT_NULL;
+		if (tpbrt_get_transform(&scene->transforms, light->transform, &light_to_world) != TPBRT_ERROR_NONE) { return; }
 
 	printf("  %-11s", EXAMPLE_NAME(example_light_names, light->type));
-	const tpbrt_spectrum_t* spectrum = NULL;
+	const tpbrt_spectrum_t* spectrum = TPBRT_NULL;
 		switch (light->type) {
 		case TPBRT_LIGHT_SOURCE_TYPE_POINT:
 			print_world_point("position", light_to_world, light->as.point.from);
@@ -51,7 +51,7 @@ static void print_light(const tpbrt_scene_t* const scene, const tpbrt_light_sour
 		default: break;
 		}
 
-		if (spectrum != NULL) {
+		if (spectrum != TPBRT_NULL) {
 			printf(" spectrum=");
 			example_print_spectrum(stdout, spectrum);
 		}
@@ -81,18 +81,18 @@ int main(const int argc, char** argv) {
 	printf("area lights (%zu):\n", scene.lights.area_lights.count);
 		for (size_t i = 0; i < scene.shapes.count; ++i) {
 			const tpbrt_shape_t* const shape = &scene.shapes.shapes[i];
-			const tpbrt_area_light_t* area	 = NULL;
-				if (tpbrt_get_area_light_by_handle(scene.lights.area_lights, shape->area_light, &area) != TPBRT_ERROR_NONE) {
+			const tpbrt_area_light_t* area	 = TPBRT_NULL;
+				if (tpbrt_get_area_light_by_handle(&scene.lights.area_lights, shape->area_light, &area) != TPBRT_ERROR_NONE) {
 					continue;
 				}
 
-			const tpbrt_mat4_t* object_to_world = NULL;
-			tpbrt_get_transform(scene.transforms, shape->transform.start_transform, &object_to_world);
+			const tpbrt_mat4_t* object_to_world = TPBRT_NULL;
+			tpbrt_get_transform(&scene.transforms, shape->transform.start_transform, &object_to_world);
 			printf("  shape %zu (%s) emits ", i, EXAMPLE_NAME(example_shape_names, shape->type));
 			example_print_spectrum(stdout, &area->as.diffuse.l);
 			printf(" scale=%g twosided=%s", area->scale, area->as.diffuse.two_sided ? "true" : "false");
 				if (area->power.has_value) { printf(" power=%g", area->power.value); }
-				if (object_to_world != NULL) {
+				if (object_to_world != TPBRT_NULL) {
 					printf(" origin=(%g %g %g)", object_to_world->m[3], object_to_world->m[7], object_to_world->m[11]);
 				}
 			printf("\n");

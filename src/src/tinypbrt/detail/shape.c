@@ -1,5 +1,6 @@
 #include <tinypbrt/pch.h>
 
+#include <tinypbrt/detail/name_index_internal.h>
 #include <tinypbrt/detail/shape_internal.h>
 
 #include <tinypbrt/detail/common_internal.h>
@@ -81,7 +82,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_shape_read_bilinear_mesh(tpbrt_shape_bilinear_mesh_params_t* const bilinear_mesh,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (bilinear_mesh == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t INDICES_STR = TPBRT_STRING_INIT("indices");
@@ -121,7 +122,8 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	static tpbrt_error_t tpbrt_shape_read_curve(tpbrt_shape_curve_params_t* const curve, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_shape_read_curve(tpbrt_shape_curve_params_t* const curve,
+	  const tpbrt_params_list_t* const params) {
 			if (curve == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t P_STR			  = TPBRT_STRING_INIT("P");
@@ -204,7 +206,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_shape_read_cylinder(tpbrt_shape_cylinder_params_t* const cylinder,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (cylinder == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t RADIUS_STR	   = TPBRT_STRING_INIT("radius");
@@ -229,7 +231,7 @@ extern "C" {
 		return tpbrt_params_list_get_float(params, PHI_MAX_STR, PHI_MAX_DEFAULT, &cylinder->phi_max);
 	}
 
-	static tpbrt_error_t tpbrt_shape_read_disk(tpbrt_shape_disk_params_t* const disk, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_shape_read_disk(tpbrt_shape_disk_params_t* const disk, const tpbrt_params_list_t* const params) {
 			if (disk == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t HEIGHT_STR			= TPBRT_STRING_INIT("height");
@@ -254,7 +256,8 @@ extern "C" {
 		return tpbrt_params_list_get_float(params, PHI_MAX_STR, PHI_MAX_DEFAULT, &disk->phi_max);
 	}
 
-	static tpbrt_error_t tpbrt_shape_read_sphere(tpbrt_shape_sphere_params_t* const sphere, const tpbrt_params_list_t params) {
+	static tpbrt_error_t tpbrt_shape_read_sphere(tpbrt_shape_sphere_params_t* const sphere,
+	  const tpbrt_params_list_t* const params) {
 			if (sphere == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t RADIUS_STR	   = TPBRT_STRING_INIT("radius");
@@ -278,7 +281,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_shape_read_triangle_mesh(tpbrt_shape_triangle_mesh_params_t* const triangle_mesh,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (triangle_mesh == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t INDICES_STR = TPBRT_STRING_INIT("indices");
@@ -322,7 +325,7 @@ extern "C" {
 	}
 
 	static tpbrt_error_t tpbrt_shape_read_ply_mesh(tpbrt_shape_ply_mesh_params_t* const ply_mesh,
-	  const tpbrt_params_list_t params, const tpbrt_textures_list_t textures) {
+	  const tpbrt_params_list_t* const params, const tpbrt_textures_list_t* const textures) {
 			if (ply_mesh == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t FILE_NAME_STR				 = TPBRT_STRING_INIT("filename");
@@ -336,14 +339,14 @@ extern "C" {
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_texture_of_type(params, DISPLACEMENT_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-		  DISPLACEMENT_DEFAULT, &ply_mesh->displacement);
+		  &DISPLACEMENT_DEFAULT, &ply_mesh->displacement);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		return tpbrt_params_list_get_float(params, EDGE_LENGTH_STR, EDGE_LENGTH_DEFAULT, &ply_mesh->edge_length);
 	}
 
 	static tpbrt_error_t tpbrt_shape_read_loop_subdiv(tpbrt_shape_loop_subdiv_params_t* const loop_subdiv,
-	  const tpbrt_params_list_t params) {
+	  const tpbrt_params_list_t* const params) {
 			if (loop_subdiv == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 		static const tpbrt_string_t LEVELS_STR	 = TPBRT_STRING_INIT("levels");
@@ -361,8 +364,8 @@ extern "C" {
 		return tpbrt_params_list_get_points(params, P_STR, &loop_subdiv->p);
 	}
 
-	tpbrt_error_t tpbrt_shape_init(const tpbrt_string_t type_str, const tpbrt_params_list_t params,
-	  const tpbrt_textures_list_t textures, const tpbrt_transform_animated_t transform,
+	tpbrt_error_t tpbrt_shape_init(const tpbrt_string_t type_str, const tpbrt_params_list_t* const params,
+	  const tpbrt_textures_list_t* const textures, const tpbrt_transform_animated_t transform,
 	  const tpbrt_material_handle_t material_handle, const tpbrt_area_light_handle_t area_light_handle,
 	  const tpbrt_media_handle_t interior_media_handle, const tpbrt_media_handle_t exterior_media_handle,
 	  const tpbrt_bool_t reverse_orientation, tpbrt_shape_t* const shape) {
@@ -382,7 +385,7 @@ extern "C" {
 		static const tpbrt_texture_handle_t ALPHA_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.0f);
 
 		tpbrt_error_t err = tpbrt_params_list_get_texture_of_type(params, ALPHA_STR, textures, TPBRT_TEXTURE_TYPE_FLOAT,
-		  ALPHA_DEFAULT, &shape->alpha);
+		  &ALPHA_DEFAULT, &shape->alpha);
 			if (err != TPBRT_ERROR_NONE) {
 				tpbrt_shape_free(shape);
 				return err;
@@ -498,14 +501,19 @@ extern "C" {
 	tpbrt_error_t tpbrt_shapes_list_append(tpbrt_shapes_list_t* const shapes_list, const tpbrt_shape_t* const shape) {
 			if (shapes_list == TPBRT_NULL || shape == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		const tpbrt_size_t new_count = shapes_list->count + 1;
-
-		tpbrt_shape_t* new_list		 = realloc(shapes_list->shapes, sizeof(tpbrt_shape_t) * new_count);
+		tpbrt_shape_t* const new_list =
+		  tpbrt_array_reserve_append(shapes_list->shapes, shapes_list->count, sizeof(tpbrt_shape_t));
 			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
 		new_list[shapes_list->count] = *shape;
-		*shapes_list				 = (tpbrt_shapes_list_t) { .shapes = new_list, .count = new_count };
+		shapes_list->shapes			 = new_list;
+		++shapes_list->count;
 		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_shapes_list_shrink_to_fit(tpbrt_shapes_list_t* const shapes_list) {
+			if (shapes_list == TPBRT_NULL) { return; }
+		shapes_list->shapes = tpbrt_array_shrink_to_fit(shapes_list->shapes, shapes_list->count, sizeof(tpbrt_shape_t));
 	}
 
 	void tpbrt_shapes_list_free(tpbrt_shapes_list_t* const shapes_list) {

@@ -24,8 +24,8 @@ static void emit_triangle(exporter_t* const e, const size_t base, const size_t a
 }
 
 static void emit_material(const exporter_t* const e, const tpbrt_shape_t* const shape) {
-	const tpbrt_material_t* material = NULL;
-		if (tpbrt_get_material_by_handle(e->scene->materials, shape->material, &material) != TPBRT_ERROR_NONE) { return; }
+	const tpbrt_material_t* material = TPBRT_NULL;
+		if (tpbrt_get_material_by_handle(&e->scene->materials, shape->material, &material) != TPBRT_ERROR_NONE) { return; }
 		if (material->name.size > 0u) { fprintf(e->out, "usemtl " EXAMPLE_STR_FMT "\n", EXAMPLE_STR_ARG(material->name)); }
 		else { fprintf(e->out, "usemtl %s_%zu\n", EXAMPLE_NAME(example_material_names, material->type), (size_t)material->idx); }
 }
@@ -152,8 +152,8 @@ int main(const int argc, char** argv) {
 			return 1;
 		}
 
-	FILE* const out = argc > 2 ? fopen(argv[2], "w") : stdout;
-		if (out == NULL) {
+	FILE* const out = argc > 2 ? example_fopen(argv[2], "w") : stdout;
+		if (out == TPBRT_NULL) {
 			fprintf(stderr, "cannot open %s\n", argv[2]);
 			tpbrt_scene_free(&scene);
 			return 1;
@@ -164,8 +164,8 @@ int main(const int argc, char** argv) {
 
 		for (size_t i = 0; i < scene.shapes.count; ++i) {
 			const tpbrt_shape_t* const shape	= &scene.shapes.shapes[i];
-			const tpbrt_mat4_t* object_to_world = NULL;
-				if (tpbrt_get_transform(scene.transforms, shape->transform.start_transform, &object_to_world) ==
+			const tpbrt_mat4_t* object_to_world = TPBRT_NULL;
+				if (tpbrt_get_transform(&scene.transforms, shape->transform.start_transform, &object_to_world) ==
 					TPBRT_ERROR_NONE) {
 					export_shape(&e, shape, object_to_world);
 				}
@@ -173,18 +173,18 @@ int main(const int argc, char** argv) {
 
 		for (size_t i = 0; i < scene.instances.count; ++i) {
 			const tpbrt_object_instance_t* const instance = &scene.instances.instances[i];
-			const tpbrt_object_t* object				  = NULL;
-			const tpbrt_mat4_t* instance_to_world		  = NULL;
-				if (tpbrt_get_object_by_handle(scene.objects, instance->object, &object) != TPBRT_ERROR_NONE ||
-					tpbrt_get_transform(scene.transforms, instance->transform.start_transform, &instance_to_world) !=
+			const tpbrt_object_t* object				  = TPBRT_NULL;
+			const tpbrt_mat4_t* instance_to_world		  = TPBRT_NULL;
+				if (tpbrt_get_object_by_handle(&scene.objects, instance->object, &object) != TPBRT_ERROR_NONE ||
+					tpbrt_get_transform(&scene.transforms, instance->transform.start_transform, &instance_to_world) !=
 					  TPBRT_ERROR_NONE) {
 					continue;
 				}
 			fprintf(out, "g instance_%zu_" EXAMPLE_STR_FMT "\n", i, EXAMPLE_STR_ARG(object->name));
 				for (size_t c = 0; c < object->children.count; ++c) {
 					const tpbrt_shape_t* const shape	= &object->children.shapes[c];
-					const tpbrt_mat4_t* shape_to_object = NULL;
-						if (tpbrt_get_transform(scene.transforms, shape->transform.start_transform, &shape_to_object) !=
+					const tpbrt_mat4_t* shape_to_object = TPBRT_NULL;
+						if (tpbrt_get_transform(&scene.transforms, shape->transform.start_transform, &shape_to_object) !=
 							TPBRT_ERROR_NONE) {
 							continue;
 						}

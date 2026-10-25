@@ -30,7 +30,7 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_camera_create_info_init_default(tpbrt_camera_create_info_t* info);
 
-	tpbrt_error_t tpbrt_camera_create_info_init(tpbrt_string_t type_str, tpbrt_params_list_t params,
+	tpbrt_error_t tpbrt_camera_create_info_init(tpbrt_string_t type_str, const tpbrt_params_list_t* params,
 	  tpbrt_transform_animated_t transform, tpbrt_media_handle_t interior_media_handle,
 	  tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_create_info_t* info);
 
