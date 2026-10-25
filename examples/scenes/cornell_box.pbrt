@@ -1,0 +1,39 @@
+LookAt 0 1 3.4   0 1 0   0 1 0
+Camera "perspective" "float fov" 40
+Film "rgb" "integer xresolution" 512 "integer yresolution" 512 "string filename" "cornell.exr"
+Sampler "zsobol" "integer pixelsamples" 128
+Integrator "volpath" "integer maxdepth" 12
+PixelFilter "gaussian"
+
+WorldBegin
+
+Texture "checks" "spectrum" "checkerboard" "float uscale" 8 "float vscale" 8
+    "rgb tex1" [ .8 .8 .8 ] "rgb tex2" [ .2 .2 .2 ]
+
+MakeNamedMaterial "white" "string type" "diffuse" "rgb reflectance" [ .73 .73 .73 ]
+MakeNamedMaterial "red"   "string type" "diffuse" "rgb reflectance" [ .65 .05 .05 ]
+MakeNamedMaterial "green" "string type" "diffuse" "rgb reflectance" [ .12 .45 .15 ]
+MakeNamedMaterial "floor" "string type" "diffuse" "texture reflectance" "checks"
+MakeNamedMaterial "gold"  "string type" "conductor"
+    "spectrum eta" "metal-Au-eta" "spectrum k" "metal-Au-k" "float roughness" .05
+MakeNamedMaterial "glass" "string type" "dielectric" "spectrum eta" "glass-BK7"
+
+Include "geometry/walls.pbrt"
+
+AttributeBegin
+    AreaLightSource "diffuse" "blackbody L" 6500 "float power" 100
+    Material "diffuse" "rgb reflectance" [ 0 0 0 ]
+    Shape "bilinearmesh" "point3 P" [ -.25 1.99 -.25   .25 1.99 -.25   -.25 1.99 .25   .25 1.99 .25 ]
+AttributeEnd
+
+AttributeBegin
+    NamedMaterial "gold"
+    Translate -.4 .3 -.3
+    Shape "sphere" "float radius" .3
+AttributeEnd
+
+AttributeBegin
+    NamedMaterial "glass"
+    Translate .4 .3 .3
+    Shape "sphere" "float radius" .3
+AttributeEnd

@@ -2,6 +2,8 @@
 #ifndef _TINYPBRT_LIGHT_H_
 #define _TINYPBRT_LIGHT_H_
 
+#include <tinypbrt/detail/fwd.h>
+
 #include <tinypbrt/detail/color.h>
 #include <tinypbrt/detail/common.h>
 #include <tinypbrt/detail/error.h>
@@ -12,7 +14,7 @@
 extern "C" {
 #endif
 
-	typedef enum tpbrt_light_source_type_t : uint8_t {
+	typedef enum tpbrt_light_source_type_t {
 		TPBRT_LIGHT_SOURCE_TYPE_DISTANT		= 0,
 		TPBRT_LIGHT_SOURCE_TYPE_GONIOMETRIC = 1,
 		TPBRT_LIGHT_SOURCE_TYPE_INFINITE	= 2,
@@ -46,22 +48,22 @@ extern "C" {
 
 	typedef struct tpbrt_light_source_projection_params_t {
 		tpbrt_spectrum_t i;
-		tpbrt_float_t fov;
 		tpbrt_string_t file_name;
+		tpbrt_float_t fov;
 	} tpbrt_light_source_projection_params_t;
 
 	typedef struct tpbrt_light_source_spot_params_t {
 		tpbrt_spectrum_t i;
-		tpbrt_point_t from, to;
+		tpbrt_point_t from;
+		tpbrt_point_t to;
 		tpbrt_float_t cone_angle;
 		tpbrt_float_t cone_delta_angle;
 	} tpbrt_light_source_spot_params_t;
 
 	typedef struct tpbrt_light_source_t {
-		tpbrt_mat4_animated_t transform;
-		tpbrt_light_source_type_t type;
-		tpbrt_opt_float_t power_illuminance;
+		tpbrt_transform_handle_t transform;
 		tpbrt_float_t scale;
+		tpbrt_opt_float_t power_illuminance;
 		tpbrt_media_handle_t interior_media_handle;
 		tpbrt_media_handle_t exterior_media_handle;
 
@@ -73,9 +75,11 @@ extern "C" {
 			tpbrt_light_source_projection_params_t projection;
 			tpbrt_light_source_spot_params_t spot;
 		} as;
+
+		tpbrt_light_source_type_t type : 4;
 	} tpbrt_light_source_t;
 
-	typedef enum tpbrt_area_light_type_t : uint8_t {
+	typedef enum tpbrt_area_light_type_t {
 		TPBRT_AREA_LIGHT_TYPE_DIFFUSE = 0,
 		TPBRT_AREA_LIGHT_TYPE_MAX_NUM = 1,
 	} tpbrt_area_light_type_t;
@@ -83,31 +87,45 @@ extern "C" {
 	typedef struct tpbrt_area_light_diffuse_params_t {
 		tpbrt_string_t file_name;
 		tpbrt_spectrum_t l;
-		tpbrt_bool_t two_sided;
+		tpbrt_bool_t two_sided : 1;
 	} tpbrt_area_light_diffuse_params_t;
 
 	typedef struct tpbrt_area_light_t {
-		tpbrt_size_t idx;
-		tpbrt_area_light_type_t type;
-
+		tpbrt_area_light_idx_t idx;
+		tpbrt_float_t scale;
+		tpbrt_opt_float_t power;
+		
 		union {
 			tpbrt_area_light_diffuse_params_t diffuse;
-		} as;
+		} as;		
+		
+		tpbrt_area_light_type_t type : 2;
 	} tpbrt_area_light_t;
 
-	typedef tpbrt_size_t tpbrt_area_light_handle_t;
+	typedef struct tpbrt_area_light_handle_t {
+		tpbrt_area_light_idx_t area_light_idx;
+	} tpbrt_area_light_handle_t;
 
-#define TPBRT_AREA_LIGHT_HANDLE_INVALID ~(tpbrt_area_light_handle_t)0
+#define TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT { .area_light_idx = TPBRT_AREA_LIGHT_IDX_INVALID }
+#define TPBRT_AREA_LIGHT_HANDLE_INVALID		 (tpbrt_area_light_handle_t) TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT
+
+	typedef struct tpbrt_lights_sources_list_t {
+		tpbrt_light_source_t* lights;
+		tpbrt_size_t count;
+	} tpbrt_lights_sources_list_t;
+
+	typedef struct tpbrt_area_lights_list_t {
+		tpbrt_area_light_t* lights;
+		tpbrt_size_t count;
+	} tpbrt_area_lights_list_t;
 
 	typedef struct tpbrt_lights_list_t {
-		tpbrt_light_source_t* lights;
-		tpbrt_size_t lights_count;
-		tpbrt_area_light_t* area_lights;
-		tpbrt_size_t area_lights_count;
+		tpbrt_lights_sources_list_t lights_sources;
+		tpbrt_area_lights_list_t area_lights;
 	} tpbrt_lights_list_t;
 
-	tpbrt_error_t tpbrt_get_area_light_by_handle(const tpbrt_lights_list_t* lights_list, tpbrt_area_light_handle_t handle,
-	  const tpbrt_area_light_t** area_light);
+	TPBRT_API tpbrt_error_t tpbrt_get_area_light_by_handle(const tpbrt_area_lights_list_t* area_lights_list,
+	  tpbrt_area_light_handle_t handle, const tpbrt_area_light_t** area_light);
 
 #ifdef __cplusplus
 }

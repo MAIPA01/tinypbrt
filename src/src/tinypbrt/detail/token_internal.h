@@ -2,14 +2,17 @@
 #ifndef _TINYPBRT_TOKEN_INTERNAL_H_
 #define _TINYPBRT_TOKEN_INTERNAL_H_
 
-#include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/fwd_internal.h>
+
 #include <tinypbrt/detail/error.h>
+
+#include <tinypbrt/detail/common_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	typedef enum tpbrt_directive_t : uint8_t {
+	typedef enum tpbrt_directive_t {
 		TPBRT_DIRECTIVE_IDENTITY			= 0,
 		TPBRT_DIRECTIVE_TRANSLATE			= 1,
 		TPBRT_DIRECTIVE_SCALE				= 2,
@@ -59,26 +62,34 @@ extern "C" {
 		TPBRT_DIRECTIVE_MAKE_NAMED_MEDIUM	= 36,
 		TPBRT_DIRECTIVE_MEDIUM_INTERFACE	= 37,
 
-		TPBRT_DIRECTIVE_MAX_NUM				= 38,
+		// removed (but used as AttributeBegin, AttributeEnd for back compatibility)
+		TPBRT_DIRECTIVE_TRANSFORM_BEGIN		= 38,
+		TPBRT_DIRECTIVE_TRANSFORM_END		= 39,
+
+		TPBRT_DIRECTIVE_MAX_NUM				= 40,
 	} tpbrt_directive_t;
 
-	typedef enum tpbrt_token_type_t : uint8_t {
+	typedef enum tpbrt_token_type_t {
 		TPBRT_TOKEN_TYPE_SINGLE		   = 0,
 		TPBRT_TOKEN_TYPE_QUOTED_STRING = 1,
 		TPBRT_TOKEN_TYPE_DIRECTIVE	   = 2,
+		TPBRT_TOKEN_TYPE_MAX_NUM	   = 3,
 	} tpbrt_token_type_t;
 
 	typedef struct tpbrt_token_t {
-		tpbrt_token_type_t type;
 		tpbrt_string_t value;
-		tpbrt_directive_t directive;
+		tpbrt_token_type_t type		: 3;
+		tpbrt_directive_t directive : 7;
 	} tpbrt_token_t;
 
-	tpbrt_error_t tpbrt_create_token(const tpbrt_string_t* value, tpbrt_token_t* token);
+	tpbrt_error_t tpbrt_directive_from_string(tpbrt_string_t directive_str, tpbrt_directive_t* directive_out);
+
+	tpbrt_error_t tpbrt_token_init(tpbrt_string_t value, tpbrt_token_t* token);
 
 	tpbrt_size_t tpbrt_token_size(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_quoted_string(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_directive(const tpbrt_token_t* token);
+	tpbrt_bool_t tpbrt_token_is_single(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_open_brace(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_close_brace(const tpbrt_token_t* token);
 	tpbrt_bool_t tpbrt_token_is_valid(const tpbrt_token_t* token);

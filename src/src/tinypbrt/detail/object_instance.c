@@ -1,0 +1,81 @@
+#include <tinypbrt/pch.h>
+
+#include <tinypbrt/detail/name_index_internal.h>
+#include <tinypbrt/detail/object_instance_internal.h>
+
+#include <tinypbrt/detail/object_internal.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#pragma region OBJECT_INSTANCE
+
+	tpbrt_error_t tpbrt_object_instance_init(const tpbrt_string_t object_name, const tpbrt_objects_list_t* const objects,
+	  const tpbrt_transform_animated_t transform, tpbrt_object_instance_t* const instance) {
+			if (instance == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(instance, 0, sizeof(tpbrt_object_instance_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		instance->transform		= transform;
+
+		const tpbrt_error_t err = tpbrt_objects_list_get_handle(objects, object_name, &instance->object);
+			if (err != TPBRT_ERROR_NONE) { tpbrt_object_instance_free(instance); }
+
+		return err;
+	}
+
+	void tpbrt_object_instance_free(tpbrt_object_instance_t* const instance) {
+			if (instance == TPBRT_NULL) { return; }
+		instance->object = TPBRT_OBJECT_HANDLE_INVALID;
+	}
+
+#pragma endregion
+
+#pragma region OBJECT_INSTANCES_LIST
+#define TPBRT_EMPTY_OBJECTS_INSTANCES_LIST_INIT { .instances = TPBRT_NULL, .count = 0 }
+#define TPBRT_EMPTY_OBJECTS_INSTANCES_LIST		(tpbrt_objects_instances_list_t) TPBRT_EMPTY_OBJECTS_INSTANCES_LIST_INIT
+
+	tpbrt_error_t tpbrt_objects_instances_list_init(tpbrt_objects_instances_list_t* const instances_list) {
+			if (instances_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		*instances_list = TPBRT_EMPTY_OBJECTS_INSTANCES_LIST;
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_objects_instances_list_append(tpbrt_objects_instances_list_t* const instances_list,
+	  const tpbrt_object_instance_t* const instance) {
+			if (instances_list == TPBRT_NULL || instance == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_object_instance_t* const new_list =
+		  tpbrt_array_reserve_append(instances_list->instances, instances_list->count, sizeof(tpbrt_object_instance_t));
+			if (new_list == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
+
+		new_list[instances_list->count] = *instance;
+		instances_list->instances		= new_list;
+		++instances_list->count;
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_objects_instances_list_shrink_to_fit(tpbrt_objects_instances_list_t* const instances_list) {
+			if (instances_list == TPBRT_NULL) { return; }
+		instances_list->instances =
+		  tpbrt_array_shrink_to_fit(instances_list->instances, instances_list->count, sizeof(tpbrt_object_instance_t));
+	}
+
+	void tpbrt_objects_instances_list_free(tpbrt_objects_instances_list_t* const instances_list) {
+			if (instances_list == TPBRT_NULL || instances_list->instances == TPBRT_NULL) { return; }
+
+			for (tpbrt_size_t i = 0; i < instances_list->count; ++i) {
+				tpbrt_object_instance_free(instances_list->instances + i);
+			}
+
+		free(instances_list->instances);
+		*instances_list = TPBRT_EMPTY_OBJECTS_INSTANCES_LIST;
+	}
+
+#pragma endregion
+
+#ifdef __cplusplus
+}
+#endif

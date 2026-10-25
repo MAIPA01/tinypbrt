@@ -2,17 +2,19 @@
 #ifndef _TINYPBRT_PARSER_INTERNAL_H_
 #define _TINYPBRT_PARSER_INTERNAL_H_
 
-#include <tinypbrt/detail/tokenizer_internal.h>
+#include <tinypbrt/detail/fwd_internal.h>
+
+#include <tinypbrt/detail/error.h>
 
 #include <tinypbrt/detail/param_internal.h>
+#include <tinypbrt/detail/token_internal.h>
+#include <tinypbrt/detail/tokenizer_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	typedef struct {
-		tpbrt_directive_t type;
-
+	typedef struct tpbrt_element_t {
 		union {
 			// Include, Import
 			struct {
@@ -44,25 +46,25 @@ extern "C" {
 
 			// Translate, Scale
 			struct {
-				tpbrt_float_t v[3];
+				tpbrt_vec3_t v;
 			} vector3;
 
 			// Rotate
 			struct {
 				tpbrt_float_t angle;
-				tpbrt_float_t v[3];
+				tpbrt_vec3_t v;
 			} rotate;
 
 			// LookAt
 			struct {
-				tpbrt_float_t eye[3];
-				tpbrt_float_t look_at[3];
-				tpbrt_float_t up[3];
+				tpbrt_vec3_t eye;
+				tpbrt_vec3_t look_at;
+				tpbrt_vec3_t up;
 			} look_at;
 
 			// Transform, ConcatTransform
 			struct {
-				tpbrt_float_t m[16];
+				tpbrt_mat4_t m;
 			} transform;
 
 			// TransformTimes
@@ -104,17 +106,19 @@ extern "C" {
 				tpbrt_string_t exterior;
 			} medium_interface;
 		} as;
+
+		tpbrt_directive_t type : 7;
 	} tpbrt_element_t;
 
-	typedef struct {
+	typedef struct tpbrt_parser_t {
 		tpbrt_tokenizer_t tokenizer;
 	} tpbrt_parser_t;
 
-	tpbrt_error_t tpbrt_parser_init(tpbrt_parser_t* parser, const tpbrt_string_t* str);
+	void tpbrt_element_free(tpbrt_element_t* element);
 
-	tpbrt_error_t tpbrt_parser_parse_next(tpbrt_parser_t* parser, tpbrt_element_t* out_element);
+	tpbrt_error_t tpbrt_parser_init(tpbrt_parser_t* parser, tpbrt_string_t str);
 
-	void tpbrt_free_element(tpbrt_element_t* element);
+	tpbrt_error_t tpbrt_parser_next(tpbrt_parser_t* parser, tpbrt_element_t* out_element);
 
 #ifdef __cplusplus
 }

@@ -2,15 +2,17 @@
 
 #include <tinypbrt/detail/tokenizer_internal.h>
 
+#include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/token_internal.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	tpbrt_error_t tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_string_t* const str) {
-			if (tokenizer == TPBRT_NULL || str == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+	tpbrt_error_t tpbrt_tokenizer_init(tpbrt_tokenizer_t* const tokenizer, const tpbrt_string_t str) {
+			if (tokenizer == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-		tokenizer->str	  = *str;
-		tokenizer->offset = 0u;
+		*tokenizer = (tpbrt_tokenizer_t) { .str = str, .offset = 0u };
 		return TPBRT_ERROR_NONE;
 	}
 
@@ -28,7 +30,48 @@ extern "C" {
 		return has_token;
 	}
 
-	tpbrt_bool_t tpbrt_tokenizer_next(tpbrt_tokenizer_t* tokenizer, tpbrt_token_t* const out_token) {
+	static tpbrt_string_t tpbrt_tokenizer_process_string(tpbrt_tokenizer_t* const tokenizer, const tpbrt_size_t start) {
+		const tpbrt_char_t* const data = tokenizer->str.data;
+		const tpbrt_char_t* const end  = data + tokenizer->str.size;
+		const tpbrt_char_t* p		   = data + tokenizer->offset;
+
+			while (p < end) {
+				const tpbrt_char_t c = *p++;
+					if (c == '\\') {
+							if (p < end) { ++p; }
+						continue;
+					}
+					if (c == '"') { break; }
+			}
+
+		tokenizer->offset = (tpbrt_size_t)(p - data);
+		return (tpbrt_string_t) { .data = data + start, .size = tokenizer->offset - start };
+	}
+
+	static void tpbrt_tokenizer_process_comment(tpbrt_tokenizer_t* const tokenizer) {
+		const tpbrt_char_t* const data = tokenizer->str.data;
+		const tpbrt_char_t* const end  = data + tokenizer->str.size;
+		const tpbrt_char_t* p		   = data + tokenizer->offset;
+			while (p < end && *p != '\r' && *p != '\n') { ++p; }
+		tokenizer->offset = (tpbrt_size_t)(p - data);
+	}
+
+	static tpbrt_string_t tpbrt_tokenizer_process_text(tpbrt_tokenizer_t* const tokenizer, const tpbrt_size_t start) {
+		const tpbrt_char_t* const data = tokenizer->str.data;
+		const tpbrt_char_t* const end  = data + tokenizer->str.size;
+		const tpbrt_char_t* p		   = data + tokenizer->offset;
+
+			while (p < end) {
+				const tpbrt_char_t c = *p;
+					if (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '"' || c == '[' || c == ']') { break; }
+				++p;
+			}
+
+		tokenizer->offset = (tpbrt_size_t)(p - data);
+		return (tpbrt_string_t) { .data = data + start, .size = tokenizer->offset - start };
+	}
+
+	tpbrt_bool_t tpbrt_tokenizer_next(tpbrt_tokenizer_t* const tokenizer, tpbrt_token_t* const out_token) {
 			if (tokenizer == TPBRT_NULL || out_token == TPBRT_NULL || tokenizer->str.data == TPBRT_NULL) { return TPBRT_FALSE; }
 
 			while (tokenizer->offset < tokenizer->str.size) {
@@ -41,7 +84,7 @@ extern "C" {
 					case '[':
 						case ']': {
 							const tpbrt_string_t view = { .data = tokenizer->str.data + start, .size = 1u };
-							tpbrt_create_token(&view, out_token);
+							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}
 					case ' ':
@@ -49,34 +92,17 @@ extern "C" {
 					case '\t':
 					case '\r':	  continue;
 						case '"': {
-								while (tokenizer->offset < tokenizer->str.size) {
-									const tpbrt_char_t c = tokenizer->str.data[tokenizer->offset++];
-										if (c == '"') { break; }
-								}
-							const tpbrt_string_t view = { .data = tokenizer->str.data + start,
-								.size							= tokenizer->offset - start };
-							tpbrt_create_token(&view, out_token);
+							const tpbrt_string_t view = tpbrt_tokenizer_process_string(tokenizer, start);
+							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}
 						case '#': {
-								while (tokenizer->offset < tokenizer->str.size) {
-									const char c = tokenizer->str.data[tokenizer->offset];
-										if (c == '\r' || c == '\n') { break; }
-									tokenizer->offset++;
-								}
+							tpbrt_tokenizer_process_comment(tokenizer);
 							continue;
 						}
 						default: {
-								while (tokenizer->offset < tokenizer->str.size) {
-									const char c = tokenizer->str.data[tokenizer->offset];
-										if (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '"' || c == '[' || c == ']') {
-											break;
-										}
-									tokenizer->offset++;
-								}
-							const tpbrt_string_t view = { .data = tokenizer->str.data + start,
-								.size							= tokenizer->offset - start };
-							tpbrt_create_token(&view, out_token);
+							const tpbrt_string_t view = tpbrt_tokenizer_process_text(tokenizer, start);
+							tpbrt_token_init(view, out_token);
 							return TPBRT_TRUE;
 						}
 					}

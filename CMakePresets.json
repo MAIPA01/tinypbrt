@@ -2,7 +2,7 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "cpp-base",
+      "name": "base",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang.exe",
@@ -24,7 +24,7 @@
     {
       "name": "windows-base",
       "description": "System Windows ze środowiskiem programistycznym programu Visual Studio jako element docelowy.",
-      "inherits": "cpp-base",
+      "inherits": "base",
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
@@ -49,13 +49,6 @@
       }
     },
     {
-      "name": "cpp11",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "11"
-      }
-    },
-    {
       "name": "debug",
       "hidden": true,
       "cacheVariables": {
@@ -66,7 +59,8 @@
       "name": "release",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "TINYPBRT_BUILD_COVERAGE": "OFF"
       }
     },
     {
@@ -102,34 +96,16 @@
       "inherits": ["windows-base", "c11", "x64", "debug"]
     },
     {
-      "name": "x64-debug-cpp11",
-      "displayName": "x64 Debug C++11",
-      "description": "Docelowy system Windows (64-bitowy). (Debug)",
-      "inherits": ["windows-base", "cpp11", "x64", "debug"]
-    },
-    {
       "name": "x64-release-c11",
       "displayName": "x64 Release C11",
       "description": "Docelowy system Windows (64-bitowy). (RelWithDebInfo)",
       "inherits": ["release", "x64-debug-c11"]
     },
     {
-      "name": "x64-release-cpp11",
-      "displayName": "x64 Release C++11",
-      "description": "Docelowy system Windows (64-bitowy). (RelWithDebInfo)",
-      "inherits": ["release", "x64-debug-cpp11"]
-    },
-    {
       "name": "x86-debug-c11",
-      "displayName": "x86 Debug C++11",
+      "displayName": "x86 Debug C11",
       "description": "Docelowy system Windows (32-bitowy). (Debug)",
       "inherits": ["windows-base", "x86", "c11", "debug"]
-    },
-    {
-      "name": "x86-debug-cpp11",
-      "displayName": "x86 Debug C++11",
-      "description": "Docelowy system Windows (32-bitowy). (Debug)",
-      "inherits": ["windows-base", "x86", "cpp11", "debug"]
     },
     {
       "name": "x86-release-c11",
@@ -138,10 +114,109 @@
       "inherits": ["release", "x86-debug-c11"]
     },
     {
-      "name": "x86-release-cpp11",
-      "displayName": "x86 Release C++11",
-      "description": "Docelowy systemu Windows (32-bitowy). (RelWithDebInfo)",
-      "inherits": ["release", "x86-debug-cpp11"]
+      "name": "sanitizers",
+      "hidden": true,
+      "cacheVariables": {
+        "TINYPBRT_ENABLE_SANITIZERS": "ON",
+        "TINYPBRT_SANITIZERS": "address;undefined",
+        "TINYPBRT_BUILD_COVERAGE": "OFF",
+        "TINYPBRT_BUILD_BENCHMARK": "OFF"
+      }
+    },
+    {
+      "name": "x64-debug-c11-sanitizers",
+      "displayName": "x64 Debug C11 + ASan/UBSan",
+      "description": "Docelowy system Windows (64-bitowy). (Debug, AddressSanitizer + UndefinedBehaviorSanitizer)",
+      "inherits": ["sanitizers", "x64-debug-c11"]
+    },
+    {
+      "name": "shared",
+      "hidden": true,
+      "cacheVariables": {
+        "TINYPBRT_BUILD_SHARED": "ON"
+      }
+    },
+    {
+      "name": "x64-debug-c11-shared",
+      "displayName": "x64 Debug C11 (DLL)",
+      "description": "Docelowy system Windows (64-bitowy). (Debug, tinypbrt.dll)",
+      "inherits": ["shared", "x64-debug-c11"]
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "TINYPBRT_BUILD_DOCUMENTATION": "OFF",
+        "TINYPBRT_BUILD_EXAMPLES": "OFF",
+        "TINYPBRT_ENABLE_CLANG_TIDY": "OFF"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-debug-sanitizers",
+      "displayName": "Linux/macOS Debug + ASan/UBSan/LSan",
+      "inherits": ["sanitizers", "linux-base", "c11", "debug"]
+    },
+    {
+      "name": "linux-debug-coverage",
+      "displayName": "Linux/macOS Debug + coverage (cmake --build --target coverage)",
+      "inherits": ["linux-base", "c11", "debug"],
+      "cacheVariables": {
+        "TINYPBRT_BUILD_COVERAGE": "ON",
+        "TINYPBRT_BUILD_BENCHMARK": "OFF",
+        "TINYPBRT_BUILD_EXAMPLES": "ON"
+      }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux/macOS Release (benchmark, examples)",
+      "inherits": ["linux-base", "c11", "release"],
+      "cacheVariables": {
+        "TINYPBRT_BUILD_COVERAGE": "OFF",
+        "TINYPBRT_BUILD_BENCHMARK": "ON",
+        "TINYPBRT_BUILD_EXAMPLES": "ON"
+      }
+    },
+    {
+      "name": "linux-debug-shared-sanitizers",
+      "displayName": "Linux/macOS Debug (.so/.dylib) + ASan/UBSan/LSan",
+      "inherits": ["shared", "linux-debug-sanitizers"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "x64-debug-c11-sanitizers",
+      "configurePreset": "x64-debug-c11-sanitizers",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-debug-sanitizers",
+      "configurePreset": "linux-debug-sanitizers",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "x64-debug-c11-shared",
+      "configurePreset": "x64-debug-c11-shared",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "linux-debug-shared-sanitizers",
+      "configurePreset": "linux-debug-shared-sanitizers",
+      "output": { "outputOnFailure": true }
     }
   ]
 }

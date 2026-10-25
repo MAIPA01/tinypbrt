@@ -2,13 +2,13 @@
 #ifndef _TINYPBRT_SAMPLERS_H_
 #define _TINYPBRT_SAMPLERS_H_
 
-#include <tinypbrt/detail/common.h>
+#include <tinypbrt/detail/fwd.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	typedef enum tpbrt_sampler_type_t : uint8_t {
+	typedef enum tpbrt_sampler_type_t {
 		TPBRT_SAMPLER_TYPE_HALTON		= 0,
 		TPBRT_SAMPLER_TYPE_INDEPENDENT	= 1,
 		TPBRT_SAMPLER_TYPE_PADDED_SOBOL = 2,
@@ -18,7 +18,7 @@ extern "C" {
 		TPBRT_SAMPLER_TYPE_MAX_NUM		= 6,
 	} tpbrt_sampler_type_t;
 
-	typedef enum tpbrt_sampler_random_t : uint8_t {
+	typedef enum tpbrt_sampler_random_t {
 		TPBRT_SAMPLER_RANDOM_NONE			= 0,
 		TPBRT_SAMPLER_RANDOM_PERMUTE_DIGITS = 1,
 		TPBRT_SAMPLER_RANDOM_OWEN			= 2,
@@ -28,7 +28,7 @@ extern "C" {
 
 	typedef struct tpbrt_sampler_halton_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 4;
 	} tpbrt_sampler_halton_params_t;
 
 	typedef struct tpbrt_sampler_independent_params_t {
@@ -37,27 +37,26 @@ extern "C" {
 
 	typedef struct tpbrt_sampler_padded_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 4;
 	} tpbrt_sampler_padded_sobol_params_t;
 
 	typedef struct tpbrt_sampler_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 4;
 	} tpbrt_sampler_sobol_params_t;
 
 	typedef struct tpbrt_sampler_stratified_params_t {
-		tpbrt_bool_t jitter;
 		tpbrt_uint_t x_samples;
 		tpbrt_uint_t y_samples;
+		tpbrt_bool_t jitter : 1;
 	} tpbrt_sampler_stratified_params_t;
 
 	typedef struct tpbrt_sampler_z_sobol_params_t {
 		tpbrt_uint_t pixel_samples;
-		tpbrt_sampler_random_t randomization;
+		tpbrt_sampler_random_t randomization : 4;
 	} tpbrt_sampler_z_sobol_params_t;
 
 	typedef struct tpbrt_sampler_t {
-		tpbrt_sampler_type_t type;
 		tpbrt_int_t seed;
 
 		union {
@@ -68,6 +67,8 @@ extern "C" {
 			tpbrt_sampler_stratified_params_t stratified;
 			tpbrt_sampler_z_sobol_params_t z_sobol;
 		} as;
+
+		tpbrt_sampler_type_t type : 4;
 	} tpbrt_sampler_t;
 
 #ifdef __cplusplus

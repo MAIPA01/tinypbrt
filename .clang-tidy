@@ -30,7 +30,7 @@ CheckOptions:
     readability-identifier-naming.ClassCase:              lower_case
     readability-identifier-naming.StructCase:             lower_case
     readability-identifier-naming.UnionCase:              lower_case
-    readability-identifier-naming.EnumCase:               CamelCase
+    readability-identifier-naming.EnumCase:               lower_case
     readability-identifier-naming.EnumPrefix:             ''
     readability-identifier-naming.TypedefCase:            lower_case
     readability-identifier-naming.ConceptCase:            lower_case

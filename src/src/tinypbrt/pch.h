@@ -10,8 +10,8 @@ extern "C" {
 #define _USE_MATH_DEFINES
 #endif
 #include <ctype.h>
+#include <float.h>
 #include <math.h>
-#include <memory.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>

@@ -11,3 +11,6 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 /.idea
+/third_party
+/.vs
+/build

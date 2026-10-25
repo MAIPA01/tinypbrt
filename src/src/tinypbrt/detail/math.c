@@ -6,140 +6,141 @@
 extern "C" {
 #endif
 
+	tpbrt_uint_t tpbrt_next_power_of_two(tpbrt_uint_t n) {
+			if (n == 0) { return 1; }
+
+		--n;
+		n |= n >> (1 << 0);
+		n |= n >> (1 << 1);
+		n |= n >> (1 << 2);
+		n |= n >> (1 << 3);
+		n |= n >> (1 << 4);
+		++n;
+
+		return n;
+	}
+
+	tpbrt_float_t tpbrt_vec3_dot(const tpbrt_vec3_t a, const tpbrt_vec3_t b) { return (a.x * b.x) + (a.y * b.y) + (a.z * b.z); }
+
+	tpbrt_vec3_t tpbrt_vec3_cross(const tpbrt_vec3_t a, const tpbrt_vec3_t b) {
+		return TPBRT_VEC3((a.y * b.z) - (a.z * b.y), (a.z * b.x) - (a.x * b.z), (a.x * b.y) - (a.y * b.x));
+	}
+
+	tpbrt_float_t tpbrt_vec3_length(const tpbrt_vec3_t a) { return sqrtf(tpbrt_vec3_dot(a, a)); }
+
+	tpbrt_vec3_t tpbrt_vec3_normalize(tpbrt_vec3_t a) {
+		const tpbrt_float_t len = tpbrt_vec3_length(a);
+
+			if (len <= TPBRT_EPSILON) { return TPBRT_VEC3(0.0f, 0.0f, 0.0f); }
+
+		a.x /= len;
+		a.y /= len;
+		a.z /= len;
+
+		return a;
+	}
+
+	tpbrt_vec3_t tpbrt_vec3_subtract(const tpbrt_vec3_t a, const tpbrt_vec3_t b) {
+		return TPBRT_VEC3(a.x - b.x, a.y - b.y, a.z - b.z);
+	}
+
+	tpbrt_bool_t tpbrt_vec3_equals(const tpbrt_vec3_t a, const tpbrt_vec3_t b) {
+		return a.x == b.x && a.y == b.y && a.z == b.z ? TPBRT_TRUE : TPBRT_FALSE;
+	}
+
 	void tpbrt_mat4_identity(tpbrt_mat4_t* const m) {
 			if (m == TPBRT_NULL) { return; }
 
-		tpbrt_float_t* out = (tpbrt_float_t*)m;
-			for (int i = 0; i < 16; i++) { out[i] = (i % 5 == 0) ? 1.0f : 0.0f; }
+		static const tpbrt_uint_t STEP_SIZE = 5u;
+			for (tpbrt_uint_t i = 0; i < TPBRT_MAT4_ARRAY_SIZE; ++i) { m->m[i] = i % STEP_SIZE == 0 ? 1.0f : 0.0f; }
 	}
 
-	void tpbrt_mat4_from_array(tpbrt_mat4_t* const m, const tpbrt_float_t arr[16]) {
+	void tpbrt_mat4_from_array(tpbrt_mat4_t* const m, const tpbrt_float_t arr[TPBRT_MAT4_ARRAY_SIZE]) {
 			if (m == TPBRT_NULL) { return; }
-		memcpy(m, arr, 16 * sizeof(tpbrt_float_t));
+		memcpy(m, arr, TPBRT_MAT4_ARRAY_SIZE * sizeof(tpbrt_float_t));
 	}
 
-	void tpbrt_mat4_from_translation(tpbrt_mat4_t* const m, const tpbrt_float_t vec[3]) {
-			if (m == TPBRT_NULL) { return; }
-		tpbrt_mat4_identity(m);
-
-		tpbrt_float_t* out = (tpbrt_float_t*)m;
-		out[3]			   = vec[0];
-		out[7]			   = vec[1];
-		out[11]			   = vec[2];
-	}
-
-	void tpbrt_mat4_from_scale(tpbrt_mat4_t* const m, const tpbrt_float_t vec[3]) {
+	void tpbrt_mat4_from_translation(tpbrt_mat4_t* const m, const tpbrt_vec3_t vec) {
 			if (m == TPBRT_NULL) { return; }
 		tpbrt_mat4_identity(m);
 
-		tpbrt_float_t* out = (tpbrt_float_t*)m;
-		out[0]			   = vec[0];
-		out[5]			   = vec[1];
-		out[10]			   = vec[2];
-		out[15]			   = 1.0f;
+		m->m03 = vec.x;
+		m->m13 = vec.y;
+		m->m23 = vec.z;
 	}
 
-	void tpbrt_mat4_from_axis_angle(tpbrt_mat4_t* const m, const tpbrt_float_t axis[3], const tpbrt_float_t angle) {
+	void tpbrt_mat4_from_scale(tpbrt_mat4_t* const m, const tpbrt_vec3_t vec) {
 			if (m == TPBRT_NULL) { return; }
-		const tpbrt_float_t rad = angle * (M_PI / 180.0f);
+		tpbrt_mat4_identity(m);
+
+		m->m00 = vec.x;
+		m->m11 = vec.y;
+		m->m22 = vec.z;
+		m->m33 = 1.0f;
+	}
+
+	void tpbrt_mat4_from_axis_angle(tpbrt_mat4_t* const m, tpbrt_vec3_t axis, const tpbrt_float_t angle) {
+			if (m == TPBRT_NULL) { return; }
+		const tpbrt_float_t rad = angle * (TPBRT_PI / 180.0f);
 
 		const tpbrt_float_t c	= cosf(rad);
 		const tpbrt_float_t s	= sinf(rad);
 		const tpbrt_float_t t	= 1.0f - c;
 
-		const tpbrt_float_t len = sqrtf(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
-		tpbrt_float_t x = axis[0], y = axis[1], z = axis[2];
-
-			if (len > 1e-6f) {
-				x /= len;
-				y /= len;
-				z /= len;
-			}
-			else {
+		axis					= tpbrt_vec3_normalize(axis);
+			if (tpbrt_vec3_equals(axis, TPBRT_VEC3(0.0f, 0.0f, 0.0f))) {
 				tpbrt_mat4_identity(m);
 				return;
 			}
 
-		tpbrt_float_t* out = (tpbrt_float_t*)m;
-		out[0]			   = t * x * x + c;
-		out[1]			   = t * x * y - s * z;
-		out[2]			   = t * x * z + s * y;
-		out[3]			   = 0.0f;
+		m->row0.x = (t * axis.x * axis.x) + c;
+		m->row0.y = (t * axis.x * axis.y) - (s * axis.z);
+		m->row0.z = (t * axis.x * axis.z) + (s * axis.y);
+		m->row0.w = 0.0f;
 
-		out[4]			   = t * x * y + s * z;
-		out[5]			   = t * y * y + c;
-		out[6]			   = t * y * z - s * x;
-		out[7]			   = 0.0f;
+		m->row1.x = (t * axis.x * axis.y) + (s * axis.z);
+		m->row1.y = (t * axis.y * axis.y) + c;
+		m->row1.z = (t * axis.y * axis.z) - (s * axis.x);
+		m->row1.w = 0.0f;
 
-		out[8]			   = t * x * z - s * y;
-		out[9]			   = t * y * z + s * x;
-		out[10]			   = t * z * z + c;
-		out[11]			   = 0.0f;
+		m->row2.x = (t * axis.x * axis.z) - (s * axis.y);
+		m->row2.y = (t * axis.y * axis.z) + (s * axis.x);
+		m->row2.z = (t * axis.z * axis.z) + c;
+		m->row2.w = 0.0f;
 
-		out[12]			   = 0.0f;
-		out[13]			   = 0.0f;
-		out[14]			   = 0.0f;
-		out[15]			   = 1.0f;
+		m->row3	  = TPBRT_VEC4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	void tpbrt_mat4_look_at_lh(tpbrt_mat4_t* const m, const tpbrt_float_t eye[3], const tpbrt_float_t look_at[3],
-	  const tpbrt_float_t up[3]) {
+	void tpbrt_mat4_look_at_lh(tpbrt_mat4_t* const m, const tpbrt_vec3_t eye, const tpbrt_vec3_t look_at, const tpbrt_vec3_t up) {
 			if (m == TPBRT_NULL) { return; }
-		tpbrt_float_t dir[3]		= { look_at[0] - eye[0], look_at[1] - eye[1], look_at[2] - eye[2] };
-		const tpbrt_float_t dir_len = sqrtf(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
-			if (dir_len > 1e-6f) {
-				dir[0] /= dir_len;
-				dir[1] /= dir_len;
-				dir[2] /= dir_len;
-			}
+		const tpbrt_vec3_t dir	  = tpbrt_vec3_normalize(tpbrt_vec3_subtract(look_at, eye));
 
-		tpbrt_float_t right[3]		  = { up[1] * dir[2] - up[2] * dir[1], up[2] * dir[0] - up[0] * dir[2],
-			up[0] * dir[1] - up[1] * dir[0] };
-		const tpbrt_float_t right_len = sqrtf(right[0] * right[0] + right[1] * right[1] + right[2] * right[2]);
-			if (right_len > 1e-6f) {
-				right[0] /= right_len;
-				right[1] /= right_len;
-				right[2] /= right_len;
-			}
+		const tpbrt_vec3_t right  = tpbrt_vec3_normalize(tpbrt_vec3_cross(up, dir));
 
-		const tpbrt_float_t new_up[3] = { dir[1] * right[2] - dir[2] * right[1], dir[2] * right[0] - dir[0] * right[2],
-			dir[0] * right[1] - dir[1] * right[0] };
+		const tpbrt_vec3_t new_up = tpbrt_vec3_cross(dir, right);
 
-		tpbrt_float_t* out			  = (tpbrt_float_t*)m;
 		// X - right
-		out[0]						  = right[0];
-		out[1]						  = right[1];
-		out[2]						  = right[2];
-		out[3]						  = -(right[0] * eye[0] + right[1] * eye[1] + right[2] * eye[2]);
+		m->row0					  = TPBRT_VEC4(right.x, right.y, right.z, -tpbrt_vec3_dot(right, eye));
 
 		// Y - up
-		out[4]						  = new_up[0];
-		out[5]						  = new_up[1];
-		out[6]						  = new_up[2];
-		out[7]						  = -(new_up[0] * eye[0] + new_up[1] * eye[1] + new_up[2] * eye[2]);
+		m->row1					  = TPBRT_VEC4(new_up.x, new_up.y, new_up.z, -tpbrt_vec3_dot(new_up, eye));
 
 		// Z - forward
-		out[8]						  = dir[0];
-		out[9]						  = dir[1];
-		out[10]						  = dir[2];
-		out[11]						  = -(dir[0] * eye[0] + dir[1] * eye[1] + dir[2] * eye[2]);
+		m->row2					  = TPBRT_VEC4(dir.x, dir.y, dir.z, -tpbrt_vec3_dot(dir, eye));
 
-		out[12]						  = 0.0f;
-		out[13]						  = 0.0f;
-		out[14]						  = 0.0f;
-		out[15]						  = 1.0f;
+		m->row3					  = TPBRT_VEC4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	void tpbrt_mat4_multiply(tpbrt_mat4_t* out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b) {
+	void tpbrt_mat4_multiply(tpbrt_mat4_t* const out_m, const tpbrt_mat4_t* a, const tpbrt_mat4_t* b) {
 			if (out_m == TPBRT_NULL || a == TPBRT_NULL || b == TPBRT_NULL) { return; }
 
-		tpbrt_float_t* out		 = (tpbrt_float_t*)out_m;
-		const tpbrt_float_t* a_f = (const tpbrt_float_t*)a;
-		const tpbrt_float_t* b_f = (const tpbrt_float_t*)b;
-			for (int c = 0; c < 4; c++) {
-					for (int r = 0; r < 4; r++) {
-						out[c * 4 + r] = a_f[0 * 4 + r] * b_f[c * 4 + 0] + a_f[1 * 4 + r] * b_f[c * 4 + 1] +
-										 a_f[2 * 4 + r] * b_f[c * 4 + 2] + a_f[3 * 4 + r] * b_f[c * 4 + 3];
+		const tpbrt_mat4_row_t* const a_r = a->rows;
+		const tpbrt_mat4_row_t* const b_r = b->rows;
+			for (tpbrt_uint_t c = 0u; c < 4u; ++c) {
+					for (tpbrt_uint_t r = 0u; r < 4u; ++r) {
+						tpbrt_float_t sum = 0.0f;
+							for (tpbrt_uint_t k = 0u; k < 4u; ++k) { sum += a_r[r].v[k] * b_r[k].v[c]; }
+						out_m->rows[r].v[c] = sum;
 					}
 			}
 	}
@@ -149,97 +150,129 @@ extern "C" {
 
 		tpbrt_mat4_t inv_m;
 
-		tpbrt_float_t* inv	   = (tpbrt_float_t*)&inv_m;
-		tpbrt_float_t* out	   = (tpbrt_float_t*)out_m;
-		const tpbrt_float_t* m = (const tpbrt_float_t*)in_m;
+		tpbrt_mat4_row_t* const inv		= inv_m.rows;
+		tpbrt_mat4_row_t* const out		= out_m->rows;
+		const tpbrt_mat4_row_t* const m = in_m->rows;
 
-		inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] -
-				 m[13] * m[7] * m[10];
-		inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] +
-				 m[12] * m[7] * m[10];
-		inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] -
-				 m[12] * m[7] * m[9];
-		inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] +
-				  m[12] * m[6] * m[9];
+		inv[0].x						= (m[1].y * m[2].z * m[3].w) - (m[1].y * m[2].w * m[3].z) - (m[2].y * m[1].z * m[3].w) +
+										  (m[2].y * m[1].w * m[3].z) + (m[3].y * m[1].z * m[2].w) - (m[3].y * m[1].w * m[2].z);
+		inv[1].x						= (-m[1].x * m[2].z * m[3].w) + (m[1].x * m[2].w * m[3].z) + (m[2].x * m[1].z * m[3].w) -
+										  (m[2].x * m[1].w * m[3].z) - (m[3].x * m[1].z * m[2].w) + (m[3].x * m[1].w * m[2].z);
+		inv[2].x						= (m[1].x * m[2].y * m[3].w) - (m[1].x * m[2].w * m[3].y) - (m[2].x * m[1].y * m[3].w) +
+										  (m[2].x * m[1].w * m[3].y) + (m[3].x * m[1].y * m[2].w) - (m[3].x * m[1].w * m[2].y);
+		inv[3].x						= (-m[1].x * m[2].y * m[3].z) + (m[1].x * m[2].z * m[3].y) + (m[2].x * m[1].y * m[3].z) -
+										  (m[2].x * m[1].z * m[3].y) - (m[3].x * m[1].y * m[2].z) + (m[3].x * m[1].z * m[2].y);
 
-		inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] - m[9] * m[3] * m[14] - m[13] * m[2] * m[11] +
-				 m[13] * m[3] * m[10];
-		inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] + m[8] * m[3] * m[14] + m[12] * m[2] * m[11] -
-				 m[12] * m[3] * m[10];
-		inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] - m[8] * m[3] * m[13] - m[12] * m[1] * m[11] +
-				 m[12] * m[3] * m[9];
-		inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] + m[8] * m[2] * m[13] + m[12] * m[1] * m[10] -
-				  m[12] * m[2] * m[9];
+		inv[0].y						= (-m[0].y * m[2].z * m[3].w) + (m[0].y * m[2].w * m[3].z) + (m[2].y * m[0].z * m[3].w) -
+										  (m[2].y * m[0].w * m[3].z) - (m[3].y * m[0].z * m[2].w) + (m[3].y * m[0].w * m[2].z);
+		inv[1].y						= (m[0].x * m[2].z * m[3].w) - (m[0].x * m[2].w * m[3].z) - (m[2].x * m[0].z * m[3].w) +
+										  (m[2].x * m[0].w * m[3].z) + (m[3].x * m[0].z * m[2].w) - (m[3].x * m[0].w * m[2].z);
+		inv[2].y						= (-m[0].x * m[2].y * m[3].w) + (m[0].x * m[2].w * m[3].y) + (m[2].x * m[0].y * m[3].w) -
+										  (m[2].x * m[0].w * m[3].y) - (m[3].x * m[0].y * m[2].w) + (m[3].x * m[0].w * m[2].y);
+		inv[3].y						= (m[0].x * m[2].y * m[3].z) - (m[0].x * m[2].z * m[3].y) - (m[2].x * m[0].y * m[3].z) +
+										  (m[2].x * m[0].z * m[3].y) + (m[3].x * m[0].y * m[2].z) - (m[3].x * m[0].z * m[2].y);
 
-		inv[2]	= m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] + m[5] * m[3] * m[14] + m[13] * m[2] * m[7] -
-				  m[13] * m[3] * m[6];
-		inv[6]	= -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] - m[4] * m[3] * m[14] - m[12] * m[2] * m[7] +
-				  m[12] * m[3] * m[6];
-		inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] + m[4] * m[3] * m[13] + m[12] * m[1] * m[7] -
-				  m[12] * m[3] * m[5];
-		inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] - m[4] * m[2] * m[13] - m[12] * m[1] * m[6] +
-				  m[12] * m[2] * m[5];
+		inv[0].z						= (m[0].y * m[1].z * m[3].w) - (m[0].y * m[1].w * m[3].z) - (m[1].y * m[0].z * m[3].w) +
+										  (m[1].y * m[0].w * m[3].z) + (m[3].y * m[0].z * m[1].w) - (m[3].y * m[0].w * m[1].z);
+		inv[1].z						= (-m[0].x * m[1].z * m[3].w) + (m[0].x * m[1].w * m[3].z) + (m[1].x * m[0].z * m[3].w) -
+										  (m[1].x * m[0].w * m[3].z) - (m[3].x * m[0].z * m[1].w) + (m[3].x * m[0].w * m[1].z);
+		inv[2].z						= (m[0].x * m[1].y * m[3].w) - (m[0].x * m[1].w * m[3].y) - (m[1].x * m[0].y * m[3].w) +
+										  (m[1].x * m[0].w * m[3].y) + (m[3].x * m[0].y * m[1].w) - (m[3].x * m[0].w * m[1].y);
+		inv[3].z						= (-m[0].x * m[1].y * m[3].z) + (m[0].x * m[1].z * m[3].y) + (m[1].x * m[0].y * m[3].z) -
+										  (m[1].x * m[0].z * m[3].y) - (m[3].x * m[0].y * m[1].z) + (m[3].x * m[0].z * m[1].y);
 
-		inv[3]	= -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] - m[5] * m[3] * m[10] - m[9] * m[2] * m[7] +
-				  m[9] * m[3] * m[6];
-		inv[7]	= m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] + m[4] * m[3] * m[10] + m[8] * m[2] * m[7] -
-				  m[8] * m[3] * m[6];
-		inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[9] - m[8] * m[1] * m[7] +
-				  m[8] * m[3] * m[5];
-		inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[9] + m[8] * m[1] * m[6] -
-				  m[8] * m[2] * m[5];
+		inv[0].w						= (-m[0].y * m[1].z * m[2].w) + (m[0].y * m[1].w * m[2].z) + (m[1].y * m[0].z * m[2].w) -
+										  (m[1].y * m[0].w * m[2].z) - (m[2].y * m[0].z * m[1].w) + (m[2].y * m[0].w * m[1].z);
+		inv[1].w						= (m[0].x * m[1].z * m[2].w) - (m[0].x * m[1].w * m[2].z) - (m[1].x * m[0].z * m[2].w) +
+										  (m[1].x * m[0].w * m[2].z) + (m[2].x * m[0].z * m[1].w) - (m[2].x * m[0].w * m[1].z);
+		inv[2].w						= (-m[0].x * m[1].y * m[2].w) + (m[0].x * m[1].w * m[2].y) + (m[1].x * m[0].y * m[2].w) -
+										  (m[1].x * m[0].w * m[2].y) - (m[2].x * m[0].y * m[1].w) + (m[2].x * m[0].w * m[1].y);
+		inv[3].w						= (m[0].x * m[1].y * m[2].z) - (m[0].x * m[1].z * m[2].y) - (m[1].x * m[0].y * m[2].z) +
+										  (m[1].x * m[0].z * m[2].y) + (m[2].x * m[0].y * m[1].z) - (m[2].x * m[0].z * m[1].y);
 
-		const tpbrt_float_t det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+		const tpbrt_float_t det			= (m[0].x * inv[0].x) + (m[0].y * inv[1].x) + (m[0].z * inv[2].x) + (m[0].w * inv[3].x);
 
-			if (fabsf(det) < 1e-6f) {
-					for (tpbrt_uint_t i = 0; i < 16; ++i) { out[i] = (i % 5 == 0) ? 1.0f : 0.0f; }
+			if (fabsf(det) < TPBRT_EPSILON) {
+				tpbrt_mat4_identity(out_m);
 				return;
 			}
 
 		const tpbrt_float_t inv_det = 1.0f / det;
-			for (tpbrt_uint_t i = 0; i < 16; ++i) { out[i] = inv[i] * inv_det; }
+			for (tpbrt_uint_t r = 0u; r < 4u; ++r) {
+					for (tpbrt_uint_t c = 0u; c < 4u; ++c) { out[r].v[c] = inv[r].v[c] * inv_det; }
+			}
 	}
 
-	void tpbrt_free_bool_array(tpbrt_bool_array_t* array) {
-			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
-		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+	void tpbrt_mat4_transpose(tpbrt_mat4_t* const out_m, const tpbrt_mat4_t* const in_m) {
+			if (out_m == TPBRT_NULL || in_m == TPBRT_NULL) { return; }
+
+			for (tpbrt_uint_t r = 0u; r < 4u; ++r) {
+					for (tpbrt_uint_t c = 0u; c < 4u; ++c) { out_m->rows[r].v[c] = in_m->rows[c].v[r]; }
+			}
 	}
 
-	void tpbrt_free_int_array(tpbrt_int_array_t* array) {
-			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
-		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+	tpbrt_uint_t tpbrt_mat4_hash(const tpbrt_mat4_t* const m) {
+			if (m == TPBRT_NULL) { return 0; }
+		const tpbrt_uchar_t* const bytes = (const tpbrt_uchar_t*)m;
+
+		/* clang-format off */
+		static const tpbrt_uint_t HASH_START = 2166136261u;
+		static const tpbrt_uint_t HASH_MULTIPLIER = 16777619u;
+		/* clang-format on */
+
+		tpbrt_uint_t hash				 = HASH_START;
+			for (tpbrt_size_t i = 0u; i < sizeof(tpbrt_mat4_t); ++i) {
+				hash ^= bytes[i];
+				hash *= HASH_MULTIPLIER;
+			}
+		return hash;
 	}
 
-	void tpbrt_free_uint_array(tpbrt_uint_array_t* array) {
-			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
-		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+	tpbrt_bool_t tpbrt_mat4_equals(const tpbrt_mat4_t* const a, const tpbrt_mat4_t* const b) {
+			if (a == TPBRT_NULL || b == TPBRT_NULL) { return TPBRT_FALSE; }
+		return memcmp(a, b, sizeof(tpbrt_mat4_t)) == 0 ? TPBRT_TRUE : TPBRT_FALSE;
 	}
 
-	void tpbrt_free_float_array(tpbrt_float_array_t* array) {
+	void tpbrt_bool_array_free(tpbrt_bool_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_BOOL_ARRAY;
 	}
 
-	void tpbrt_free_vec2_array(tpbrt_vec2_array_t* array) {
+	void tpbrt_int_array_free(tpbrt_int_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_INT_ARRAY;
 	}
 
-	void tpbrt_free_vec3_array(tpbrt_vec3_array_t* array) {
+	void tpbrt_uint_array_free(tpbrt_uint_array_t* array) {
 			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
 		free(array->data);
-		array->data	 = TPBRT_NULL;
-		array->count = 0;
+		*array = TPBRT_EMPTY_UINT_ARRAY;
+	}
+
+	void tpbrt_float_array_free(tpbrt_float_array_t* array) {
+			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
+		free(array->data);
+		*array = TPBRT_EMPTY_FLOAT_ARRAY;
+	}
+
+	void tpbrt_vec2_array_free(tpbrt_vec2_array_t* array) {
+			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
+		free(array->data);
+		*array = TPBRT_EMPTY_VEC2_ARRAY;
+	}
+
+	void tpbrt_vec3_array_free(tpbrt_vec3_array_t* array) {
+			if (array == TPBRT_NULL || array->data == TPBRT_NULL) { return; }
+
+		free(array->data);
+		*array = TPBRT_EMPTY_VEC3_ARRAY;
 	}
 
 #ifdef __cplusplus

@@ -1,12 +1,15 @@
+if(COMMAND CPMAddPackage)
+    return()
+endif()
+
 set(CPM_USE_LOCAL_PACKAGES OFF)
-# Storage location
 if(NOT CPM_SOURCE_CACHE)
-    set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/third_party)
+    set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/third_party)
 endif()
 
 # Set download location
 if(NOT CPM_DOWNLOAD_LOCATION)
-    set(CPM_DOWNLOAD_LOCATION "${CMAKE_SOURCE_DIR}/third_party/cpm/CPM.cmake")
+    set(CPM_DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/third_party/cpm/CPM.cmake")
 endif()
 
 # download CPM.cmake

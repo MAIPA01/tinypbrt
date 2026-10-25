@@ -1,0 +1,63 @@
+# Konfiguracja Doxygen dla tinypbrt. Plik jest przetwarzany przez CMake (cmake/doxygen.cmake):
+# @ZMIENNE@ są zastępowane przy konfiguracji. Pełna lista opcji: doxygen -g
+PROJECT_NAME           = "tinypbrt"
+PROJECT_NUMBER         = @PROJECT_VERSION@
+PROJECT_BRIEF          = "pbrt-v4 scene file parser for C11"
+OUTPUT_DIRECTORY       = "@TINYPBRT_DOCUMENTATION_OUTPUT_DIR@"
+OUTPUT_LANGUAGE        = English
+MARKDOWN_SUPPORT       = YES
+TOC_INCLUDE_HEADINGS   = 3
+AUTOLINK_SUPPORT       = YES
+# kotwice nagłówków jak na GitHubie (linki ze spisu treści README); Doxygen >= 1.10
+MARKDOWN_ID_STYLE      = GITHUB
+
+# --- wejście: publiczne nagłówki, README (strona główna) i strony z docs/pages
+INPUT                  = "@PROJECT_SOURCE_DIR@/README.md" \
+                         "@PROJECT_SOURCE_DIR@/docs/pages" \
+                         "@PROJECT_SOURCE_DIR@/src/include"
+FILE_PATTERNS          = *.h *.md
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = "@PROJECT_SOURCE_DIR@/README.md"
+EXAMPLE_PATH           = "@PROJECT_SOURCE_DIR@/examples"
+EXAMPLE_RECURSIVE      = YES
+IMAGE_PATH             = "@PROJECT_SOURCE_DIR@/docs/images"
+STRIP_FROM_PATH        = "@PROJECT_SOURCE_DIR@/src/include" "@PROJECT_SOURCE_DIR@"
+STRIP_FROM_INC_PATH    = "@PROJECT_SOURCE_DIR@/src/include"
+FULL_PATH_NAMES        = YES
+
+# --- C
+OPTIMIZE_OUTPUT_FOR_C  = YES
+TYPEDEF_HIDES_STRUCT   = YES
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = NO
+EXTRACT_PRIVATE        = NO
+HIDE_UNDOC_MEMBERS     = NO
+SORT_MEMBER_DOCS       = NO
+JAVADOC_AUTOBRIEF      = YES
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+# makra eksportu i bloki extern "C" nie są częścią dokumentacji
+PREDEFINED             = TPBRT_API= __cplusplus_DOXYGEN_SKIP
+
+# --- ostrzeżenia (TINYPBRT_DOCUMENTATION_WARN_UNDOCUMENTED=ON gdy API będzie już opisane)
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = @TINYPBRT_DOXYGEN_WARN_IF_UNDOCUMENTED@
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
+WARN_AS_ERROR          = NO
+
+# --- wynik
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_TREEVIEW      = YES
+HTML_COLORSTYLE        = AUTO_LIGHT
+SEARCHENGINE           = YES
+GENERATE_LATEX         = NO
+GENERATE_XML           = NO
+SOURCE_BROWSER         = NO
+HAVE_DOT               = @TINYPBRT_DOXYGEN_HAVE_DOT@
+CLASS_GRAPH            = NO
+INCLUDE_GRAPH          = NO
+INCLUDED_BY_GRAPH      = NO

@@ -3,319 +3,351 @@
 #include <tinypbrt/detail/camera_internal.h>
 
 #include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/film_internal.h>
 #include <tinypbrt/detail/math_internal.h>
 #include <tinypbrt/detail/param_internal.h>
+#include <tinypbrt/detail/transform_internal.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	static tpbrt_error_t tpbrt_camera_type_from_string(const tpbrt_string_t* const type_str, tpbrt_camera_type_t* const type) {
+	tpbrt_error_t tpbrt_camera_type_from_string(const tpbrt_string_t type_str, tpbrt_camera_type_t* const type) {
 		static const tpbrt_string_t TYPES_STRS[TPBRT_CAMERA_TYPE_MAX_NUM] = {
-			TPBRT_STRING("orthographic"),
-			TPBRT_STRING("perspective"),
-			TPBRT_STRING("realistic"),
-			TPBRT_STRING("spherical"),
+			TPBRT_STRING_INIT("orthographic"),
+			TPBRT_STRING_INIT("perspective"),
+			TPBRT_STRING_INIT("realistic"),
+			TPBRT_STRING_INIT("spherical"),
 		};
 
-			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || type == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (type == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_CAMERA_TYPE; }
 
 			for (tpbrt_camera_type_t t = 0; t < TPBRT_CAMERA_TYPE_MAX_NUM; ++t) {
-					if (tpbrt_string_equals(type_str, TYPES_STRS + t)) {
+					if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
 						*type = t;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		return TPBRT_ERROR_UNKNOWN_CAMERA_TYPE;
+		return TPBRT_ERROR_INVALID_CAMERA_TYPE;
 	}
 
-	static tpbrt_error_t tpbrt_camera_spherical_mapping_from_string(const tpbrt_string_t* const mapping_str,
+	tpbrt_error_t tpbrt_camera_spherical_mapping_from_string(const tpbrt_string_t mapping_str,
 	  tpbrt_camera_spherical_mapping_t* const mapping) {
 		static const tpbrt_string_t MAPPINGS_STRS[TPBRT_CAMERA_SPHERICAL_MAPPING_MAX_NUM] = {
-			TPBRT_STRING("equalarea"),
-			TPBRT_STRING("equirectangular"),
+			TPBRT_STRING_INIT("equalarea"),
+			TPBRT_STRING_INIT("equirectangular"),
 		};
 
-			if (mapping_str == TPBRT_NULL || mapping_str->data == TPBRT_NULL || mapping == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (mapping == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(mapping_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_CAMERA_SPHERICAL_MAPPING; }
 
 			for (tpbrt_camera_spherical_mapping_t m = 0; m < TPBRT_CAMERA_SPHERICAL_MAPPING_MAX_NUM; ++m) {
-					if (tpbrt_string_equals(mapping_str, MAPPINGS_STRS + m)) {
+					if (tpbrt_string_equals(mapping_str, MAPPINGS_STRS[m]) == TPBRT_TRUE) {
 						*mapping = m;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		return TPBRT_ERROR_UNKNOWN_CAMERA_SPHERICAL_MAPPING;
+		return TPBRT_ERROR_INVALID_CAMERA_SPHERICAL_MAPPING;
 	}
 
-	static tpbrt_error_t tpbrt_camera_realistic_aperture_builtin_from_string(const tpbrt_string_t* const builtin_str,
+	tpbrt_error_t tpbrt_camera_realistic_aperture_builtin_from_string(const tpbrt_string_t builtin_str,
 	  tpbrt_camera_realistic_aperture_builtin_t* const builtin) {
 		static const tpbrt_string_t BUILTINS_STRS[TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_MAX_NUM] = {
-			TPBRT_STRING("circular"),
-			TPBRT_STRING("gaussian"),
-			TPBRT_STRING("square"),
-			TPBRT_STRING("pentagon"),
-			TPBRT_STRING("star"),
+			TPBRT_STRING_INIT("circular"),
+			TPBRT_STRING_INIT("gaussian"),
+			TPBRT_STRING_INIT("square"),
+			TPBRT_STRING_INIT("pentagon"),
+			TPBRT_STRING_INIT("star"),
 		};
 
-			if (builtin_str == TPBRT_NULL || builtin_str->data == TPBRT_NULL || builtin == TPBRT_NULL) {
-				return TPBRT_ERROR_INVALID_POINTER;
-			}
+			if (builtin == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (tpbrt_string_empty(builtin_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_CAMERA_REALISTIC_APERTURE_BUILTIN; }
 
 			for (tpbrt_camera_realistic_aperture_builtin_t b = 0; b < TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_MAX_NUM; ++b) {
-					if (tpbrt_string_equals(builtin_str, BUILTINS_STRS + b)) {
+					if (tpbrt_string_equals(builtin_str, BUILTINS_STRS[b]) == TPBRT_TRUE) {
 						*builtin = b;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
-		return TPBRT_ERROR_UNKNOWN_CAMERA_REALISTIC_APERTURE_BUILTIN;
+		return TPBRT_ERROR_INVALID_CAMERA_REALISTIC_APERTURE_BUILTIN;
 	}
 
-	tpbrt_error_t tpbrt_create_camera(const tpbrt_string_t* const type_str, const tpbrt_params_list_t* const params,
-	  const tpbrt_film_t* film, const tpbrt_mat4_animated_t* const ctm, const tpbrt_media_handle_t interior_media_handle,
-	  const tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_t* const camera) {
-			if (type_str == TPBRT_NULL || type_str->data == TPBRT_NULL || params == TPBRT_NULL || camera == TPBRT_NULL) {
+	static tpbrt_error_t tpbrt_camera_read_image(tpbrt_float_t* const frame_aspect_ratio, tpbrt_float_t screen_window[4],
+	  tpbrt_float_t* const lens_radius, tpbrt_float_t* const focal_distance, const tpbrt_film_t* const film,
+	  const tpbrt_params_list_t* const params) {
+			if (frame_aspect_ratio == TPBRT_NULL || screen_window == TPBRT_NULL || lens_radius == TPBRT_NULL ||
+				focal_distance == TPBRT_NULL || film == TPBRT_NULL) {
 				return TPBRT_ERROR_INVALID_POINTER;
 			}
 
-			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+		static const tpbrt_string_t FRAME_ASPECT_RATIO_STR = TPBRT_STRING_INIT("frameaspectratio");
+		static const tpbrt_string_t SCREEN_WINDOW_STR	   = TPBRT_STRING_INIT("screenwindow");
+		static const tpbrt_string_t LENS_RADIUS_STR		   = TPBRT_STRING_INIT("lensradius");
+		static const tpbrt_string_t FOCAL_DISTANCE_STR	   = TPBRT_STRING_INIT("focaldistance");
 
-		camera->transform							 = *ctm;
-		camera->interior_media_handle				 = interior_media_handle;
-		camera->exterior_media_handle				 = exterior_media_handle;
+		const tpbrt_float_t default_aspect_ratio		  = (tpbrt_float_t)film->x_resolution / (tpbrt_float_t)film->y_resolution;
+		static const tpbrt_float_t FOCAL_DISTANCE_DEFAULT = 1e+30f;
 
-		static const tpbrt_string_t SHUTTER_OPEN_STR = TPBRT_STRING("shutteropen");
-		tpbrt_error_t err = tpbrt_params_list_get_float(params, &SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_camera(camera);
-				return err;
-			}
+		tpbrt_error_t err = tpbrt_params_list_get_float(params, FRAME_ASPECT_RATIO_STR, default_aspect_ratio, frame_aspect_ratio);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		static const tpbrt_string_t SHUTTER_CLOSE_STR = TPBRT_STRING("shutterclose");
-		err = tpbrt_params_list_get_float(params, &SHUTTER_CLOSE_STR, 1.0f, &camera->shutter_close);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_camera(camera);
-				return err;
-			}
+		tpbrt_float_array_t temp_array;
+		err = tpbrt_params_list_get_floats_of_size(params, SCREEN_WINDOW_STR, 4u, &temp_array);
+			if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-		err = tpbrt_camera_type_from_string(type_str, &camera->type);
-			if (err != TPBRT_ERROR_NONE) {
-				tpbrt_free_camera(camera);
-				return err;
-			}
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+					if (film->x_resolution < film->y_resolution) {
+						const tpbrt_float_t aspect = 1.0f / default_aspect_ratio;
 
-			if (camera->type == TPBRT_CAMERA_TYPE_ORTHOGRAPHIC || camera->type == TPBRT_CAMERA_TYPE_PERSPECTIVE) {
-				static const tpbrt_string_t FRAME_ASPECT_RATIO_STR = TPBRT_STRING("frameaspectratio");
-				const tpbrt_float_t default_aspect_ratio		   = film->x_resolution / film->y_resolution;
-
-				static const tpbrt_string_t SCREEN_WINDOW_STR	   = TPBRT_STRING("screenwindow");
-				static const tpbrt_string_t LENS_RADIUS_STR		   = TPBRT_STRING("lensradius");
-				static const tpbrt_string_t FOCAL_DISTANCE_STR	   = TPBRT_STRING("focaldistance");
-
-				err = tpbrt_params_list_get_float(params, &FRAME_ASPECT_RATIO_STR, default_aspect_ratio,
-				  camera->type == TPBRT_CAMERA_TYPE_ORTHOGRAPHIC ? &camera->as.orthographic.frame_aspect_ratio :
-																   &camera->as.perspective.frame_aspect_ratio);
-					if (err != TPBRT_ERROR_NONE) {
-						tpbrt_free_camera(camera);
-						return err;
-					}
-
-				tpbrt_float_array_t screen_window;
-				err = tpbrt_params_list_get_floats(params, &SCREEN_WINDOW_STR, &screen_window);
-					if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-						tpbrt_free_camera(camera);
-						return err;
-					}
-					if (err != TPBRT_ERROR_NOT_FOUND) {
-							if (screen_window.count < 4) {
-								tpbrt_free_float_array(&screen_window);
-								tpbrt_free_camera(camera);
-								return TPBRT_ERROR_MISSING_REQUIRED_PARAMETER;
-							}
-
-							if (screen_window.count > 4) {
-								tpbrt_free_float_array(&screen_window);
-								tpbrt_free_camera(camera);
-								return TPBRT_ERROR_TOO_MANY_VALUES;
-							}
-
-							if (camera->type == TPBRT_CAMERA_TYPE_ORTHOGRAPHIC) {
-								camera->as.orthographic.screen_window[0] = screen_window.data[0];
-								camera->as.orthographic.screen_window[1] = screen_window.data[1];
-								camera->as.orthographic.screen_window[2] = screen_window.data[2];
-								camera->as.orthographic.screen_window[3] = screen_window.data[3];
-							}
-							else {
-								camera->as.perspective.screen_window[0] = screen_window.data[0];
-								camera->as.perspective.screen_window[1] = screen_window.data[1];
-								camera->as.perspective.screen_window[2] = screen_window.data[2];
-								camera->as.perspective.screen_window[3] = screen_window.data[3];
-							}
-						tpbrt_free_float_array(&screen_window);
+						screen_window[0]		   = -1.0f;
+						screen_window[1]		   = 1.0f;
+						screen_window[2]		   = -aspect;
+						screen_window[3]		   = aspect;
 					}
 					else {
-							if (film->x_resolution < film->y_resolution) {
-								const tpbrt_float_t aspect = film->y_resolution / film->x_resolution;
+						const tpbrt_float_t aspect = default_aspect_ratio;
 
-									if (camera->type == TPBRT_CAMERA_TYPE_ORTHOGRAPHIC) {
-										camera->as.orthographic.screen_window[0] = -1.0f;
-										camera->as.orthographic.screen_window[1] = 1.0f;
-										camera->as.orthographic.screen_window[2] = -aspect;
-										camera->as.orthographic.screen_window[3] = aspect;
-									}
-									else {
-										camera->as.perspective.screen_window[0] = -1.0f;
-										camera->as.perspective.screen_window[1] = 1.0f;
-										camera->as.perspective.screen_window[2] = -aspect;
-										camera->as.perspective.screen_window[3] = aspect;
-									}
-							}
-							else {
-								const tpbrt_float_t aspect = film->x_resolution / film->y_resolution;
-
-									if (camera->type == TPBRT_CAMERA_TYPE_ORTHOGRAPHIC) {
-										camera->as.orthographic.screen_window[0] = -aspect;
-										camera->as.orthographic.screen_window[1] = aspect;
-										camera->as.orthographic.screen_window[2] = -1.0f;
-										camera->as.orthographic.screen_window[3] = 1.0f;
-									}
-									else {
-										camera->as.perspective.screen_window[0] = -aspect;
-										camera->as.perspective.screen_window[1] = aspect;
-										camera->as.perspective.screen_window[2] = -1.0f;
-										camera->as.perspective.screen_window[3] = 1.0f;
-									}
-							}
+						screen_window[0]		   = -aspect;
+						screen_window[1]		   = aspect;
+						screen_window[2]		   = -1.0f;
+						screen_window[3]		   = 1.0f;
 					}
+			}
+			else {
+				memcpy(screen_window, temp_array.data, sizeof(tpbrt_float_t) * 4u);
+				tpbrt_float_array_free(&temp_array);
+			}
 
-				err = tpbrt_params_list_get_float(params, &LENS_RADIUS_STR, 0.0f,
-				  camera->type == TPBRT_CAMERA_TYPE_ORTHOGRAPHIC ? &camera->as.orthographic.lens_radius :
-																   &camera->as.perspective.lens_radius);
-					if (err != TPBRT_ERROR_NONE) {
-						tpbrt_free_camera(camera);
-						return err;
-					}
+		err = tpbrt_params_list_get_float(params, LENS_RADIUS_STR, 0.0f, lens_radius);
+			if (err != TPBRT_ERROR_NONE) { return err; }
 
-				static const tpbrt_float_t FOCAL_DISTANCE_DEFAULT = 1e+30f;
-				err = tpbrt_params_list_get_float(params, &FOCAL_DISTANCE_STR, FOCAL_DISTANCE_DEFAULT,
-				  camera->type == TPBRT_CAMERA_TYPE_ORTHOGRAPHIC ? &camera->as.orthographic.focal_distance :
-																   &camera->as.perspective.focal_distance);
-					if (err != TPBRT_ERROR_NONE) {
-						tpbrt_free_camera(camera);
-						return err;
-					}
+		return tpbrt_params_list_get_float(params, FOCAL_DISTANCE_STR, FOCAL_DISTANCE_DEFAULT, focal_distance);
+	}
+
+	static tpbrt_error_t tpbrt_camera_read_orthographic(tpbrt_camera_orthographic_params_t* const orthographic_params,
+	  const tpbrt_film_t* const film, const tpbrt_params_list_t* const params) {
+			if (orthographic_params == TPBRT_NULL || film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		return tpbrt_camera_read_image(&orthographic_params->frame_aspect_ratio, orthographic_params->screen_window,
+		  &orthographic_params->lens_radius, &orthographic_params->focal_distance, film, params);
+	}
+
+	static tpbrt_error_t tpbrt_camera_read_perspective(tpbrt_camera_perspective_params_t* const perspective_params,
+	  const tpbrt_film_t* const film, const tpbrt_params_list_t* const params) {
+			if (perspective_params == TPBRT_NULL || film == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t FOV_STR	   = TPBRT_STRING_INIT("fov");
+
+		static const tpbrt_float_t FOV_DEFAULT = 90.0f;
+
+		const tpbrt_error_t err				   = tpbrt_camera_read_image(&perspective_params->frame_aspect_ratio,
+		  perspective_params->screen_window, &perspective_params->lens_radius, &perspective_params->focal_distance, film, params);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		return tpbrt_params_list_get_float(params, FOV_STR, FOV_DEFAULT, &perspective_params->fov);
+	}
+
+	static tpbrt_error_t tpbrt_camera_read_realistic(tpbrt_camera_realistic_params_t* const realistic_params,
+	  const tpbrt_params_list_t* const params) {
+			if (realistic_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t LENS_FILE_STR			 = TPBRT_STRING_INIT("lensfile");
+		static const tpbrt_string_t APERTURE_DIAMETER_STR	 = TPBRT_STRING_INIT("aperturediameter");
+		static const tpbrt_string_t FOCUS_DISTANCE_STR		 = TPBRT_STRING_INIT("focusdistance");
+		static const tpbrt_string_t APERTURE_STR			 = TPBRT_STRING_INIT("aperture");
+
+		static const tpbrt_string_t LENS_FILE_DEFAULT		 = TPBRT_EMPTY_STRING_INIT;
+		static const tpbrt_float_t APERTURE_DIAMETER_DEFAULT = 1.0f;
+		static const tpbrt_float_t FOCUS_DISTANCE_DEFAULT	 = 10.0f;
+		static const tpbrt_string_t APERTURE_DEFAULT		 = TPBRT_EMPTY_STRING_INIT;
+
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, LENS_FILE_STR, LENS_FILE_DEFAULT, &realistic_params->lens_file);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, APERTURE_DIAMETER_STR, APERTURE_DIAMETER_DEFAULT,
+		  &realistic_params->aperture_diameter);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		err = tpbrt_params_list_get_float(params, FOCUS_DISTANCE_STR, FOCUS_DISTANCE_DEFAULT, &realistic_params->focus_distance);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		tpbrt_string_t aperture_val;
+		err = tpbrt_params_list_get_string(params, APERTURE_STR, APERTURE_DEFAULT, &aperture_val);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+			if (tpbrt_string_empty(aperture_val) == TPBRT_TRUE) {
+				realistic_params->aperture.type		  = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN;
+				realistic_params->aperture.as.builtin = TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_CIRCULAR;
+				return TPBRT_ERROR_NONE;
+			}
+
+		tpbrt_camera_realistic_aperture_builtin_t builtin = TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_MAX_NUM;
+		err = tpbrt_camera_realistic_aperture_builtin_from_string(aperture_val, &builtin);
+			if (err == TPBRT_ERROR_NONE) {
+				tpbrt_string_free(&aperture_val);
+				realistic_params->aperture.type		  = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN;
+				realistic_params->aperture.as.builtin = builtin;
+				return TPBRT_ERROR_NONE;
+			}
+
+		realistic_params->aperture.type			= TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_FILE_NAME;
+		realistic_params->aperture.as.file_name = aperture_val;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	static tpbrt_error_t tpbrt_camera_read_spherical(tpbrt_camera_spherical_params_t* const spherical_params,
+	  const tpbrt_params_list_t* const params) {
+			if (spherical_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t MAPPING_STR		= TPBRT_STRING_INIT("mapping");
+
+		static const tpbrt_string_t MAPPING_DEFAULT = TPBRT_EMPTY_STRING_INIT;
+
+		tpbrt_string_t mapping_val;
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, MAPPING_STR, MAPPING_DEFAULT, &mapping_val);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+			if (tpbrt_string_empty(mapping_val) == TPBRT_TRUE) {
+				spherical_params->mapping = TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA;
+				return TPBRT_ERROR_NONE;
+			}
+
+		tpbrt_camera_spherical_mapping_t spherical_mapping;
+		err = tpbrt_camera_spherical_mapping_from_string(mapping_val, &spherical_mapping);
+		tpbrt_string_free(&mapping_val);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		spherical_params->mapping = spherical_mapping;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_camera_create_info_init_default(tpbrt_camera_create_info_t* const info) {
+			if (info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(info, 0, sizeof(tpbrt_camera_create_info_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		info->type				= TPBRT_CAMERA_TYPE_PERSPECTIVE;
+
+		const tpbrt_error_t err = tpbrt_params_list_init(&info->params);
+			if (err != TPBRT_ERROR_NONE) { return err; }
+
+		info->camera_transform.start_transform = TPBRT_TRANSFORM_HANDLE_INVALID;
+		info->camera_transform.end_transform   = TPBRT_TRANSFORM_HANDLE_INVALID;
+		info->interior_media_handle			   = TPBRT_MEDIA_HANDLE_INVALID;
+		info->exterior_media_handle			   = TPBRT_MEDIA_HANDLE_INVALID;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	tpbrt_error_t tpbrt_camera_create_info_init(const tpbrt_string_t type_str, const tpbrt_params_list_t* const params,
+	  const tpbrt_transform_animated_t transform, const tpbrt_media_handle_t interior_media_handle,
+	  const tpbrt_media_handle_t exterior_media_handle, tpbrt_camera_create_info_t* const info) {
+			if (info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(info, 0, sizeof(tpbrt_camera_create_info_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		tpbrt_error_t err = tpbrt_params_list_init(&info->params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_create_info_free(info);
+				return err;
+			}
+		err = tpbrt_params_list_extend(&info->params, params);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_create_info_free(info);
+				return err;
+			}
+
+		info->camera_transform		= transform;
+		info->interior_media_handle = interior_media_handle;
+		info->exterior_media_handle = exterior_media_handle;
+
+		tpbrt_camera_type_t type;
+		err = tpbrt_camera_type_from_string(type_str, &type);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_create_info_free(info);
+				return err;
+			}
+		info->type = type;
+
+		return TPBRT_ERROR_NONE;
+	}
+
+	void tpbrt_camera_create_info_free(tpbrt_camera_create_info_t* const info) {
+			if (info == TPBRT_NULL) { return; }
+
+		tpbrt_params_list_free(&info->params);
+	}
+
+	tpbrt_error_t tpbrt_camera_init(const tpbrt_camera_create_info_t* const info, const tpbrt_film_t* const film,
+	  tpbrt_camera_t* const camera) {
+			if (camera == TPBRT_NULL || film == TPBRT_NULL || info == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+			if (memset(camera, 0, sizeof(tpbrt_camera_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		camera->interior_media_handle				 = info->interior_media_handle;
+		camera->exterior_media_handle				 = info->exterior_media_handle;
+		camera->type								 = info->type;
+		camera->transform							 = info->camera_transform;
+
+		static const tpbrt_string_t SHUTTER_OPEN_STR = TPBRT_STRING_INIT("shutteropen");
+		tpbrt_error_t err = tpbrt_params_list_get_float(&info->params, SHUTTER_OPEN_STR, 0.0f, &camera->shutter_open);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_free(camera);
+				return err;
+			}
+
+		static const tpbrt_string_t SHUTTER_CLOSE_STR = TPBRT_STRING_INIT("shutterclose");
+		err = tpbrt_params_list_get_float(&info->params, SHUTTER_CLOSE_STR, 1.0f, &camera->shutter_close);
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_free(camera);
+				return err;
 			}
 
 			switch (camera->type) {
 			default:
 				case TPBRT_CAMERA_TYPE_ORTHOGRAPHIC: {
+					err = tpbrt_camera_read_orthographic(&camera->as.orthographic, film, &info->params);
 					break;
 				}
 				case TPBRT_CAMERA_TYPE_PERSPECTIVE: {
-					static const tpbrt_string_t FOV_STR	   = TPBRT_STRING("fov");
-					static const tpbrt_float_t FOV_DEFAULT = 90.0f;
-
-					err = tpbrt_params_list_get_float(params, &FOV_STR, FOV_DEFAULT, &camera->as.perspective.fov);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_camera(camera);
-							return err;
-						}
+					err = tpbrt_camera_read_perspective(&camera->as.perspective, film, &info->params);
 					break;
 				}
 				case TPBRT_CAMERA_TYPE_REALISTIC: {
-					static const tpbrt_string_t LENS_FILE_STR		  = TPBRT_STRING("lensfile");
-					static const tpbrt_string_t APERTURE_DIAMETER_STR = TPBRT_STRING("aperturediameter");
-					static const tpbrt_string_t FOCUS_DISTANCE_STR	  = TPBRT_STRING("focusdistance");
-					static const tpbrt_string_t APERTURE_STR		  = TPBRT_STRING("aperture");
-
-					err = tpbrt_params_list_get_string(params, &LENS_FILE_STR, &camera->as.realistic.lens_file);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_camera(camera);
-							return err;
-						}
-
-					err =
-					  tpbrt_params_list_get_float(params, &APERTURE_DIAMETER_STR, 1.0f, &camera->as.realistic.aperture_diameter);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_camera(camera);
-							return err;
-						}
-
-					static const tpbrt_float_t FOCUS_DISTANCE_DEFAULT = 10.0f;
-					err = tpbrt_params_list_get_float(params, &FOCUS_DISTANCE_STR, FOCUS_DISTANCE_DEFAULT,
-					  &camera->as.realistic.focus_distance);
-						if (err != TPBRT_ERROR_NONE) {
-							tpbrt_free_camera(camera);
-							return err;
-						}
-
-					tpbrt_string_t aperture_val;
-					err = tpbrt_params_list_get_string(params, &APERTURE_STR, &aperture_val);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_camera(camera);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							camera->as.realistic.aperture.type		 = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN;
-							camera->as.realistic.aperture.as.builtin = TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_CIRCULAR;
-							break;
-						}
-
-					err = tpbrt_camera_realistic_aperture_builtin_from_string(&aperture_val,
-					  &camera->as.realistic.aperture.as.builtin);
-						if (err == TPBRT_ERROR_NONE) {
-							tpbrt_free_string(&aperture_val);
-							camera->as.realistic.aperture.type = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN;
-							break;
-						}
-
-					camera->as.realistic.aperture.type		   = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_FILE_NAME;
-					camera->as.realistic.aperture.as.file_name = aperture_val;
+					err = tpbrt_camera_read_realistic(&camera->as.realistic, &info->params);
 					break;
 				}
 				case TPBRT_CAMERA_TYPE_SPHERICAL: {
-					static const tpbrt_string_t MAPPING_STR = TPBRT_STRING("mapping");
-
-					tpbrt_string_t mapping_val;
-					err = tpbrt_params_list_get_string(params, &MAPPING_STR, &mapping_val);
-						if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) {
-							tpbrt_free_camera(camera);
-							return err;
-						}
-
-						if (err == TPBRT_ERROR_NOT_FOUND) {
-							camera->as.spherical.mapping = TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA;
-						}
-						else {
-							err = tpbrt_camera_spherical_mapping_from_string(&mapping_val, &camera->as.spherical.mapping);
-							tpbrt_free_string(&mapping_val);
-								if (err != TPBRT_ERROR_NONE) {
-									tpbrt_free_camera(camera);
-									return err;
-								}
-						}
+					err = tpbrt_camera_read_spherical(&camera->as.spherical, &info->params);
 					break;
 				}
+			}
+
+			if (err != TPBRT_ERROR_NONE) {
+				tpbrt_camera_free(camera);
+				return err;
 			}
 
 		return TPBRT_ERROR_NONE;
 	}
 
-	void tpbrt_free_camera(tpbrt_camera_t* const camera) {
+	void tpbrt_camera_free(tpbrt_camera_t* const camera) {
 			if (camera == TPBRT_NULL) { return; }
 
 			if (camera->type == TPBRT_CAMERA_TYPE_REALISTIC) {
-				tpbrt_free_string(&camera->as.realistic.lens_file);
+				tpbrt_string_free(&camera->as.realistic.lens_file);
 
 					if (camera->as.realistic.aperture.type == TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_FILE_NAME) {
-						tpbrt_free_string(&camera->as.realistic.aperture.as.file_name);
+						tpbrt_string_free(&camera->as.realistic.aperture.as.file_name);
 					}
 			}
 	}
