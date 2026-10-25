@@ -52,3 +52,29 @@ if (TINYPBRT_BUILD_TESTS)
         tinypbrt_set_sanitizers_test_environment(${PROJECT_NAME}-example-${EXAMPLE}_TEST)
     endforeach()
 endif()
+
+# region CLANG_TIDY
+if (TINYPBRT_ENABLE_CLANG_TIDY)
+    set(CLANG_TIDY_C_STANDARD c11)
+
+    enable_clang_tidy(
+            TARGET ${PROJECT_NAME}-example-utils
+            CONFIG "${PROJECT_SOURCE_DIR}/.clang-tidy"
+            CXX_STANDARD ${CLANG_TIDY_C_STANDARD}
+            HEADER_FILTER "^${CMAKE_CURRENT_SOURCE_DIR}[\\\\\/\\\\].*"
+            EXCLUDE_HEADER_FILTER "^${PROJECT_SOURCE_DIR}[\\\\\/\\\\]third_party[\\\\\/\\\\].*"
+    )
+
+    foreach(EXAMPLE ${TINYPBRT_EXAMPLES})
+        set(EXAMPLE_TARGET ${PROJECT_NAME}-example-${EXAMPLE})
+
+        enable_clang_tidy(
+                TARGET ${EXAMPLE_TARGET}
+                CONFIG "${PROJECT_SOURCE_DIR}/.clang-tidy"
+                CXX_STANDARD ${CLANG_TIDY_C_STANDARD}
+                HEADER_FILTER "^${CMAKE_CURRENT_SOURCE_DIR}[\\\\\/\\\\].*"
+                EXCLUDE_HEADER_FILTER "^${PROJECT_SOURCE_DIR}[\\\\\/\\\\]third_party[\\\\\/\\\\].*"
+        )
+    endforeach()
+endif()
+# endregion

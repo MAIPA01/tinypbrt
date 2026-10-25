@@ -9,11 +9,11 @@
 
 namespace tpbrt_bench {
 
-	class Rng {
+	class rng {
 	public:
 		// NOLINTBEGIN(readability-magic-numbers)
 
-		explicit Rng(const std::uint32_t seed) : _state(seed == 0u ? 0x9E37'79B9u : seed) {}
+		explicit rng(const std::uint32_t seed) : _state(seed == 0u ? 0x9E37'79B9u : seed) {}
 
 		float next01() {
 			_state ^= _state << 13;
@@ -45,7 +45,7 @@ namespace tpbrt_bench {
 	}
 
 	inline std::string spheres(const std::size_t count) {
-		Rng rng(1u);
+		rng rng(1u);
 		std::string s = header();
 		s.reserve(s.size() + (count * 110u)); // NOLINT(readability-magic-numbers)
 		s += "Material \"diffuse\" \"rgb reflectance\" [ .5 .5 .5 ]\n";
@@ -64,7 +64,7 @@ namespace tpbrt_bench {
 	}
 
 	inline std::string triangle_mesh(const std::size_t vertices) {
-		Rng rng(2u);
+		rng rng(2u);
 		std::size_t side = 2u;
 			while (side * side < vertices) { ++side; }
 
@@ -110,7 +110,7 @@ namespace tpbrt_bench {
 	}
 
 	inline std::string named_materials(const std::size_t count) {
-		Rng rng(3u);
+		rng rng(3u);
 		std::string s = header();
 		s.reserve(s.size() + (count * 400u)); // NOLINT(readability-magic-numbers)
 			for (std::size_t i = 0; i < count; ++i) {
@@ -124,7 +124,9 @@ namespace tpbrt_bench {
 					 id + "\" \"texture roughness\" \"rough" + id + "\"\n";
 			}
 			for (std::size_t i = 0; i < count; ++i) {
+				// NOLINTBEGIN(readability-magic-numbers)
 				s += "AttributeBegin\n  NamedMaterial \"mat" + std::to_string((i * 7919u) % count) + "\"\n  Translate ";
+				// NOLINTEND(readability-magic-numbers)
 				append_uint(s, i);
 				s += " 0 0\n  Shape \"disk\"\nAttributeEnd\n";
 			}
@@ -132,7 +134,7 @@ namespace tpbrt_bench {
 	}
 
 	inline std::string instances(const std::size_t count) {
-		Rng rng(4u);
+		rng rng(4u);
 		std::string s = header();
 		s.reserve(s.size() + (count * 90u)); // NOLINT(readability-magic-numbers)
 		s +=

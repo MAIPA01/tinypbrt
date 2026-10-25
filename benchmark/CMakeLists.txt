@@ -25,3 +25,17 @@ if (TINYPBRT_BUILD_TESTS)
              COMMAND ${C_TARGET_BENCHMARK} --benchmark_min_time=1x --benchmark_filter=/100$|/1000$|/10$)
     set_tests_properties(${C_TARGET_BENCHMARK}_SMOKE PROPERTIES LABELS benchmark)
 endif()
+
+# region CLANG_TIDY
+if (TINYPBRT_ENABLE_CLANG_TIDY)
+    set(CLANG_TIDY_CXX_STANDARD c++17)
+
+    enable_clang_tidy(
+            TARGET ${C_TARGET_BENCHMARK}
+            CONFIG "${PROJECT_SOURCE_DIR}/.clang-tidy"
+            CXX_STANDARD ${CLANG_TIDY_CXX_STANDARD}
+            HEADER_FILTER "^${CMAKE_CURRENT_SOURCE_DIR}[\\\\\/\\\\].*"
+            EXCLUDE_HEADER_FILTER "^${PROJECT_SOURCE_DIR}[\\\\\/\\\\]third_party[\\\\\/\\\\].*"
+    )
+endif()
+# endregion
