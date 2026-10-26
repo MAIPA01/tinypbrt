@@ -1,0 +1,129 @@
+# Dokumentacja (Doxygen) i raport pokrycia (llvm-cov) publikowane na GitHub Pages:
+#   https://<owner>.github.io/<repo>/           - dokumentacja
+#   https://<owner>.github.io/<repo>/coverage/  - raport pokrycia
+#   https://<owner>.github.io/<repo>/coverage/badge.json - dane odznaki dla shields.io
+#
+# Jednorazowo w repozytorium: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+# Pull requesty tylko budują (testy, docs, coverage) - publikuje się wyłącznie main.
+name: Docs & coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # nowy push do PR przerywa stary przebieg; na main publikacje idą po kolei
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash # -eo pipefail: błąd przed `| tee` też przerywa krok
+
+env:
+  LLVM_VERSION: 18
+
+jobs:
+  build:
+    name: Build docs and coverage report
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build doxygen graphviz \
+            clang-${LLVM_VERSION} llvm-${LLVM_VERSION}
+          doxygen --version
+          clang-${LLVM_VERSION} --version
+
+      # CPM pobiera GoogleTest do third_party/ (CPM_SOURCE_CACHE z cmake/get_cpm.cmake)
+      - name: Cache CPM packages
+        uses: actions/cache@v6
+        with:
+          path: third_party
+          key: cpm-${{ runner.os }}-${{ hashFiles('cmake/third_party.cmake', 'cmake/get_cpm.cmake') }}
+
+      - name: Documentation
+        run: |
+          cmake -S . -B build/docs -G Ninja \
+            -DTINYPBRT_BUILD_DOCUMENTATION=ON \
+            -DTINYPBRT_DOCUMENTATION_OUTPUT_DIR="${GITHUB_WORKSPACE}/build/docs-out" \
+            -DTINYPBRT_BUILD_TESTS=OFF -DTINYPBRT_BUILD_BENCHMARK=OFF -DTINYPBRT_BUILD_EXAMPLES=OFF \
+            -DTINYPBRT_BUILD_COVERAGE=OFF -DTINYPBRT_ENABLE_CLANG_TIDY=OFF -DTINYPBRT_INSTALL=OFF
+          cmake --build build/docs --target docs
+          test -f build/docs-out/html/index.html
+
+      # testy (gtest, C API, przykłady) z instrumentacją + raport HTML: cel `coverage` z cmake/coverage_report.cmake
+      - name: Tests and coverage
+        run: |
+          cmake --preset linux-debug-coverage \
+            -DCMAKE_C_COMPILER=clang-${LLVM_VERSION} -DCMAKE_CXX_COMPILER=clang++-${LLVM_VERSION}
+          cmake --build build/linux-debug-coverage --target coverage 2>&1 | tee build/coverage.log
+          test -f build/linux-debug-coverage/coverage_report/index.html
+
+      - name: Assemble site
+        run: |
+          mkdir -p site
+          cp -r build/docs-out/html/. site/
+
+          # README (strona główna docs) linkuje do plików repozytorium (docs/pages, examples/..., LICENSE) -
+          # na Pages ich nie ma, więc względne linki spoza dokumentacji kierujemy do GitHuba dla tego commita
+          repo_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}"
+          REPO_URL="${repo_url}" perl -pi -e \
+            's{href="(?![a-zA-Z][a-zA-Z0-9+.-]*:|#|/)([^"]+)"}{my $p = $1; $p =~ /\.(html|js|css|png|svg)(#.*)?$/ ? qq{href="$p"} : qq{href="$ENV{REPO_URL}/$p"}}ge' \
+            site/*.html
+
+          cp -r build/linux-debug-coverage/coverage_report site/coverage
+
+          # wiersz TOTAL z `llvm-cov report`: regiony (3), funkcje (3), linie (3), gałęzie (3) [, MC/DC]
+          total=$(grep -E '^TOTAL[[:space:]]' build/coverage.log | tail -1)
+          lines=$(awk '{ print $10 }' <<< "${total}")
+          functions=$(awk '{ print $7 }' <<< "${total}")
+          branches=$(awk '{ print $13 }' <<< "${total}")
+          percent=${lines%\%}
+          if [[ -z "${percent}" ]]; then echo "::error::No TOTAL line in the llvm-cov report"; exit 1; fi
+
+          color=$(awk -v p="${percent}" 'BEGIN {
+            if (p >= 90) print "brightgreen"; else if (p >= 80) print "green"; else if (p >= 70) print "yellowgreen";
+            else if (p >= 60) print "yellow"; else if (p >= 50) print "orange"; else print "red" }')
+          printf '{ "schemaVersion": 1, "label": "coverage", "message": "%s", "color": "%s" }\n' \
+            "${lines}" "${color}" > site/coverage/badge.json
+          cat site/coverage/badge.json
+
+          {
+            echo "### Coverage"
+            echo
+            echo "| Lines | Functions | Branches |"
+            echo "|---|---|---|"
+            echo "| ${lines} | ${functions} | ${branches} |"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

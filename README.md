@@ -1,5 +1,10 @@
 # tinypbrt
 
+[![Docs & coverage](https://github.com/MAIPA01/tinypbrt/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/MAIPA01/tinypbrt/actions/workflows/pages.yml)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://maipa01.github.io/tinypbrt/)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fmaipa01.github.io%2Ftinypbrt%2Fcoverage%2Fbadge.json)](https://maipa01.github.io/tinypbrt/coverage/)
+[![C11](https://img.shields.io/badge/language-C11-blue)](https://en.cppreference.com/w/c/11)
+
 Tiny but powerful [pbrt-v4](https://pbrt.org/fileformat-v4) scene file loader written in C11.
 
 tinypbrt parses `.pbrt` scene descriptions (cameras, film, samplers, integrators, shapes, materials, textures, lights,
@@ -430,6 +435,9 @@ cmake --build build/linux-debug-coverage --target coverage
 `llvm-profdata`/`llvm-cov` matching the Clang version are found next to the compiler. Tests, examples, benchmarks and
 third-party code are excluded from the report.
 
+The report for the latest commit on `main` is published at <https://maipa01.github.io/tinypbrt/coverage/> by the
+[`Docs & coverage`](.github/workflows/pages.yml) workflow.
+
 ## clang-tidy
 
 With `TINYPBRT_ENABLE_CLANG_TIDY=ON` every checked target gets two targets: `clang_tidy_<target>` checks only the files
@@ -458,6 +466,9 @@ is skipped for older versions.
 [`docs/Doxyfile.in`](docs/Doxyfile.in) and writes `<build>/docs/html/index.html`. This README is the main page;
 additional pages go to [`docs/pages`](docs/pages) (Markdown) and images to `docs/images`. Document the public headers
 with Doxygen comments; `-DTINYPBRT_DOCUMENTATION_WARN_UNDOCUMENTED=ON` lists what is still missing.
+
+The documentation of `main` is published at <https://maipa01.github.io/tinypbrt/> on every push (GitHub Actions ->
+GitHub Pages, together with the [coverage report](#coverage)).
 
 ## License
 
