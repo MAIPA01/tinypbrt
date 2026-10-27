@@ -6,6 +6,7 @@
 #include <tinypbrt/detail/color_internal.h>
 #include <tinypbrt/detail/common_internal.h>
 #include <tinypbrt/detail/param_internal.h>
+#include <tinypbrt/detail/scattering_internal.h>
 #include <tinypbrt/detail/texture_internal.h>
 
 #ifdef __cplusplus
@@ -439,6 +440,43 @@ extern "C" {
 		  &mix->amount);
 	}
 
+	static tpbrt_error_t tpbrt_material_read_subsurface_scattering(tpbrt_material_subsurface_scattering_t* const scattering,
+	  const tpbrt_params_list_t* const params, const tpbrt_textures_list_t* const textures) {
+			if (scattering == TPBRT_NULL || params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
+		static const tpbrt_string_t NAME_STR				= TPBRT_STRING_INIT("name");
+		static const tpbrt_string_t SIGMA_A_STR				= TPBRT_STRING_INIT("sigma_a");
+		static const tpbrt_string_t SIGMA_S_STR				= TPBRT_STRING_INIT("sigma_s");
+
+		static const tpbrt_string_t NAME_DEFAULT			= TPBRT_EMPTY_STRING_INIT;
+		static const tpbrt_texture_handle_t SIGMA_A_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(0.0011f, 0.0024f, 0.014f);
+		static const tpbrt_texture_handle_t SIGMA_S_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(2.55f, 3.12f, 3.77f);
+
+		tpbrt_string_t name_str;
+		tpbrt_error_t err = tpbrt_params_list_get_string(params, NAME_STR, NAME_DEFAULT, &name_str);
+
+			if (err == TPBRT_ERROR_NONE) {
+				scattering->type = TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_BUILTIN;
+
+				err				 = tpbrt_scattering_builtin_from_string(name_str, &scattering->as.builtin);
+				tpbrt_string_free(&name_str);
+				return err;
+			}
+
+			if (err == TPBRT_ERROR_NOT_FOUND) {
+				scattering->type = TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_SIGMA;
+
+				err = tpbrt_params_list_get_texture_of_type(params, SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+				  &SIGMA_A_DEFAULT, &scattering->as.sigma.a);
+					if (err != TPBRT_ERROR_NONE) { return err; }
+
+				return tpbrt_params_list_get_texture_of_type(params, SIGMA_S_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
+				  &SIGMA_S_DEFAULT, &scattering->as.sigma.a);
+			}
+
+		return err;
+	}
+
 	static tpbrt_error_t tpbrt_material_read_subsurface(tpbrt_material_subsurface_params_t* const subsurface,
 	  const tpbrt_params_list_t* const params, const tpbrt_textures_list_t* const textures) {
 			if (subsurface == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
@@ -446,20 +484,14 @@ extern "C" {
 		static const tpbrt_string_t ETA_STR						= TPBRT_STRING_INIT("eta");
 		static const tpbrt_string_t G_STR						= TPBRT_STRING_INIT("g");
 		static const tpbrt_string_t MFP_STR						= TPBRT_STRING_INIT("mfp");
-		static const tpbrt_string_t NAME_STR					= TPBRT_STRING_INIT("name");
 		static const tpbrt_string_t REFLECTANCE_STR				= TPBRT_STRING_INIT("reflectance");
-		static const tpbrt_string_t SIGMA_A_STR					= TPBRT_STRING_INIT("sigma_a");
-		static const tpbrt_string_t SIGMA_S_STR					= TPBRT_STRING_INIT("sigma_s");
 		static const tpbrt_string_t SCALE_STR					= TPBRT_STRING_INIT("scale");
 
 		static const tpbrt_texture_handle_t ETA_DEFAULT			= TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(1.33f);
 		static const tpbrt_texture_handle_t G_DEFAULT			= TPBRT_TEXTURE_HANDLE_SPECTRUM_CONSTANT_INIT(0.0f);
 		static const tpbrt_texture_handle_t MFP_DEFAULT			= TPBRT_TEXTURE_HANDLE_INVALID_INIT;
-		static const tpbrt_string_t NAME_DEFAULT				= TPBRT_EMPTY_STRING_INIT;
 		static const tpbrt_texture_handle_t REFLECTANCE_DEFAULT = TPBRT_TEXTURE_HANDLE_INVALID_INIT;
-		static const tpbrt_texture_handle_t SIGMA_A_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(0.0011f, 0.0024f, 0.014f);
-		static const tpbrt_texture_handle_t SIGMA_S_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(2.55f, 3.12f, 3.77f);
-		static const tpbrt_float_t SCALE_DEFAULT			= 1.0f;
+		static const tpbrt_float_t SCALE_DEFAULT				= 1.0f;
 
 		tpbrt_error_t err = tpbrt_material_read_bump_map(&subsurface->bump_map, params, textures);
 			if (err != TPBRT_ERROR_NONE) { return err; }
@@ -476,19 +508,11 @@ extern "C" {
 		  &subsurface->mfp);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_string(params, NAME_STR, NAME_DEFAULT, &subsurface->name);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-
 		err = tpbrt_params_list_get_texture_of_type(params, REFLECTANCE_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
 		  &REFLECTANCE_DEFAULT, &subsurface->reflectance);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
-		err = tpbrt_params_list_get_texture_of_type(params, SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM, &SIGMA_A_DEFAULT,
-		  &subsurface->sigma_a);
-			if (err != TPBRT_ERROR_NONE) { return err; }
-
-		err = tpbrt_params_list_get_texture_of_type(params, SIGMA_S_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM, &SIGMA_S_DEFAULT,
-		  &subsurface->sigma_s);
+		err = tpbrt_material_read_subsurface_scattering(&subsurface->scattering, params, textures);
 			if (err != TPBRT_ERROR_NONE) { return err; }
 
 		err = tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &subsurface->scale);
@@ -700,12 +724,14 @@ extern "C" {
 				case TPBRT_MATERIAL_TYPE_SUBSURFACE: {
 					tpbrt_material_subsurface_params_t* const params = &material->as.subsurface;
 					tpbrt_material_free_bump_map(&params->bump_map);
-					tpbrt_string_free(&params->name);
 					tpbrt_texture_handle_free(&params->mfp);
 					tpbrt_texture_handle_free(&params->reflectance);
-					tpbrt_texture_handle_free(&params->sigma_a);
-					tpbrt_texture_handle_free(&params->sigma_s);
 					tpbrt_texture_handle_free(&params->eta);
+
+						if (params->scattering.type == TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_SIGMA) {
+							tpbrt_texture_handle_free(&params->scattering.as.sigma.a);
+							tpbrt_texture_handle_free(&params->scattering.as.sigma.s);
+						}
 					break;
 				}
 				case TPBRT_MATERIAL_TYPE_THIN_DIELECTRIC: {

@@ -76,10 +76,11 @@ extern "C" {
 			TPBRT_STRING_INIT("Includes depth was greater than maximum depth"), // TPBRT_ERROR_INCLUDES_STACK_OVERFLOW
 			TPBRT_STRING_INIT(
 			  "Parameter is declared with a different type than expected (e.g. \"string radius\" instead of \"float radius\")"
-			),											   // TPBRT_ERROR_PARAM_TYPE_MISMATCH
-			TPBRT_STRING_INIT("Named material redefined"), // TPBRT_ERROR_DUPLICATE_MATERIAL_NAME
-			TPBRT_STRING_INIT("Named medium redefined"),   // TPBRT_ERROR_DUPLICATE_MEDIUM_NAME
-			TPBRT_STRING_INIT("Undefined error"),		   // DEFAULT
+			),														  // TPBRT_ERROR_PARAM_TYPE_MISMATCH
+			TPBRT_STRING_INIT("Named material redefined"),			  // TPBRT_ERROR_DUPLICATE_MATERIAL_NAME
+			TPBRT_STRING_INIT("Named medium redefined"),			  // TPBRT_ERROR_DUPLICATE_MEDIUM_NAME
+			TPBRT_STRING_INIT("Unsupported scattering builtin"), // TPBRT_ERROR_INVALID_SCATTERING_BUILTIN
+			TPBRT_STRING_INIT("Undefined error"),					  // DEFAULT
 		};
 
 			if (buffer == TPBRT_NULL || buffer_size == 0) { return 0; }

@@ -23,7 +23,8 @@ extern "C" {
 #pragma region MEDIAS_LIST
 	tpbrt_error_t tpbrt_medias_list_init(tpbrt_medias_list_t* medias_list);
 	tpbrt_error_t tpbrt_medias_list_append(tpbrt_medias_list_t* medias_list, const tpbrt_media_t* media);
-	tpbrt_error_t tpbrt_medias_list_get(const tpbrt_medias_list_t* medias_list, tpbrt_string_t media_name, const tpbrt_media_t** media);
+	tpbrt_error_t tpbrt_medias_list_get(const tpbrt_medias_list_t* medias_list, tpbrt_string_t media_name,
+	  const tpbrt_media_t** media);
 	tpbrt_error_t tpbrt_medias_list_get_handle(const tpbrt_medias_list_t* medias_list, tpbrt_string_t media_name,
 	  tpbrt_media_handle_t* media_handle);
 	tpbrt_error_t tpbrt_medias_list_shrink_to_fit(tpbrt_medias_list_t* medias_list);
