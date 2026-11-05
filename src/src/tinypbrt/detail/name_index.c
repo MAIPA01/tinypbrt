@@ -8,6 +8,15 @@ extern "C" {
 
 #pragma region NAME_INDEX
 
+	/**
+	 * @brief Max linear name index.
+	 * @ingroup name-index-private
+	 */
+	enum {
+		/// @brief Max linear name index value.
+		TPBRT_NAME_INDEX_LINEAR_MAX = 8
+	};
+
 	static const tpbrt_string_t* tpbrt_name_index_name_at(const tpbrt_name_index_view_t* const view,
 	  const tpbrt_size_t element_idx) {
 		return (const tpbrt_string_t*)((const tpbrt_uchar_t*)view->elements + (element_idx * view->stride) + view->name_offset);

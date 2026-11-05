@@ -8,73 +8,79 @@
 extern "C" {
 #endif
 
+	static const tpbrt_string_t DIRECTIVES_STRS[TPBRT_DIRECTIVE_MAX_NUM] = {
+		TPBRT_STRING_INIT("Identity"),
+		TPBRT_STRING_INIT("Translate"),
+		TPBRT_STRING_INIT("Scale"),
+		TPBRT_STRING_INIT("Rotate"),
+		TPBRT_STRING_INIT("LookAt"),
+		TPBRT_STRING_INIT("CoordinateSystem"),
+		TPBRT_STRING_INIT("CoordSysTransform"),
+		TPBRT_STRING_INIT("Transform"),
+		TPBRT_STRING_INIT("ConcatTransform"),
+		TPBRT_STRING_INIT("TransformTimes"),
+		TPBRT_STRING_INIT("ActiveTransform"),
+
+		TPBRT_STRING_INIT("Include"),
+		TPBRT_STRING_INIT("Import"),
+
+		TPBRT_STRING_INIT("Option"),
+
+		TPBRT_STRING_INIT("Camera"),
+		TPBRT_STRING_INIT("Sampler"),
+		TPBRT_STRING_INIT("ColorSpace"),
+		TPBRT_STRING_INIT("Film"),
+		TPBRT_STRING_INIT("PixelFilter"),
+		TPBRT_STRING_INIT("Integrator"),
+		TPBRT_STRING_INIT("Accelerator"),
+
+		TPBRT_STRING_INIT("WorldBegin"),
+
+		TPBRT_STRING_INIT("AttributeBegin"),
+		TPBRT_STRING_INIT("AttributeEnd"),
+		TPBRT_STRING_INIT("Attribute"),
+
+		TPBRT_STRING_INIT("ReverseOrientation"),
+		TPBRT_STRING_INIT("Shape"),
+		TPBRT_STRING_INIT("ObjectBegin"),
+		TPBRT_STRING_INIT("ObjectEnd"),
+		TPBRT_STRING_INIT("ObjectInstance"),
+
+		TPBRT_STRING_INIT("LightSource"),
+		TPBRT_STRING_INIT("AreaLightSource"),
+
+		TPBRT_STRING_INIT("Material"),
+		TPBRT_STRING_INIT("MakeNamedMaterial"),
+		TPBRT_STRING_INIT("NamedMaterial"),
+
+		TPBRT_STRING_INIT("Texture"),
+
+		TPBRT_STRING_INIT("MakeNamedMedium"),
+		TPBRT_STRING_INIT("MediumInterface"),
+
+		TPBRT_STRING_INIT("TransformBegin"),
+		TPBRT_STRING_INIT("TransformEnd"),
+	};
+
 	tpbrt_error_t tpbrt_directive_from_string(const tpbrt_string_t directive_str, tpbrt_directive_t* directive_out) {
-		static const tpbrt_string_t TYPES_STRS[TPBRT_DIRECTIVE_MAX_NUM] = {
-			TPBRT_STRING_INIT("Identity"),
-			TPBRT_STRING_INIT("Translate"),
-			TPBRT_STRING_INIT("Scale"),
-			TPBRT_STRING_INIT("Rotate"),
-			TPBRT_STRING_INIT("LookAt"),
-			TPBRT_STRING_INIT("CoordinateSystem"),
-			TPBRT_STRING_INIT("CoordSysTransform"),
-			TPBRT_STRING_INIT("Transform"),
-			TPBRT_STRING_INIT("ConcatTransform"),
-			TPBRT_STRING_INIT("TransformTimes"),
-			TPBRT_STRING_INIT("ActiveTransform"),
-
-			TPBRT_STRING_INIT("Include"),
-			TPBRT_STRING_INIT("Import"),
-
-			TPBRT_STRING_INIT("Option"),
-
-			TPBRT_STRING_INIT("Camera"),
-			TPBRT_STRING_INIT("Sampler"),
-			TPBRT_STRING_INIT("ColorSpace"),
-			TPBRT_STRING_INIT("Film"),
-			TPBRT_STRING_INIT("PixelFilter"),
-			TPBRT_STRING_INIT("Integrator"),
-			TPBRT_STRING_INIT("Accelerator"),
-
-			TPBRT_STRING_INIT("WorldBegin"),
-
-			TPBRT_STRING_INIT("AttributeBegin"),
-			TPBRT_STRING_INIT("AttributeEnd"),
-			TPBRT_STRING_INIT("Attribute"),
-
-			TPBRT_STRING_INIT("ReverseOrientation"),
-			TPBRT_STRING_INIT("Shape"),
-			TPBRT_STRING_INIT("ObjectBegin"),
-			TPBRT_STRING_INIT("ObjectEnd"),
-			TPBRT_STRING_INIT("ObjectInstance"),
-
-			TPBRT_STRING_INIT("LightSource"),
-			TPBRT_STRING_INIT("AreaLightSource"),
-
-			TPBRT_STRING_INIT("Material"),
-			TPBRT_STRING_INIT("MakeNamedMaterial"),
-			TPBRT_STRING_INIT("NamedMaterial"),
-
-			TPBRT_STRING_INIT("Texture"),
-
-			TPBRT_STRING_INIT("MakeNamedMedium"),
-			TPBRT_STRING_INIT("MediumInterface"),
-
-			TPBRT_STRING_INIT("TransformBegin"),
-			TPBRT_STRING_INIT("TransformEnd"),
-		};
-
 			if (directive_out == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
 			if (tpbrt_string_empty(directive_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_DIRECTIVE; }
 
 			for (tpbrt_directive_t d = 0; d < TPBRT_DIRECTIVE_MAX_NUM; ++d) {
-					if (tpbrt_string_equals(directive_str, TYPES_STRS[d]) == TPBRT_TRUE) {
+					if (tpbrt_string_equals(directive_str, DIRECTIVES_STRS[d]) == TPBRT_TRUE) {
 						*directive_out = d;
 						return TPBRT_ERROR_NONE;
 					}
 			}
 
 		return TPBRT_ERROR_INVALID_DIRECTIVE;
+	}
+
+	tpbrt_size_t tpbrt_directive_size(const tpbrt_directive_t directive) {
+			if (directive == TPBRT_DIRECTIVE_MAX_NUM) { return 0u; }
+
+		return DIRECTIVES_STRS[directive].size;
 	}
 
 	tpbrt_error_t tpbrt_token_init(const tpbrt_string_t value, tpbrt_token_t* const token) {
@@ -103,7 +109,10 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_size_t tpbrt_token_size(const tpbrt_token_t* const token) { return token != TPBRT_NULL ? token->value.size : 0u; }
+	tpbrt_size_t tpbrt_token_size(const tpbrt_token_t* const token) {
+			if (token == TPBRT_NULL) { return 0; }
+		return token->type == TPBRT_TOKEN_TYPE_DIRECTIVE ? tpbrt_directive_size(token->directive) : token->value.size;
+	}
 
 	tpbrt_bool_t tpbrt_token_is_quoted_string(const tpbrt_token_t* const token) {
 			if (token == TPBRT_NULL) { return TPBRT_FALSE; }

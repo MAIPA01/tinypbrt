@@ -16,10 +16,6 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_size_t tpbrt_tokenizer_offset(const tpbrt_tokenizer_t* const tokenizer) {
-		return tokenizer != TPBRT_NULL ? tokenizer->offset : 0u;
-	}
-
 	tpbrt_bool_t tpbrt_tokenizer_peek(tpbrt_tokenizer_t* const tokenizer, tpbrt_token_t* const out_token) {
 			if (tokenizer == TPBRT_NULL || out_token == TPBRT_NULL) { return TPBRT_FALSE; }
 

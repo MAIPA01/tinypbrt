@@ -42,7 +42,7 @@ extern "C" {
 		return TPBRT_ERROR_INVALID_FILM_TYPE;
 	}
 
-	tpbrt_error_t tpbrt_film_sensor_from_string(const tpbrt_string_t type_str, tpbrt_film_sensor_t* const sensor) {
+	tpbrt_error_t tpbrt_film_sensor_from_string(const tpbrt_string_t sensor_str, tpbrt_film_sensor_t* const sensor) {
 		static const tpbrt_string_t SENSORS_STRS[TPBRT_FILM_SENSOR_MAX_NUM] = {
 			TPBRT_STRING_INIT("cie1931"),
 			TPBRT_STRING_INIT("canon_eos_100d"),
@@ -66,10 +66,10 @@ extern "C" {
 
 			if (sensor == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-			if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_FILM_SENSOR; }
+			if (tpbrt_string_empty(sensor_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_FILM_SENSOR; }
 
 			for (tpbrt_film_sensor_t s = 0; s < TPBRT_FILM_SENSOR_MAX_NUM; ++s) {
-					if (tpbrt_string_equals(type_str, SENSORS_STRS[s]) == TPBRT_TRUE) {
+					if (tpbrt_string_equals(sensor_str, SENSORS_STRS[s]) == TPBRT_TRUE) {
 						*sensor = s;
 						return TPBRT_ERROR_NONE;
 					}

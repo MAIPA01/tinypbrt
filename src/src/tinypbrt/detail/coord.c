@@ -41,6 +41,8 @@ extern "C" {
 
 	tpbrt_error_t tpbrt_coord_system_map_insert(tpbrt_coord_system_map_t* const map, const tpbrt_string_t name,
 	  const tpbrt_mat4_animated_t* const transform) {
+			if (map == TPBRT_NULL || transform == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 		const tpbrt_coord_system_map_entry_t entry = (tpbrt_coord_system_map_entry_t) { .name = name, .transform = *transform };
 
 			for (tpbrt_size_t i = 0; i < map->count; ++i) {
@@ -64,15 +66,17 @@ extern "C" {
 		return TPBRT_ERROR_NONE;
 	}
 
-	tpbrt_bool_t tpbrt_coord_system_map_get(const tpbrt_coord_system_map_t* const map, const tpbrt_string_t name,
+	tpbrt_error_t tpbrt_coord_system_map_get(const tpbrt_coord_system_map_t* const map, const tpbrt_string_t name,
 	  tpbrt_mat4_animated_t* const out_transform) {
+			if (map == TPBRT_NULL || out_transform == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
+
 			for (tpbrt_size_t i = 0; i < map->count; i++) {
-					if (tpbrt_string_equals(map->entries[i].name, name)) {
+					if (tpbrt_string_equals(map->entries[i].name, name) == TPBRT_TRUE) {
 						*out_transform = map->entries[i].transform;
-						return TPBRT_TRUE;
+						return TPBRT_ERROR_NONE;
 					}
 			}
-		return TPBRT_FALSE;
+		return TPBRT_ERROR_NOT_FOUND;
 	}
 
 	void tpbrt_coord_system_map_free(tpbrt_coord_system_map_t* const map) {
