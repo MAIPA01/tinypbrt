@@ -270,7 +270,7 @@ TEST(params, extend_overwrites_and_append_missing_keeps) {
 	tpbrt_params_list_t missing;
 	tpbrt_params_list_init(&missing);
 	ASSERT_EQ(tpbrt_params_list_extend(&missing, &a.list()), TPBRT_ERROR_NONE);
-	ASSERT_EQ(tpbrt_params_list_append_missing(&missing, &b.list()), TPBRT_ERROR_NONE);
+	ASSERT_EQ(tpbrt_params_list_extend_missing(&missing, &b.list()), TPBRT_ERROR_NONE);
 	EXPECT_EQ(missing.count, 3u);
 	ASSERT_EQ(tpbrt_params_list_get_float(&missing, TPBRT_STRING("radius"), 0.0f, &v), TPBRT_ERROR_NONE);
 	EXPECT_FLOAT_EQ(v, 1.0f);

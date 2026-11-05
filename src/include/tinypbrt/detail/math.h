@@ -205,8 +205,10 @@ extern "C" {
 				tpbrt_float_t m30, m31, m32, m33;
 			};
 
+			// NOLINTBEGIN(readability-magic-numbers)
 			/// @brief Array of 16 elements.
-			tpbrt_float_t m[TPBRT_MAT4_ARRAY_SIZE];
+			tpbrt_float_t m[16u];
+			// NOLINTEND(readability-magic-numbers)
 		};
 	} tpbrt_mat4_t;
 

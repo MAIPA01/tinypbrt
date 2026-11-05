@@ -8,7 +8,7 @@
  * @brief All directives as strings in the same order as enum values.
  * @ingroup token-private
  */
-static const tpbrt_string_t DIRECTIVES_STRS[TPBRT_DIRECTIVE_MAX_NUM] = {
+static const tpbrt_string_t directives_strs[TPBRT_DIRECTIVE_MAX_NUM] = {
 	TPBRT_STRING_INIT("Identity"),
 	TPBRT_STRING_INIT("Translate"),
 	TPBRT_STRING_INIT("Scale"),
@@ -68,7 +68,7 @@ tpbrt_error_t tpbrt_directive_from_string(const tpbrt_string_t directive_str, tp
 		if (tpbrt_string_empty(directive_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_DIRECTIVE; }
 
 		for (tpbrt_directive_t d = 0; d < TPBRT_DIRECTIVE_MAX_NUM; ++d) {
-				if (tpbrt_string_equals(directive_str, DIRECTIVES_STRS[d]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(directive_str, directives_strs[d]) == TPBRT_TRUE) {
 					*directive_out = d;
 					return TPBRT_ERROR_NONE;
 				}
@@ -80,7 +80,7 @@ tpbrt_error_t tpbrt_directive_from_string(const tpbrt_string_t directive_str, tp
 tpbrt_size_t tpbrt_directive_size(const tpbrt_directive_t directive) {
 		if (directive == TPBRT_DIRECTIVE_MAX_NUM) { return 0u; }
 
-	return DIRECTIVES_STRS[directive].size;
+	return directives_strs[directive].size;
 }
 
 tpbrt_error_t tpbrt_token_init(const tpbrt_string_t value, tpbrt_token_t* const token) {

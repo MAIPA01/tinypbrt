@@ -142,6 +142,7 @@ extern "C" {
 	 * @ingroup math-private
 	 */
 	void tpbrt_mat4_identity(tpbrt_mat4_t* m);
+	// NOLINTBEGIN(readability-magic-numbers)
 	/**
 	 * @brief Creates 4 by 4 matrix from array of 16 values.
 	 * @param m Output matrix data.
@@ -149,6 +150,7 @@ extern "C" {
 	 * @ingroup math-private
 	 */
 	void tpbrt_mat4_from_array(tpbrt_mat4_t* m, const tpbrt_float_t arr[16u]);
+	// NOLINTEND(readability-magic-numbers)
 	/**
 	 * @brief Creates 4 by 4 translation matrix from 3 component vector.
 	 * @param m Output matrix data.

@@ -48,11 +48,14 @@ void tpbrt_mat4_identity(tpbrt_mat4_t* const m) {
 		if (m == TPBRT_NULL) { return; }
 
 	static const tpbrt_uint_t STEP_SIZE = 5u;
+	// NOLINTNEXTLINE(readability-magic-numbers)
 		for (tpbrt_uint_t i = 0; i < 16u; ++i) { m->m[i] = i % STEP_SIZE == 0 ? 1.0f : 0.0f; }
 }
 
+// NOLINTNEXTLINE(readability-magic-numbers)
 void tpbrt_mat4_from_array(tpbrt_mat4_t* const m, const tpbrt_float_t arr[16u]) {
 		if (m == TPBRT_NULL) { return; }
+	// NOLINTNEXTLINE(readability-magic-numbers)
 	memcpy(m, arr, 16u * sizeof(tpbrt_float_t));
 }
 

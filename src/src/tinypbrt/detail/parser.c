@@ -133,6 +133,7 @@ static tpbrt_error_t tpbrt_read_point_token(tpbrt_parser_t* const parser, tpbrt_
 static tpbrt_error_t tpbrt_read_matrix_token(tpbrt_parser_t* const parser, tpbrt_mat4_t* const out_m) {
 		if (parser == TPBRT_NULL || out_m == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
+	// NOLINTNEXTLINE(readability-magic-numbers)
 		for (tpbrt_uint_t i = 0; i < 16u; ++i) {
 			const tpbrt_error_t err = tpbrt_read_float_token(parser, &out_m->m[i]);
 				if (err != TPBRT_ERROR_NONE) { return err; }

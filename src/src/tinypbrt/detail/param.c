@@ -1047,7 +1047,7 @@ tpbrt_error_t tpbrt_params_list_extend(tpbrt_params_list_t* const dst_params_lis
 	return TPBRT_ERROR_NONE;
 }
 
-tpbrt_error_t tpbrt_params_list_append_missing(tpbrt_params_list_t* const dst_params_list,
+tpbrt_error_t tpbrt_params_list_extend_missing(tpbrt_params_list_t* const dst_params_list,
   const tpbrt_params_list_t* const src_params_list) {
 		if (dst_params_list == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
