@@ -21,6 +21,7 @@ extern "C" {
 	 * @ingroup transform-public
 	 */
 	typedef struct tpbrt_transform_handle_t {
+		/// @brief Index of transform in transforms list.
 		tpbrt_transform_idx_t transform_idx;
 	} tpbrt_transform_handle_t;
 

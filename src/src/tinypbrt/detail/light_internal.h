@@ -107,7 +107,6 @@ extern "C" {
 	/**
 	 * @brief Shrinks lights list to fit final size.
 	 * @param lights_list Lights list data.
-	 * @return Error code (possible errors TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_OUT_OF_MEMORY, TPBRT_ERROR_NONE).
 	 * @ingroup light-private
 	 */
 	void tpbrt_lights_list_shrink_to_fit(tpbrt_lights_list_t* lights_list);

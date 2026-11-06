@@ -59,7 +59,9 @@ extern "C" {
 	 * @ingroup color-public
 	 */
 	typedef struct tpbrt_wavelength_t {
+		/// @brief Wavelength.
 		tpbrt_float_t wavelength;
+		/// @brief Value on current wavelength.
 		tpbrt_float_t value;
 	} tpbrt_wavelength_t;
 

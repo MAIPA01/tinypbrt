@@ -539,7 +539,7 @@ static tpbrt_error_t tpbrt_material_read_mix(tpbrt_material_mix_params_t* const 
  * @param scattering Scattering data.
  * @param params Parameters list.
  * @param textures Textures list.
- * @return Error code (possible errors TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_NONE).
+ * @return Error code (possible errors TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_SCATTERING_BUILTIN, TPBRT_ERROR_PARAM_TYPE_MISMATCH, TPBRT_ERROR_NONE).
  * @ingroup material-private
  */
 static tpbrt_error_t tpbrt_material_read_subsurface_scattering(tpbrt_material_subsurface_scattering_t* const scattering,
@@ -552,31 +552,31 @@ static tpbrt_error_t tpbrt_material_read_subsurface_scattering(tpbrt_material_su
 
 	static const tpbrt_string_t NAME_DEFAULT			= TPBRT_EMPTY_STRING_INIT;
 	static const tpbrt_texture_handle_t SIGMA_A_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(0.0011f, 0.0024f, 0.014f);
-	static const tpbrt_texture_handle_t SIGMA_S_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(2.55f, 3.12f, 3.77f);
+	static const tpbrt_texture_handle_t SIGMA_S_DEFAULT = TPBRT_TEXTURE_HANDLE_SPECTRUM_RGB_INIT(2.55f, 3.21f, 3.77f);
 
+	// get_string returns the default ("") with TPBRT_ERROR_NONE when "name" is missing - like pbrt-v4,
+	// an empty name means "no builtin", so sigma_a / sigma_s are read instead
 	tpbrt_string_t name_str;
 	tpbrt_error_t err = tpbrt_params_list_get_string(params, NAME_STR, NAME_DEFAULT, &name_str);
+		if (err != TPBRT_ERROR_NONE) { return err; }
 
-		if (err == TPBRT_ERROR_NONE) {
+		if (tpbrt_string_empty(name_str) == TPBRT_FALSE) {
 			scattering->type = TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_BUILTIN;
 
 			err				 = tpbrt_scattering_builtin_from_string(name_str, &scattering->as.builtin);
 			tpbrt_string_free(&name_str);
 			return err;
 		}
+	tpbrt_string_free(&name_str);
 
-		if (err == TPBRT_ERROR_NOT_FOUND) {
-			scattering->type = TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_SIGMA;
+	scattering->type = TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_SIGMA;
 
-			err				 = tpbrt_params_list_get_texture_of_type(params, SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
-			  &SIGMA_A_DEFAULT, &scattering->as.sigma.a);
-				if (err != TPBRT_ERROR_NONE) { return err; }
+	err = tpbrt_params_list_get_texture_of_type(params, SIGMA_A_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM, &SIGMA_A_DEFAULT,
+	  &scattering->as.sigma.a);
+		if (err != TPBRT_ERROR_NONE) { return err; }
 
-			return tpbrt_params_list_get_texture_of_type(params, SIGMA_S_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM,
-			  &SIGMA_S_DEFAULT, &scattering->as.sigma.a);
-		}
-
-	return err;
+	return tpbrt_params_list_get_texture_of_type(params, SIGMA_S_STR, textures, TPBRT_TEXTURE_TYPE_SPECTRUM, &SIGMA_S_DEFAULT,
+	  &scattering->as.sigma.s);
 }
 
 /**

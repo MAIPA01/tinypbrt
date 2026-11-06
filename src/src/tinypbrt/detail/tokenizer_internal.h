@@ -22,7 +22,9 @@ extern "C" {
 	 * @ingroup tokenizer-private
 	 */
 	typedef struct tpbrt_tokenizer_t {
+		/// @brief String to tokenize.
 		tpbrt_string_t str;
+		/// @brief Current offset in string.
 		tpbrt_size_t offset;
 	} tpbrt_tokenizer_t;
 

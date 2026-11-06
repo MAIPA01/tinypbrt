@@ -85,7 +85,7 @@ extern "C" {
 	/**
 	 * @brief Loads scene from memory (provided string).
 	 * @param data Scene string (must end with '\0').
-	 * @param working_directory Directory which will be used if Include or Export will be used.
+	 * @param working_directory Directory which will be used if Include or Import will be used.
 	 * @param out_scene Pointer to result scene structure.
 	 * @return Error code. If not TPBRT_ERROR_NONE then out_scene is not initialized.
 	 * @ingroup scene-public
@@ -94,6 +94,7 @@ extern "C" {
 	  tpbrt_scene_t* out_scene);
 	/**
 	 * @brief Free all scene resources. Nothing happens if TPBRT_NULL is provided.
+	 * @param scene Scene resources to free.
 	 * @ingroup scene-public
 	 */
 	TPBRT_API void tpbrt_scene_free(tpbrt_scene_t* scene);

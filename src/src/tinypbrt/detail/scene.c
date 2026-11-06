@@ -24,8 +24,12 @@
 #include <tinypbrt/detail/state_internal.h>
 #include <tinypbrt/detail/texture_internal.h>
 #include <tinypbrt/detail/token_internal.h>
-#include <tinypbrt/detail/tokenizer_internal.h>
 #include <tinypbrt/detail/transform_internal.h>
+
+/**
+ * @defgroup scene-private Scene
+ * @ingroup tinypbrt-private
+ */
 
 /**
  * @brief Max include depth.
@@ -415,7 +419,7 @@ static tpbrt_error_t tpbrt_scene_directive_coord_sys_transform(tpbrt_state_t* co
 		}
 
 	tpbrt_mat4_animated_t mat;
-		if (tpbrt_coord_system_map_get(named_coord_systems, element->as.named_entity.name, &mat) == TPBRT_FALSE) {
+		if (tpbrt_coord_system_map_get(named_coord_systems, element->as.named_entity.name, &mat) != TPBRT_ERROR_NONE) {
 			return TPBRT_ERROR_NONE;
 		}
 

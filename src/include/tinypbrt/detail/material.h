@@ -320,7 +320,7 @@ extern "C" {
 		TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_SIGMA   = 0,
 		/// @brief Uses builtin as sigma_s and sigma_a values.
 		TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_BUILTIN = 1,
-		/// @brief Count of available media scattering values.
+		/// @brief Count of available material scattering values.
 		TPBRT_MATERIAL_SUBSURFACE_SCATTERING_VALUE_MAX_NUM = 2,
 	} tpbrt_material_subsurface_scattering_value_t;
 

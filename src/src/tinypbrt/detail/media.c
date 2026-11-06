@@ -9,6 +9,11 @@
 #include <tinypbrt/detail/param_internal.h>
 #include <tinypbrt/detail/scattering_internal.h>
 
+/**
+ * @defgroup media-private Media
+ * @ingroup tinypbrt-private
+ */
+
 #pragma region MEDIA
 
 tpbrt_error_t tpbrt_media_type_from_string(const tpbrt_string_t type_str, tpbrt_media_type_t* const type) {
@@ -38,7 +43,7 @@ tpbrt_error_t tpbrt_media_type_from_string(const tpbrt_string_t type_str, tpbrt_
  * @brief Reads scattering parameters.
  * @param scattering Scattering data.
  * @param params Parameters list.
- * @return Error code (possible errors TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_NONE).
+ * @return Error code (possible errors TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_SCATTERING_BUILTIN, TPBRT_ERROR_PARAM_TYPE_MISMATCH, TPBRT_ERROR_NONE).
  * @ingroup media-private
  */
 static tpbrt_error_t tpbrt_media_read_scattering(tpbrt_media_scattering_t* const scattering,
@@ -53,27 +58,27 @@ static tpbrt_error_t tpbrt_media_read_scattering(tpbrt_media_scattering_t* const
 	static const tpbrt_spectrum_t SIGMA_A_DEFAULT = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
 	static const tpbrt_spectrum_t SIGMA_S_DEFAULT = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
 
+	// get_string returns the default ("") with TPBRT_ERROR_NONE when "preset" is missing - like pbrt-v4,
+	// an empty preset means "no preset", so sigma_a / sigma_s are read instead
 	tpbrt_string_t preset_str;
 	tpbrt_error_t err = tpbrt_params_list_get_string(params, PRESET_STR, PRESET_DEFAULT, &preset_str);
+		if (err != TPBRT_ERROR_NONE) { return err; }
 
-		if (err == TPBRT_ERROR_NONE) {
+		if (tpbrt_string_empty(preset_str) == TPBRT_FALSE) {
 			scattering->type = TPBRT_MEDIA_SCATTERING_VALUE_PRESET;
 
 			err				 = tpbrt_scattering_builtin_from_string(preset_str, &scattering->as.preset);
 			tpbrt_string_free(&preset_str);
 			return err;
 		}
+	tpbrt_string_free(&preset_str);
 
-		if (err == TPBRT_ERROR_NOT_FOUND) {
-			scattering->type = TPBRT_MEDIA_SCATTERING_VALUE_SIGMA;
+	scattering->type = TPBRT_MEDIA_SCATTERING_VALUE_SIGMA;
 
-			err				 = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &SIGMA_A_DEFAULT, &scattering->as.sigma.a);
-				if (err != TPBRT_ERROR_NONE) { return err; }
+	err				 = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &SIGMA_A_DEFAULT, &scattering->as.sigma.a);
+		if (err != TPBRT_ERROR_NONE) { return err; }
 
-			return tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &SIGMA_S_DEFAULT, &scattering->as.sigma.s);
-		}
-
-	return err;
+	return tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &SIGMA_S_DEFAULT, &scattering->as.sigma.s);
 }
 
 /**

@@ -29,13 +29,13 @@ extern "C" {
 	 * @param options Options data.
 	 * @param param Option value.
 	 * @return Error code (possible errors TPBRT_ERROR_INVALID_OPTION, TPBRT_ERROR_NONE).
-	 * @ingroup options-private.
+	 * @ingroup options-private
 	 */
 	tpbrt_error_t tpbrt_options_apply(tpbrt_options_t* options, const tpbrt_param_t* param);
 	/**
 	 * @brief Frees options data.
 	 * @param options Options data to free.
-	 * @ingroup options-private.
+	 * @ingroup options-private
 	 */
 	void tpbrt_options_free(tpbrt_options_t* options);
 

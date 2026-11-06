@@ -78,7 +78,7 @@ tpbrt_error_t tpbrt_directive_from_string(const tpbrt_string_t directive_str, tp
 }
 
 tpbrt_size_t tpbrt_directive_size(const tpbrt_directive_t directive) {
-		if (directive == TPBRT_DIRECTIVE_MAX_NUM) { return 0u; }
+		if (directive >= TPBRT_DIRECTIVE_MAX_NUM) { return 0u; }
 
 	return directives_strs[directive].size;
 }

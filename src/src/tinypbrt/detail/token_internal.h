@@ -138,16 +138,12 @@ extern "C" {
 	 * @ingroup token-private
 	 */
 	typedef struct tpbrt_token_t {
-		/// @brief Value depends on token type.
-		union {
-			/// @brief Token value.
-			tpbrt_string_t value;
-			/// @brief Token directive type.
-			tpbrt_directive_t directive : 7;
-		};
-
+		/// @brief Token text (a view into the parsed source; for directives the directive name).
+		tpbrt_string_t value;
 		/// @brief Token type.
-		tpbrt_token_type_t type : 3;
+		tpbrt_token_type_t type		: 3;
+		/// @brief Directive type (TPBRT_DIRECTIVE_MAX_NUM when the token is not a directive).
+		tpbrt_directive_t directive : 7;
 	} tpbrt_token_t;
 
 	/**
@@ -163,7 +159,7 @@ extern "C" {
 	 * @brief Returns directive string size.
 	 * @param directive Directive.
 	 * @return Size of directive string.
-	 * @ingroup token-private.
+	 * @ingroup token-private
 	 */
 	tpbrt_size_t tpbrt_directive_size(tpbrt_directive_t directive);
 
