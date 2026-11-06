@@ -67,9 +67,9 @@ TEST(scene_media, homogeneous_defaults) {
 	const tpbrt_media_t& m = s->medias.medias[0];
 	EXPECT_EQ(to_std(m.name), "fog");
 	EXPECT_EQ(m.type, TPBRT_MEDIA_TYPE_HOMOGENEOUS);
-	ASSERT_EQ(m.as.homogeneous.sigma_a.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
-	EXPECT_FLOAT_EQ(m.as.homogeneous.sigma_a.as.constant, 1.0f);
-	EXPECT_FLOAT_EQ(m.as.homogeneous.sigma_s.as.constant, 1.0f);
+	ASSERT_EQ(m.as.homogeneous.scattering.as.sigma.a.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
+	EXPECT_FLOAT_EQ(m.as.homogeneous.scattering.as.sigma.a.as.constant, 1.0f);
+	EXPECT_FLOAT_EQ(m.as.homogeneous.scattering.as.sigma.s.as.constant, 1.0f);
 	ASSERT_EQ(m.as.homogeneous.le.type, TPBRT_SPECTRUM_TYPE_CONSTANT);
 	EXPECT_FLOAT_EQ(m.as.homogeneous.le.as.constant, 0.0f);
 }

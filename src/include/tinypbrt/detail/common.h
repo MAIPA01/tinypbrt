@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _TINYPBRT_TYPES_H_
-#define _TINYPBRT_TYPES_H_
+#ifndef _TINYPBRT_COMMON_H_
+#define _TINYPBRT_COMMON_H_
 
 #include <tinypbrt/detail/fwd.h>
 
@@ -8,25 +8,43 @@
 extern "C" {
 #endif
 
+	/**
+	 * @defgroup common-public Common
+	 * @ingroup tinypbrt-public
+	 */
+
+	/**
+	 * @brief Simple string representation (not always ends with '\0', size determines final length of string)
+	 * @ingroup common-public
+	 */
 	typedef struct tpbrt_string_t {
+		/// @brief String characters.
 		const tpbrt_char_t* data;
+		/// @brief String size.
 		tpbrt_size_t size;
 	} tpbrt_string_t;
 
+	/**
+	 * @brief Array of strings
+	 * @ingroup common-public
+	 */
 	typedef struct tpbrt_string_array_t {
+		/// @brief Array data.
 		tpbrt_string_t* data;
+		/// @brief Array items count.
 		tpbrt_size_t count;
 	} tpbrt_string_array_t;
 
 	/**
-	 * Indeks nazw listy (materiałów, tekstur, mediów, obiektów) - tablica haszująca z adresowaniem otwartym,
-	 * przechowująca tylko indeksy elementów (4 B na slot, ~1,33 slotu na nazwany element po wczytaniu sceny).
-	 * Przy niewielu nazwach (capacity == 0) wyszukiwanie jest liniowe i indeks nie zajmuje pamięci.
-	 * Pole wewnętrzne: używaj funkcji tpbrt_get_*_by_name, nie czytaj go bezpośrednio.
+	 * @brief Keeps name indexes for faster lookups.
+	 * @ingroup common-public
 	 */
 	typedef struct tpbrt_name_index_t {
+		/// @brief Indexes.
 		tpbrt_idx_t* slots;
+		/// @brief Slots capacity.
 		tpbrt_uint_t capacity;
+		/// @brief Slots count.
 		tpbrt_uint_t count;
 	} tpbrt_name_index_t;
 
