@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(tinypbrt VERSION 1.0.0 LANGUAGES C CXX)
+project(tinypbrt VERSION 1.0.1 LANGUAGES C CXX)
 
 option(BUILD_SHARED_LIBS 					"Build shared library" 			OFF)
 option(TINYPBRT_BUILD_SHARED 				"Build tinypbrt as a shared library" 	${BUILD_SHARED_LIBS})
