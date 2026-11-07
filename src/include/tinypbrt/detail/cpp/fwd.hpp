@@ -8,8 +8,10 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
+#include <variant>
 
-namespace tinypbrt {
+namespace tpbrt {
 #pragma region COMMON_DEFINES
 	/**
 	 * @brief NULL value.
@@ -64,6 +66,9 @@ namespace tinypbrt {
 	 * @ingroup tinypbrt-cpp-public
 	 */
 	static constexpr auto FltMax   = TPBRT_FLT_MAX;
+
+	template<class... Ts>
+	using optional_variant = std::optional<std::variant<Ts...>>;
 
 #pragma endregion
 
@@ -213,7 +218,7 @@ namespace tinypbrt {
 	 * @brief Transform index.
 	 * @ingroup transform-cpp-public
 	 */
-	using transform_idx						  = tpbrt_transform_idx_t;
+	using transform_idx_t					  = tpbrt_transform_idx_t;
 	/**
 	 * @brief Invalid transform index.
 	 * @ingroup transform-cpp-public
@@ -236,294 +241,244 @@ namespace tinypbrt {
 #pragma region TEXTURE
 	/**
 	 * @brief Texture index type.
-	 * @ingroup texture-public
+	 * @ingroup texture-cpp-public
 	 */
-	typedef tpbrt_idx_t tpbrt_texture_idx_t;
+	using texture_idx_t						= tpbrt_texture_idx_t;
 	/**
 	 * @brief Invalid texture index.
-	 * @ingroup texture-public
+	 * @ingroup texture-cpp-public
 	 */
-#define TPBRT_TEXTURE_IDX_INVALID TPBRT_IDX_INVALID
+	static constexpr auto TextureInvalidIdx = TPBRT_TEXTURE_IDX_INVALID;
 
 	/**
 	 * @brief Texture handle type.
-	 * @ingroup texture-public
+	 * @ingroup texture-cpp-public
 	 */
-	typedef struct tpbrt_texture_handle_t tpbrt_texture_handle_t;
+	using texture_handle					= tpbrt_texture_handle_t;
 
 	/**
 	 * @brief Texture type.
-	 * @ingroup texture-public
+	 * @ingroup texture-cpp-public
 	 */
-	typedef struct tpbrt_texture_t tpbrt_texture_t;
-	/**
-	 * @brief List of textures type.
-	 * @ingroup texture-public
-	 */
-	typedef struct tpbrt_textures_list_t tpbrt_textures_list_t;
+	struct texture;
 #pragma endregion
 
 #pragma region SHAPE
 	/**
 	 * @brief Shape type.
-	 * @ingroup shape-public
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_t tpbrt_shape_t;
-	/**
-	 * @brief List of shapes type.
-	 * @ingroup shape-public
-	 */
-	typedef struct tpbrt_shapes_list_t tpbrt_shapes_list_t;
+	struct shape;
 #pragma endregion
 
 #pragma region SCENE
 	/**
 	 * @brief Scene type.
-	 * @ingroup scene-public
+	 * @ingroup scene-cpp-public
 	 */
-	typedef struct tpbrt_scene_t tpbrt_scene_t;
+	struct scene;
 #pragma endregion
 
 #pragma region SAMPLER
 	/**
 	 * @brief Sampler type.
-	 * @ingroup sampler-public
+	 * @ingroup sampler-cpp-public
 	 */
-	typedef struct tpbrt_sampler_t tpbrt_sampler_t;
+	struct sampler;
 #pragma endregion
 
 #pragma region OPTIONS
 	/**
 	 * @brief Options type.
-	 * @ingroup options-public
+	 * @ingroup options-cpp-public
 	 */
-	typedef struct tpbrt_options_t tpbrt_options_t;
+	struct options;
 #pragma endregion
 
 #pragma region OBJECT
 	/**
 	 * @brief Object index type.
-	 * @ingroup object-public
+	 * @ingroup object-cpp-public
 	 */
-	typedef tpbrt_idx_t tpbrt_object_idx_t;
+	using object_idx_t					   = tpbrt_object_idx_t;
 	/**
 	 * @brief Invalid object index.
-	 * @ingroup object-public
+	 * @ingroup object-cpp-public
 	 */
-#define TPBRT_OBJECT_IDX_INVALID TPBRT_IDX_INVALID
+	static constexpr auto ObjectInvalidIdx = TPBRT_OBJECT_IDX_INVALID;
 
 	/**
 	 * @brief Object handle type.
-	 * @ingroup object-public
+	 * @ingroup object-cpp-public
 	 */
-	typedef struct tpbrt_object_handle_t tpbrt_object_handle_t;
+	using object_handle					   = tpbrt_object_handle_t;
 
 	/**
 	 * @brief Object type.
-	 * @ingroup object-public
+	 * @ingroup object-cpp-public
 	 */
-	typedef struct tpbrt_object_t tpbrt_object_t;
-	/**
-	 * @brief List of objects type.
-	 * @ingroup object-public
-	 */
-	typedef struct tpbrt_objects_list_t tpbrt_objects_list_t;
+	struct object;
 #pragma endregion
 
 #pragma region OBJECT_INSTANCE
 	/**
 	 * @brief Object instance type.
-	 * @ingroup object-instance-public
+	 * @ingroup object-instance-cpp-public
 	 */
-	typedef struct tpbrt_object_instance_t tpbrt_object_instance_t;
-	/**
-	 * @brief List of objects instances type.
-	 * @ingroup object-instance-public
-	 */
-	typedef struct tpbrt_objects_instances_list_t tpbrt_objects_instances_list_t;
+	struct object_instance;
 #pragma endregion
 
 #pragma region MEDIA
 	/**
 	 * @brief Media index type.
-	 * @ingroup media-public
+	 * @ingroup media-cpp-public
 	 */
-	typedef tpbrt_idx_t tpbrt_media_idx_t;
+	using media_idx_t					  = tpbrt_media_idx_t;
 	/**
 	 * @brief Invalid media index.
-	 * @ingroup media-public
+	 * @ingroup media-cpp-public
 	 */
-#define TPBRT_MEDIA_IDX_INVALID TPBRT_IDX_INVALID
+	static constexpr auto MediaInvalidIdx = TPBRT_MEDIA_IDX_INVALID;
 
 	/**
 	 * @brief Media handle type.
-	 * @ingroup media-public
+	 * @ingroup media-cpp-public
 	 */
-	typedef struct tpbrt_media_handle_t tpbrt_media_handle_t;
+	using media_handle					  = tpbrt_media_handle_t;
 
 	/**
 	 * @brief Media type.
-	 * @ingroup media-public
+	 * @ingroup media-cpp-public
 	 */
-	typedef struct tpbrt_media_t tpbrt_media_t;
-	/**
-	 * @brief List of medias type.
-	 * @ingroup media-public
-	 */
-	typedef struct tpbrt_medias_list_t tpbrt_medias_list_t;
+	struct media;
 #pragma endregion
 
 #pragma region MATERIAL
 	/**
 	 * @brief Material index type.
-	 * @ingroup material-public
+	 * @ingroup material-cpp-public
 	 */
-	typedef tpbrt_idx_t tpbrt_material_idx_t;
+	using material_idx_t					 = tpbrt_material_idx_t;
 	/**
 	 * @brief Invalid material index.
-	 * @ingroup material-public
+	 * @ingroup material-cpp-public
 	 */
-#define TPBRT_MATERIAL_IDX_INVALID TPBRT_IDX_INVALID
+	static constexpr auto MaterialInvalidIdx = TPBRT_MATERIAL_IDX_INVALID;
 
 	/**
 	 * @brief Material handle type.
-	 * @ingroup material-public
+	 * @ingroup material-cpp-public
 	 */
-	typedef struct tpbrt_material_handle_t tpbrt_material_handle_t;
+	using material_handle					 = tpbrt_material_handle_t;
 
 	/**
 	 * @brief Material type.
-	 * @ingroup material-public
+	 * @ingroup material-cpp-public
 	 */
-	typedef struct tpbrt_material_t tpbrt_material_t;
-	/**
-	 * @brief List of materials type.
-	 * @ingroup material-public
-	 */
-	typedef struct tpbrt_materials_list_t tpbrt_materials_list_t;
+	struct material;
 #pragma endregion
 
 #pragma region LIGHT
 	/**
 	 * @brief Light source type.
-	 * @ingroup light-public
+	 * @ingroup light-cpp-public
 	 */
-	typedef struct tpbrt_light_source_t tpbrt_light_source_t;
-	/**
-	 * @brief List of light sources type.
-	 * @ingroup light-public
-	 */
-	typedef struct tpbrt_lights_sources_list_t tpbrt_lights_sources_list_t;
+	struct light_source;
 
 	/**
 	 * @brief Area light index type.
-	 * @ingroup light-public
+	 * @ingroup light-cpp-public
 	 */
-	typedef tpbrt_idx_t tpbrt_area_light_idx_t;
+	using area_light_idx_t					  = tpbrt_area_light_idx_t;
 	/**
 	 * @brief Invalid area light index.
-	 * @ingroup light-public
+	 * @ingroup light-cpp-public
 	 */
-#define TPBRT_AREA_LIGHT_IDX_INVALID TPBRT_IDX_INVALID
+	static constexpr auto AreaLightInvalidIdx = TPBRT_AREA_LIGHT_IDX_INVALID;
 
 	/**
 	 * @brief Area light handle type.
-	 * @ingroup light-public
+	 * @ingroup light-cpp-public
 	 */
-	typedef struct tpbrt_area_light_handle_t tpbrt_area_light_handle_t;
+	using area_light_handle					  = tpbrt_area_light_handle_t;
 
 	/**
 	 * @brief Area light type.
-	 * @ingroup light-public
+	 * @ingroup light-cpp-public
 	 */
-	typedef struct tpbrt_area_light_t tpbrt_area_light_t;
-	/**
-	 * @brief List of area lights type.
-	 * @ingroup light-public
-	 */
-	typedef struct tpbrt_area_lights_list_t tpbrt_area_lights_list_t;
+	struct area_light;
 
 	/**
 	 * @brief List of lights type.
-	 * @ingroup light-public
+	 * @ingroup light-cpp-public
 	 */
-	typedef struct tpbrt_lights_list_t tpbrt_lights_list_t;
+	struct lights_list;
 #pragma endregion
 
 #pragma region INTEGRATOR
 	/**
 	 * @brief Integrator type.
-	 * @ingroup integrator-public
+	 * @ingroup integrator-cpp-public
 	 */
-	typedef struct tpbrt_integrator_t tpbrt_integrator_t;
+	struct integrator;
 #pragma endregion
 
 #pragma region FILTER
 	/**
 	 * @brief Filter type.
-	 * @ingroup filter-public
+	 * @ingroup filter-cpp-public
 	 */
-	typedef struct tpbrt_filter_t tpbrt_filter_t;
+	struct filter;
 #pragma endregion
 
 #pragma region FILM
 	/**
 	 * @brief Film type.
-	 * @ingroup film-public
+	 * @ingroup film-cpp-public
 	 */
-	typedef struct tpbrt_film_t tpbrt_film_t;
+	struct film;
 #pragma endregion
 
 #pragma region COLOR
 	/**
 	 * @brief Wavelength-value pair type.
-	 * @ingroup color-public
+	 * @ingroup color-cpp-public
 	 */
-	typedef struct tpbrt_wavelength_t tpbrt_wavelength_t;
-	/**
-	 * @brief Array of wavelengths type.
-	 * @ingroup color-public
-	 */
-	typedef struct tpbrt_wavelength_array_t tpbrt_wavelength_array_t;
+	using wavelength = tpbrt_wavelength_t;
 
 	/**
 	 * @brief Blackbody temperature type.
-	 * @ingroup color-public
+	 * @ingroup color-cpp-public
 	 */
-	typedef tpbrt_float_t tpbrt_blackbody_t;
+	using blackbody	 = tpbrt_blackbody_t;
 
 	/**
 	 * @brief RGB type.
-	 * @ingroup color-public
+	 * @ingroup color-cpp-public
 	 */
-	typedef tpbrt_vec3_t tpbrt_rgb_t;
-	/**
-	 * @brief Array of rgb type.
-	 * @ingroup color-public
-	 */
-	typedef tpbrt_vec3_array_t tpbrt_rgb_array_t;
+	using rgb		 = tpbrt_rgb_t;
 
 	/**
 	 * @brief Spectrum type.
-	 * @ingroup color-public
+	 * @ingroup color-cpp-public
 	 */
-	typedef struct tpbrt_spectrum_t tpbrt_spectrum_t;
+	struct spectrum;
 #pragma endregion
 
 #pragma region CAMERA
 	/**
-	 * @brief Camera type.
-	 * @ingroup camera-public
+	 * @copybrief tpbrt_camera_t
+	 * @ingroup camera-cpp-public
 	 */
-	typedef struct tpbrt_camera_t tpbrt_camera_t;
+	struct camera;
 #pragma endregion
 
 #pragma region ACCELERATOR
 	/**
-	 * @brief Accelerator type.
-	 * @ingroup accelerator-public
+	 * @copybrief tpbrt_accelerator_t
+	 * @ingroup accelerator-cpp-public
 	 */
-	typedef struct tpbrt_accelerator_t tpbrt_accelerator_t;
+	struct accelerator;
 #pragma endregion
-} // namespace tinypbrt
-#endif // _TINYPBRT_FWD_H_
+} // namespace tpbrt
+#endif // _TINYPBRT_FWD_HPP_

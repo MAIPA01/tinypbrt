@@ -16,6 +16,7 @@
 #include <tinypbrt/detail/cpp/common.hpp>
 #include <tinypbrt/detail/cpp/coord.hpp>
 #include <tinypbrt/detail/cpp/error.hpp>
+#include <tinypbrt/detail/cpp/export.hpp>
 #include <tinypbrt/detail/cpp/film.hpp>
 #include <tinypbrt/detail/cpp/filter.hpp>
 #include <tinypbrt/detail/cpp/integrator.hpp>

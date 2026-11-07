@@ -59,9 +59,9 @@ CheckOptions:
 
     # --- Constants, macros, enumerators ---
     readability-identifier-naming.EnumConstantCase:       UPPER_CASE
-    readability-identifier-naming.StaticConstantCase:     UPPER_CASE
-    readability-identifier-naming.StaticConstexprVariableCase:     UPPER_CASE
-    readability-identifier-naming.ConstexprVariableCase:  UPPER_CASE
+    readability-identifier-naming.StaticConstantCase:     CamelCase
+    readability-identifier-naming.StaticConstexprVariableCase:     CamelCase
+    readability-identifier-naming.ConstexprVariableCase:  CamelCase
     readability-identifier-naming.MacroDefinitionCase:    UPPER_CASE
     readability-identifier-naming.MacroDefinitionIgnoredRegexp:   '^_?[A-Z][A-Z0-9_]*_?$'
 

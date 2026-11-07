@@ -3,6 +3,7 @@ project(tinypbrt VERSION 1.0.1 LANGUAGES C CXX)
 
 option(BUILD_SHARED_LIBS 					"Build shared library" 			OFF)
 option(TINYPBRT_BUILD_SHARED 				"Build tinypbrt as a shared library" 	${BUILD_SHARED_LIBS})
+option(TINYPBRT_BUILD_CPP_WRAPPER 			"Build the C++ wrapper (tinypbrt::tinypbrt_cpp)" 	ON)
 option(TINYPBRT_BUILD_TESTS 				"Build tests"			 		${PROJECT_IS_TOP_LEVEL})
 option(TINYPBRT_BUILD_BENCHMARK  			"Build benchmark" 				${PROJECT_IS_TOP_LEVEL})
 option(TINYPBRT_BUILD_COVERAGE 				"Enable coverage reporting" 	${PROJECT_IS_TOP_LEVEL})

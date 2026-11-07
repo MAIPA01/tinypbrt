@@ -4,6 +4,7 @@
 
 #include <tinypbrt/detail/export.h>
 
+#include <float.h>
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -66,6 +67,18 @@ extern "C" {
  * @ingroup tinypbrt-public
  */
 #define TPBRT_FLT_MAX FLT_MAX
+
+/**
+ * @brief Anonymous union holding anonymous structs (`TPBRT_ANONYMOUS_UNION { struct { float x, y; }; float v[2]; }`).
+ * Standard in C11, but anonymous structs are an extension in ISO C++: `__extension__` silences -Wpedantic
+ * for GCC/Clang when the headers are included from C++ (the C++ wrapper or user code built with -Wpedantic).
+ * @ingroup tinypbrt-public
+ */
+#if defined(__GNUC__) || defined(__clang__)
+	#define TPBRT_ANONYMOUS_UNION __extension__ union
+#else
+	#define TPBRT_ANONYMOUS_UNION union
+#endif
 
 #pragma endregion
 

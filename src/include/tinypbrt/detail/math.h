@@ -73,7 +73,7 @@ extern "C" {
 	 * @ingroup math-public
 	 */
 	typedef struct tpbrt_vec2_t {
-		union {
+		TPBRT_ANONYMOUS_UNION {
 			struct {
 				union {
 					/// @brief First vector component.
@@ -96,7 +96,7 @@ extern "C" {
 	 * @ingroup math-public
 	 */
 	typedef struct tpbrt_vec3_t {
-		union {
+		TPBRT_ANONYMOUS_UNION {
 			struct {
 				union {
 					/// @brief First vector component.
@@ -124,7 +124,7 @@ extern "C" {
 	 * @ingroup math-public
 	 */
 	typedef struct tpbrt_vec4_t {
-		union {
+		TPBRT_ANONYMOUS_UNION {
 			struct {
 				union {
 					/// @brief First vector component.
@@ -179,7 +179,7 @@ extern "C" {
 	 * @ingroup math-public
 	 */
 	typedef struct tpbrt_mat4_t {
-		union {
+		TPBRT_ANONYMOUS_UNION {
 			struct {
 				/// @brief First row.
 				tpbrt_mat4_row_t row0;
