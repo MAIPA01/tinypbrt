@@ -8,6 +8,7 @@
 
 #include <string_view>
 #include <tuple>
+#include <type_traits>
 
 namespace tpbrt {
 	/**
@@ -35,11 +36,12 @@ namespace tpbrt {
 	 * @ingroup accelerator-cpp-public
 	 */
 	[[nodiscard]] constexpr std::string_view to_string(const accelerator_type type) noexcept {
+		using enum accelerator_type;
 			switch (type) {
-			case accelerator_type::BVH:		return "bvh";
-			case accelerator_type::KD_TREE: return "kdtree";
-			case accelerator_type::MAX_NUM: return "maxnum";
-			default:						return "UNKNOWN";
+			case BVH:	  return "bvh";
+			case KD_TREE: return "kdtree";
+			case MAX_NUM: return "maxnum";
+			default:	  return "UNKNOWN";
 			}
 	}
 
@@ -67,13 +69,14 @@ namespace tpbrt {
 	 * @ingroup accelerator-cpp-public
 	 */
 	[[nodiscard]] constexpr std::string_view to_string(const accelerator_bvh_split_method method) noexcept {
+		using enum accelerator_bvh_split_method;
 			switch (method) {
-			case accelerator_bvh_split_method::SAH:		return "sah";
-			case accelerator_bvh_split_method::MIDDLE:	return "middle";
-			case accelerator_bvh_split_method::EQUAL:	return "equal";
-			case accelerator_bvh_split_method::HLBVH:	return "hlbvh";
-			case accelerator_bvh_split_method::MAX_NUM: return "maxnum";
-			default:									return "UNKNOWN";
+			case SAH:	  return "sah";
+			case MIDDLE:  return "middle";
+			case EQUAL:	  return "equal";
+			case HLBVH:	  return "hlbvh";
+			case MAX_NUM: return "maxnum";
+			default:	  return "UNKNOWN";
 			}
 	}
 
@@ -89,38 +92,30 @@ namespace tpbrt {
 		using reflect_type = std::tuple<uint_t, accelerator_bvh_split_method>;
 
 	private:
-		/// @brief C bvh parameters struct.
+		/// @brief C native struct.
 		native_type _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr accelerator_bvh_params(const native_type& native) noexcept : _native(native) {} // NOLINT
 
-		/// @brief Default copy constructor.
-		constexpr accelerator_bvh_params(const accelerator_bvh_params&) noexcept = default;
-		/// @brief Default move constructor.
-		constexpr accelerator_bvh_params(accelerator_bvh_params&&) noexcept		 = default;
-
-		/// @brief Default destructor.
-		constexpr ~accelerator_bvh_params() noexcept							 = default;
-
-		/// @brief Convertion assign operator.
+		/// @brief C to C++ wrapper convertion assign operator.
 		constexpr accelerator_bvh_params& operator=(const native_type& native) noexcept {
 			_native = native;
 			return *this;
 		}
 
-		/// @brief Default copy assign operator.
-		constexpr accelerator_bvh_params& operator=(const accelerator_bvh_params&) noexcept = default;
-		/// @brief Default move assign operator.
-		constexpr accelerator_bvh_params& operator=(accelerator_bvh_params&&) noexcept		= default;
-
-		/// @brief Returns max node prims value.
+		/// @brief Returns max_node_prims value.
 		[[nodiscard]] constexpr uint_t max_node_prims() const noexcept { return _native.max_node_prims; }
 
-		/// @brief Returns split method value.
+		/// @brief Returns split_method value.
 		[[nodiscard]] constexpr accelerator_bvh_split_method split_method() const noexcept {
 			return static_cast<accelerator_bvh_split_method>(_native.split_method);
+		}
+
+		/// @brief Conversion operator to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(max_node_prims(), split_method());
 		}
 
 		/// @brief Conversion operator to native type.
@@ -135,11 +130,6 @@ namespace tpbrt {
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator native_type*() noexcept { return &_native; } // NOLINT
 
-		/// @brief Conversion operator to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-			return std::make_tuple(max_node_prims(), split_method());
-		}
-
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const accelerator_bvh_params& rhs) const noexcept {
 			return reflect() <=> rhs.reflect();
@@ -147,15 +137,12 @@ namespace tpbrt {
 
 		/// @brief Equal operator.
 		[[nodiscard]] constexpr bool operator==(const accelerator_bvh_params& rhs) const noexcept {
-			return operator<=>(rhs) == 0;
+			return max_node_prims() == rhs.max_node_prims() && split_method() == rhs.split_method();
 		}
-
-		/// @brief Not equal operator.
-		[[nodiscard]] constexpr bool operator!=(const accelerator_bvh_params& rhs) const noexcept { return !operator==(rhs); }
 	};
 
 	/**
-	 * @brief C++ wrapper for tpbrt_accelerator_kd_tree_params_t
+	 * @brief C++ wrapper for tpbrt_accelerator_kd_tree_params_t.
 	 * @ingroup accelerator-cpp-public
 	 */
 	struct accelerator_kd_tree_params {
@@ -166,7 +153,7 @@ namespace tpbrt {
 		using reflect_type = std::tuple<uint_t, uint_t, float_t, uint_t, int_t>;
 
 	private:
-		/// @brief C bvh parameters struct.
+		/// @brief C native struct.
 		native_type _native;
 
 	public:
@@ -174,24 +161,11 @@ namespace tpbrt {
 		constexpr accelerator_kd_tree_params(const native_type& native) noexcept // NOLINT
 			: _native(native) {}
 
-		/// @brief Default copy constructor.
-		constexpr accelerator_kd_tree_params(const accelerator_kd_tree_params&) noexcept = default;
-		/// @brief Default move constructor.
-		constexpr accelerator_kd_tree_params(accelerator_kd_tree_params&&) noexcept		 = default;
-
-		/// @brief Default destructor.
-		constexpr ~accelerator_kd_tree_params() noexcept								 = default;
-
-		/// @brief Convertion assign operator.
+		/// @brief C to C++ wrapper convertion assign operator.
 		constexpr accelerator_kd_tree_params& operator=(const native_type& native) noexcept {
 			_native = native;
 			return *this;
 		}
-
-		/// @brief Default copy assign operator.
-		constexpr accelerator_kd_tree_params& operator=(const accelerator_kd_tree_params&) noexcept = default;
-		/// @brief Default move assign operator.
-		constexpr accelerator_kd_tree_params& operator=(accelerator_kd_tree_params&&) noexcept		= default;
 
 		/// @brief Returns intersect_cost value.
 		[[nodiscard]] constexpr uint_t intersect_cost() const noexcept { return _native.intersect_cost; }
@@ -208,6 +182,11 @@ namespace tpbrt {
 		/// @brief Returns max_depth value.
 		[[nodiscard]] constexpr int_t max_depth() const noexcept { return _native.max_depth; }
 
+		/// @brief Conversion operator to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(intersect_cost(), traversal_cost(), empty_bonus(), max_prims(), max_depth());
+		}
+
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] operator const native_type&() const noexcept { return _native; } // NOLINT
 
@@ -220,12 +199,6 @@ namespace tpbrt {
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] operator native_type*() noexcept { return &_native; } // NOLINT
 
-		/// @brief Conversion operator to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-			return std::make_tuple(_native.intersect_cost, _native.traversal_cost, _native.empty_bonus, _native.max_prims,
-			  _native.max_depth);
-		}
-
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const accelerator_kd_tree_params& rhs) const noexcept {
 			return reflect() <=> rhs.reflect();
@@ -233,58 +206,46 @@ namespace tpbrt {
 
 		/// @brief Equal operator.
 		[[nodiscard]] constexpr bool operator==(const accelerator_kd_tree_params& rhs) const noexcept {
-			return operator<=>(rhs) == 0;
+			return intersect_cost() == rhs.intersect_cost() && traversal_cost() == rhs.traversal_cost() &&
+				   empty_bonus() == rhs.empty_bonus() && max_prims() == rhs.max_prims() && max_depth() == rhs.max_depth();
 		}
-
-		/// @brief Not equal operator.
-		[[nodiscard]] constexpr bool operator!=(const accelerator_kd_tree_params& rhs) const noexcept { return !operator==(rhs); }
 	};
 
 	/**
-	 * @brief C++ wrapper for tpbrt_accelerator_t
+	 * @brief C++ wrapper for tpbrt_accelerator_t.
 	 * @ingroup accelerator-cpp-public
 	 */
 	struct accelerator {
 		/// @brief Native C library type for this struct.
 		using native_type  = tpbrt_accelerator_t;
 
+		/// @brief Type used for better reading tagged union of parameters.
+		using variant_type = optional_variant<accelerator_bvh_params, accelerator_kd_tree_params>;
+
 		/// @brief Type used for reflection.
-		using reflect_type = optional_variant<accelerator_bvh_params, accelerator_kd_tree_params>;
+		using reflect_type = std::tuple<variant_type, accelerator_type>;
 
 	private:
-		/// @brief C bvh parameters struct.
+		/// @brief C native struct.
 		native_type _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr accelerator(const native_type& native) noexcept : _native(native) {} // NOLINT
 
-		/// @brief Default copy constructor.
-		constexpr accelerator(const accelerator&) noexcept = default;
-		/// @brief Default move constructor.
-		constexpr accelerator(accelerator&&) noexcept	   = default;
-
-		/// @brief Default destructor.
-		constexpr ~accelerator() noexcept				   = default;
-
-		/// @brief Convertion assign operator.
+		/// @brief C to C++ wrapper convertion assign operator.
 		constexpr accelerator& operator=(const native_type& native) noexcept {
 			_native = native;
 			return *this;
 		}
 
-		/// @brief Default copy assign operator.
-		constexpr accelerator& operator=(const accelerator& rhs) noexcept = default;
-		/// @brief Default move assign operator.
-		constexpr accelerator& operator=(accelerator&&) noexcept		  = default;
-
 		/// @brief Returns type value.
 		[[nodiscard]] constexpr accelerator_type type() const noexcept { return static_cast<accelerator_type>(_native.type); }
 
-		/// @brief Returns if accelerator type is bvh.
+		/// @brief Returns if type is bvh.
 		[[nodiscard]] constexpr bool is_bvh() const noexcept { return type() == accelerator_type::BVH; }
 
-		/// @brief Returns if accelerator type is kd tree.
+		/// @brief Returns if type is kd tree.
 		[[nodiscard]] constexpr bool is_kd_tree() const noexcept { return type() == accelerator_type::KD_TREE; }
 
 		/// @brief Returns accelerator parameters as bvh.
@@ -299,12 +260,35 @@ namespace tpbrt {
 			return _native.as.kd_tree;
 		}
 
-		/// @brief Visits accelerator parameters.
-		constexpr auto visit(const auto visitor) const noexcept {
-			const reflect_type res = reflect();
-				if (res.has_value()) { return; }
-			return std::visit(visitor, res);
+		/// @brief Conversion operator to variant.
+		[[nodiscard]] constexpr variant_type to_variant() const noexcept {
+			using enum accelerator_type;
+				switch (type()) {
+				case BVH:	  return _native.as.bvh;
+				case KD_TREE: return _native.as.kd_tree;
+				case MAX_NUM: [[fallthrough]];
+				default:	  break;
+				}
+			return std::nullopt;
 		}
+
+		/// @brief Visits accelerator parameters.
+		constexpr auto visit(const auto& visitor) const noexcept {
+			const variant_type res = to_variant();
+
+			using return_type	   = decltype(std::visit(visitor, res.value()));
+
+				if constexpr (std::is_void_v<return_type>) {
+						if (res.has_value()) { return std::visit(visitor, res.value()); }
+				}
+				else {
+						if (res.has_value()) { return std::optional<return_type>(std::visit(visitor, res.value())); }
+					return std::optional<return_type>(std::nullopt);
+				}
+		}
+
+		/// @brief Conversion operator to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(to_variant(), type()); }
 
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
@@ -318,25 +302,16 @@ namespace tpbrt {
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator native_type*() noexcept { return &_native; } // NOLINT
 
-		/// @brief Conversion operator to variant.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-				switch (_native.type) {
-				case TPBRT_ACCELERATOR_TYPE_BVH:	 return _native.as.bvh;
-				case TPBRT_ACCELERATOR_TYPE_KD_TREE: return _native.as.kd_tree;
-				case TPBRT_ACCELERATOR_TYPE_MAX_NUM: [[fallthrough]];
-				default:							 break;
-				}
-			return std::nullopt;
+		/// @brief Space ship operator.
+		[[nodiscard]] constexpr auto operator<=>(const accelerator& rhs) const noexcept {
+			return to_variant() <=> rhs.to_variant();
 		}
 
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const accelerator& rhs) const noexcept { return reflect() <=> rhs.reflect(); }
-
 		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const accelerator& rhs) const noexcept { return operator<=>(rhs) == 0; }
-
-		/// @brief Not equal operator.
-		[[nodiscard]] constexpr bool operator!=(const accelerator& rhs) const noexcept { return !operator==(rhs); }
+		[[nodiscard]] constexpr bool operator==(const accelerator& rhs) const noexcept {
+				if (type() != rhs.type()) { return false; }
+			return to_variant() == rhs.to_variant();
+		}
 	};
 } // namespace tpbrt
 #endif // _TINYPBRT_ACCELERATOR_HPP_

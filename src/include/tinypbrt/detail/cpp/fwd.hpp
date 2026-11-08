@@ -67,6 +67,11 @@ namespace tpbrt {
 	 */
 	static constexpr auto FltMax   = TPBRT_FLT_MAX;
 
+	/**
+	 * @brief Optional variant.
+	 * @tparam Ts Variant types.
+	 * @ingroup tinypbrt-cpp-public
+	 */
 	template<class... Ts>
 	using optional_variant = std::optional<std::variant<Ts...>>;
 
@@ -466,18 +471,10 @@ namespace tpbrt {
 #pragma endregion
 
 #pragma region CAMERA
-	/**
-	 * @copybrief tpbrt_camera_t
-	 * @ingroup camera-cpp-public
-	 */
 	struct camera;
 #pragma endregion
 
 #pragma region ACCELERATOR
-	/**
-	 * @copybrief tpbrt_accelerator_t
-	 * @ingroup accelerator-cpp-public
-	 */
 	struct accelerator;
 #pragma endregion
 } // namespace tpbrt
