@@ -20,6 +20,18 @@ extern "C" {
 	 */
 
 /**
+ * @brief Invalid texture handle initialization.
+ * @ingroup texture-private
+ */
+#define TPBRT_TEXTURE_HANDLE_INVALID_INIT                                                                      \
+	{ .as.texture_idx = TPBRT_TEXTURE_IDX_INVALID, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX }
+/**
+ * @brief Invalid texture handle initialization with type conversion.
+ * @ingroup texture-private
+ */
+#define TPBRT_TEXTURE_HANDLE_INVALID (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_INVALID_INIT
+
+/**
  * @brief Texture handle initialization with texture index.
  * @param idx Texture index.
  * @ingroup texture-private

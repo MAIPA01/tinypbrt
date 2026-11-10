@@ -1,122 +1,181 @@
 #pragma once
-#ifndef _TINYPBRT_SCATTERING_H_
-#define _TINYPBRT_SCATTERING_H_
+#ifndef _TINYPBRT_SCATTERING_HPP_
+#define _TINYPBRT_SCATTERING_HPP_
 
-#include <tinypbrt/detail/fwd.h>
+#include <tinypbrt/detail/cpp/fwd.hpp>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <tinypbrt/detail/scattering.h>
 
+#include <string_view>
+
+namespace tpbrt {
 	/**
-	 * @defgroup scattering-public Scattering
-	 * @ingroup tinypbrt-public
+	 * @defgroup scattering-cpp-public Scattering
+	 * @ingroup tinypbrt-cpp-public
 	 */
 
 	/**
-	 * @brief Scattering builtins.
-	 * @ingroup scattering-public
+	 * @copybrief tpbrt_scattering_builtin_t
+	 * @ingroup scattering-cpp-public
 	 */
-	typedef enum tpbrt_scattering_builtin_t {
-		/// @brief Apple.
-		TPBRT_SCATTERING_BUILTIN_APPLE						 = 0,
-		/// @brief Chicken 1.
-		TPBRT_SCATTERING_BUILTIN_CHICKEN_1					 = 1,
-		/// @brief Chicken 2.
-		TPBRT_SCATTERING_BUILTIN_CHICKEN_2					 = 2,
-		/// @brief Cream.
-		TPBRT_SCATTERING_BUILTIN_CREAM						 = 3,
-		/// @brief Ketchup.
-		TPBRT_SCATTERING_BUILTIN_KETCHUP					 = 4,
-		/// @brief Marble.
-		TPBRT_SCATTERING_BUILTIN_MARBLE						 = 5,
-		/// @brief Potato.
-		TPBRT_SCATTERING_BUILTIN_POTATO						 = 6,
-		/// @brief Skim milk.
-		TPBRT_SCATTERING_BUILTIN_SKIM_MILK					 = 7,
-		/// @brief Skin 1.
-		TPBRT_SCATTERING_BUILTIN_SKIN_1						 = 8,
-		/// @brief Skin 2.
-		TPBRT_SCATTERING_BUILTIN_SKIN_2						 = 9,
-		/// @brief Spectralon.
-		TPBRT_SCATTERING_BUILTIN_SPECTRALON					 = 10,
-		/// @brief Whole milk.
-		TPBRT_SCATTERING_BUILTIN_WHOLE_MILK					 = 11,
-		/// @brief Low fat milk.
-		TPBRT_SCATTERING_BUILTIN_LOW_FAT_MILK				 = 12,
-		/// @brief Reduced milk.
-		TPBRT_SCATTERING_BUILTIN_REDUCED_MILK				 = 13,
-		/// @brief Regular milk.
-		TPBRT_SCATTERING_BUILTIN_REGULAR_MILK				 = 14,
-		/// @brief Espresso.
-		TPBRT_SCATTERING_BUILTIN_ESPRESSO					 = 15,
-		/// @brief Mint mocha coffee.
-		TPBRT_SCATTERING_BUILTIN_MINT_MOCHA_COFFEE			 = 16,
-		/// @brief Low fat soy milk.
-		TPBRT_SCATTERING_BUILTIN_LOW_FAT_SOY_MILK			 = 17,
-		/// @brief Regular soy milk.
-		TPBRT_SCATTERING_BUILTIN_REGULAR_SOY_MILK			 = 18,
-		/// @brief Low fat chocolate milk.
-		TPBRT_SCATTERING_BUILTIN_LOW_FAT_CHOCOLATE_MILK		 = 19,
-		/// @brief Regular chocolate milk.
-		TPBRT_SCATTERING_BUILTIN_REGULAR_CHOCOLATE_MILK		 = 20,
-		/// @brief Coke.
-		TPBRT_SCATTERING_BUILTIN_COKE						 = 21,
-		/// @brief Pepsi.
-		TPBRT_SCATTERING_BUILTIN_PEPSI						 = 22,
-		/// @brief Sprite.
-		TPBRT_SCATTERING_BUILTIN_SPRITE						 = 23,
-		/// @brief Gatorade.
-		TPBRT_SCATTERING_BUILTIN_GATORADE					 = 24,
-		/// @brief Chardonnay.
-		TPBRT_SCATTERING_BUILTIN_CHARDONNAY					 = 25,
-		/// @brief White Zinfandel.
-		TPBRT_SCATTERING_BUILTIN_WHITE_ZINFANDEL			 = 26,
-		/// @brief Merlot.
-		TPBRT_SCATTERING_BUILTIN_MERLOT						 = 27,
-		/// @brief Budweiser beer.
-		TPBRT_SCATTERING_BUILTIN_BUDWEISER_BEER				 = 28,
-		/// @brief Coors light beer.
-		TPBRT_SCATTERING_BUILTIN_COORS_LIGHT_BEER			 = 29,
-		/// @brief Clorox.
-		TPBRT_SCATTERING_BUILTIN_CLOROX						 = 30,
-		/// @brief Apple juice.
-		TPBRT_SCATTERING_BUILTIN_APPLE_JUICE				 = 31,
-		/// @brief Cranberry juice.
-		TPBRT_SCATTERING_BUILTIN_CRANBERRY_JUICE			 = 32,
-		/// @brief Grape juice.
-		TPBRT_SCATTERING_BUILTIN_GRAPE_JUICE				 = 33,
-		/// @brief Ruby grapefruit juice.
-		TPBRT_SCATTERING_BUILTIN_RUBY_GRAPEFRUIT_JUICE		 = 34,
-		/// @brief White grapefruit juice.
-		TPBRT_SCATTERING_BUILTIN_WHITE_GRAPEFRUIT_JUICE		 = 35,
-		/// @brief Shampoo.
-		TPBRT_SCATTERING_BUILTIN_SHAMPOO					 = 36,
-		/// @brief Strawberry shampoo.
-		TPBRT_SCATTERING_BUILTIN_STRAWBERRY_SHAMPOO			 = 37,
-		/// @brief Head & Shoulders shampoo.
-		TPBRT_SCATTERING_BUILTIN_HEAD_AND_SHOULDERS_SHAMPOO	 = 38,
-		/// @brief Lemon tea powder.
-		TPBRT_SCATTERING_BUILTIN_LEMON_TEA_POWDER			 = 39,
-		/// @brief Orange powder.
-		TPBRT_SCATTERING_BUILTIN_ORANGE_POWDER				 = 40,
-		/// @brief Pink lemonade powder.
-		TPBRT_SCATTERING_BUILTIN_PINK_LEMONADE_POWDER		 = 41,
-		/// @brief Cappuccino powder.
-		TPBRT_SCATTERING_BUILTIN_CAPPUCCINO_POWDER			 = 42,
-		/// @brief Salt powder.
-		TPBRT_SCATTERING_BUILTIN_SALT_POWDER				 = 43,
-		/// @brief Sugar powder.
-		TPBRT_SCATTERING_BUILTIN_SUGAR_POWDER				 = 44,
-		/// @brief Mocha powder.
-		TPBRT_SCATTERING_BUILTIN_SUISSE_MOCHA_POWDER		 = 45,
-		/// @brief Pacific ocean surface water.
-		TPBRT_SCATTERING_BUILTIN_PACIFIC_OCEAN_SURFACE_WATER = 46,
-		/// @brief Count of available scattering builtins.
-		TPBRT_SCATTERING_BUILTIN_MAX_NUM					 = 47,
-	} tpbrt_scattering_builtin_t;
+	enum class scattering_builtin {
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_APPLE
+		APPLE						= TPBRT_SCATTERING_BUILTIN_APPLE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_CHICKEN_1
+		CHICKEN_1					= TPBRT_SCATTERING_BUILTIN_CHICKEN_1,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_CHICKEN_2
+		CHICKEN_2					= TPBRT_SCATTERING_BUILTIN_CHICKEN_2,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_CREAM
+		CREAM						= TPBRT_SCATTERING_BUILTIN_CREAM,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_KETCHUP
+		KETCHUP						= TPBRT_SCATTERING_BUILTIN_KETCHUP,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_MARBLE
+		MARBLE						= TPBRT_SCATTERING_BUILTIN_MARBLE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_POTATO
+		POTATO						= TPBRT_SCATTERING_BUILTIN_POTATO,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SKIM_MILK
+		SKIM_MILK					= TPBRT_SCATTERING_BUILTIN_SKIM_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SKIN_1
+		SKIN_1						= TPBRT_SCATTERING_BUILTIN_SKIN_1,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SKIN_2
+		SKIN_2						= TPBRT_SCATTERING_BUILTIN_SKIN_2,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SPECTRALON
+		SPECTRALON					= TPBRT_SCATTERING_BUILTIN_SPECTRALON,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_WHOLE_MILK
+		WHOLE_MILK					= TPBRT_SCATTERING_BUILTIN_WHOLE_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_LOW_FAT_MILK
+		LOW_FAT_MILK				= TPBRT_SCATTERING_BUILTIN_LOW_FAT_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_REDUCED_MILK
+		REDUCED_MILK				= TPBRT_SCATTERING_BUILTIN_REDUCED_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_REGULAR_MILK
+		REGULAR_MILK				= TPBRT_SCATTERING_BUILTIN_REGULAR_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_ESPRESSO
+		ESPRESSO					= TPBRT_SCATTERING_BUILTIN_ESPRESSO,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_MINT_MOCHA_COFFEE
+		MINT_MOCHA_COFFEE			= TPBRT_SCATTERING_BUILTIN_MINT_MOCHA_COFFEE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_LOW_FAT_SOY_MILK
+		LOW_FAT_SOY_MILK			= TPBRT_SCATTERING_BUILTIN_LOW_FAT_SOY_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_REGULAR_SOY_MILK
+		REGULAR_SOY_MILK			= TPBRT_SCATTERING_BUILTIN_REGULAR_SOY_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_LOW_FAT_CHOCOLATE_MILK
+		LOW_FAT_CHOCOLATE_MILK		= TPBRT_SCATTERING_BUILTIN_LOW_FAT_CHOCOLATE_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_REGULAR_CHOCOLATE_MILK
+		REGULAR_CHOCOLATE_MILK		= TPBRT_SCATTERING_BUILTIN_REGULAR_CHOCOLATE_MILK,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_COKE
+		COKE						= TPBRT_SCATTERING_BUILTIN_COKE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_PEPSI
+		PEPSI						= TPBRT_SCATTERING_BUILTIN_PEPSI,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SPRITE
+		SPRITE						= TPBRT_SCATTERING_BUILTIN_SPRITE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_GATORADE
+		GATORADE					= TPBRT_SCATTERING_BUILTIN_GATORADE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_CHARDONNAY
+		CHARDONNAY					= TPBRT_SCATTERING_BUILTIN_CHARDONNAY,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_WHITE_ZINFANDEL
+		WHITE_ZINFANDEL				= TPBRT_SCATTERING_BUILTIN_WHITE_ZINFANDEL,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_MERLOT
+		MERLOT						= TPBRT_SCATTERING_BUILTIN_MERLOT,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_BUDWEISER_BEER
+		BUDWEISER_BEER				= TPBRT_SCATTERING_BUILTIN_BUDWEISER_BEER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_COORS_LIGHT_BEER
+		COORS_LIGHT_BEER			= TPBRT_SCATTERING_BUILTIN_COORS_LIGHT_BEER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_CLOROX
+		CLOROX						= TPBRT_SCATTERING_BUILTIN_CLOROX,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_APPLE_JUICE
+		APPLE_JUICE					= TPBRT_SCATTERING_BUILTIN_APPLE_JUICE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_CRANBERRY_JUICE
+		CRANBERRY_JUICE				= TPBRT_SCATTERING_BUILTIN_CRANBERRY_JUICE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_GRAPE_JUICE
+		GRAPE_JUICE					= TPBRT_SCATTERING_BUILTIN_GRAPE_JUICE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_RUBY_GRAPEFRUIT_JUICE
+		RUBY_GRAPEFRUIT_JUICE		= TPBRT_SCATTERING_BUILTIN_RUBY_GRAPEFRUIT_JUICE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_WHITE_GRAPEFRUIT_JUICE
+		WHITE_GRAPEFRUIT_JUICE		= TPBRT_SCATTERING_BUILTIN_WHITE_GRAPEFRUIT_JUICE,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SHAMPOO
+		SHAMPOO						= TPBRT_SCATTERING_BUILTIN_SHAMPOO,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_STRAWBERRY_SHAMPOO
+		STRAWBERRY_SHAMPOO			= TPBRT_SCATTERING_BUILTIN_STRAWBERRY_SHAMPOO,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_HEAD_AND_SHOULDERS_SHAMPOO
+		HEAD_AND_SHOULDERS_SHAMPOO	= TPBRT_SCATTERING_BUILTIN_HEAD_AND_SHOULDERS_SHAMPOO,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_LEMON_TEA_POWDER
+		LEMON_TEA_POWDER			= TPBRT_SCATTERING_BUILTIN_LEMON_TEA_POWDER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_ORANGE_POWDER
+		ORANGE_POWDER				= TPBRT_SCATTERING_BUILTIN_ORANGE_POWDER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_PINK_LEMONADE_POWDER
+		PINK_LEMONADE_POWDER		= TPBRT_SCATTERING_BUILTIN_PINK_LEMONADE_POWDER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_CAPPUCCINO_POWDER
+		CAPPUCCINO_POWDER			= TPBRT_SCATTERING_BUILTIN_CAPPUCCINO_POWDER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SALT_POWDER
+		SALT_POWDER					= TPBRT_SCATTERING_BUILTIN_SALT_POWDER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SUGAR_POWDER
+		SUGAR_POWDER				= TPBRT_SCATTERING_BUILTIN_SUGAR_POWDER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_SUISSE_MOCHA_POWDER
+		SUISSE_MOCHA_POWDER			= TPBRT_SCATTERING_BUILTIN_SUISSE_MOCHA_POWDER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_PACIFIC_OCEAN_SURFACE_WATER
+		PACIFIC_OCEAN_SURFACE_WATER = TPBRT_SCATTERING_BUILTIN_PACIFIC_OCEAN_SURFACE_WATER,
+		/// @copybrief TPBRT_SCATTERING_BUILTIN_MAX_NUM
+		MAX_NUM						= TPBRT_SCATTERING_BUILTIN_MAX_NUM,
+	};
 
-#ifdef __cplusplus
-}
-#endif
-#endif // _TINYPBRT_SCATTERING_H_
+	/**
+	 * @brief Converts scattering_builtin enum value to string.
+	 * @param builtin Scattering builtin.
+	 * @return String value of media type.
+	 * @ingroup scattering-cpp-public
+	 */
+	[[nodiscard]] constexpr std::string_view to_string(const scattering_builtin builtin) noexcept {
+		using enum scattering_builtin;
+			switch (builtin) {
+			case APPLE:						  return "Apple";
+			case CHICKEN_1:					  return "Chicken1";
+			case CHICKEN_2:					  return "Chicken2";
+			case CREAM:						  return "Cream";
+			case KETCHUP:					  return "Ketchup";
+			case MARBLE:					  return "Marble";
+			case POTATO:					  return "Potato";
+			case SKIM_MILK:					  return "Skimmilk";
+			case SKIN_1:					  return "Skin1";
+			case SKIN_2:					  return "Skin2";
+			case SPECTRALON:				  return "Spectralon";
+			case WHOLE_MILK:				  return "Wholemilk";
+			case LOW_FAT_MILK:				  return "Lowfat Milk";
+			case REDUCED_MILK:				  return "Reduced Milk";
+			case REGULAR_MILK:				  return "Regular Milk";
+			case ESPRESSO:					  return "Espresso";
+			case MINT_MOCHA_COFFEE:			  return "Mint Mocha Coffee";
+			case LOW_FAT_SOY_MILK:			  return "Lowfat Soy Milk";
+			case REGULAR_SOY_MILK:			  return "Regular Soy Milk";
+			case LOW_FAT_CHOCOLATE_MILK:	  return "Lowfat Chocolate Milk";
+			case REGULAR_CHOCOLATE_MILK:	  return "Regular Chocolate Milk";
+			case COKE:						  return "Coke";
+			case PEPSI:						  return "Pepsi";
+			case SPRITE:					  return "Sprite";
+			case GATORADE:					  return "Gatorade";
+			case CHARDONNAY:				  return "Chardonnay";
+			case WHITE_ZINFANDEL:			  return "White Zinfandel";
+			case MERLOT:					  return "Merlot";
+			case BUDWEISER_BEER:			  return "Budweiser Beer";
+			case COORS_LIGHT_BEER:			  return "Coors Light Beer";
+			case CLOROX:					  return "Clorox";
+			case APPLE_JUICE:				  return "Apple Juice";
+			case CRANBERRY_JUICE:			  return "Cranberry Juice";
+			case GRAPE_JUICE:				  return "Grape Juice";
+			case RUBY_GRAPEFRUIT_JUICE:		  return "Ruby Grapefruit Juice";
+			case WHITE_GRAPEFRUIT_JUICE:	  return "White Grapefruit Juice";
+			case SHAMPOO:					  return "Shampoo";
+			case STRAWBERRY_SHAMPOO:		  return "Strawberry Shampoo";
+			case HEAD_AND_SHOULDERS_SHAMPOO:  return "Head & Shoulders Shampoo";
+			case LEMON_TEA_POWDER:			  return "Lemon Tea Powder";
+			case ORANGE_POWDER:				  return "Orange Powder";
+			case PINK_LEMONADE_POWDER:		  return "Pink Lemonade Powder";
+			case CAPPUCCINO_POWDER:			  return "Cappuccino Powder";
+			case SALT_POWDER:				  return "Salt Powder";
+			case SUGAR_POWDER:				  return "Sugar Powder";
+			case SUISSE_MOCHA_POWDER:		  return "Suisse Mocha Powder";
+			case PACIFIC_OCEAN_SURFACE_WATER: return "Pacific Ocean Surface Water";
+			case MAX_NUM:					  return "maxnum";
+			default:						  return "UNKNOWN";
+			}
+	}
+} // namespace tpbrt
+#endif // _TINYPBRT_SCATTERING_HPP_

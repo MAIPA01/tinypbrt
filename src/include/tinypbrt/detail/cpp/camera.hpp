@@ -7,6 +7,8 @@
 #include <tinypbrt/detail/camera.h>
 
 #include <tinypbrt/detail/cpp/common.hpp>
+#include <tinypbrt/detail/cpp/media.hpp>
+#include <tinypbrt/detail/cpp/transform.hpp>
 
 #include <algorithm>
 #include <array>
@@ -68,17 +70,11 @@ namespace tpbrt {
 
 	private:
 		/// @brief C bvh parameters struct.
-		native_type _native;
+		const native_type& _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr camera_orthographic_params(const native_type& native) noexcept : _native(native) {} // NOLINT
-
-		/// @brief C to C++ wrapper convertion assign operator.
-		constexpr camera_orthographic_params& operator=(const native_type& native) noexcept {
-			_native = native;
-			return *this;
-		}
 
 		/// @brief Returns frame_aspect_ratio value.
 		[[nodiscard]] constexpr float_t frame_aspect_ratio() const noexcept { return _native.frame_aspect_ratio; }
@@ -94,7 +90,7 @@ namespace tpbrt {
 		/// @brief Returns focal_distance value.s
 		[[nodiscard]] constexpr float_t focal_distance() const noexcept { return _native.focal_distance; }
 
-		/// @brief Conversion operator to tuple.
+		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(frame_aspect_ratio(), screen_window(), lens_radius(), focal_distance());
 		}
@@ -102,14 +98,8 @@ namespace tpbrt {
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
 
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type&() noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
+		/// @brief Conversion operator to pointer to native type.
 		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type*() noexcept { return &_native; } // NOLINT
 
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const camera_orthographic_params& rhs) const noexcept {
@@ -142,18 +132,12 @@ namespace tpbrt {
 
 	private:
 		/// @brief C native struct.
-		native_type _native;
+		const native_type& _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr camera_perspective_params(const native_type& native) noexcept // NOLINT
 			: _native(native) {}
-
-		/// @brief C to C++ wrapper convertion assign operator.
-		constexpr camera_perspective_params& operator=(const native_type& native) noexcept {
-			_native = native;
-			return *this;
-		}
 
 		/// @brief Returns frame_aspect_ratio value.
 		[[nodiscard]] constexpr float_t frame_aspect_ratio() const noexcept { return _native.frame_aspect_ratio; }
@@ -172,7 +156,7 @@ namespace tpbrt {
 		/// @brief Returns fov value.
 		[[nodiscard]] constexpr float_t fov() const noexcept { return _native.fov; }
 
-		/// @brief Conversion operator to tuple.
+		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(frame_aspect_ratio(), screen_window(), lens_radius(), focal_distance(), fov());
 		}
@@ -180,14 +164,8 @@ namespace tpbrt {
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] operator const native_type&() const noexcept { return _native; } // NOLINT
 
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] operator native_type&() noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
+		/// @brief Conversion operator to pointer to native type.
 		[[nodiscard]] operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] operator native_type*() noexcept { return &_native; } // NOLINT
 
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const camera_perspective_params& rhs) const noexcept {
@@ -211,7 +189,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_camera_spherical_mapping_t
 	 * @ingroup camera-cpp-public
 	 */
-	enum class camera_spherical_mapping {
+	enum class camera_spherical_mapping : char_t {
 		/// @copybrief TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA
 		EQUAL_AREA		 = TPBRT_CAMERA_SPHERICAL_MAPPING_EQUAL_AREA,
 		/// @copybrief TPBRT_CAMERA_SPHERICAL_MAPPING_EQUI_RECTANGULAR
@@ -249,37 +227,25 @@ namespace tpbrt {
 
 	private:
 		/// @brief C native struct.
-		native_type _native;
+		const native_type& _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr camera_spherical_params(const tpbrt_camera_spherical_params_t& native) noexcept : _native(native) {} // NOLINT
-
-		/// @brief C to C++ wrapper convertion assign operator.
-		constexpr camera_spherical_params& operator=(const native_type& native) noexcept {
-			_native = native;
-			return *this;
-		}
 
 		/// @brief Returns mapping value.
 		[[nodiscard]] constexpr camera_spherical_mapping mapping() const noexcept {
 			return static_cast<camera_spherical_mapping>(_native.mapping);
 		}
 
-		/// @brief Conversion operator to tuple.
+		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(mapping()); }
 
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
 
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type&() noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
+		/// @brief Conversion operator to pointer to native type.
 		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type*() noexcept { return &_native; } // NOLINT
 
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const camera_spherical_params& rhs) const noexcept {
@@ -296,7 +262,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_camera_realistic_aperture_type_t
 	 * @ingroup camera-cpp-public
 	 */
-	enum class camera_realistic_aperture_type {
+	enum class camera_realistic_aperture_type : char_t {
 		/// @copybrief TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_FILE_NAME
 		FILE_NAME = TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_FILE_NAME,
 		/// @copybrief TPBRT_CAMERA_REALISTIC_APERTURE_TYPE_BUILTIN
@@ -325,7 +291,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_camera_realistic_aperture_builtin_t
 	 * @ingroup camera-cpp-public
 	 */
-	enum class camera_realistic_aperture_builtin {
+	enum class camera_realistic_aperture_builtin : char_t {
 		/// @copybrief TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_CIRCULAR
 		CIRCULAR = TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_CIRCULAR,
 		/// @copybrief TPBRT_CAMERA_REALISTIC_APERTURE_BUILTIN_GAUSSIAN
@@ -368,24 +334,18 @@ namespace tpbrt {
 		using native_type  = tpbrt_camera_realistic_aperture_t;
 
 		/// @brief Type used for better reading tagged union of parameters.
-		using variant_type = optional_variant<camera_realistic_aperture_builtin, std::string_view>;
+		using variant_type = detail::optional_variant<camera_realistic_aperture_builtin, string>;
 
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<variant_type, camera_realistic_aperture_type>;
 
 	private:
 		/// @brief C native struct.
-		native_type _native;
+		const native_type& _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr camera_realistic_aperture(const native_type& native) noexcept : _native(native) {} // NOLINT
-
-		/// @brief C to C++ wrapper convertion assign operator.
-		constexpr camera_realistic_aperture& operator=(const native_type& native) noexcept {
-			_native = native;
-			return *this;
-		}
 
 		/// @brief Returns type value.
 		[[nodiscard]] constexpr camera_realistic_aperture_type type() const noexcept {
@@ -399,9 +359,9 @@ namespace tpbrt {
 		[[nodiscard]] constexpr bool is_builtin() const noexcept { return type() == camera_realistic_aperture_type::BUILTIN; }
 
 		/// @brief Returns camera realistic aperture as file name.
-		[[nodiscard]] constexpr std::optional<std::string_view> as_file_name() const noexcept {
+		[[nodiscard]] constexpr std::optional<string> as_file_name() const noexcept {
 				if (!is_file_name()) { return std::nullopt; }
-			return to_string_view(_native.as.file_name);
+			return _native.as.file_name;
 		}
 
 		/// @brief Returns camera realistic aperture as builtin.
@@ -410,11 +370,11 @@ namespace tpbrt {
 			return static_cast<camera_realistic_aperture_builtin>(_native.as.builtin);
 		}
 
-		/// @brief Conversion operator to variant.
+		/// @brief Conversion to variant.
 		[[nodiscard]] constexpr variant_type to_variant() const noexcept {
 			using enum camera_realistic_aperture_type;
 				switch (type()) {
-				case FILE_NAME: return to_string_view(_native.as.file_name);
+				case FILE_NAME: return _native.as.file_name;
 				case BUILTIN:	return static_cast<camera_realistic_aperture_builtin>(_native.as.builtin);
 				case MAX_NUM:	[[fallthrough]];
 				default:		break;
@@ -437,20 +397,14 @@ namespace tpbrt {
 				}
 		}
 
-		/// @brief Conversion operator to tuple.
+		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(to_variant(), type()); }
 
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
 
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type&() noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
+		/// @brief Conversion operator to pointer to native type.
 		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type*() noexcept { return &_native; } // NOLINT
 
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const camera_realistic_aperture& rhs) const noexcept {
@@ -473,24 +427,18 @@ namespace tpbrt {
 		using native_type  = tpbrt_camera_realistic_params_t;
 
 		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<std::string_view, float_t, float_t, camera_realistic_aperture>;
+		using reflect_type = std::tuple<string, float_t, float_t, camera_realistic_aperture>;
 
 	private:
 		/// @brief C native struct.
-		native_type _native;
+		const native_type& _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr camera_realistic_params(const native_type& native) noexcept : _native(native) {} // NOLINT
 
-		/// @brief C to C++ wrapper convertion assign operator.
-		constexpr camera_realistic_params& operator=(const native_type& native) noexcept {
-			_native = native;
-			return *this;
-		}
-
 		/// @brief Returns lens_file value.
-		[[nodiscard]] constexpr std::string_view lens_file() const noexcept { return to_string_view(_native.lens_file); }
+		[[nodiscard]] constexpr string lens_file() const noexcept { return _native.lens_file; }
 
 		/// @brief Returns aperture_diameter value.
 		[[nodiscard]] constexpr float_t aperture_diameter() const noexcept { return _native.aperture_diameter; }
@@ -501,7 +449,7 @@ namespace tpbrt {
 		/// @brief Returns aperture value.
 		[[nodiscard]] constexpr camera_realistic_aperture aperture() const noexcept { return _native.aperture; }
 
-		/// @brief Conversion operator to tuple.
+		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(lens_file(), aperture_diameter(), focus_distance(), aperture());
 		}
@@ -509,14 +457,8 @@ namespace tpbrt {
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
 
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type&() noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
+		/// @brief Conversion operator to pointer to native type.
 		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type*() noexcept { return &_native; } // NOLINT
 
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const camera_realistic_params& rhs) const noexcept {
@@ -539,8 +481,8 @@ namespace tpbrt {
 		using native_type  = tpbrt_camera_t;
 
 		/// @brief Type used for better reading tagged union of parameters.
-		using variant_type = optional_variant<camera_orthographic_params, camera_perspective_params, camera_spherical_params,
-		  camera_realistic_params>;
+		using variant_type = detail::optional_variant<camera_orthographic_params, camera_perspective_params,
+		  camera_spherical_params, camera_realistic_params>;
 
 		/// @brief Type used for reflection.
 		using reflect_type =
@@ -548,17 +490,11 @@ namespace tpbrt {
 
 	private:
 		/// @brief C native struct.
-		native_type _native;
+		const native_type& _native;
 
 	public:
 		/// @brief C to C++ wrapper conversion constructor.
 		constexpr camera(const native_type& native) noexcept : _native(native) {} // NOLINT
-
-		/// @brief C to C++ wrapper convertion assign operator.
-		constexpr camera& operator=(const native_type& native) noexcept {
-			_native = native;
-			return *this;
-		}
 
 		/// @brief Returns shutter_open value.
 		[[nodiscard]] constexpr float_t shutter_open() const noexcept { return _native.shutter_open; }
@@ -614,7 +550,7 @@ namespace tpbrt {
 			return _native.as.realistic;
 		}
 
-		/// @brief Conversion operator to variant.
+		/// @brief Conversion to variant.
 		[[nodiscard]] constexpr variant_type to_variant() const noexcept {
 			using enum camera_type;
 				switch (type()) {
@@ -643,7 +579,7 @@ namespace tpbrt {
 				}
 		}
 
-		/// @brief Conversion operator to tuple.
+		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(shutter_open(), shutter_close(), transform(), interior_media_handle(), exterior_media_handle(),
 			  to_variant(), type());
@@ -652,22 +588,15 @@ namespace tpbrt {
 		/// @brief Conversion operator to native type.
 		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
 
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type&() noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
+		/// @brief Conversion operator to pointer to native type.
 		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator native_type*() noexcept { return &_native; } // NOLINT
 
 		/// @brief Space ship operator.
 		[[nodiscard]] constexpr auto operator<=>(const camera& rhs) const noexcept { return reflect() <=> rhs.reflect(); }
 
 		/// @brief Equal operator.
 		[[nodiscard]] constexpr bool operator==(const camera& rhs) const noexcept {
-				if (type() != rhs.type()) { return false; }
-			return shutter_open() == rhs.shutter_open() && shutter_close() == rhs.shutter_close() &&
+			return type() == rhs.type() && shutter_open() == rhs.shutter_open() && shutter_close() == rhs.shutter_close() &&
 				   transform() == rhs.transform() && interior_media_handle() == rhs.interior_media_handle() &&
 				   exterior_media_handle() == rhs.exterior_media_handle() && to_variant() == rhs.to_variant();
 		}

@@ -2,6 +2,8 @@
 #ifndef _TINYPBRT_COORD_H_
 #define _TINYPBRT_COORD_H_
 
+#include <tinypbrt/detail/fwd.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

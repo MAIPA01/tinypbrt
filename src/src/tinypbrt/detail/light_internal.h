@@ -49,6 +49,17 @@ extern "C" {
 #pragma endregion
 
 #pragma region AREA_LIGHT
+/**
+ * @brief Invalid area light handle initialization.
+ * @ingroup light-private
+ */
+#define TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT { .area_light_idx = TPBRT_AREA_LIGHT_IDX_INVALID }
+/**
+ * @brief Invalid area light handle initialization with type conversion.
+ * @ingroup light-private
+ */
+#define TPBRT_AREA_LIGHT_HANDLE_INVALID (tpbrt_area_light_handle_t) TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT
+
 	/**
 	 * @brief Returns area light type based on string value.
 	 * @param type_str String which is convertable to area light type.

@@ -8,6 +8,8 @@
  * More info about pbrt-v4 file format you can find here: https://pbrt.org/fileformat-v4
  */
 
+#include <tinypbrt/tinypbrt.h>
+
 #include <tinypbrt/detail/cpp/fwd.hpp>
 
 #include <tinypbrt/detail/cpp/accelerator.hpp>

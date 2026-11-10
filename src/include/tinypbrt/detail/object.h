@@ -52,17 +52,6 @@ extern "C" {
 		tpbrt_object_idx_t object_idx;
 	} tpbrt_object_handle_t;
 
-/**
- * @brief Invalid object handle initialization.
- * @ingroup object-public
- */
-#define TPBRT_OBJECT_HANDLE_INVALID_INIT { .object_idx = TPBRT_OBJECT_IDX_INVALID }
-/**
- * @brief Invalid object handle initialization with type conversion.
- * @ingroup object-public
- */
-#define TPBRT_OBJECT_HANDLE_INVALID (tpbrt_object_handle_t) TPBRT_OBJECT_HANDLE_INVALID_INIT
-
 	/**
 	 * @brief Returns pointer to object with given name.
 	 * @param objects List of objects in which searched object should be.

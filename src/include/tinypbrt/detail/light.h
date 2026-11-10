@@ -209,17 +209,6 @@ extern "C" {
 		tpbrt_area_light_idx_t area_light_idx;
 	} tpbrt_area_light_handle_t;
 
-/**
- * @brief Invalid area light handle initialization.
- * @ingroup light-public
- */
-#define TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT { .area_light_idx = TPBRT_AREA_LIGHT_IDX_INVALID }
-/**
- * @brief Invalid area light handle initialization with type conversion.
- * @ingroup light-public
- */
-#define TPBRT_AREA_LIGHT_HANDLE_INVALID (tpbrt_area_light_handle_t) TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT
-
 	/**
 	 * @brief List of light sources.
 	 * @ingroup light-public

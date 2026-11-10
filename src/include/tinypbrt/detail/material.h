@@ -61,17 +61,6 @@ extern "C" {
 		tpbrt_material_idx_t material_idx;
 	} tpbrt_material_handle_t;
 
-/**
- * @brief Invalid material handle initialization.
- * @ingroup material-public
- */
-#define TPBRT_MATERIAL_HANDLE_INVALID_INIT { .material_idx = TPBRT_MATERIAL_IDX_INVALID }
-/**
- * @brief Invalid material handle initialization with type conversion.
- * @ingroup material-public
- */
-#define TPBRT_MATERIAL_HANDLE_INVALID (tpbrt_material_handle_t) TPBRT_MATERIAL_HANDLE_INVALID_INIT
-
 	/**
 	 * @brief Material bump map types.
 	 * @ingroup material-public

@@ -240,17 +240,6 @@ extern "C" {
 		tpbrt_media_idx_t media_idx;
 	} tpbrt_media_handle_t;
 
-/**
- * @brief Invalid media handle initialization.
- * @ingroup media-public
- */
-#define TPBRT_MEDIA_HANDLE_INVALID_INIT { .media_idx = TPBRT_MEDIA_IDX_INVALID }
-/**
- * @brief Invalid media handle initialization with type conversion.
- * @ingroup media-public
- */
-#define TPBRT_MEDIA_HANDLE_INVALID (tpbrt_media_handle_t) TPBRT_MEDIA_HANDLE_INVALID_INIT
-
 	/**
 	 * @brief Medias list.
 	 * @ingroup media-public

@@ -151,7 +151,7 @@ extern "C" {
 	} tpbrt_error_t;
 
 	/**
-	 * @brief Writes error message to given buffer.
+	 * @brief Writes error message to given buffer. (Preferred buffer size is 128 characters).
 	 * @param error Error code.
 	 * @param buffer Pointer to buffer in which error message will be stored.
 	 * @param buffer_size Size of buffer.

@@ -25,17 +25,6 @@ extern "C" {
 		tpbrt_transform_idx_t transform_idx;
 	} tpbrt_transform_handle_t;
 
-/**
- * @brief Invalid transform handle initialization.
- * @ingroup transform-public
- */
-#define TPBRT_TRANSFORM_HANDLE_INVALID_INIT { .transform_idx = TPBRT_TRANSFORM_IDX_INVALID }
-/**
- * @brief Invalid transform handle initialization with type conversion.
- * @ingroup transform-public
- */
-#define TPBRT_TRANSFORM_HANDLE_INVALID (tpbrt_transform_handle_t) TPBRT_TRANSFORM_HANDLE_INVALID_INIT
-
 	/**
 	 * @brief Animated transform.
 	 * @ingroup transform-public

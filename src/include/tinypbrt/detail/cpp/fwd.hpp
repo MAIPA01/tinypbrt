@@ -5,7 +5,6 @@
 #include <tinypbrt/detail/export.h>
 #include <tinypbrt/detail/fwd.h>
 
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -14,459 +13,337 @@
 namespace tpbrt {
 #pragma region COMMON_DEFINES
 	/**
-	 * @brief NULL value.
+	 * @copybrief TPBRT_FALSE
 	 * @ingroup tinypbrt-cpp-public
 	 */
-	static constexpr auto Null	   = nullptr;
+	static constexpr auto False = TPBRT_FALSE;
+	/**
+	 * @copybrief TPBRT_TRUE
+	 * @ingroup tinypbrt-cpp-public
+	 */
+	static constexpr auto True	= TPBRT_TRUE;
 
-	/**
-	 * @brief False value.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto False	   = TPBRT_FALSE;
-	/**
-	 * @brief True value.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto True	   = TPBRT_TRUE;
+	namespace detail {
+		template<class T, class... Us>
+		constexpr bool is_type_in_v = (std::is_same_v<std::decay_t<T>, std::decay_t<Us>> || ...); // NOLINT
 
-	/**
-	 * @brief Infinity.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto Infinity = TPBRT_INFINITY;
-	/**
-	 * @brief PI.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto Pi	   = TPBRT_PI;
-	/**
-	 * @brief Epsilon.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto Epsilon  = TPBRT_EPSILON;
+		template<class TupleIn, class TupleOut>
+		struct _unique_types_impl;
 
-	/**
-	 * @brief Min int value.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto IntMin   = TPBRT_INT_MIN;
-	/**
-	 * @brief Max int value.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto IntMax   = TPBRT_INT_MAX;
-	/**
-	 * @brief Max uint value.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto UintMax  = TPBRT_UINT_MAX;
-	/**
-	 * @brief Max float value.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	static constexpr auto FltMax   = TPBRT_FLT_MAX;
+		template<class... Us>
+		struct _unique_types_impl<std::tuple<>, std::tuple<Us...>> {
+			using type = std::tuple<Us...>;
+		};
 
-	/**
-	 * @brief Optional variant.
-	 * @tparam Ts Variant types.
-	 * @ingroup tinypbrt-cpp-public
-	 */
-	template<class... Ts>
-	using optional_variant = std::optional<std::variant<Ts...>>;
+		template<class T, class... Ts, class... Us>
+		struct _unique_types_impl<std::tuple<T, Ts...>, std::tuple<Us...>>
+			: _unique_types_impl<std::tuple<Ts...>,
+				std::conditional_t<is_type_in_v<T, Us...>, std::tuple<Us...>, std::tuple<Us..., std::decay_t<T>>>> {};
+
+		template<class T, class... Ts>
+		struct _unique_types_impl<std::tuple<T, Ts...>, std::tuple<>>
+			: _unique_types_impl<std::tuple<Ts...>, std::tuple<std::decay_t<T>>> {};
+
+		template<class... Ts>
+		using unique_types_t = _unique_types_impl<std::tuple<Ts...>, std::tuple<>>::type;
+
+		template<class T>
+		struct _optional_variant;
+
+		template<class... Ts>
+		struct _optional_variant<std::tuple<Ts...>> {
+			using type = std::optional<std::variant<Ts...>>;
+		};
+
+		/**
+		 * @brief Optional variant.
+		 * @tparam Ts Variant types.
+		 * @ingroup tinypbrt-cpp-public
+		 */
+		template<class... Ts>
+		using optional_variant = _optional_variant<unique_types_t<Ts...>>::type;
+	} // namespace detail
 
 #pragma endregion
 
 #pragma region COMMON
 	/**
-	 * @brief Char type.
-	 * @ingroup common-public
+	 * @copybrief tpbrt_char_t
+	 * @ingroup common-cpp-public
 	 */
 	using char_t  = tpbrt_char_t;
 	/**
-	 * @brief Unsigned char type.
-	 * @ingroup common-public
+	 * @copybrief tpbrt_uchar_t
+	 * @ingroup common-cpp-public
 	 */
 	using uchar_t = tpbrt_uchar_t;
 #pragma endregion
 
 #pragma region MATH
 	/**
-	 * @brief Bool type.
+	 * @copybrief tpbrt_bool_t
 	 * @ingroup math-cpp-public
 	 */
 	using bool_t					 = tpbrt_bool_t;
 	/**
-	 * @brief Int type.
+	 * @copybrief tpbrt_int_t
 	 * @ingroup math-cpp-public
 	 */
 	using int_t						 = tpbrt_int_t;
 	/**
-	 * @brief Unsigned int type.
+	 * @copybrief tpbrt_uint_t
 	 * @ingroup math-cpp-public
 	 */
 	using uint_t					 = tpbrt_uint_t;
 	/**
-	 * @brief Float type.
+	 * @copybrief tpbrt_float_t
 	 * @ingroup math-cpp-public
 	 */
 	using float_t					 = tpbrt_float_t;
 	/**
-	 * @brief Double type.
+	 * @copybrief tpbrt_double_t
 	 * @ingroup math-cpp-public
 	 */
 	using double_t					 = tpbrt_double_t;
 	/**
-	 * @brief Size type.
+	 * @copybrief tpbrt_size_t
 	 * @ingroup math-cpp-public
 	 */
 	using size_t					 = tpbrt_size_t;
 	/**
-	 * @brief Long type.
+	 * @copybrief tpbrt_long_t
 	 * @ingroup math-cpp-public
 	 */
 	using long_t					 = tpbrt_long_t;
 	/**
-	 * @brief Unsigned long type.
+	 * @copybrief tpbrt_ulong_t
 	 * @ingroup math-cpp-public
 	 */
 	using ulong_t					 = tpbrt_ulong_t;
 	/**
-	 * @brief Long long type.
+	 * @copybrief tpbrt_longlong_t
 	 * @ingroup math-cpp-public
 	 */
 	using longlong_t				 = tpbrt_longlong_t;
 	/**
-	 * @brief Unsigned long long type.
+	 * @copybrief tpbrt_ulonglong_t
 	 * @ingroup math-cpp-public
 	 */
 	using ulonglong_t				 = tpbrt_ulonglong_t;
 
 	/**
-	 * @brief Index type.
+	 * @copybrief tpbrt_idx_t
 	 * @ingroup math-cpp-public
 	 */
 	using idx_t						 = tpbrt_idx_t;
 	/**
-	 * @brief Invalid index.
+	 * @copybrief TPBRT_IDX_INVALID
 	 * @ingroup math-cpp-public
 	 */
 	static constexpr auto InvalidIdx = TPBRT_IDX_INVALID;
 
-	/**
-	 * @brief 2 component vector.
-	 * @ingroup math-cpp-public
-	 */
-	using vec2						 = tpbrt_vec2_t;
-	/**
-	 * @brief 2 component point.
-	 * @ingroup math-cpp-public
-	 */
-	using point2					 = tpbrt_point2_t;
 
+	struct vec2;
 	/**
-	 * @brief 3 component vector.
+	 * @brief C++ wrapper for tpbrt_point2_t
 	 * @ingroup math-cpp-public
 	 */
-	using vec3						 = tpbrt_vec3_t;
-	/**
-	 * @brief Vector.
-	 * @ingroup math-cpp-public
-	 */
-	using vec						 = tpbrt_vec_t;
-	/**
-	 * @brief 3 component point.
-	 * @ingroup math-cpp-public
-	 */
-	using point3					 = tpbrt_point3_t;
-	/**
-	 * @brief Point.
-	 * @ingroup math-cpp-public
-	 */
-	using point						 = tpbrt_point_t;
-	/**
-	 * @brief 3 component normal.
-	 * @ingroup math-cpp-public
-	 */
-	using normal3					 = tpbrt_normal3_t;
-	/**
-	 * @brief Normal.
-	 * @ingroup math-cpp-public
-	 */
-	using normal					 = tpbrt_normal_t;
+	using point2 = vec2;
 
-	/**
-	 * @brief 4 component vector.
-	 * @ingroup math-cpp-public
-	 */
-	using vec4						 = tpbrt_vec4_t;
 
+	struct vec3;
 	/**
-	 * @brief 4 by 4 matrix row type.
+	 * @brief C++ wrapper for tpbrt_vec_t
 	 * @ingroup math-cpp-public
 	 */
-	using mat4_row_t				 = tpbrt_mat4_row_t;
+	using vec	  = vec3;
 	/**
-	 * @brief 4 by 4 matrix type.
+	 * @brief C++ wrapper for tpbrt_point3_t
 	 * @ingroup math-cpp-public
 	 */
-	using mat4						 = tpbrt_mat4_t;
+	using point3  = vec3;
 	/**
-	 * @brief 4 by 4 animated matrix type.
+	 * @brief C++ wrapper for tpbrt_point_t
 	 * @ingroup math-cpp-public
 	 */
-	using mat4_animated				 = tpbrt_mat4_animated_t;
+	using point	  = point3;
+	/**
+	 * @brief C++ wrapper for tpbrt_normal3_t
+	 * @ingroup math-cpp-public
+	 */
+	using normal3 = vec3;
+	/**
+	 * @brief C++ wrapper for tpbrt_normal_t
+	 * @ingroup math-cpp-public
+	 */
+	using normal  = normal3;
+
+
+	struct vec4;
+
+	struct mat4;
+
+	struct mat4_animated;
 #pragma endregion
 
 #pragma region TRANSFORM
 	/**
-	 * @brief Transform index.
+	 * @copybrief tpbrt_transform_idx_t.
 	 * @ingroup transform-cpp-public
 	 */
 	using transform_idx_t					  = tpbrt_transform_idx_t;
 	/**
-	 * @brief Invalid transform index.
+	 * @copybrief TPBRT_TRANSFORM_IDX_INVALID.
 	 * @ingroup transform-cpp-public
 	 */
 	static constexpr auto TransformInvalidIdx = TPBRT_TRANSFORM_IDX_INVALID;
 
-	/**
-	 * @brief Transform handle type.
-	 * @ingroup transform-cpp-public
-	 */
-	using transform_handle					  = tpbrt_transform_handle_t;
+	struct transforms_list;
 
-	/**
-	 * @brief Animated transform type.
-	 * @ingroup transform-cpp-public
-	 */
-	using transform_animated				  = tpbrt_transform_animated_t;
+	struct transform_handle;
+
+	struct transform_animated;
 #pragma endregion
 
 #pragma region TEXTURE
 	/**
-	 * @brief Texture index type.
+	 * @copybrief tpbrt_texture_idx_t
 	 * @ingroup texture-cpp-public
 	 */
 	using texture_idx_t						= tpbrt_texture_idx_t;
 	/**
-	 * @brief Invalid texture index.
+	 * @copybrief TPBRT_TEXTURE_IDX_INVALID
 	 * @ingroup texture-cpp-public
 	 */
 	static constexpr auto TextureInvalidIdx = TPBRT_TEXTURE_IDX_INVALID;
 
-	/**
-	 * @brief Texture handle type.
-	 * @ingroup texture-cpp-public
-	 */
-	using texture_handle					= tpbrt_texture_handle_t;
+	struct texture_handle;
 
-	/**
-	 * @brief Texture type.
-	 * @ingroup texture-cpp-public
-	 */
 	struct texture;
 #pragma endregion
 
 #pragma region SHAPE
-	/**
-	 * @brief Shape type.
-	 * @ingroup shape-cpp-public
-	 */
 	struct shape;
 #pragma endregion
 
 #pragma region SCENE
-	/**
-	 * @brief Scene type.
-	 * @ingroup scene-cpp-public
-	 */
 	struct scene;
 #pragma endregion
 
 #pragma region SAMPLER
-	/**
-	 * @brief Sampler type.
-	 * @ingroup sampler-cpp-public
-	 */
 	struct sampler;
 #pragma endregion
 
 #pragma region OPTIONS
-	/**
-	 * @brief Options type.
-	 * @ingroup options-cpp-public
-	 */
 	struct options;
 #pragma endregion
 
 #pragma region OBJECT
 	/**
-	 * @brief Object index type.
+	 * @copybrief tpbrt_object_idx_t
 	 * @ingroup object-cpp-public
 	 */
 	using object_idx_t					   = tpbrt_object_idx_t;
 	/**
-	 * @brief Invalid object index.
+	 * @copybrief TPBRT_OBJECT_IDX_INVALID
 	 * @ingroup object-cpp-public
 	 */
 	static constexpr auto ObjectInvalidIdx = TPBRT_OBJECT_IDX_INVALID;
 
-	/**
-	 * @brief Object handle type.
-	 * @ingroup object-cpp-public
-	 */
-	using object_handle					   = tpbrt_object_handle_t;
+	struct object_handle;
 
-	/**
-	 * @brief Object type.
-	 * @ingroup object-cpp-public
-	 */
 	struct object;
 #pragma endregion
 
 #pragma region OBJECT_INSTANCE
-	/**
-	 * @brief Object instance type.
-	 * @ingroup object-instance-cpp-public
-	 */
 	struct object_instance;
 #pragma endregion
 
 #pragma region MEDIA
 	/**
-	 * @brief Media index type.
+	 * @copybrief tpbrt_media_idx_t
 	 * @ingroup media-cpp-public
 	 */
 	using media_idx_t					  = tpbrt_media_idx_t;
 	/**
-	 * @brief Invalid media index.
+	 * @copybrief TPBRT_MEDIA_IDX_INVALID
 	 * @ingroup media-cpp-public
 	 */
 	static constexpr auto MediaInvalidIdx = TPBRT_MEDIA_IDX_INVALID;
 
-	/**
-	 * @brief Media handle type.
-	 * @ingroup media-cpp-public
-	 */
-	using media_handle					  = tpbrt_media_handle_t;
+	struct medias_list;
 
-	/**
-	 * @brief Media type.
-	 * @ingroup media-cpp-public
-	 */
+	struct media_handle;
+
 	struct media;
 #pragma endregion
 
 #pragma region MATERIAL
 	/**
-	 * @brief Material index type.
+	 * @copybrief tpbrt_material_idx_t
 	 * @ingroup material-cpp-public
 	 */
 	using material_idx_t					 = tpbrt_material_idx_t;
 	/**
-	 * @brief Invalid material index.
+	 * @copybrief TPBRT_MATERIAL_IDX_INVALID
 	 * @ingroup material-cpp-public
 	 */
 	static constexpr auto MaterialInvalidIdx = TPBRT_MATERIAL_IDX_INVALID;
 
-	/**
-	 * @brief Material handle type.
-	 * @ingroup material-cpp-public
-	 */
-	using material_handle					 = tpbrt_material_handle_t;
+	struct material_handle;
 
-	/**
-	 * @brief Material type.
-	 * @ingroup material-cpp-public
-	 */
 	struct material;
 #pragma endregion
 
 #pragma region LIGHT
-	/**
-	 * @brief Light source type.
-	 * @ingroup light-cpp-public
-	 */
 	struct light_source;
 
 	/**
-	 * @brief Area light index type.
+	 * @copybrief tpbrt_area_light_idx_t
 	 * @ingroup light-cpp-public
 	 */
 	using area_light_idx_t					  = tpbrt_area_light_idx_t;
 	/**
-	 * @brief Invalid area light index.
+	 * @copybrief TPBRT_AREA_LIGHT_IDX_INVALID
 	 * @ingroup light-cpp-public
 	 */
 	static constexpr auto AreaLightInvalidIdx = TPBRT_AREA_LIGHT_IDX_INVALID;
 
-	/**
-	 * @brief Area light handle type.
-	 * @ingroup light-cpp-public
-	 */
-	using area_light_handle					  = tpbrt_area_light_handle_t;
 
-	/**
-	 * @brief Area light type.
-	 * @ingroup light-cpp-public
-	 */
+	struct area_light_handle;
+
 	struct area_light;
 
-	/**
-	 * @brief List of lights type.
-	 * @ingroup light-cpp-public
-	 */
 	struct lights_list;
 #pragma endregion
 
 #pragma region INTEGRATOR
-	/**
-	 * @brief Integrator type.
-	 * @ingroup integrator-cpp-public
-	 */
 	struct integrator;
 #pragma endregion
 
 #pragma region FILTER
-	/**
-	 * @brief Filter type.
-	 * @ingroup filter-cpp-public
-	 */
 	struct filter;
 #pragma endregion
 
 #pragma region FILM
-	/**
-	 * @brief Film type.
-	 * @ingroup film-cpp-public
-	 */
 	struct film;
 #pragma endregion
 
 #pragma region COLOR
-	/**
-	 * @brief Wavelength-value pair type.
-	 * @ingroup color-cpp-public
-	 */
-	using wavelength = tpbrt_wavelength_t;
+	struct wavelength;
 
 	/**
-	 * @brief Blackbody temperature type.
+	 * @copybrief tpbrt_blackbody_t
 	 * @ingroup color-cpp-public
 	 */
-	using blackbody	 = tpbrt_blackbody_t;
+	using blackbody = tpbrt_blackbody_t;
 
 	/**
-	 * @brief RGB type.
+	 * @brief C++ wrapper for tpbrt_rgb_t
 	 * @ingroup color-cpp-public
 	 */
-	using rgb		 = tpbrt_rgb_t;
+	using rgb		= vec3;
 
-	/**
-	 * @brief Spectrum type.
-	 * @ingroup color-cpp-public
-	 */
 	struct spectrum;
 #pragma endregion
 
