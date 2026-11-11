@@ -21,62 +21,30 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_transform_handle_t.
 	 * @ingroup transform-cpp-public
 	 */
-	struct transform_handle {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_transform_handle_t;
-
+	struct transform_handle : wrapper<transform_handle, tpbrt_transform_handle_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<transform_idx_t>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr transform_handle(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns transform_idx value.
 		[[nodiscard]] constexpr transform_idx_t transform_idx() const noexcept { return _native.transform_idx; }
 
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(transform_idx()); }
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const transform_handle& rhs) const noexcept {
-			return transform_idx() <=> rhs.transform_idx();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const transform_handle& rhs) const noexcept {
-			return transform_idx() == rhs.transform_idx();
-		}
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_transform_animated_t.
 	 * @ingroup transform-cpp-public
 	 */
-	struct transform_animated {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_transform_animated_t;
-
+	struct transform_animated : wrapper<transform_animated, tpbrt_transform_animated_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<transform_handle, transform_handle>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr transform_animated(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns start_transform value.
 		[[nodiscard]] constexpr transform_handle start_transform() const noexcept { return _native.start_transform; }
@@ -87,22 +55,6 @@ namespace tpbrt {
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(start_transform(), end_transform());
-		}
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const transform_animated& rhs) const noexcept {
-			return reflect() <=> rhs.reflect();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const transform_animated& rhs) const noexcept {
-			return start_transform() == rhs.start_transform() && end_transform() == rhs.end_transform();
 		}
 	};
 
@@ -119,9 +71,9 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_transforms_list_t.
 	 * @ingroup transform-cpp-public
 	 */
-	struct transforms_list : list<tpbrt_transforms_list_t, mat4, &tpbrt_transforms_list_t::transforms> {
+	struct transforms_list : array<tpbrt_transforms_list_t, mat4, &tpbrt_transforms_list_t::transforms> {
 		/// @brief Base list constructor.
-		using list::list;
+		using array::array;
 
 		/// @brief Returns element pointed by given handle.
 		[[nodiscard]] constexpr result<element_type> at(const transform_handle& handle) const noexcept {

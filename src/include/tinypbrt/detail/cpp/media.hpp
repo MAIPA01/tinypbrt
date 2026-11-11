@@ -6,12 +6,12 @@
 
 #include <tinypbrt/detail/media.h>
 
+#include <tuple>
+
 #include <tinypbrt/detail/cpp/color.hpp>
+#include <tinypbrt/detail/cpp/common.hpp>
 #include <tinypbrt/detail/cpp/scattering.hpp>
 #include <tinypbrt/detail/cpp/transform.hpp>
-
-#include <tuple>
-#include <variant>
 
 namespace tpbrt {
 	/**
@@ -61,20 +61,12 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_media_cloud_params_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media_cloud_params {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_media_cloud_params_t;
-
+	struct media_cloud_params : wrapper<media_cloud_params, tpbrt_media_cloud_params_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<float_t, float_t, point3, float_t, point3, float_t, spectrum, spectrum>;
 
-	private:
-		/// @brief C bvh parameters struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media_cloud_params(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns density value.
 		[[nodiscard]] constexpr float_t density() const noexcept { return _native.density; }
@@ -103,22 +95,6 @@ namespace tpbrt {
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(density(), frequency(), p0(), g(), p1(), wispiness(), sigma_a(), sigma_s());
-		}
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media_cloud_params& rhs) const noexcept {
-			return reflect() <=> rhs.reflect();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media_cloud_params& rhs) const noexcept {
-			return reflect() == rhs.reflect();
 		}
 	};
 
@@ -155,23 +131,13 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_media_scattering_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media_scattering {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_media_scattering_t;
-
-		/// @brief Type used for better reading tagged union of parameters.
-		using variant_type = detail::optional_variant<std::pair<spectrum, spectrum>, scattering_builtin>;
-
+	struct media_scattering : wrapper<media_scattering, tpbrt_media_scattering_t>,
+							  with_variant<media_scattering, std::pair<spectrum, spectrum>, scattering_builtin> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<variant_type, media_scattering_value>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media_scattering(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns type value.
 		[[nodiscard]] constexpr media_scattering_value type() const noexcept {
@@ -179,10 +145,10 @@ namespace tpbrt {
 		}
 
 		/// @brief Returns if type is sigma.
-		[[nodiscard]] constexpr bool is_sigma() const noexcept { return type() == media_scattering_value::SIGMA; }
+		[[nodiscard]] constexpr bool_t is_sigma() const noexcept { return type() == media_scattering_value::SIGMA; }
 
 		/// @brief Returns if type is preset.
-		[[nodiscard]] constexpr bool is_preset() const noexcept { return type() == media_scattering_value::PRESET; }
+		[[nodiscard]] constexpr bool_t is_preset() const noexcept { return type() == media_scattering_value::PRESET; }
 
 		/// @brief Returns media scattering value as sigma.
 		[[nodiscard]] constexpr std::optional<std::pair<spectrum, spectrum>> as_sigma() const noexcept {
@@ -208,59 +174,20 @@ namespace tpbrt {
 			return std::nullopt;
 		}
 
-		/// @brief Visits camera parameters.
-		constexpr auto visit(const auto& visitor) const noexcept {
-			const variant_type res = to_variant();
-
-			using return_type	   = decltype(std::visit(visitor, res.value()));
-
-				if constexpr (std::is_void_v<return_type>) {
-						if (res.has_value()) { return std::visit(visitor, res.value()); }
-				}
-				else {
-						if (res.has_value()) { return std::optional<return_type>(std::visit(visitor, res.value())); }
-					return std::optional<return_type>(std::nullopt);
-				}
-		}
-
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(to_variant(), type()); }
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media_scattering& rhs) const noexcept {
-			return reflect() <=> rhs.reflect();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media_scattering& rhs) const noexcept {
-			return type() == rhs.type() && to_variant() == rhs.to_variant();
-		}
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_media_homogeneous_params_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media_homogeneous_params {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_media_homogeneous_params_t;
-
+	struct media_homogeneous_params : wrapper<media_homogeneous_params, tpbrt_media_homogeneous_params_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<float_t, float_t, spectrum, media_scattering, float_t>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media_homogeneous_params(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns g value.
 		[[nodiscard]] constexpr float_t g() const noexcept { return _native.g; }
@@ -281,43 +208,18 @@ namespace tpbrt {
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(g(), le_scale(), le(), scattering(), scale());
 		}
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media_homogeneous_params& rhs) const noexcept {
-			return reflect() <=> rhs.reflect();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media_homogeneous_params& rhs) const noexcept {
-			return g() == rhs.g() && le_scale() == rhs.le_scale() && le() == rhs.le() && scattering() == rhs.scattering() &&
-				   scale() == rhs.scale();
-		}
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_media_nano_vdb_params_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media_nano_vdb_params {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_media_nano_vdb_params_t;
-
+	struct media_nano_vdb_params : wrapper<media_nano_vdb_params, tpbrt_media_nano_vdb_params_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<float_t, float_t, spectrum, spectrum, string, float_t, float_t, float_t>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media_nano_vdb_params(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns g value.
 		[[nodiscard]] constexpr float_t g() const noexcept { return _native.g; }
@@ -348,45 +250,19 @@ namespace tpbrt {
 			return std::make_tuple(g(), le_scale(), sigma_a(), sigma_s(), file_name(), temperature_offset(), temperature_scale(),
 			  scale());
 		}
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media_nano_vdb_params& rhs) const noexcept {
-			return reflect() <=> rhs.reflect();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media_nano_vdb_params& rhs) const noexcept {
-			return g() == rhs.g() && le_scale() == rhs.le_scale() && sigma_a() == rhs.sigma_a() && sigma_s() == rhs.sigma_s() &&
-				   file_name() == rhs.file_name() && temperature_offset() == rhs.temperature_offset() &&
-				   temperature_scale() == rhs.temperature_scale() && scale() == rhs.scale();
-		}
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_media_rgb_grid_params_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media_rgb_grid_params {
-		/// @brief Native C library type for this struct.
-		using native_type = tpbrt_media_rgb_grid_params_t;
-
+	struct media_rgb_grid_params : wrapper<media_rgb_grid_params, tpbrt_media_rgb_grid_params_t> {
 		/// @brief Type used for reflection.
 		using reflect_type =
 		  std::tuple<rgb_array, point3, float_t, point3, float_t, rgb_array, rgb_array, float_t, uint_t, uint_t, uint_t>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media_rgb_grid_params(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns le value.
 		[[nodiscard]] constexpr rgb_array le() const noexcept { return _native.le; }
@@ -425,45 +301,19 @@ namespace tpbrt {
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(le(), p0(), le_scale(), p1(), g(), sigma_a(), sigma_s(), scale(), nx(), ny(), nz());
 		}
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media_rgb_grid_params& rhs) const noexcept {
-			return reflect() <=> rhs.reflect();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media_rgb_grid_params& rhs) const noexcept {
-			return le() == rhs.le() && p0() == rhs.p0() && le_scale() == rhs.le_scale() && p1() == rhs.p1() && g() == rhs.g() &&
-				   sigma_a() == rhs.sigma_a() && sigma_s() == rhs.sigma_s() && scale() == rhs.scale() && nx() == rhs.nx() &&
-				   ny() == rhs.ny() && nz() == rhs.nz();
-		}
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_media_uniform_grid_params_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media_uniform_grid_params {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_media_uniform_grid_params_t;
-
+	struct media_uniform_grid_params : wrapper<media_uniform_grid_params, tpbrt_media_uniform_grid_params_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<float_array, spectrum, point3, float_t, point3, uint_t, uint_t, uint_t, media_scattering,
 		  float_t, float_t, float_array, float_t, float_t>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media_uniform_grid_params(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns density value.
 		[[nodiscard]] constexpr float_array density() const noexcept { return _native.density; }
@@ -512,50 +362,20 @@ namespace tpbrt {
 			return std::make_tuple(density(), le(), p0(), le_scale(), p1(), nx(), ny(), nz(), scattering(), scale(), g(),
 			  temperature(), temperature_offset(), temperature_scale());
 		}
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media_uniform_grid_params& rhs) const noexcept {
-			return reflect() <=> rhs.reflect();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media_uniform_grid_params& rhs) const noexcept {
-			return density() == rhs.density() && le() == rhs.le() && p0() == rhs.p0() && le_scale() == rhs.le_scale() &&
-				   p1() == rhs.p1() && nx() == rhs.nx() && ny() == rhs.ny() && nz() == rhs.nz() &&
-				   scattering() == rhs.scattering() && scale() == rhs.scale() && g() == rhs.g() &&
-				   temperature() == rhs.temperature() && temperature_offset() == rhs.temperature_offset() &&
-				   temperature_scale() == rhs.temperature_scale();
-		}
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_media_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_media_t;
-
-		/// @brief Type used for better reading tagged union of parameters.
-		using variant_type = detail::optional_variant<media_cloud_params, media_homogeneous_params, media_uniform_grid_params,
-		  media_rgb_grid_params, media_nano_vdb_params>;
-
+	struct media : wrapper<media, tpbrt_media_t>,
+				   with_variant<media, media_cloud_params, media_homogeneous_params, media_uniform_grid_params,
+					 media_rgb_grid_params, media_nano_vdb_params> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<media_idx_t, transform_handle, string, variant_type, media_type>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns idx value.
 		[[nodiscard]] constexpr media_idx_t idx() const noexcept { return _native.idx; }
@@ -570,19 +390,19 @@ namespace tpbrt {
 		[[nodiscard]] constexpr media_type type() const noexcept { return static_cast<media_type>(_native.type); }
 
 		/// @brief Returns if type is cloud.
-		[[nodiscard]] constexpr bool is_cloud() const noexcept { return type() == media_type::CLOUD; }
+		[[nodiscard]] constexpr bool_t is_cloud() const noexcept { return type() == media_type::CLOUD; }
 
 		/// @brief Returns if type is homogeneous.
-		[[nodiscard]] constexpr bool is_homogeneous() const noexcept { return type() == media_type::HOMOGENEOUS; }
+		[[nodiscard]] constexpr bool_t is_homogeneous() const noexcept { return type() == media_type::HOMOGENEOUS; }
 
 		/// @brief Returns if type is uniform_grid.
-		[[nodiscard]] constexpr bool is_uniform_grid() const noexcept { return type() == media_type::UNIFORM_GRID; }
+		[[nodiscard]] constexpr bool_t is_uniform_grid() const noexcept { return type() == media_type::UNIFORM_GRID; }
 
 		/// @brief Returns if type is rgb_grid.
-		[[nodiscard]] constexpr bool is_rgb_grid() const noexcept { return type() == media_type::RGB_GRID; }
+		[[nodiscard]] constexpr bool_t is_rgb_grid() const noexcept { return type() == media_type::RGB_GRID; }
 
 		/// @brief Returns if type is nano_vdb.
-		[[nodiscard]] constexpr bool is_nano_vdb() const noexcept { return type() == media_type::NANO_VDB; }
+		[[nodiscard]] constexpr bool_t is_nano_vdb() const noexcept { return type() == media_type::NANO_VDB; }
 
 		/// @brief Returns media parameters as cloud.
 		[[nodiscard]] constexpr std::optional<media_cloud_params> as_cloud() const noexcept {
@@ -629,39 +449,9 @@ namespace tpbrt {
 			return std::nullopt;
 		}
 
-		/// @brief Visits camera parameters.
-		constexpr auto visit(const auto& visitor) const noexcept {
-			const variant_type res = to_variant();
-
-			using return_type	   = decltype(std::visit(visitor, res.value()));
-
-				if constexpr (std::is_void_v<return_type>) {
-						if (res.has_value()) { return std::visit(visitor, res.value()); }
-				}
-				else {
-						if (res.has_value()) { return std::optional<return_type>(std::visit(visitor, res.value())); }
-					return std::optional<return_type>(std::nullopt);
-				}
-		}
-
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
 			return std::make_tuple(idx(), transform(), name(), to_variant(), type());
-		}
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media& rhs) const noexcept { return reflect() <=> rhs.reflect(); }
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media& rhs) const noexcept {
-			return idx() == rhs.idx() && transform() == rhs.transform() && name() == rhs.name() &&
-				   to_variant() == rhs.to_variant() && type() == rhs.type();
 		}
 	};
 
@@ -669,40 +459,18 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_media_handle_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct media_handle {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_media_handle_t;
-
+	struct media_handle : wrapper<media_handle, tpbrt_media_handle_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<media_idx_t>;
 
-	private:
-		/// @brief C native struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr media_handle(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns media_idx value.
 		[[nodiscard]] constexpr media_idx_t media_idx() const noexcept { return _native.media_idx; }
 
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(media_idx()); }
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const media_handle& rhs) const noexcept {
-			return media_idx() <=> rhs.media_idx();
-		}
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const media_handle& rhs) const noexcept { return media_idx() == rhs.media_idx(); }
 	};
 
 	/**
@@ -727,9 +495,9 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_medias_list_t.
 	 * @ingroup media-cpp-public
 	 */
-	struct medias_list : list<tpbrt_medias_list_t, media, &tpbrt_medias_list_t::medias> {
+	struct medias_list : array<tpbrt_medias_list_t, media, &tpbrt_medias_list_t::medias> {
 		/// @brief Base list constructor.
-		using list::list;
+		using array::array;
 
 		/// @brief Returns element pointed by given handle.
 		[[nodiscard]] constexpr result<element_type> at(const media_handle handle) const noexcept {

@@ -18,7 +18,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_scattering_builtin_t
 	 * @ingroup scattering-cpp-public
 	 */
-	enum class scattering_builtin {
+	enum class scattering_builtin : char_t {
 		/// @copybrief TPBRT_SCATTERING_BUILTIN_APPLE
 		APPLE						= TPBRT_SCATTERING_BUILTIN_APPLE,
 		/// @copybrief TPBRT_SCATTERING_BUILTIN_CHICKEN_1

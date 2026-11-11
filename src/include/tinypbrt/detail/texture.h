@@ -351,10 +351,7 @@ extern "C" {
 	 * @brief Cylindrical texture mapping parameters.
 	 * @ingroup texture-public
 	 */
-	typedef struct tpbrt_texture_mapping_cylindrical_params_t {
-		/// @brief The current transformation matrix when the associated texture is specified gives the rendering space from texture space transformation.
-		tpbrt_transform_handle_t transform;
-	} tpbrt_texture_mapping_cylindrical_params_t;
+	typedef tpbrt_texture_mapping_spherical_params_t tpbrt_texture_mapping_cylindrical_params_t;
 
 	/**
 	 * @brief Planar texture mapping parameters.

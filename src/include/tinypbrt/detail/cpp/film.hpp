@@ -1,144 +1,264 @@
 #pragma once
-#ifndef _TINYPBRT_FILM_H_
-#define _TINYPBRT_FILM_H_
+#ifndef _TINYPBRT_FILM_HPP_
+#define _TINYPBRT_FILM_HPP_
 
-#include <tinypbrt/detail/fwd.h>
+#include <tinypbrt/detail/cpp/fwd.hpp>
 
-#include <tinypbrt/detail/common.h>
-#include <tinypbrt/detail/coord.h>
+#include <tinypbrt/detail/film.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <tinypbrt/detail/cpp/common.hpp>
 
+namespace tpbrt {
 	/**
-	 * @defgroup film-public Film
-	 * @ingroup tinypbrt-public
+	 * @defgroup film-cpp-public Film
+	 * @ingroup tinypbrt-cpp-public
 	 */
 
 	/**
-	 * @brief Film value type.
-	 * @ingroup film-public
+	 * @copybrief tpbrt_film_type_t
+	 * @ingroup film-cpp-public
 	 */
-	typedef enum tpbrt_film_type_t {
-		/// @brief Stores RGB images using the current color space when the Film directive is encountered.
-		TPBRT_FILM_TYPE_RGB		 = 0,
-		/// @brief In addition to RGB, stores multiple additional channels that encode information about the visible geometry in each pixel.
-		TPBRT_FILM_TYPE_GBUFFER	 = 1,
-		/// @brief  stores a discretized spectral distribution at each pixel, in addition to RGB (for convenience when viewing images.).
-		TPBRT_FILM_TYPE_SPECTRAL = 2,
-		/// @brief Count of available film types.
-		TPBRT_FILM_TYPE_MAX_NUM	 = 3,
-	} tpbrt_film_type_t;
+	enum class film_type : char_t {
+		/// @copybrief TPBRT_FILM_TYPE_RGB
+		RGB		 = TPBRT_FILM_TYPE_RGB,
+		/// @copybrief TPBRT_FILM_TYPE_GBUFFER
+		GBUFFER	 = TPBRT_FILM_TYPE_GBUFFER,
+		/// @copybrief TPBRT_FILM_TYPE_SPECTRAL
+		SPECTRAL = TPBRT_FILM_TYPE_SPECTRAL,
+		/// @copybrief TPBRT_FILM_TYPE_MAX_NUM
+		MAX_NUM	 = TPBRT_FILM_TYPE_MAX_NUM,
+	};
 
 	/**
-	 * @brief GBuffer film type parameters.
-	 * @ingroup film-public
+	 * @brief Converts film_type enum value to string.
+	 * @param type Film type.
+	 * @return String value of film type.
+	 * @ingroup film-cpp-public
 	 */
-	typedef struct tpbrt_film_gbuffer_params_t {
-		/// @brief Tells in which coordinate system geometric data is stored.
-		tpbrt_coord_system_type_t coordinate_system : 3;
-	} tpbrt_film_gbuffer_params_t;
+	[[nodiscard]] constexpr std::string_view to_string(const film_type type) noexcept {
+		using enum film_type;
+			switch (type) {
+			case RGB:	   return "rgb";
+			case GBUFFER:  return "gbuffer";
+			case SPECTRAL: return "spectral";
+			case MAX_NUM:  return "maxnum";
+			default:	   return "UNKNOWN";
+			}
+	}
 
 	/**
-	 * @brief Spectral film type parameters.
-	 * @ingroup film-public
+	 * @brief C++ wrapper for tpbrt_film_gbuffer_params_t.
+	 * @ingroup film-cpp-public
 	 */
-	typedef struct tpbrt_film_spectral_params_t {
-		/// @brief Number of buckets that the spectral range is discretized into.
-		tpbrt_uint_t nbuckets;
-		/// @brief Minimum wavelength for spectral range.
-		tpbrt_float_t lambda_min;
-		/// @brief Maximum wavelength for spectral range.
-		tpbrt_float_t lambda_max;
-	} tpbrt_film_spectral_params_t;
+	struct film_gbuffer_params : wrapper<film_gbuffer_params, tpbrt_film_gbuffer_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<coord_system_type>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns coordinate_system value.
+		[[nodiscard]] constexpr coord_system_type coordinate_system() const noexcept {
+			return static_cast<coord_system_type>(_native.coordinate_system);
+		}
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(coordinate_system()); }
+	};
 
 	/**
-	 * @brief Film sensor type.
-	 * @ingroup film-public
+	 * @brief C++ wrapper for tpbrt_film_spectral_params_t.
+	 * @ingroup film-cpp-public
 	 */
-	typedef enum tpbrt_film_sensor_t {
-		/// @brief The CIE 1931 spectral response curves.
-		TPBRT_FILM_SENSOR_CIE_1931			  = 0,
-		/// @brief Canon EOS 100D
-		TPBRT_FILM_SENSOR_CANON_EOS_100D	  = 1,
-		/// @brief Canon EOS 1DX MK II
-		TPBRT_FILM_SENSOR_CANON_EOS_1DX_MKII  = 2,
-		/// @brief Canon EOS 200D
-		TPBRT_FILM_SENSOR_CANON_EOS_200D	  = 3,
-		/// @brief Canon EOS 200D MK II
-		TPBRT_FILM_SENSOR_CANON_EOS_200D_MKII = 4,
-		/// @brief Canon EOS 5D
-		TPBRT_FILM_SENSOR_CANON_EOS_5D		  = 5,
-		/// @brief Canon EOS 5D MK II
-		TPBRT_FILM_SENSOR_CANON_EOS_5D_MKII	  = 6,
-		/// @brief Canon EOS 5D MK III
-		TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIII  = 7,
-		/// @brief Canon EOS 5D MK IV
-		TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIV	  = 8,
-		/// @brief Canon EOS 5DS
-		TPBRT_FILM_SENSOR_CANON_EOS_5DS		  = 9,
-		/// @brief Canon EOS M
-		TPBRT_FILM_SENSOR_CANON_EOS_M		  = 10,
-		/// @brief Hasselblad L1D 20C
-		TPBRT_FILM_SENSOR_HASSELBLAD_L1D_20C  = 11,
-		/// @brief Nikon D810
-		TPBRT_FILM_SENSOR_NIKON_D810		  = 12,
-		/// @brief Nikon D850
-		TPBRT_FILM_SENSOR_NIKON_D850		  = 13,
-		/// @brief Sony ILCE 6400
-		TPBRT_FILM_SENSOR_SONY_ILCE_6400	  = 14,
-		/// @brief Sony ILCE 7M3
-		TPBRT_FILM_SENSOR_SONY_ILCE_7M3		  = 15,
-		/// @brief Sony ILCE 7RM3
-		TPBRT_FILM_SENSOR_SONY_ILCE_7RM3	  = 16,
-		/// @brief Sony ILCE 9
-		TPBRT_FILM_SENSOR_SONY_ILCE_9		  = 17,
-		/// @brief Count of available film sensor types.
-		TPBRT_FILM_SENSOR_MAX_NUM			  = 18,
-	} tpbrt_film_sensor_t;
+	struct film_spectral_params : wrapper<film_spectral_params, tpbrt_film_spectral_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<uint_t, float_t, float_t>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns nbuckets value.
+		[[nodiscard]] constexpr uint_t nbuckets() const noexcept { return _native.nbuckets; }
+
+		/// @brief Returns lambda_min value.
+		[[nodiscard]] constexpr float_t lambda_min() const noexcept { return _native.lambda_min; }
+
+		/// @brief Returns lambda_max value.
+		[[nodiscard]] constexpr float_t lambda_max() const noexcept { return _native.lambda_max; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(nbuckets(), lambda_min(), lambda_max());
+		}
+	};
 
 	/**
-	 * @brief PBRT film representation.
-	 * @ingroup film-public
+	 * @copybrief tpbrt_film_sensor_t
+	 * @ingroup film-cpp-public
 	 */
-	typedef struct tpbrt_film_t {
-		/// @brief The sub-region of the image to render. The four values specified should be fractions in the range [0,1], and they represent x_min, x_max, y_min, and y_max, respectively. These values are in normalized device coordinates, with (0,0) in the upper-left corner of the image.
-		tpbrt_float_t crop_window[4];
-		/// @brief A sub-region of the image to render, specified using pixel coordinates.
-		tpbrt_uint_t pixel_bounds[4];
-		/// @brief The output filename.
-		tpbrt_string_t file_name;
-		/// @brief The number of pixels in the x direction.
-		tpbrt_uint_t x_resolution;
-		/// @brief The number of pixels in the y direction.
-		tpbrt_uint_t y_resolution;
-		/// @brief Diagonal length of the film, in mm. (This value is only used when the RealisticCamera is used.)
-		tpbrt_float_t diagonal;
-		/// @brief Film sensitivity to light; final pixel values are scaled by the "iso" value divided by 100.
-		tpbrt_float_t iso;
-		/// @brief If non-zero, this gives a temperature in degrees kelvin that is used as the reference color temperature used for whitebalancing.
-		tpbrt_float_t white_balance;
-		/// @brief Image sample values with luminance greater than this value are clamped to have this luminance. (This is a hack, but can be useful for eliminating large variance spikes in scenes with difficult light transport.)
-		tpbrt_float_t max_component_value;
+	enum class film_sensor : char_t {
+		/// @copybrief TPBRT_FILM_SENSOR_CIE_1931
+		CIE_1931			= TPBRT_FILM_SENSOR_CIE_1931,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_100D
+		CANON_EOS_100D		= TPBRT_FILM_SENSOR_CANON_EOS_100D,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_1DX_MKII
+		CANON_EOS_1DX_MKII	= TPBRT_FILM_SENSOR_CANON_EOS_1DX_MKII,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_200D
+		CANON_EOS_200D		= TPBRT_FILM_SENSOR_CANON_EOS_200D,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_200D_MKII
+		CANON_EOS_200D_MKII = TPBRT_FILM_SENSOR_CANON_EOS_200D_MKII,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_5D
+		CANON_EOS_5D		= TPBRT_FILM_SENSOR_CANON_EOS_5D,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_5D_MKII
+		CANON_EOS_5D_MKII	= TPBRT_FILM_SENSOR_CANON_EOS_5D_MKII,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIII
+		CANON_EOS_5D_MKIII	= TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIII,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIV
+		CANON_EOS_5D_MKIV	= TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIV,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_5DS
+		CANON_EOS_5DS		= TPBRT_FILM_SENSOR_CANON_EOS_5DS,
+		/// @copybrief TPBRT_FILM_SENSOR_CANON_EOS_M
+		CANON_EOS_M			= TPBRT_FILM_SENSOR_CANON_EOS_M,
+		/// @copybrief TPBRT_FILM_SENSOR_HASSELBLAD_L1D_20C
+		HASSELBLAD_L1D_20C	= TPBRT_FILM_SENSOR_HASSELBLAD_L1D_20C,
+		/// @copybrief TPBRT_FILM_SENSOR_NIKON_D810
+		NIKON_D810			= TPBRT_FILM_SENSOR_NIKON_D810,
+		/// @copybrief TPBRT_FILM_SENSOR_NIKON_D850
+		NIKON_D850			= TPBRT_FILM_SENSOR_NIKON_D850,
+		/// @copybrief TPBRT_FILM_SENSOR_SONY_ILCE_6400
+		SONY_ILCE_6400		= TPBRT_FILM_SENSOR_SONY_ILCE_6400,
+		/// @copybrief TPBRT_FILM_SENSOR_SONY_ILCE_7M3
+		SONY_ILCE_7M3		= TPBRT_FILM_SENSOR_SONY_ILCE_7M3,
+		/// @copybrief TPBRT_FILM_SENSOR_SONY_ILCE_7RM3
+		SONY_ILCE_7RM3		= TPBRT_FILM_SENSOR_SONY_ILCE_7RM3,
+		/// @copybrief TPBRT_FILM_SENSOR_SONY_ILCE_9
+		SONY_ILCE_9			= TPBRT_FILM_SENSOR_SONY_ILCE_9,
+		/// @copybrief TPBRT_FILM_SENSOR_MAX_NUM
+		MAX_NUM				= TPBRT_FILM_SENSOR_MAX_NUM,
+	};
 
-		/// @brief value dependent on type.
-		union {
-			/// @brief GBuffer film type parameters.
-			tpbrt_film_gbuffer_params_t gbuffer;
-			/// @brief Spectral film type parameters.
-			tpbrt_film_spectral_params_t spectral;
-		} as;
+	/**
+	 * @brief Converts film_sensor enum value to string.
+	 * @param type Film sensor.
+	 * @return String value of film sensor.
+	 * @ingroup film-cpp-public
+	 */
+	[[nodiscard]] constexpr std::string_view to_string(const film_sensor type) noexcept {
+		using enum film_sensor;
+			switch (type) {
+			case CIE_1931:			  return "cie1931";
+			case CANON_EOS_100D:	  return "canon_eos_100d";
+			case CANON_EOS_1DX_MKII:  return "canon_eos_1dx_mkii";
+			case CANON_EOS_200D:	  return "canon_eos_200d";
+			case CANON_EOS_200D_MKII: return "canon_eos_200d_mkii";
+			case CANON_EOS_5D:		  return "canon_eos_5d";
+			case CANON_EOS_5D_MKII:	  return "canon_eos_5d_mkii";
+			case CANON_EOS_5D_MKIII:  return "canon_eos_5d_mkiii";
+			case CANON_EOS_5D_MKIV:	  return "canon_eos_5d_mkiv";
+			case CANON_EOS_5DS:		  return "canon_eos_5ds";
+			case CANON_EOS_M:		  return "canon_eos_m";
+			case HASSELBLAD_L1D_20C:  return "hasselblad_l1d_20c";
+			case NIKON_D810:		  return "nikon_d810";
+			case NIKON_D850:		  return "nikon_d850";
+			case SONY_ILCE_6400:	  return "sony_ilce_6400";
+			case SONY_ILCE_7M3:		  return "sony_ilce_7m3";
+			case SONY_ILCE_7RM3:	  return "sony_ilce_7rm3";
+			case SONY_ILCE_9:		  return "sony_ilce_9";
+			case MAX_NUM:			  return "maxnum";
+			default:				  return "UNKNOWN";
+			}
+	}
 
-		/// @brief Film type.
-		tpbrt_film_type_t type	   : 3;
-		/// @brief Characterizes the sensor's response for red, green, and blue colors.
-		tpbrt_film_sensor_t sensor : 6;
-		/// @brief Whether 16-bit floating point values (as opposed to 32-bit floating point values) should be used when saving images in OpenEXR format.
-		tpbrt_bool_t save_fp16	   : 1;
-	} tpbrt_film_t;
+	/**
+	 * @brief C++ wrapper for tpbrt_film_t.
+	 * @ingroup film-cpp-public
+	 */
+	struct film : wrapper<film, tpbrt_film_t>,
+				  with_variant<film, film_gbuffer_params, film_spectral_params> {
+		/// @brief Type used to read crop_window parameter.
+		using crop_window_type	= array<tpbrt_float_t[4], float_t>;
 
-#ifdef __cplusplus
-}
-#endif
-#endif // _TINYPBRT_FILM_H_
+		/// @brief Type used to read pixel_bounds parameter.
+		using pixel_bounds_type = array<tpbrt_uint_t[4], uint_t>;
+
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<crop_window_type, pixel_bounds_type, string, uint_t, uint_t, float_t, float_t, float_t,
+		  float_t, variant_type, film_type, film_sensor, bool_t>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns crop_window value.
+		[[nodiscard]] constexpr crop_window_type crop_window() const noexcept { return _native.crop_window; }
+
+		/// @brief Returns pixel_bounds value.
+		[[nodiscard]] constexpr pixel_bounds_type pixel_bounds() const noexcept { return _native.pixel_bounds; }
+
+		/// @brief Returns file_name value.
+		[[nodiscard]] constexpr string file_name() const noexcept { return _native.file_name; }
+
+		/// @brief Returns x_resolution value.
+		[[nodiscard]] constexpr uint_t x_resolution() const noexcept { return _native.x_resolution; }
+
+		/// @brief Returns y_resolution value.
+		[[nodiscard]] constexpr uint_t y_resolution() const noexcept { return _native.y_resolution; }
+
+		/// @brief Returns diagonal value.
+		[[nodiscard]] constexpr float_t diagonal() const noexcept { return _native.diagonal; }
+
+		/// @brief Returns iso value.
+		[[nodiscard]] constexpr float_t iso() const noexcept { return _native.iso; }
+
+		/// @brief Returns white_balance value.
+		[[nodiscard]] constexpr float_t white_balance() const noexcept { return _native.white_balance; }
+
+		/// @brief Returns max_component_value value.
+		[[nodiscard]] constexpr float_t max_component_value() const noexcept { return _native.max_component_value; }
+
+		/// @brief Returns sensor value.
+		[[nodiscard]] constexpr film_sensor sensor() const noexcept { return static_cast<film_sensor>(_native.sensor); }
+
+		/// @brief Returns save_fp16 value.
+		[[nodiscard]] constexpr bool_t save_fp16() const noexcept { return _native.save_fp16 == True; }
+
+		/// @brief Returns type value.
+		[[nodiscard]] constexpr film_type type() const noexcept { return static_cast<film_type>(_native.type); }
+
+		/// @brief Returns if type is gbuffer.
+		[[nodiscard]] constexpr bool_t is_gbuffer() const noexcept { return type() == film_type::GBUFFER; }
+
+		/// @brief Returns if type is spectral.
+		[[nodiscard]] constexpr bool_t is_spectral() const noexcept { return type() == film_type::SPECTRAL; }
+
+		/// @brief Returns film parameters as gbuffer.
+		[[nodiscard]] constexpr std::optional<film_gbuffer_params> as_gbuffer() const noexcept {
+				if (!is_gbuffer()) { return std::nullopt; }
+			return _native.as.gbuffer;
+		}
+
+		/// @brief Returns film parameters as spectral.
+		[[nodiscard]] constexpr std::optional<film_spectral_params> as_spectral() const noexcept {
+				if (!is_spectral()) { return std::nullopt; }
+			return _native.as.spectral;
+		}
+
+		/// @brief Conversion to variant.
+		[[nodiscard]] constexpr variant_type to_variant() const noexcept {
+			using enum film_type;
+				switch (type()) {
+				case GBUFFER:  return _native.as.gbuffer;
+				case SPECTRAL: return _native.as.spectral;
+				case MAX_NUM:  [[fallthrough]];
+				default:	   break;
+				}
+			return std::nullopt;
+		}
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(crop_window(), pixel_bounds(), file_name(), x_resolution(), y_resolution(), diagonal(), iso(),
+			  white_balance(), max_component_value(), to_variant(), type(), sensor(), save_fp16());
+		}
+	};
+} // namespace tpbrt
+#endif // _TINYPBRT_FILM_HPP_

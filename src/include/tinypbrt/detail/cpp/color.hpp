@@ -6,24 +6,17 @@
 
 #include <tinypbrt/detail/color.h>
 
-#include <tinypbrt/detail/cpp/common.hpp>
-#include <tinypbrt/detail/cpp/math.hpp>
-
 #include <optional>
 #include <tuple>
-#include <variant>
+
+#include <tinypbrt/detail/cpp/common.hpp>
+#include <tinypbrt/detail/cpp/math.hpp>
 
 namespace tpbrt {
 	/**
 	 * @defgroup color-cpp-public Color
 	 * @ingroup tinypbrt-cpp-public
 	 */
-
-	/**
-	 * @brief C++ wrapper for tpbrt_rgb_array_t
-	 * @ingroup color-cpp-public
-	 */
-	using rgb_array = array<tpbrt_rgb_array_t, rgb>;
 
 	/**
 	 * @copybrief tpbrt_color_space_t
@@ -105,20 +98,12 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_wavelength_t.
 	 * @ingroup color-cpp-public
 	 */
-	struct wavelength {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_wavelength_t;
-
+	struct wavelength : wrapper<wavelength, tpbrt_wavelength_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<float_t, float_t>;
 
-	private:
-		/// @brief C bvh parameters struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr wavelength(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns wavelength value.
 		[[nodiscard]] constexpr float_t lambda() const noexcept { return _native.wavelength; }
@@ -128,27 +113,7 @@ namespace tpbrt {
 
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(lambda(), value()); }
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const wavelength& rhs) const noexcept { return reflect() <=> rhs.reflect(); }
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const wavelength& rhs) const noexcept {
-			return lambda() == rhs.lambda() && value() == rhs.value();
-		}
 	};
-
-	/**
-	 * @brief C++ wrapper for tpbrt_wavelength_array_t.
-	 * @ingroup color-cpp-public
-	 */
-	using wavelength_array = array<tpbrt_wavelength_array_t, wavelength>;
 
 	/**
 	 * @copybrief tpbrt_spectrum_builtin_t
@@ -288,44 +253,34 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_spectrum_t.
 	 * @ingroup color-cpp-public
 	 */
-	struct spectrum {
-		/// @brief Native C library type for this struct.
-		using native_type  = tpbrt_spectrum_t;
-
-		/// @brief Type used for better reading tagged union of parameters.
-		using variant_type = detail::optional_variant<wavelength_array, rgb, blackbody, string, spectrum_builtin, float_t>;
-
+	struct spectrum : wrapper<spectrum, tpbrt_spectrum_t>,
+					  with_variant<spectrum, wavelength_array, rgb, blackbody, string, spectrum_builtin, float_t> {
 		/// @brief Type used for reflection.
 		using reflect_type = std::tuple<variant_type, spectrum_type>;
 
-	private:
-		/// @brief C bvh parameters struct.
-		const native_type& _native;
-
-	public:
-		/// @brief C to C++ wrapper conversion constructor.
-		constexpr spectrum(const native_type& native) noexcept : _native(native) {} // NOLINT
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
 		/// @brief Returns type value.
 		[[nodiscard]] constexpr spectrum_type type() const noexcept { return static_cast<spectrum_type>(_native.type); }
 
 		/// @brief Returns if type is wavelengths.
-		[[nodiscard]] constexpr bool is_wavelengths() const noexcept { return type() == spectrum_type::WAVELENGTHS; }
+		[[nodiscard]] constexpr bool_t is_wavelengths() const noexcept { return type() == spectrum_type::WAVELENGTHS; }
 
 		/// @brief Returns if type is rgb.
-		[[nodiscard]] constexpr bool is_rgb() const noexcept { return type() == spectrum_type::RGB; }
+		[[nodiscard]] constexpr bool_t is_rgb() const noexcept { return type() == spectrum_type::RGB; }
 
 		/// @brief Returns if type is blackbody.
-		[[nodiscard]] constexpr bool is_blackbody() const noexcept { return type() == spectrum_type::BLACKBODY; }
+		[[nodiscard]] constexpr bool_t is_blackbody() const noexcept { return type() == spectrum_type::BLACKBODY; }
 
 		/// @brief Returns if type is file.
-		[[nodiscard]] constexpr bool is_file() const noexcept { return type() == spectrum_type::FILE; }
+		[[nodiscard]] constexpr bool_t is_file() const noexcept { return type() == spectrum_type::FILE; }
 
 		/// @brief Returns if type is builtin.
-		[[nodiscard]] constexpr bool is_builtin() const noexcept { return type() == spectrum_type::BUILTIN; }
+		[[nodiscard]] constexpr bool_t is_builtin() const noexcept { return type() == spectrum_type::BUILTIN; }
 
 		/// @brief Returns if type is constant.
-		[[nodiscard]] constexpr bool is_constant() const noexcept { return type() == spectrum_type::CONSTANT; }
+		[[nodiscard]] constexpr bool_t is_constant() const noexcept { return type() == spectrum_type::CONSTANT; }
 
 		/// @brief Returns spectrum value as wavelengths.
 		[[nodiscard]] constexpr std::optional<wavelength_array> as_wavelengths() const noexcept {
@@ -379,35 +334,8 @@ namespace tpbrt {
 			return std::nullopt;
 		}
 
-		/// @brief Visits camera parameters.
-		constexpr auto visit(const auto& visitor) const noexcept {
-			const variant_type res = to_variant();
-
-			using return_type	   = decltype(std::visit(visitor, res.value()));
-
-				if constexpr (std::is_void_v<return_type>) {
-						if (res.has_value()) { return std::visit(visitor, res.value()); }
-				}
-				else {
-						if (res.has_value()) { return std::optional<return_type>(std::visit(visitor, res.value())); }
-					return std::optional<return_type>(std::nullopt);
-				}
-		}
-
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(to_variant(), type()); }
-
-		/// @brief Conversion operator to native type.
-		[[nodiscard]] constexpr operator const native_type&() const noexcept { return _native; } // NOLINT
-
-		/// @brief Conversion operator to pointer to native type.
-		[[nodiscard]] constexpr operator const native_type*() const noexcept { return &_native; } // NOLINT
-
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const spectrum& rhs) const noexcept { return reflect() <=> rhs.reflect(); }
-
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const spectrum& rhs) const noexcept { return reflect() == rhs.reflect(); }
 	};
 } // namespace tpbrt
 #endif // _TINYPBRT_COLOR_HPP_

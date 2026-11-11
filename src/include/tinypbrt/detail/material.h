@@ -375,7 +375,7 @@ extern "C" {
 	 */
 	typedef struct tpbrt_material_t {
 		/// @brief Material index.
-		tpbrt_size_t idx;
+		tpbrt_material_idx_t idx;
 		/// @brief Material name (if it is not named material name is empty).
 		tpbrt_string_t name;
 

@@ -1,271 +1,536 @@
 #pragma once
-#ifndef _TINYPBRT_SHAPE_H_
-#define _TINYPBRT_SHAPE_H_
+#ifndef _TINYPBRT_SHAPE_HPP_
+#define _TINYPBRT_SHAPE_HPP_
 
-#include <tinypbrt/detail/fwd.h>
+#include <tinypbrt/detail/cpp/fwd.hpp>
 
-#include <tinypbrt/detail/light.h>
-#include <tinypbrt/detail/material.h>
-#include <tinypbrt/detail/math.h>
-#include <tinypbrt/detail/media.h>
-#include <tinypbrt/detail/texture.h>
+#include <tinypbrt/detail/shape.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <tinypbrt/detail/cpp/light.hpp>
+#include <tinypbrt/detail/cpp/material.hpp>
+#include <tinypbrt/detail/cpp/math.hpp>
+#include <tinypbrt/detail/cpp/texture.hpp>
 
+namespace tpbrt {
 	/**
-	 * @defgroup shape-public Shape
+	 * @defgroup shape-cpp-public Shape
 	 * @ingroup tinypbrt-public
 	 */
 
 	/**
-	 * @brief Shape types.
-	 * @ingroup shape-public
+	 * @copybrief tpbrt_shape_type_t
+	 * @ingroup shape-cpp-public
 	 */
-	typedef enum tpbrt_shape_type_t {
-		/// @brief Bilinear mesh.
-		TPBRT_SHAPE_TYPE_BILINEAR_MESH = 0,
-		/// @brief Curve.
-		TPBRT_SHAPE_TYPE_CURVE		   = 1,
-		/// @brief Cylinder.
-		TPBRT_SHAPE_TYPE_CYLINDER	   = 2,
-		/// @brief Disk.
-		TPBRT_SHAPE_TYPE_DISK		   = 3,
-		/// @brief Sphere.
-		TPBRT_SHAPE_TYPE_SPHERE		   = 4,
-		/// @brief Triangle mesh.
-		TPBRT_SHAPE_TYPE_TRIANGLE_MESH = 5,
-		/// @brief Ply file mesh.
-		TPBRT_SHAPE_TYPE_PLY_MESH	   = 6,
-		/// @brief Loop subdivision.
-		TPBRT_SHAPE_TYPE_LOOP_SUBDIV   = 7,
-		/// @brief Count of available shape types.
-		TPBRT_SHAPE_TYPE_MAX_NUM	   = 8,
-	} tpbrt_shape_type_t;
+	enum class shape_type : char_t {
+		/// @copybrief TPBRT_SHAPE_TYPE_BILINEAR_MESH
+		BILINEAR_MESH = TPBRT_SHAPE_TYPE_BILINEAR_MESH,
+		/// @copybrief TPBRT_SHAPE_TYPE_CURVE
+		CURVE		  = TPBRT_SHAPE_TYPE_CURVE,
+		/// @copybrief TPBRT_SHAPE_TYPE_CYLINDER
+		CYLINDER	  = TPBRT_SHAPE_TYPE_CYLINDER,
+		/// @copybrief TPBRT_SHAPE_TYPE_DISK
+		DISK		  = TPBRT_SHAPE_TYPE_DISK,
+		/// @copybrief TPBRT_SHAPE_TYPE_SPHERE
+		SPHERE		  = TPBRT_SHAPE_TYPE_SPHERE,
+		/// @copybrief TPBRT_SHAPE_TYPE_TRIANGLE_MESH
+		TRIANGLE_MESH = TPBRT_SHAPE_TYPE_TRIANGLE_MESH,
+		/// @copybrief TPBRT_SHAPE_TYPE_PLY_MESH
+		PLY_MESH	  = TPBRT_SHAPE_TYPE_PLY_MESH,
+		/// @copybrief TPBRT_SHAPE_TYPE_LOOP_SUBDIV
+		LOOP_SUBDIV	  = TPBRT_SHAPE_TYPE_LOOP_SUBDIV,
+		/// @copybrief TPBRT_SHAPE_TYPE_MAX_NUM
+		MAX_NUM		  = TPBRT_SHAPE_TYPE_MAX_NUM,
+	};
 
 	/**
-	 * @brief Curve shape basis.
-	 * @ingroup shape-public
+	 * @brief Converts shape_type enum value to string.
+	 * @param type Shape type.
+	 * @return String value of shape type.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef enum tpbrt_shape_curve_basis_t {
-		/// @brief Bezier curve.
-		TPBRT_SHAPE_CURVE_BASIS_BEZIER	= 0,
-		/// @brief BSpline curve.
-		TPBRT_SHAPE_CURVE_BASIS_BSPLINE = 1,
-		/// @brief Count of available curve shape basis.
-		TPBRT_SHAPE_CURVE_BASIS_MAX_NUM = 2,
-	} tpbrt_shape_curve_basis_t;
+	[[nodiscard]] constexpr std::string_view to_string(const shape_type type) noexcept {
+		using enum shape_type;
+			switch (type) {
+			case BILINEAR_MESH: return "bilinearmesh";
+			case CURVE:			return "curve";
+			case CYLINDER:		return "cylinder";
+			case DISK:			return "disk";
+			case SPHERE:		return "sphere";
+			case TRIANGLE_MESH: return "trianglemesh";
+			case PLY_MESH:		return "plymesh";
+			case LOOP_SUBDIV:	return "loopsubdiv";
+			case MAX_NUM:		return "maxnum";
+			default:			return "UNKNOWN";
+			}
+	}
 
 	/**
-	 * @brief Curve shape degree.
-	 * @ingroup shape-public
+	 * @copybrief tpbrt_shape_curve_basis_t
+	 * @ingroup shape-cpp-public
 	 */
-	typedef enum tpbrt_shape_curve_degree_t {
-		/// @brief 2 Degree.
-		TPBRT_SHAPE_CURVE_DEGREE_2 = 2,
-		/// @brief 3 Degree.
-		TPBRT_SHAPE_CURVE_DEGREE_3 = 3,
-	} tpbrt_shape_curve_degree_t;
+	enum class shape_curve_basis : char_t {
+		/// @copybrief TPBRT_SHAPE_CURVE_BASIS_BEZIER
+		BEZIER	= TPBRT_SHAPE_CURVE_BASIS_BEZIER,
+		/// @copybrief TPBRT_SHAPE_CURVE_BASIS_BSPLINE
+		BSPLINE = TPBRT_SHAPE_CURVE_BASIS_BSPLINE,
+		/// @copybrief TPBRT_SHAPE_CURVE_BASIS_MAX_NUM
+		MAX_NUM = TPBRT_SHAPE_CURVE_BASIS_MAX_NUM,
+	};
 
 	/**
-	 * @brief Curve shape type.
-	 * @ingroup shape-public
+	 * @brief Converts shape_curve_basis enum value to string.
+	 * @param basis Shape curve basis.
+	 * @return String value of shape curve basis.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef enum tpbrt_shape_curve_type_t {
-		/// @brief Curve is always oriented to face the incident ray.
-		TPBRT_SHAPE_CURVE_TYPE_FLAT		= 0,
-		/// @brief Alternative includes a shading normal that causes the curve to appear to have a cylindrical cross section.
-		TPBRT_SHAPE_CURVE_TYPE_CYLINDER = 1,
-		/// @brief Curve has a fixed orientation.
-		TPBRT_SHAPE_CURVE_TYPE_RIBBON	= 2,
-		/// @brief Count of available curve types.
-		TPBRT_SHAPE_CURVE_TYPE_MAX_NUM	= 3,
-	} tpbrt_shape_curve_type_t;
+	[[nodiscard]] constexpr std::string_view to_string(const shape_curve_basis basis) noexcept {
+		using enum shape_curve_basis;
+			switch (basis) {
+			case BEZIER:  return "bezier";
+			case BSPLINE: return "bspline";
+			case MAX_NUM: return "maxnum";
+			default:	  return "UNKNOWN";
+			}
+	}
 
 	/**
-	 * @brief Bilinear mesh parameters.
-	 * @ingroup shape-public
+	 * @copybrief tpbrt_shape_curve_degree_t
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_bilinear_mesh_params_t {
-		/// @brief The array of integer offsets into the per-vertex data arrays (P, and any of N, S, or uv that are present.) Required, unless exactly four vertices are specified.
-		tpbrt_uint_array_t indices;
-		/// @brief The vertex positions of the bilinear mesh.
-		tpbrt_point3_array_t p;
-		/// @brief Per-vertex normals. If present, shading normals will be computed from these values.
-		tpbrt_normal_array_t n;
-		/// @brief Per-vertex texture coordinates.
-		tpbrt_point2_array_t uv;
-	} tpbrt_shape_bilinear_mesh_params_t;
+	enum class shape_curve_degree : char_t {
+		/// @copybrief TPBRT_SHAPE_CURVE_DEGREE_2
+		DEGREE_2 = TPBRT_SHAPE_CURVE_DEGREE_2,
+		/// @copybrief TPBRT_SHAPE_CURVE_DEGREE_3
+		DEGREE_3 = TPBRT_SHAPE_CURVE_DEGREE_3,
+	};
 
 	/**
-	 * @brief Curve shape parameters.
-	 * @ingroup shape-public
+	 * @brief Converts shape_curve_degree enum value to string.
+	 * @param degree Shape curve degree.
+	 * @return String value of shape curve degree.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_curve_params_t {
-		/// @brief Control points for the cubic Bezier spline that goes along the center of the curve shape.
-		tpbrt_point3_t p[4];
-		/// @brief For "ribbon" curves, these normals are respectively used at endpoints of the curve to orient the surface there. Intermediate normals are interpolated using spherical linear interpolation.
-		tpbrt_normal_t n[2];
-		/// @brief Width of the curve.
-		tpbrt_float_t width;
-		/// @brief Width of the curve at the start point. If specified, these override the "width" parameter.
-		tpbrt_opt_float_t width0;
-		/// @brief Width of the curve at the end point. If specified, these override the "width" parameter.
-		tpbrt_opt_float_t width1;
-		/// @brief Number of times the curve is split in half into sub-curves at startup time. Splitting curves increases memory use but can improve ray intersection performance, as the sub-curves generally have tighter bounding boxes than the entire curve extent.
-		tpbrt_uint_t split_depth;
-		/// @brief Curve spline basis.
-		tpbrt_shape_curve_basis_t basis	  : 3;
-		/// @brief Degree of the curve's spline.
-		tpbrt_shape_curve_degree_t degree : 3;
-		/// @brief Which curve variant is used.
-		tpbrt_shape_curve_type_t type	  : 3;
-	} tpbrt_shape_curve_params_t;
+	[[nodiscard]] constexpr std::string_view to_string(const shape_curve_degree degree) noexcept {
+		using enum shape_curve_degree;
+			switch (degree) {
+			case DEGREE_2: return "2";
+			case DEGREE_3: return "3";
+			default:	   return "UNKNOWN";
+			}
+	}
 
 	/**
-	 * @brief Cylinder shape parameters.
-	 * @ingroup shape-public
+	 * @copybrief tpbrt_shape_curve_type_t
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_cylinder_params_t {
-		/// @brief The cylinder's radius.
-		tpbrt_float_t radius;
-		/// @brief The height of the cylinder's bottom along the z axis.
-		tpbrt_float_t z_min;
-		/// @brief The height of the cylinder's top along the z axis.
-		tpbrt_float_t z_max;
-		/// @brief The maximum extent of the cylinder in phi (in spherical coordinates).
-		tpbrt_float_t phi_max;
-	} tpbrt_shape_cylinder_params_t;
+	enum class shape_curve_type : char_t {
+		/// @copybrief TPBRT_SHAPE_CURVE_TYPE_FLAT
+		FLAT	 = TPBRT_SHAPE_CURVE_TYPE_FLAT,
+		/// @copybrief TPBRT_SHAPE_CURVE_TYPE_CYLINDER
+		CYLINDER = TPBRT_SHAPE_CURVE_TYPE_CYLINDER,
+		/// @copybrief TPBRT_SHAPE_CURVE_TYPE_RIBBON
+		RIBBON	 = TPBRT_SHAPE_CURVE_TYPE_RIBBON,
+		/// @copybrief TPBRT_SHAPE_CURVE_TYPE_MAX_NUM
+		MAX_NUM	 = TPBRT_SHAPE_CURVE_TYPE_MAX_NUM,
+	};
 
 	/**
-	 * @brief Disk shape parameters.
-	 * @ingroup shape-public
+	 * @brief Converts shape_curve_type enum value to string.
+	 * @param type Shape curve type.
+	 * @return String value of shape curve type.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_disk_params_t {
-		/// @brief The position of the disk along the z axis.
-		tpbrt_float_t height;
-		/// @brief The outer radius of the disk.
-		tpbrt_float_t radius;
-		/// @brief The inner radius of the disk (if nonzero, the disk is an annulus).
-		tpbrt_float_t inner_radius;
-		/// @brief The maximum extent of the disk in phi (in spherical coordinates).
-		tpbrt_float_t phi_max;
-	} tpbrt_shape_disk_params_t;
+	[[nodiscard]] constexpr std::string_view to_string(const shape_curve_type type) noexcept {
+		using enum shape_curve_type;
+			switch (type) {
+			case FLAT:	   return "flat";
+			case CYLINDER: return "cylinder";
+			case RIBBON:   return "ribbon";
+			case MAX_NUM:  return "maxnum";
+			default:	   return "UNKNOWN";
+			}
+	}
 
 	/**
-	 * @brief Sphere shape parameters.
-	 * @ingroup shape-public
+	 * @brief C++ wrapper for tpbrt_shape_bilinear_mesh_params_t.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_sphere_params_t {
-		/// @brief The sphere's radius.
-		tpbrt_float_t radius;
-		/// @brief The height of the lower clipping plane along the z axis.
-		tpbrt_float_t z_min;
-		/// @brief The height of the upper clipping plane along the z axis.
-		tpbrt_float_t z_max;
-		/// @brief The maximum extent of the sphere in phi (in spherical coordinates).
-		tpbrt_float_t phi_max;
-	} tpbrt_shape_sphere_params_t;
+	struct shape_bilinear_mesh_params : wrapper<shape_bilinear_mesh_params, tpbrt_shape_bilinear_mesh_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<uint_array, point3_array, normal_array, point2_array>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns indices value.
+		[[nodiscard]] constexpr uint_array indices() const noexcept { return _native.indices; }
+
+		/// @brief Returns p value.
+		[[nodiscard]] constexpr point3_array p() const noexcept { return _native.p; }
+
+		/// @brief Returns n value.
+		[[nodiscard]] constexpr normal_array n() const noexcept { return _native.n; }
+
+		/// @brief Returns uv value.
+		[[nodiscard]] constexpr point2_array uv() const noexcept { return _native.uv; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(indices(), p(), n(), uv()); }
+	};
 
 	/**
-	 * @brief Triangle mesh parameters.
-	 * @ingroup shape-public
+	 * @brief C++ wrapper for tpbrt_shape_curve_params_t.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_triangle_mesh_params_t {
-		/// @brief The array of integer offsets into the per-vertex data arrays (P, and any of N, S, or uv that are present.) Required, unless exactly three vertices are specified.
-		tpbrt_uint_array_t indices;
-		/// @brief The vertex positions of the triangle mesh.
-		tpbrt_point3_array_t p;
-		/// @brief Per-vertex normals. If present, shading normals will be computed from these values.
-		tpbrt_normal_array_t n;
-		/// @brief Per-vertex tangents.
-		tpbrt_vec3_array_t s;
-		/// @brief Per-vertex texture coordinates.
-		tpbrt_point2_array_t uv;
-	} tpbrt_shape_triangle_mesh_params_t;
+	struct shape_curve_params : wrapper<shape_curve_params, tpbrt_shape_curve_params_t> {
+		/// @brief Type used to read p value.
+		using p_array_type = array<tpbrt_point3_t[4], point3>;
+
+		/// @brief Type used to read n value.
+		using n_array_type = array<tpbrt_normal_t[2], normal>;
+
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<p_array_type, n_array_type, float_t, opt_float, opt_float, uint_t, shape_curve_basis,
+		  shape_curve_degree, shape_curve_type>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns p value.
+		[[nodiscard]] constexpr p_array_type p() const noexcept { return _native.p; }
+
+		/// @brief Returns n value.
+		[[nodiscard]] constexpr n_array_type n() const noexcept { return _native.n; }
+
+		/// @brief Returns width value.
+		[[nodiscard]] constexpr float_t width() const noexcept { return _native.width; }
+
+		/// @brief Returns width0 value.
+		[[nodiscard]] constexpr opt_float width0() const noexcept { return _native.width0; }
+
+		/// @brief Returns width1 value.
+		[[nodiscard]] constexpr opt_float width1() const noexcept { return _native.width1; }
+
+		/// @brief Returns split_depth value.
+		[[nodiscard]] constexpr uint_t split_depth() const noexcept { return _native.split_depth; }
+
+		/// @brief Returns basis value.
+		[[nodiscard]] constexpr shape_curve_basis basis() const noexcept { return static_cast<shape_curve_basis>(_native.basis); }
+
+		/// @brief Returns degree value.
+		[[nodiscard]] constexpr shape_curve_degree degree() const noexcept {
+			return static_cast<shape_curve_degree>(_native.degree);
+		}
+
+		/// @brief Returns type value.
+		[[nodiscard]] constexpr shape_curve_type type() const noexcept { return static_cast<shape_curve_type>(_native.type); }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(p(), n(), width(), width0(), width1(), split_depth(), basis(), degree(), type());
+		}
+	};
 
 	/**
-	 * @brief Ply file mesh parameters.
-	 * @ingroup shape-public
+	 * @brief C++ wrapper for tpbrt_shape_cylinder_params_t.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_ply_mesh_params_t {
-		/// @brief File from which the PLY-format mesh is loaded. If the file name's extension is ".gz", the file will be decompressed from gzip format as it is read.
-		tpbrt_string_t file_name;
-		/// @brief Specifies a texture used to displace the vertices of the mesh. The mesh will be adaptively tessellated so that all edges are below a specified length.
-		tpbrt_texture_handle_t displacement;
-		/// @brief Maximum length (in world space) of an edge of a triangle mesh that is being displaced. Edges are recursively split until shorter than this length.
-		tpbrt_float_t edge_length;
-	} tpbrt_shape_ply_mesh_params_t;
+	struct shape_cylinder_params : wrapper<shape_cylinder_params, tpbrt_shape_cylinder_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<float_t, float_t, float_t, float_t>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns radius value.
+		[[nodiscard]] constexpr float_t radius() const noexcept { return _native.radius; }
+
+		/// @brief Returns z_min value.
+		[[nodiscard]] constexpr float_t z_min() const noexcept { return _native.z_min; }
+
+		/// @brief Returns z_max value.
+		[[nodiscard]] constexpr float_t z_max() const noexcept { return _native.z_max; }
+
+		/// @brief Returns phi_max value.
+		[[nodiscard]] constexpr float_t phi_max() const noexcept { return _native.phi_max; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(radius(), z_min(), z_max(), phi_max());
+		}
+	};
 
 	/**
-	 * @brief Loop subdiv parameters.
-	 * @ingroup shape-public
+	 * @brief C++ wrapper for tpbrt_shape_disk_params_t.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_loop_subdiv_params_t {
-		/// @brief Indices for the base mesh. Indexing is the same as for the triangle mesh primitive.
-		tpbrt_uint_array_t indices;
-		/// @brief Vertex positions for the base mesh. This is the same as for the triangle mesh primitive.
-		tpbrt_point_array_t p;
-		/// @brief The number of levels of refinement to compute in the subdivision algorithm.
-		tpbrt_uint_t levels;
-	} tpbrt_shape_loop_subdiv_params_t;
+	struct shape_disk_params : wrapper<shape_disk_params, tpbrt_shape_disk_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<float_t, float_t, float_t, float_t>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns height value.
+		[[nodiscard]] constexpr float_t height() const noexcept { return _native.height; }
+
+		/// @brief Returns radius value.
+		[[nodiscard]] constexpr float_t radius() const noexcept { return _native.radius; }
+
+		/// @brief Returns inner_radius value.
+		[[nodiscard]] constexpr float_t inner_radius() const noexcept { return _native.inner_radius; }
+
+		/// @brief Returns phi_max value.
+		[[nodiscard]] constexpr float_t phi_max() const noexcept { return _native.phi_max; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(height(), radius(), inner_radius(), phi_max());
+		}
+	};
 
 	/**
-	 * @brief PBRT shape representation.
-	 * @ingroup shape-public
+	 * @brief C++ wrapper for tpbrt_shape_sphere_params_t.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shape_t {
-		/// @brief Handle to texture.
-		tpbrt_texture_handle_t alpha;
-		/// @brief Animated transform.
-		tpbrt_transform_animated_t transform;
-		/// @brief Material handle.
-		tpbrt_material_handle_t material;
-		/// @brief Area light handle.
-		tpbrt_area_light_handle_t area_light;
-		/// @brief Interior media handle.
-		tpbrt_media_handle_t interior_media_handle;
-		/// @brief Exterior media handle.
-		tpbrt_media_handle_t exterior_media_handle;
-		/// @brief Shape value type.
-		tpbrt_shape_type_t type			 : 5;
-		/// @brief If true shape orientation is reversed (inside becomes outside)
-		tpbrt_bool_t reverse_orientation : 1;
+	struct shape_sphere_params : wrapper<shape_sphere_params, tpbrt_shape_sphere_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<float_t, float_t, float_t, float_t>;
 
-		/// @brief Value dependent on type value.
-		union {
-			/// @brief Bilinear mesh parameters.
-			tpbrt_shape_bilinear_mesh_params_t bilinear_mesh;
-			/// @brief Curve shape parameters.
-			tpbrt_shape_curve_params_t curve;
-			/// @brief Cylinder shape parameters.
-			tpbrt_shape_cylinder_params_t cylinder;
-			/// @brief Disk shape parameters.
-			tpbrt_shape_disk_params_t disk;
-			/// @brief Sphere shape parameters.
-			tpbrt_shape_sphere_params_t sphere;
-			/// @brief Triangle mesh parameters.
-			tpbrt_shape_triangle_mesh_params_t triangle_mesh;
-			/// @brief Ply mesh file parameters.
-			tpbrt_shape_ply_mesh_params_t ply_mesh;
-			/// @brief Loop subdiv parameters.
-			tpbrt_shape_loop_subdiv_params_t loop_subdiv;
-		} as;
-	} tpbrt_shape_t;
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns radius value.
+		[[nodiscard]] constexpr float_t radius() const noexcept { return _native.radius; }
+
+		/// @brief Returns z_min value.
+		[[nodiscard]] constexpr float_t z_min() const noexcept { return _native.z_min; }
+
+		/// @brief Returns z_max value.
+		[[nodiscard]] constexpr float_t z_max() const noexcept { return _native.z_max; }
+
+		/// @brief Returns phi_max value.
+		[[nodiscard]] constexpr float_t phi_max() const noexcept { return _native.phi_max; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(radius(), z_min(), z_max(), phi_max());
+		}
+	};
 
 	/**
-	 * @brief List of shapes.
-	 * @ingroup shape-public
+	 * @brief C++ wrapper for tpbrt_shape_triangle_mesh_params_t.
+	 * @ingroup shape-cpp-public
 	 */
-	typedef struct tpbrt_shapes_list_t {
-		/// @brief Shapes list data.
-		tpbrt_shape_t* shapes;
-		/// @brief Number of shapes in list.
-		tpbrt_size_t count;
-	} tpbrt_shapes_list_t;
+	struct shape_triangle_mesh_params : wrapper<shape_triangle_mesh_params, tpbrt_shape_triangle_mesh_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<uint_array, point3_array, normal_array, vec3_array, point2_array>;
 
-#ifdef __cplusplus
-}
-#endif
-#endif // _TINYPBRT_SHAPE_H_
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns indices value.
+		[[nodiscard]] constexpr uint_array indices() const noexcept { return _native.indices; }
+
+		/// @brief Returns p value.
+		[[nodiscard]] constexpr point3_array p() const noexcept { return _native.p; }
+
+		/// @brief Returns n value.
+		[[nodiscard]] constexpr normal_array n() const noexcept { return _native.n; }
+
+		/// @brief Returns s value.
+		[[nodiscard]] constexpr vec3_array s() const noexcept { return _native.s; }
+
+		/// @brief Returns uv value.
+		[[nodiscard]] constexpr point2_array uv() const noexcept { return _native.uv; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(indices(), p(), n(), s(), uv()); }
+	};
+
+	/**
+	 * @brief C++ wrapper for tpbrt_shape_ply_mesh_params_t.
+	 * @ingroup shape-cpp-public
+	 */
+	struct shape_ply_mesh_params : wrapper<shape_ply_mesh_params, tpbrt_shape_ply_mesh_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<string, texture_handle, float_t>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns file_name value.
+		[[nodiscard]] constexpr string file_name() const noexcept { return _native.file_name; }
+
+		/// @brief Returns displacement value.
+		[[nodiscard]] constexpr texture_handle displacement() const noexcept { return _native.displacement; }
+
+		/// @brief Returns edge_length value.
+		[[nodiscard]] constexpr float_t edge_length() const noexcept { return _native.edge_length; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(file_name(), displacement(), edge_length());
+		}
+	};
+
+	/**
+	 * @brief C++ wrapper for tpbrt_shape_loop_subdiv_params_t.
+	 * @ingroup shape-cpp-public
+	 */
+	struct shape_loop_subdiv_params : wrapper<shape_loop_subdiv_params, tpbrt_shape_loop_subdiv_params_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<uint_array, point_array, uint_t>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns indices value.
+		[[nodiscard]] constexpr uint_array indices() const noexcept { return _native.indices; }
+
+		/// @brief Returns p value.
+		[[nodiscard]] constexpr point_array p() const noexcept { return _native.p; }
+
+		/// @brief Returns levels value.
+		[[nodiscard]] constexpr uint_t levels() const noexcept { return _native.levels; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(indices(), p(), levels()); }
+	};
+
+	/**
+	 * @brief C++ wrapper for tpbrt_shape_t.
+	 * @ingroup shape-cpp-public
+	 */
+	struct shape : wrapper<shape, tpbrt_shape_t>,
+				   with_variant<shape, shape_bilinear_mesh_params, shape_curve_params, shape_cylinder_params, shape_disk_params,
+					 shape_sphere_params, shape_triangle_mesh_params, shape_ply_mesh_params, shape_loop_subdiv_params> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<texture_handle, transform_animated, material_handle, area_light_handle, media_handle,
+		  media_handle, shape_type, bool_t, variant_type>;
+
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns alpha value.
+		[[nodiscard]] constexpr texture_handle alpha() const noexcept { return _native.alpha; }
+
+		/// @brief Returns transform value.
+		[[nodiscard]] constexpr transform_animated transform() const noexcept { return _native.transform; }
+
+		/// @brief Returns material value.
+		[[nodiscard]] constexpr material_handle material() const noexcept { return _native.material; }
+
+		/// @brief Returns area_light value.
+		[[nodiscard]] constexpr area_light_handle area_light() const noexcept { return _native.area_light; }
+
+		/// @brief Returns interior_media_handle value.
+		[[nodiscard]] constexpr media_handle interior_media_handle() const noexcept { return _native.interior_media_handle; }
+
+		/// @brief Returns exterior_media_handle value.
+		[[nodiscard]] constexpr media_handle exterior_media_handle() const noexcept { return _native.exterior_media_handle; }
+
+		/// @brief Returns reverse_orientation value.
+		[[nodiscard]] constexpr bool_t reverse_orientation() const noexcept { return _native.reverse_orientation; }
+
+		/// @brief Returns type value.
+		[[nodiscard]] constexpr shape_type type() const noexcept { return static_cast<shape_type>(_native.type); }
+
+		/// @brief Returns if type is bilinear_mesh.
+		[[nodiscard]] constexpr bool_t is_bilinear_mesh() const noexcept { return type() == shape_type::BILINEAR_MESH; }
+
+		/// @brief Returns if type is curve.
+		[[nodiscard]] constexpr bool_t is_curve() const noexcept { return type() == shape_type::CURVE; }
+
+		/// @brief Returns if type is cylinder.
+		[[nodiscard]] constexpr bool_t is_cylinder() const noexcept { return type() == shape_type::CYLINDER; }
+
+		/// @brief Returns if type is disk.
+		[[nodiscard]] constexpr bool_t is_disk() const noexcept { return type() == shape_type::DISK; }
+
+		/// @brief Returns if type is sphere.
+		[[nodiscard]] constexpr bool_t is_sphere() const noexcept { return type() == shape_type::SPHERE; }
+
+		/// @brief Returns if type is triangle_mesh.
+		[[nodiscard]] constexpr bool_t is_triangle_mesh() const noexcept { return type() == shape_type::TRIANGLE_MESH; }
+
+		/// @brief Returns if type is ply_mesh.
+		[[nodiscard]] constexpr bool_t is_ply_mesh() const noexcept { return type() == shape_type::PLY_MESH; }
+
+		/// @brief Returns if type is loop_subdiv.
+		[[nodiscard]] constexpr bool_t is_loop_subdiv() const noexcept { return type() == shape_type::LOOP_SUBDIV; }
+
+		/// @brief Returns shape parameters as bilinear_mesh.
+		[[nodiscard]] constexpr std::optional<shape_bilinear_mesh_params> as_bilinear_mesh() const noexcept {
+				if (!is_bilinear_mesh()) { return std::nullopt; }
+			return _native.as.bilinear_mesh;
+		}
+
+		/// @brief Returns shape parameters as curve.
+		[[nodiscard]] constexpr std::optional<shape_curve_params> as_curve() const noexcept {
+				if (!is_curve()) { return std::nullopt; }
+			return _native.as.curve;
+		}
+
+		/// @brief Returns shape parameters as cylinder.
+		[[nodiscard]] constexpr std::optional<shape_cylinder_params> as_cylinder() const noexcept {
+				if (!is_cylinder()) { return std::nullopt; }
+			return _native.as.cylinder;
+		}
+
+		/// @brief Returns shape parameters as disk.
+		[[nodiscard]] constexpr std::optional<shape_disk_params> as_disk() const noexcept {
+				if (!is_disk()) { return std::nullopt; }
+			return _native.as.disk;
+		}
+
+		/// @brief Returns shape parameters as sphere.
+		[[nodiscard]] constexpr std::optional<shape_sphere_params> as_sphere() const noexcept {
+				if (!is_sphere()) { return std::nullopt; }
+			return _native.as.sphere;
+		}
+
+		/// @brief Returns shape parameters as triangle_mesh.
+		[[nodiscard]] constexpr std::optional<shape_triangle_mesh_params> as_triangle_mesh() const noexcept {
+				if (!is_triangle_mesh()) { return std::nullopt; }
+			return _native.as.triangle_mesh;
+		}
+
+		/// @brief Returns shape parameters as ply_mesh.
+		[[nodiscard]] constexpr std::optional<shape_ply_mesh_params> as_ply_mesh() const noexcept {
+				if (!is_ply_mesh()) { return std::nullopt; }
+			return _native.as.ply_mesh;
+		}
+
+		/// @brief Returns shape parameters as loop_subdiv.
+		[[nodiscard]] constexpr std::optional<shape_loop_subdiv_params> as_loop_subdiv() const noexcept {
+				if (!is_loop_subdiv()) { return std::nullopt; }
+			return _native.as.loop_subdiv;
+		}
+
+		/// @brief Conversion to variant.
+		[[nodiscard]] constexpr variant_type to_variant() const noexcept {
+			using enum shape_type;
+				switch (type()) {
+				case BILINEAR_MESH: return _native.as.bilinear_mesh;
+				case CURVE:			return _native.as.curve;
+				case CYLINDER:		return _native.as.cylinder;
+				case DISK:			return _native.as.disk;
+				case SPHERE:		return _native.as.sphere;
+				case TRIANGLE_MESH: return _native.as.triangle_mesh;
+				case PLY_MESH:		return _native.as.ply_mesh;
+				case LOOP_SUBDIV:	return _native.as.loop_subdiv;
+				case MAX_NUM:		[[fallthrough]];
+				default:			break;
+				}
+			return std::nullopt;
+		}
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
+			return std::make_tuple(alpha(), transform(), material(), area_light(), interior_media_handle(),
+			  exterior_media_handle(), type(), reverse_orientation(), to_variant());
+		}
+	};
+} // namespace tpbrt
+#endif // _TINYPBRT_SHAPE_HPP_

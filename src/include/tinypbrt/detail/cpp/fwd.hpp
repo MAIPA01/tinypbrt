@@ -2,11 +2,11 @@
 #ifndef _TINYPBRT_FWD_HPP_
 #define _TINYPBRT_FWD_HPP_
 
-#include <tinypbrt/detail/export.h>
 #include <tinypbrt/detail/fwd.h>
 
-#include <cstddef>
-#include <cstdint>
+#include <tinypbrt/detail/object_instance.h>
+#include <tinypbrt/detail/shape.h>
+
 #include <optional>
 #include <variant>
 
@@ -77,6 +77,34 @@ namespace tpbrt {
 	 * @ingroup common-cpp-public
 	 */
 	using uchar_t = tpbrt_uchar_t;
+
+	/**
+	 * @brief Base wrapper struct.
+	 * @tparam Derived Derived C++ wrapper type.
+	 * @tparam Native Native C library type.
+	 * @ingroup common-cpp-public
+	 */
+	template<class Derived, class Native>
+	struct wrapper;
+
+	/**
+	 * @brief Adds variant visitor and type.
+	 * @tparam Derived Derived C++ wrapper.
+	 * @tparam Ts Variant types.
+	 * @ingroup common-cpp-public
+	 */
+	template<class Derived, class... Ts>
+	struct with_variant;
+
+	/**
+	 * @brief Generic C++ array view with type conversion.
+	 * @tparam Native Type of C library native array type.
+	 * @tparam Element Desired array element type. (If not the same as NativeElement transformation will be performed).
+	 * @tparam DataField Pointer to field with data.
+	 * @ingroup common-cpp-public
+	 */
+	template<class Native, class Element = void, auto DataField = nullptr>
+	struct array;
 #pragma endregion
 
 #pragma region MATH
@@ -84,7 +112,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_bool_t
 	 * @ingroup math-cpp-public
 	 */
-	using bool_t					 = tpbrt_bool_t;
+	using bool_t					 = bool;
 	/**
 	 * @copybrief tpbrt_int_t
 	 * @ingroup math-cpp-public
@@ -149,7 +177,6 @@ namespace tpbrt {
 	 * @ingroup math-cpp-public
 	 */
 	using point2 = vec2;
-
 
 	struct vec3;
 	/**
@@ -220,10 +247,18 @@ namespace tpbrt {
 	struct texture_handle;
 
 	struct texture;
+
+	struct textures_list;
 #pragma endregion
 
 #pragma region SHAPE
 	struct shape;
+
+	/**
+	 * @brief C++ wrapper for tpbrt_shapes_list_t.
+	 * @ingroup shape-cpp-public
+	 */
+	using shapes_list = array<tpbrt_shapes_list_t, shape, &tpbrt_shapes_list_t::shapes>;
 #pragma endregion
 
 #pragma region SCENE
@@ -253,10 +288,19 @@ namespace tpbrt {
 	struct object_handle;
 
 	struct object;
+
+	struct objects_list;
 #pragma endregion
 
 #pragma region OBJECT_INSTANCE
 	struct object_instance;
+
+	/**
+	 * @brief C++ wrapper for tpbrt_objects_instances_list_t.
+	 * @ingroup object-instance-cpp-public
+	 */
+	using objects_instances_list =
+	  array<tpbrt_objects_instances_list_t, object_instance, &tpbrt_objects_instances_list_t::instances>;
 #pragma endregion
 
 #pragma region MEDIA
@@ -293,6 +337,8 @@ namespace tpbrt {
 	struct material_handle;
 
 	struct material;
+
+	struct materials_list;
 #pragma endregion
 
 #pragma region LIGHT
@@ -313,6 +359,8 @@ namespace tpbrt {
 	struct area_light_handle;
 
 	struct area_light;
+
+	struct area_lights_list;
 
 	struct lights_list;
 #pragma endregion
@@ -345,6 +393,18 @@ namespace tpbrt {
 	using rgb		= vec3;
 
 	struct spectrum;
+
+	/**
+	 * @brief C++ wrapper for tpbrt_wavelength_array_t.
+	 * @ingroup color-cpp-public
+	 */
+	using wavelength_array = array<tpbrt_wavelength_array_t, wavelength>;
+
+	/**
+	 * @brief C++ wrapper for tpbrt_rgb_array_t
+	 * @ingroup color-cpp-public
+	 */
+	using rgb_array		   = array<tpbrt_rgb_array_t, rgb>;
 #pragma endregion
 
 #pragma region CAMERA

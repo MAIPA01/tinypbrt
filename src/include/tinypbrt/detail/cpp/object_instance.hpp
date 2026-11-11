@@ -1,44 +1,38 @@
 #pragma once
-#ifndef _TINYPBRT_OBJECT_INSTANCE_H_
-#define _TINYPBRT_OBJECT_INSTANCE_H_
+#ifndef _TINYPBRT_OBJECT_INSTANCE_HPP_
+#define _TINYPBRT_OBJECT_INSTANCE_HPP_
 
-#include <tinypbrt/detail/fwd.h>
+#include <tinypbrt/detail/cpp/fwd.hpp>
 
-#include <tinypbrt/detail/math.h>
-#include <tinypbrt/detail/object.h>
+#include <tinypbrt/detail/object_instance.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <tinypbrt/detail/cpp/object.hpp>
 
+namespace tpbrt {
 	/**
-	 * @defgroup object-instance-public Object Instance
-	 * @ingroup tinypbrt-public
+	 * @defgroup object-instance-cpp-public Object Instance
+	 * @ingroup tinypbrt-cpp-public
 	 */
 
 	/**
-	 * @brief PBRT object instance representation.
-	 * @ingroup object-instance-public
+	 * @brief C++ wrapper for tpbrt_object_instance_t.
+	 * @ingroup object-instance-cpp-public
 	 */
-	typedef struct tpbrt_object_instance_t {
-		/// @brief Handle to object.
-		tpbrt_object_handle_t object;
-		/// @brief Animated transform.
-		tpbrt_transform_animated_t transform;
-	} tpbrt_object_instance_t;
+	struct object_instance : wrapper<object_instance, tpbrt_object_instance_t> {
+		/// @brief Type used for reflection.
+		using reflect_type = std::tuple<object_handle, transform_animated>;
 
-	/**
-	 * @brief List of object instances.
-	 * @ingroup object-instance-public
-	 */
-	typedef struct tpbrt_objects_instances_list_t {
-		/// @brief Objects instances.
-		tpbrt_object_instance_t* instances;
-		/// @brief Number of objects instances in list.
-		tpbrt_size_t count;
-	} tpbrt_objects_instances_list_t;
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
 
-#ifdef __cplusplus
-}
-#endif
-#endif // _TINYPBRT_OBJECT_INSTANCE_H_
+		/// @brief Returns object value.
+		[[nodiscard]] constexpr object_handle object() const noexcept { return _native.object; }
+
+		/// @brief Returns transform value.
+		[[nodiscard]] constexpr transform_animated transform() const noexcept { return _native.transform; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(object(), transform()); }
+	};
+} // namespace tpbrt
+#endif // _TINYPBRT_OBJECT_INSTANCE_HPP_
