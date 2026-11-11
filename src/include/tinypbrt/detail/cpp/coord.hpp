@@ -44,4 +44,4 @@ namespace tpbrt {
 			}
 	}
 } // namespace tpbrt
-#endif // _TINYPBRT_COORD_H_
+#endif // _TINYPBRT_COORD_HPP_

@@ -188,7 +188,7 @@ namespace tpbrt {
 		constexpr result(value_type&& val) noexcept : _data(std::move(val)) {} // NOLINT
 
 		/// @brief Returns true if result has value.
-		[[nodiscard]] constexpr bool has_value() const noexcept { return std::holds_alternative<value_type>(_data); }
+		[[nodiscard]] constexpr bool_t has_value() const noexcept { return std::holds_alternative<value_type>(_data); }
 
 		/// @brief Returns error code.
 		[[nodiscard]] constexpr error_type get_error() const noexcept {
@@ -229,7 +229,7 @@ namespace tpbrt {
 		[[nodiscard]] constexpr auto operator<=>(const result& rhs) const noexcept { return _data <=> rhs._data; }
 
 		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool operator==(const result& rhs) const noexcept { return _data == rhs._data; }
+		[[nodiscard]] constexpr bool_t operator==(const result& rhs) const noexcept { return _data == rhs._data; }
 	};
 
 	/**
