@@ -7,6 +7,7 @@
 # setup_coverage_report(
 #     TEST_TARGET <exe>                - główny plik testów (wymagany)
 #     [EXE_TARGETS <exe>...]           - inne programy, których pokrycie ma być w raporcie (np. test C API)
+#     [DEPENDS <target>...]            - cele bez instrumentacji, które ctest też uruchamia (muszą być zbudowane)
 #     [FORMAT html|text]               - format raportu (domyślnie html)
 #     [OUTPUT_DIR <dir>]               - katalog raportu (domyślnie <build>/coverage_report)
 #     [IGNORE_REGEX <regex>...]        - pliki pomijane w raporcie (domyślnie testy, przykłady, benchmark, third_party)
@@ -64,7 +65,7 @@ function(setup_coverage_report)
 
     set(options CLEAN_TEMP)
     set(oneValueArgs TEST_TARGET FORMAT OUTPUT_DIR)
-    set(multiValueArgs EXE_TARGETS IGNORE_REGEX)
+    set(multiValueArgs EXE_TARGETS DEPENDS IGNORE_REGEX)
     cmake_parse_arguments(PARSE_ARGV 0 COVERAGE "${options}" "${oneValueArgs}" "${multiValueArgs}")
 
     if (NOT DEFINED COVERAGE_TEST_TARGET)
@@ -153,7 +154,8 @@ function(setup_coverage_report)
         COMMAND ${TINYPBRT_LLVM_COV} report ${COV_OBJECTS} -instr-profile=${PROFDATA_FILE} ${IGNORE_ARGS}
         ${CLEAN_COMMANDS}
         COMMAND ${CMAKE_COMMAND} -E echo "Coverage report: ${COVERAGE_OUTPUT_DIR}/index.${COVERAGE_FORMAT}"
-        DEPENDS ${COVERAGE_TEST_TARGET} ${COVERAGE_EXE_TARGETS}
+        # ctest uruchamia wszystkie testy, więc wszystkie ich programy muszą być zbudowane przed raportem
+        DEPENDS ${COVERAGE_TEST_TARGET} ${COVERAGE_EXE_TARGETS} ${COVERAGE_DEPENDS}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Generating coverage report (${COVERAGE_FORMAT}) in ${COVERAGE_OUTPUT_DIR}"
         VERBATIM
