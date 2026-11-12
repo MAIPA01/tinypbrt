@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.30)
+# The only place where the version of tinypbrt is set. README.md and examples/cpm_project are updated from it
+# (TINYPBRT_SYNC_VERSION, cmake/version_sync.cmake), everything else reads PROJECT_VERSION.
 project(tinypbrt VERSION 1.1.1 LANGUAGES C CXX)
 
 option(BUILD_SHARED_LIBS 					"Build shared library" 			OFF)
@@ -23,7 +25,26 @@ option(TINYPBRT_INSTALL_TEST				"This is only to test if installation of tinypbr
 
 option(TINYPBRT_DISABLE_ASSERT_ON_RELEASE 		"Disables assert on release builds" 				OFF)
 
+option(TINYPBRT_SYNC_VERSION 				"Write PROJECT_VERSION into README.md and examples/cpm_project when configuring" 	${PROJECT_IS_TOP_LEVEL})
+
 message(STATUS "TINYPBRT_DISABLE_ASSERT_ON_RELEASE: ${TINYPBRT_DISABLE_ASSERT_ON_RELEASE}")
+
+# region VERSION
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version_sync.cmake)
+if (TINYPBRT_SYNC_VERSION)
+	tinypbrt_sync_version(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} VERSION ${PROJECT_VERSION})
+endif()
+
+if (PROJECT_IS_TOP_LEVEL)
+	# cmake --build <build> --target tinypbrt-sync-version  (when TINYPBRT_SYNC_VERSION=OFF)
+	add_custom_target(tinypbrt-sync-version
+			COMMAND ${CMAKE_COMMAND} -DTINYPBRT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DTINYPBRT_VERSION=${PROJECT_VERSION}
+					-P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/version_sync.cmake
+			COMMENT "Writing version ${PROJECT_VERSION} into README.md and examples"
+			VERBATIM
+	)
+endif()
+# endregion
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sanitizers.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/coverage_report.cmake)
@@ -45,6 +66,14 @@ endif()
 if (TINYPBRT_BUILD_TESTS OR TINYPBRT_BUILD_COVERAGE)
 	enable_testing()
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
+	if (PROJECT_IS_TOP_LEVEL)
+		# fails when README.md or examples mention another version than project() (e.g. TINYPBRT_SYNC_VERSION=OFF in CI)
+		add_test(NAME tinypbrt-version-check
+				COMMAND ${CMAKE_COMMAND} -DTINYPBRT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DTINYPBRT_VERSION=${PROJECT_VERSION}
+						-DTINYPBRT_CHECK_ONLY=ON -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/version_sync.cmake
+		)
+	endif()
 endif()
 
 if (TINYPBRT_BUILD_BENCHMARK)

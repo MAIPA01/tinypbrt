@@ -119,7 +119,7 @@ project(my_renderer LANGUAGES C)
 # https://github.com/cpm-cmake/CPM.cmake#adding-cpm
 include(cmake/CPM.cmake)
 
-CPMAddPackage("gh:MAIPA01/tinypbrt@v1.0.0")
+CPMAddPackage("gh:MAIPA01/tinypbrt@v1.1.1")
 
 add_executable(my_renderer main.c)
 target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
@@ -129,7 +129,7 @@ target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
 # target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt_cpp)
 ```
 
-`gh:MAIPA01/tinypbrt@v1.0.0` fetches the git tag `v1.0.0`. To follow a branch or pin a commit, or to pass options, use
+`gh:MAIPA01/tinypbrt@v1.1.1` fetches the git tag `v1.1.1`. To follow a branch or pin a commit, or to pass options, use
 the long form:
 
 ```cmake
@@ -161,7 +161,7 @@ projects.
 include(FetchContent)
 FetchContent_Declare(tinypbrt
         GIT_REPOSITORY https://github.com/MAIPA01/tinypbrt.git
-        GIT_TAG v1.0.0
+        GIT_TAG v1.1.1
 )
 FetchContent_MakeAvailable(tinypbrt)
 
@@ -184,11 +184,11 @@ cmake --install build --prefix /opt/tinypbrt
 ```
 
 ```cmake
-find_package(tinypbrt 1.0 REQUIRED CONFIG)   # -DCMAKE_PREFIX_PATH=/opt/tinypbrt
+find_package(tinypbrt 1.1 REQUIRED CONFIG)   # -DCMAKE_PREFIX_PATH=/opt/tinypbrt
 target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
 
 # C++ wrapper (finds tinypbrt by itself)
-find_package(tinypbrt_cpp 1.0 REQUIRED CONFIG)
+find_package(tinypbrt_cpp 1.1 REQUIRED CONFIG)
 target_link_libraries(my_cpp_renderer PRIVATE tinypbrt::tinypbrt_cpp)
 ```
 
@@ -422,9 +422,20 @@ Things worth knowing:
 | `TINYPBRT_ENABLE_SANITIZERS`   | `OFF`               | build the library and tests with sanitizers                                            |
 | `TINYPBRT_SANITIZERS`          | `address;undefined` | sanitizers to use (`address`, `undefined`, `leak`, `memory`, `thread`)                 |
 | `TINYPBRT_INSTALL`             | top-level only      | generate install rules                                                                 |
+| `TINYPBRT_SYNC_VERSION`        | top-level only      | write the version into README.md and `examples/cpm_project` ([details](#versioning))   |
 
 Compiler warnings and optimization flags used to build tinypbrt are private to the library: they are not added to your
 targets. Link-time optimization and static linking are left to your project (e.g. `CMAKE_INTERPROCEDURAL_OPTIMIZATION`).
+
+### Versioning
+
+The version is set in one place only: `project(tinypbrt VERSION x.y.z ...)` in the main `CMakeLists.txt`. The library
+(`VERSION`/`SOVERSION`), the installed package version files and the Doxygen documentation read it from there, and
+configuring tinypbrt as the top-level project writes it into this README (`@vx.y.z`, `GIT_TAG vx.y.z`,
+`find_package(tinypbrt x.y)`) and into [`examples/cpm_project`](examples/cpm_project)
+([`cmake/version_sync.cmake`](cmake/version_sync.cmake)). With `TINYPBRT_SYNC_VERSION=OFF` run
+`cmake --build build --target tinypbrt-sync-version` instead; the `tinypbrt-version-check` test fails when the files
+are out of date. Push the matching `vx.y.z` git tag when releasing, so the CPM and FetchContent snippets work.
 
 ## Examples
 

@@ -46,55 +46,55 @@ namespace tpbrt {
 		using wrapper::wrapper;
 
 		/// @brief Returns options value.
-		[[nodiscard]] constexpr options options() const noexcept { return _native->options; }
+		[[nodiscard]] constexpr tpbrt::options options() const noexcept { return _native->options; }
 
 		/// @brief Returns camera value.
-		[[nodiscard]] constexpr camera camera() const noexcept { return _native->camera; }
+		[[nodiscard]] constexpr tpbrt::camera camera() const noexcept { return _native->camera; }
 
 		/// @brief Returns film value.
-		[[nodiscard]] constexpr film film() const noexcept { return _native->film; }
+		[[nodiscard]] constexpr tpbrt::film film() const noexcept { return _native->film; }
 
 		/// @brief Returns integrator value.
-		[[nodiscard]] constexpr integrator integrator() const noexcept { return _native->integrator; }
+		[[nodiscard]] constexpr tpbrt::integrator integrator() const noexcept { return _native->integrator; }
 
 		/// @brief Returns accelerator value.
-		[[nodiscard]] constexpr accelerator accelerator() const noexcept { return _native->accelerator; }
+		[[nodiscard]] constexpr tpbrt::accelerator accelerator() const noexcept { return _native->accelerator; }
 
 		/// @brief Returns sampler value.
-		[[nodiscard]] constexpr sampler sampler() const noexcept { return _native->sampler; }
+		[[nodiscard]] constexpr tpbrt::sampler sampler() const noexcept { return _native->sampler; }
 
 		/// @brief Returns start_time value.
 		[[nodiscard]] constexpr float_t start_time() const noexcept { return _native->start_time; }
 
 		/// @brief Returns filter value.
-		[[nodiscard]] constexpr filter filter() const noexcept { return _native->filter; }
+		[[nodiscard]] constexpr tpbrt::filter filter() const noexcept { return _native->filter; }
 
 		/// @brief Returns end_time value.
 		[[nodiscard]] constexpr float_t end_time() const noexcept { return _native->end_time; }
 
 		/// @brief Returns textures value.
-		[[nodiscard]] constexpr textures_list textures() const noexcept { return _native->textures; }
+		[[nodiscard]] constexpr tpbrt::textures_list textures() const noexcept { return _native->textures; }
 
 		/// @brief Returns materials value.
-		[[nodiscard]] constexpr materials_list materials() const noexcept { return _native->materials; }
+		[[nodiscard]] constexpr tpbrt::materials_list materials() const noexcept { return _native->materials; }
 
 		/// @brief Returns medias value.
-		[[nodiscard]] constexpr medias_list medias() const noexcept { return _native->medias; }
+		[[nodiscard]] constexpr tpbrt::medias_list medias() const noexcept { return _native->medias; }
 
 		/// @brief Returns lights value.
-		[[nodiscard]] constexpr lights_list lights() const noexcept { return _native->lights; }
+		[[nodiscard]] constexpr tpbrt::lights_list lights() const noexcept { return _native->lights; }
 
 		/// @brief Returns shapes value.
-		[[nodiscard]] constexpr shapes_list shapes() const noexcept { return _native->shapes; }
+		[[nodiscard]] constexpr tpbrt::shapes_list shapes() const noexcept { return _native->shapes; }
 
 		/// @brief Returns objects value.
-		[[nodiscard]] constexpr objects_list objects() const noexcept { return _native->objects; }
+		[[nodiscard]] constexpr tpbrt::objects_list objects() const noexcept { return _native->objects; }
 
 		/// @brief Returns instances value.
-		[[nodiscard]] constexpr objects_instances_list instances() const noexcept { return _native->instances; }
+		[[nodiscard]] constexpr tpbrt::objects_instances_list instances() const noexcept { return _native->instances; }
 
 		/// @brief Returns transforms value.
-		[[nodiscard]] constexpr transforms_list transforms() const noexcept { return _native->transforms; }
+		[[nodiscard]] constexpr tpbrt::transforms_list transforms() const noexcept { return _native->transforms; }
 
 		/// @brief Conversion to tuple.
 		[[nodiscard]] constexpr auto reflect() const noexcept {
