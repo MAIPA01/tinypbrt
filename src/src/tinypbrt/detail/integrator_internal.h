@@ -19,7 +19,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns integrator type based on string value.
-	 * @param type_str String which is convertable to integrator type.
+	 * @param type_str String which is convertible to integrator type.
 	 * @param type Output integrator type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_INTEGRATOR_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup integrator-private
@@ -28,7 +28,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns integrator light sampler type based on string value.
-	 * @param sampler_str String which is convertable to integrator light sampler type.
+	 * @param sampler_str String which is convertible to integrator light sampler type.
 	 * @param sampler Output integrator light sampler type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_INTEGRATOR_LIGHT_SAMPLER, TPBRT_ERROR_NONE).
 	 * @ingroup integrator-private

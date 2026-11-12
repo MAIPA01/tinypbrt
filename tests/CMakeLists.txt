@@ -2,7 +2,8 @@ set(C_TARGET_TEST ${PROJECT_NAME}-tests)
 
 # source files
 set(C_TARGET_TEST_SOURCES ${C_TARGET_TEST}_TEST_SOURCES)
-file(GLOB_RECURSE ${C_TARGET_TEST_SOURCES} CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+# tylko ten katalog - testy wrappera C++ (cpp/) mają osobny cel z C++20
+file(GLOB ${C_TARGET_TEST_SOURCES} CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 # region INSTALL_TESTING
 if (TINYPBRT_INSTALL_TEST)
@@ -122,6 +123,39 @@ target_link_options(${C_TARGET_TEST} PRIVATE
 
 tinypbrt_enable_coverage(${C_TARGET_TEST})
 tinypbrt_enable_coverage(${C_TARGET_C_API_TEST})
+
+# region CPP_TESTS
+# Testy wrappera C++ (C++20). Przy bibliotece współdzielonej linkują statyczną kopię (tinypbrt_static), bo test enumów
+# porównuje to_string() z wewnętrznymi parserami C, a nagłówki C bez TINYPBRT_SHARED_LIBS nie używają dllimport.
+if (TINYPBRT_BUILD_CPP_WRAPPER AND TARGET tinypbrt_cpp AND NOT TINYPBRT_INSTALL_TEST)
+    set(CPP_TARGET_TEST ${PROJECT_NAME}-cpp-tests)
+
+    file(GLOB CPP_TARGET_TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cpp/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/cpp/*.hpp)
+    add_executable(${CPP_TARGET_TEST} ${CPP_TARGET_TEST_SOURCES})
+    add_test(NAME ${CPP_TARGET_TEST}_TEST COMMAND ${CPP_TARGET_TEST})
+
+    if (TARGET tinypbrt_static)
+        target_link_libraries(${CPP_TARGET_TEST} PRIVATE tinypbrt_static gtest_main)
+    else()
+        target_link_libraries(${CPP_TARGET_TEST} PRIVATE tinypbrt::tinypbrt_cpp gtest_main)
+    endif()
+    target_compile_features(${CPP_TARGET_TEST} PRIVATE cxx_std_20)
+    target_include_directories(${CPP_TARGET_TEST} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cpp "${TINYPBRT_SOURCE_DIR}/src")
+    target_compile_definitions(${CPP_TARGET_TEST} PRIVATE TINYPBRT_EXAMPLE_SCENES_DIR="${PROJECT_SOURCE_DIR}/examples/scenes")
+    tinypbrt_configure_cpp_compile_options(${CPP_TARGET_TEST})
+
+    tinypbrt_enable_sanitizers(${CPP_TARGET_TEST})
+    tinypbrt_set_sanitizers_test_environment(${CPP_TARGET_TEST}_TEST)
+    tinypbrt_enable_coverage(${CPP_TARGET_TEST})
+
+    if (WIN32 AND BUILD_SHARED_LIBS)
+        add_custom_command(TARGET ${CPP_TARGET_TEST} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${CPP_TARGET_TEST}> $<TARGET_FILE_DIR:${CPP_TARGET_TEST}>
+            COMMAND_EXPAND_LISTS
+        )
+    endif()
+endif()
+# endregion
 
 # region CLANG_TIDY
 if (TINYPBRT_ENABLE_CLANG_TIDY)

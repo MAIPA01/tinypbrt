@@ -14,7 +14,7 @@ extern "C" {
 	 */
 
 	/**
-	 * @brief Error type (used as result type where success = TPBRT_ERROR_NONE = 0)
+	 * @brief Error type (used as result type where success = TPBRT_ERROR_NONE = 0).
 	 * @ingroup error-public
 	 */
 	typedef enum tpbrt_error_t {
@@ -151,7 +151,7 @@ extern "C" {
 	} tpbrt_error_t;
 
 	/**
-	 * @brief Writes error message to given buffer.
+	 * @brief Writes error message to given buffer. (Preferred buffer size is 128 characters).
 	 * @param error Error code.
 	 * @param buffer Pointer to buffer in which error message will be stored.
 	 * @param buffer_size Size of buffer.

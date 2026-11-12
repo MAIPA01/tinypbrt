@@ -18,6 +18,17 @@ extern "C" {
 	 */
 
 #pragma region OBJECT
+/**
+ * @brief Invalid object handle initialization.
+ * @ingroup object-private
+ */
+#define TPBRT_OBJECT_HANDLE_INVALID_INIT { .object_idx = TPBRT_OBJECT_IDX_INVALID }
+/**
+ * @brief Invalid object handle initialization with type conversion.
+ * @ingroup object-private
+ */
+#define TPBRT_OBJECT_HANDLE_INVALID (tpbrt_object_handle_t) TPBRT_OBJECT_HANDLE_INVALID_INIT
+
 	/**
 	 * @brief Initializes object data.
 	 * @param name Object name.

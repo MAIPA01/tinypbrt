@@ -26,6 +26,34 @@ if (TINYPBRT_BUILD_TESTS)
     set_tests_properties(${C_TARGET_BENCHMARK}_SMOKE PROPERTIES LABELS benchmark)
 endif()
 
+# region CPP_BENCHMARK
+# C++ wrapper: każdy benchmark bm_cpp_* ma odpowiednik bm_c_* robiący to samo przez API C (narzut wrappera)
+if (TINYPBRT_BUILD_CPP_WRAPPER AND TARGET tinypbrt_cpp)
+    set(CPP_TARGET_BENCHMARK ${PROJECT_NAME}-cpp-benchmark)
+
+    add_executable(${CPP_TARGET_BENCHMARK}
+            ${CMAKE_CURRENT_SOURCE_DIR}/benchmark_cpp.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/scene_generators.hpp
+    )
+    target_compile_features(${CPP_TARGET_BENCHMARK} PRIVATE cxx_std_20)
+    target_include_directories(${CPP_TARGET_BENCHMARK} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(${CPP_TARGET_BENCHMARK} PRIVATE tinypbrt::tinypbrt_cpp benchmark::benchmark)
+
+    if (WIN32 AND (TINYPBRT_BUILD_SHARED OR BUILD_SHARED_LIBS))
+        add_custom_command(TARGET ${CPP_TARGET_BENCHMARK} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${CPP_TARGET_BENCHMARK}> $<TARGET_FILE_DIR:${CPP_TARGET_BENCHMARK}>
+            COMMAND_EXPAND_LISTS
+        )
+    endif()
+
+    if (TINYPBRT_BUILD_TESTS)
+        add_test(NAME ${CPP_TARGET_BENCHMARK}_SMOKE
+                 COMMAND ${CPP_TARGET_BENCHMARK} --benchmark_min_time=1x)
+        set_tests_properties(${CPP_TARGET_BENCHMARK}_SMOKE PROPERTIES LABELS benchmark)
+    endif()
+endif()
+# endregion
+
 # region CLANG_TIDY
 if (TINYPBRT_ENABLE_CLANG_TIDY)
     set(CLANG_TIDY_CXX_STANDARD c++17)

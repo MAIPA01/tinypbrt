@@ -7,7 +7,7 @@
 #include <tinypbrt/detail/param_internal.h>
 
 tpbrt_error_t tpbrt_sampler_type_from_string(const tpbrt_string_t type_str, tpbrt_sampler_type_t* const type) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_SAMPLER_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_SAMPLER_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("halton"),
 		TPBRT_STRING_INIT("independent"),
 		TPBRT_STRING_INIT("paddedsobol"),
@@ -21,7 +21,7 @@ tpbrt_error_t tpbrt_sampler_type_from_string(const tpbrt_string_t type_str, tpbr
 		if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SAMPLER_TYPE; }
 
 		for (tpbrt_sampler_type_t t = 0; t < TPBRT_SAMPLER_TYPE_MAX_NUM; ++t) {
-				if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(type_str, TypesStrs[t]) == TPBRT_TRUE) {
 					*type = t;
 					return TPBRT_ERROR_NONE;
 				}
@@ -31,7 +31,7 @@ tpbrt_error_t tpbrt_sampler_type_from_string(const tpbrt_string_t type_str, tpbr
 }
 
 tpbrt_error_t tpbrt_sampler_random_from_string(const tpbrt_string_t random_str, tpbrt_sampler_random_t* const random) {
-	static const tpbrt_string_t RANDOMS_STRS[TPBRT_SAMPLER_RANDOM_MAX_NUM] = {
+	static const tpbrt_string_t RandomsStrs[TPBRT_SAMPLER_RANDOM_MAX_NUM] = {
 		TPBRT_STRING_INIT("none"),
 		TPBRT_STRING_INIT("permutedigits"),
 		TPBRT_STRING_INIT("owen"),
@@ -43,7 +43,7 @@ tpbrt_error_t tpbrt_sampler_random_from_string(const tpbrt_string_t random_str, 
 		if (tpbrt_string_empty(random_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SAMPLER_RANDOM; }
 
 		for (tpbrt_sampler_random_t r = 0; r < TPBRT_SAMPLER_RANDOM_MAX_NUM; ++r) {
-				if (tpbrt_string_equals(random_str, RANDOMS_STRS[r]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(random_str, RandomsStrs[r]) == TPBRT_TRUE) {
 					*random = r;
 					return TPBRT_ERROR_NONE;
 				}
@@ -63,11 +63,11 @@ static tpbrt_error_t tpbrt_sampler_read_pixel_samples(tpbrt_uint_t* const pixel_
   const tpbrt_params_list_t* const params) {
 		if (pixel_samples == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t PIXEL_SAMPLES_STR	= TPBRT_STRING_INIT("pixelsamples");
+	static const tpbrt_string_t PixelSamplesStr	  = TPBRT_STRING_INIT("pixelsamples");
 
-	static const tpbrt_uint_t PIXEL_SAMPLES_DEFAULT = 16u;
+	static const tpbrt_uint_t PixelSamplesDefault = 16u;
 
-	return tpbrt_params_list_get_uint(params, PIXEL_SAMPLES_STR, PIXEL_SAMPLES_DEFAULT, pixel_samples);
+	return tpbrt_params_list_get_uint(params, PixelSamplesStr, PixelSamplesDefault, pixel_samples);
 }
 
 /**
@@ -82,12 +82,12 @@ static tpbrt_error_t tpbrt_sampler_read_randomization(tpbrt_sampler_random_t* co
   const tpbrt_params_list_t* const params, const tpbrt_sampler_random_t default_random) {
 		if (randomization == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t RANDOMIZATION_STR	  = TPBRT_STRING_INIT("randomization");
+	static const tpbrt_string_t RandomizationStr	 = TPBRT_STRING_INIT("randomization");
 
-	static const tpbrt_string_t RANDOMIZATION_DEFAULT = TPBRT_EMPTY_STRING_INIT;
+	static const tpbrt_string_t RandomizationDefault = TPBRT_EMPTY_STRING_INIT;
 
 	tpbrt_string_t random_str;
-	tpbrt_error_t err = tpbrt_params_list_get_string(params, RANDOMIZATION_STR, RANDOMIZATION_DEFAULT, &random_str);
+	tpbrt_error_t err = tpbrt_params_list_get_string(params, RandomizationStr, RandomizationDefault, &random_str);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 		if (tpbrt_string_empty(random_str) == TPBRT_TRUE) {
@@ -111,13 +111,13 @@ static tpbrt_error_t tpbrt_sampler_read_halton(tpbrt_sampler_halton_params_t* co
   const tpbrt_params_list_t* const params) {
 		if (halton == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_PERMUTE_DIGITS;
+	static const tpbrt_sampler_random_t RandomizationDefault = TPBRT_SAMPLER_RANDOM_PERMUTE_DIGITS;
 
-	tpbrt_error_t err										  = tpbrt_sampler_read_pixel_samples(&halton->pixel_samples, params);
+	tpbrt_error_t err										 = tpbrt_sampler_read_pixel_samples(&halton->pixel_samples, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
-	err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+	err									 = tpbrt_sampler_read_randomization(&randomization, params, RandomizationDefault);
 	halton->randomization				 = randomization;
 
 	return err;
@@ -148,14 +148,14 @@ static tpbrt_error_t tpbrt_sampler_read_padded_sobol(tpbrt_sampler_padded_sobol_
   const tpbrt_params_list_t* const params) {
 		if (padded_sobol == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
+	static const tpbrt_sampler_random_t RandomizationDefault = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
 
 	tpbrt_error_t err = tpbrt_sampler_read_pixel_samples(&padded_sobol->pixel_samples, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	padded_sobol->pixel_samples			 = tpbrt_next_power_of_two(padded_sobol->pixel_samples);
 
 	tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
-	err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+	err									 = tpbrt_sampler_read_randomization(&randomization, params, RandomizationDefault);
 	padded_sobol->randomization			 = randomization;
 
 	return err;
@@ -172,14 +172,14 @@ static tpbrt_error_t tpbrt_sampler_read_sobol(tpbrt_sampler_sobol_params_t* cons
   const tpbrt_params_list_t* const params) {
 		if (sobol == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
+	static const tpbrt_sampler_random_t RandomizationDefault = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
 
-	tpbrt_error_t err										  = tpbrt_sampler_read_pixel_samples(&sobol->pixel_samples, params);
+	tpbrt_error_t err										 = tpbrt_sampler_read_pixel_samples(&sobol->pixel_samples, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	sobol->pixel_samples				 = tpbrt_next_power_of_two(sobol->pixel_samples);
 
 	tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
-	err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+	err									 = tpbrt_sampler_read_randomization(&randomization, params, RandomizationDefault);
 	sobol->randomization				 = randomization;
 
 	return err;
@@ -196,23 +196,23 @@ static tpbrt_error_t tpbrt_sampler_read_stratified(tpbrt_sampler_stratified_para
   const tpbrt_params_list_t* const params) {
 		if (stratified == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t JITTER_STR		= TPBRT_STRING_INIT("jitter");
-	static const tpbrt_string_t X_SAMPLES_STR	= TPBRT_STRING_INIT("xsamples");
-	static const tpbrt_string_t Y_SAMPLES_STR	= TPBRT_STRING_INIT("ysamples");
+	static const tpbrt_string_t JitterStr	  = TPBRT_STRING_INIT("jitter");
+	static const tpbrt_string_t XSamplesStr	  = TPBRT_STRING_INIT("xsamples");
+	static const tpbrt_string_t YSamplesStr	  = TPBRT_STRING_INIT("ysamples");
 
-	static const tpbrt_bool_t JITTER_DEFAULT	= TPBRT_TRUE;
-	static const tpbrt_uint_t X_SAMPLES_DEFAULT = 4u;
-	static const tpbrt_uint_t Y_SAMPLES_DEFAULT = 4u;
+	static const tpbrt_bool_t JitterDefault	  = TPBRT_TRUE;
+	static const tpbrt_uint_t XSamplesDefault = 4u;
+	static const tpbrt_uint_t YSamplesDefault = 4u;
 
 	tpbrt_bool_t jitter;
-	tpbrt_error_t err = tpbrt_params_list_get_bool(params, JITTER_STR, JITTER_DEFAULT, &jitter);
+	tpbrt_error_t err = tpbrt_params_list_get_bool(params, JitterStr, JitterDefault, &jitter);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	stratified->jitter = jitter;
 
-	err				   = tpbrt_params_list_get_uint(params, X_SAMPLES_STR, X_SAMPLES_DEFAULT, &stratified->x_samples);
+	err				   = tpbrt_params_list_get_uint(params, XSamplesStr, XSamplesDefault, &stratified->x_samples);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_uint(params, Y_SAMPLES_STR, Y_SAMPLES_DEFAULT, &stratified->y_samples);
+	return tpbrt_params_list_get_uint(params, YSamplesStr, YSamplesDefault, &stratified->y_samples);
 }
 
 /**
@@ -226,14 +226,14 @@ static tpbrt_error_t tpbrt_sampler_read_z_sobol(tpbrt_sampler_z_sobol_params_t* 
   const tpbrt_params_list_t* const params) {
 		if (z_sobol == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_sampler_random_t RANDOMIZATION_DEFAULT = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
+	static const tpbrt_sampler_random_t RandomizationDefault = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
 
-	tpbrt_error_t err										  = tpbrt_sampler_read_pixel_samples(&z_sobol->pixel_samples, params);
+	tpbrt_error_t err										 = tpbrt_sampler_read_pixel_samples(&z_sobol->pixel_samples, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	z_sobol->pixel_samples				 = tpbrt_next_power_of_two(z_sobol->pixel_samples);
 
 	tpbrt_sampler_random_t randomization = TPBRT_SAMPLER_RANDOM_MAX_NUM;
-	err									 = tpbrt_sampler_read_randomization(&randomization, params, RANDOMIZATION_DEFAULT);
+	err									 = tpbrt_sampler_read_randomization(&randomization, params, RandomizationDefault);
 	z_sobol->randomization				 = randomization;
 
 	return err;
@@ -244,12 +244,12 @@ tpbrt_error_t tpbrt_sampler_init_default(tpbrt_sampler_t* const sampler) {
 
 		if (memset(sampler, 0, sizeof(tpbrt_sampler_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_uint_t PIXEL_SAMPLES_DEFAULT = 16u;
+	static const tpbrt_uint_t PixelSamplesDefault = 16u;
 
-	sampler->seed									= 0;
-	sampler->type									= TPBRT_SAMPLER_TYPE_Z_SOBOL;
-	sampler->as.z_sobol.pixel_samples				= PIXEL_SAMPLES_DEFAULT;
-	sampler->as.z_sobol.randomization				= TPBRT_SAMPLER_RANDOM_FAST_OWEN;
+	sampler->seed								  = 0;
+	sampler->type								  = TPBRT_SAMPLER_TYPE_Z_SOBOL;
+	sampler->as.z_sobol.pixel_samples			  = PixelSamplesDefault;
+	sampler->as.z_sobol.randomization			  = TPBRT_SAMPLER_RANDOM_FAST_OWEN;
 
 	return TPBRT_ERROR_NONE;
 }
@@ -260,11 +260,11 @@ tpbrt_error_t tpbrt_sampler_init(const tpbrt_string_t type_str, const tpbrt_para
 
 		if (memset(sampler, 0, sizeof(tpbrt_sampler_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t SEED_STR  = TPBRT_STRING_INIT("seed");
+	static const tpbrt_string_t SeedStr	 = TPBRT_STRING_INIT("seed");
 
-	static const tpbrt_int_t SEED_DEFAULT = 0;
+	static const tpbrt_int_t SeedDefault = 0;
 
-	tpbrt_error_t err					  = tpbrt_params_list_get_int(params, SEED_STR, SEED_DEFAULT, &sampler->seed);
+	tpbrt_error_t err					 = tpbrt_params_list_get_int(params, SeedStr, SeedDefault, &sampler->seed);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	tpbrt_sampler_type_t type;

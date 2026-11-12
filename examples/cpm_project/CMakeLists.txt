@@ -10,7 +10,7 @@ include(${CPM_DOWNLOAD_LOCATION})
 CPMAddPackage(
     NAME tinypbrt
     GITHUB_REPOSITORY MAIPA01/tinypbrt
-    GIT_TAG v1.0.0
+    GIT_TAG v1.1.1
     OPTIONS
         "TINYPBRT_BUILD_SHARED OFF"     # ON -> tinypbrt.dll / libtinypbrt.so
 )

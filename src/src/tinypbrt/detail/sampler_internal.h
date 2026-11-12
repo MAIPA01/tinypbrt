@@ -19,7 +19,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns sampler type based on string value.
-	 * @param type_str String which is convertable to sampler type.
+	 * @param type_str String which is convertible to sampler type.
 	 * @param type Output sampler type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_SAMPLER_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup sampler-private
@@ -28,7 +28,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns sampler random based on string value.
-	 * @param random_str String which is convertable to sampler random.
+	 * @param random_str String which is convertible to sampler random.
 	 * @param random Output sampler random value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_SAMPLER_RANDOM, TPBRT_ERROR_NONE).
 	 * @ingroup sampler-private

@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(tinypbrt @PROJECT_VERSION@ EXACT CONFIG HINTS "${CMAKE_CURRENT_LIST_DIR}")
+
+if(NOT TARGET @PROJECT_NAME@::@PROJECT_NAME@_cpp)
+    include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@_cppTargets.cmake)
+endif()
+
+check_required_components(@PROJECT_NAME@_cpp)

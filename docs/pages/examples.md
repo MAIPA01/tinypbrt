@@ -6,3 +6,6 @@
 @example examples/materials/main.c
 @example examples/lights/main.c
 @example examples/export_obj/main.c
+@example examples/cpp/quickstart/main.cpp
+@example examples/cpp/scene_info/main.cpp
+@example examples/cpp/materials/main.cpp

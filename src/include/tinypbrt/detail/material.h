@@ -61,17 +61,6 @@ extern "C" {
 		tpbrt_material_idx_t material_idx;
 	} tpbrt_material_handle_t;
 
-/**
- * @brief Invalid material handle initialization.
- * @ingroup material-public
- */
-#define TPBRT_MATERIAL_HANDLE_INVALID_INIT { .material_idx = TPBRT_MATERIAL_IDX_INVALID }
-/**
- * @brief Invalid material handle initialization with type conversion.
- * @ingroup material-public
- */
-#define TPBRT_MATERIAL_HANDLE_INVALID (tpbrt_material_handle_t) TPBRT_MATERIAL_HANDLE_INVALID_INIT
-
 	/**
 	 * @brief Material bump map types.
 	 * @ingroup material-public
@@ -183,7 +172,7 @@ extern "C" {
 				tpbrt_spectrum_t k;
 			} conductor;
 
-			/// @brief As an alternative to specifying the conductor's index of refraction and extinction coefficient, its average spectral reflectance can be specified instead; in this case plausible values for the index of refraction and extinction cofficient are found for rendering.
+			/// @brief As an alternative to specifying the conductor's index of refraction and extinction coefficient, its average spectral reflectance can be specified instead; in this case plausible values for the index of refraction and extinction coefficient are found for rendering.
 			tpbrt_spectrum_t reflectance;
 		} as;
 
@@ -250,7 +239,7 @@ extern "C" {
 	} tpbrt_material_diffuse_params_t;
 
 	/**
-	 * @brief Diffuse transmission material parameters
+	 * @brief Diffuse transmission material parameters.
 	 * @ingroup material-public
 	 */
 	typedef struct tpbrt_material_diffuse_transmission_params_t {
@@ -386,7 +375,7 @@ extern "C" {
 	 */
 	typedef struct tpbrt_material_t {
 		/// @brief Material index.
-		tpbrt_size_t idx;
+		tpbrt_material_idx_t idx;
 		/// @brief Material name (if it is not named material name is empty).
 		tpbrt_string_t name;
 

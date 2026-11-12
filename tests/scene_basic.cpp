@@ -7,7 +7,7 @@
 using namespace tpbrt_test;
 
 // Przykład z https://pbrt.org/fileformat-v4
-static constexpr auto SPEC_EXAMPLE = R"(
+static constexpr auto SpecExample = R"(
 LookAt 3 4 1.5  # eye
        .5 .5 0  # look at point
        0 0 1    # up vector
@@ -42,7 +42,7 @@ AttributeEnd
 )";
 
 TEST(scene_basic, spec_example) {
-	Scene s(SPEC_EXAMPLE);
+	Scene s(SpecExample);
 	ASSERT_TRUE(s.ok()) << s.error();
 
 	EXPECT_EQ(s->shapes.count, 2u);

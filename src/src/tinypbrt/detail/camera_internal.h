@@ -36,7 +36,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns camera type based on string value.
-	 * @param type_str String which is convertable to camera type.
+	 * @param type_str String which is convertible to camera type.
 	 * @param type Output camera type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_CAMERA_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup camera-private
@@ -45,7 +45,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns camera spherical mapping based on string value.
-	 * @param mapping_str String which is convertable to camera spherical mapping.
+	 * @param mapping_str String which is convertible to camera spherical mapping.
 	 * @param mapping Output camera spherical mapping value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_CAMERA_SPHERICAL_MAPPING, TPBRT_ERROR_NONE).
 	 * @ingroup camera-private
@@ -55,7 +55,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns camera realistic aperture builtin based on string value.
-	 * @param builtin_str String which is convertable to camera realistic aperture builtin.
+	 * @param builtin_str String which is convertible to camera realistic aperture builtin.
 	 * @param builtin Output camera realistic aperture builtin value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_CAMERA_REALISTIC_APERTURE_BUILTIN, TPBRT_ERROR_NONE).
 	 * @ingroup camera-private

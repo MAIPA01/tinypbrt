@@ -17,7 +17,7 @@
 #pragma region MEDIA
 
 tpbrt_error_t tpbrt_media_type_from_string(const tpbrt_string_t type_str, tpbrt_media_type_t* const type) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_MEDIA_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_MEDIA_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("cloud"),
 		TPBRT_STRING_INIT("homogeneous"),
 		TPBRT_STRING_INIT("nanovdb"),
@@ -30,7 +30,7 @@ tpbrt_error_t tpbrt_media_type_from_string(const tpbrt_string_t type_str, tpbrt_
 		if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_MEDIA_TYPE; }
 
 		for (tpbrt_media_type_t t = 0; t < TPBRT_MEDIA_TYPE_MAX_NUM; ++t) {
-				if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(type_str, TypesStrs[t]) == TPBRT_TRUE) {
 					*type = t;
 					return TPBRT_ERROR_NONE;
 				}
@@ -50,18 +50,18 @@ static tpbrt_error_t tpbrt_media_read_scattering(tpbrt_media_scattering_t* const
   const tpbrt_params_list_t* const params) {
 		if (scattering == TPBRT_NULL || params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t PRESET_STR		  = TPBRT_STRING_INIT("preset");
-	static const tpbrt_string_t SIGMA_A_STR		  = TPBRT_STRING_INIT("sigma_a");
-	static const tpbrt_string_t SIGMA_S_STR		  = TPBRT_STRING_INIT("sigma_s");
+	static const tpbrt_string_t PresetStr		= TPBRT_STRING_INIT("preset");
+	static const tpbrt_string_t SigmaAStr		= TPBRT_STRING_INIT("sigma_a");
+	static const tpbrt_string_t SigmaSStr		= TPBRT_STRING_INIT("sigma_s");
 
-	static const tpbrt_string_t PRESET_DEFAULT	  = TPBRT_EMPTY_STRING_INIT;
-	static const tpbrt_spectrum_t SIGMA_A_DEFAULT = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
-	static const tpbrt_spectrum_t SIGMA_S_DEFAULT = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
+	static const tpbrt_string_t PresetDefault	= TPBRT_EMPTY_STRING_INIT;
+	static const tpbrt_spectrum_t SigmaADefault = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
+	static const tpbrt_spectrum_t SigmaSDefault = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
 
 	// get_string returns the default ("") with TPBRT_ERROR_NONE when "preset" is missing - like pbrt-v4,
 	// an empty preset means "no preset", so sigma_a / sigma_s are read instead
 	tpbrt_string_t preset_str;
-	tpbrt_error_t err = tpbrt_params_list_get_string(params, PRESET_STR, PRESET_DEFAULT, &preset_str);
+	tpbrt_error_t err = tpbrt_params_list_get_string(params, PresetStr, PresetDefault, &preset_str);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 		if (tpbrt_string_empty(preset_str) == TPBRT_FALSE) {
@@ -75,10 +75,10 @@ static tpbrt_error_t tpbrt_media_read_scattering(tpbrt_media_scattering_t* const
 
 	scattering->type = TPBRT_MEDIA_SCATTERING_VALUE_SIGMA;
 
-	err				 = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &SIGMA_A_DEFAULT, &scattering->as.sigma.a);
+	err				 = tpbrt_params_list_get_spectrum(params, SigmaAStr, &SigmaADefault, &scattering->as.sigma.a);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &SIGMA_S_DEFAULT, &scattering->as.sigma.s);
+	return tpbrt_params_list_get_spectrum(params, SigmaSStr, &SigmaSDefault, &scattering->as.sigma.s);
 }
 
 /**
@@ -91,46 +91,46 @@ static tpbrt_error_t tpbrt_media_read_scattering(tpbrt_media_scattering_t* const
 static tpbrt_error_t tpbrt_media_read_cloud(tpbrt_media_cloud_params_t* const cloud, const tpbrt_params_list_t* const params) {
 		if (cloud == TPBRT_NULL || params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t DENSITY_STR		  = TPBRT_STRING_INIT("density");
-	static const tpbrt_string_t FREQUENCY_STR	  = TPBRT_STRING_INIT("frequency");
-	static const tpbrt_string_t G_STR			  = TPBRT_STRING_INIT("g");
-	static const tpbrt_string_t P0_STR			  = TPBRT_STRING_INIT("p0");
-	static const tpbrt_string_t P1_STR			  = TPBRT_STRING_INIT("p1");
-	static const tpbrt_string_t SIGMA_A_STR		  = TPBRT_STRING_INIT("sigma_a");
-	static const tpbrt_string_t SIGMA_S_STR		  = TPBRT_STRING_INIT("sigma_s");
-	static const tpbrt_string_t WISPINESS_STR	  = TPBRT_STRING_INIT("wispiness");
+	static const tpbrt_string_t DensityStr		= TPBRT_STRING_INIT("density");
+	static const tpbrt_string_t FrequencyStr	= TPBRT_STRING_INIT("frequency");
+	static const tpbrt_string_t GStr			= TPBRT_STRING_INIT("g");
+	static const tpbrt_string_t P0Str			= TPBRT_STRING_INIT("p0");
+	static const tpbrt_string_t P1Str			= TPBRT_STRING_INIT("p1");
+	static const tpbrt_string_t SigmaAStr		= TPBRT_STRING_INIT("sigma_a");
+	static const tpbrt_string_t SigmaSStr		= TPBRT_STRING_INIT("sigma_s");
+	static const tpbrt_string_t WispinessStr	= TPBRT_STRING_INIT("wispiness");
 
-	static const tpbrt_float_t DENSITY_DEFAULT	  = 1.0f;
-	static const tpbrt_float_t FREQUENCY_DEFAULT  = 5.0f;
-	static const tpbrt_float_t G_DEFAULT		  = 0.0f;
-	static const tpbrt_vec3_t P0_DEFAULT		  = TPBRT_VEC3_INIT(0.0f, 0.0f, 0.0f);
-	static const tpbrt_vec3_t P1_DEFAULT		  = TPBRT_VEC3_INIT(1.0f, 1.0f, 1.0f);
-	static const tpbrt_spectrum_t SIGMA_A_DEFAULT = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
-	static const tpbrt_spectrum_t SIGMA_S_DEFAULT = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
-	static const tpbrt_float_t WISPINESS_DEFAULT  = 1.0f;
+	static const tpbrt_float_t DensityDefault	= 1.0f;
+	static const tpbrt_float_t FrequencyDefault = 5.0f;
+	static const tpbrt_float_t GDefault			= 0.0f;
+	static const tpbrt_vec3_t P0Default			= TPBRT_VEC3_INIT(0.0f, 0.0f, 0.0f);
+	static const tpbrt_vec3_t P1Default			= TPBRT_VEC3_INIT(1.0f, 1.0f, 1.0f);
+	static const tpbrt_spectrum_t SigmaADefault = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
+	static const tpbrt_spectrum_t SigmaSDefault = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
+	static const tpbrt_float_t WispinessDefault = 1.0f;
 
-	tpbrt_error_t err = tpbrt_params_list_get_float(params, DENSITY_STR, DENSITY_DEFAULT, &cloud->density);
+	tpbrt_error_t err = tpbrt_params_list_get_float(params, DensityStr, DensityDefault, &cloud->density);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, FREQUENCY_STR, FREQUENCY_DEFAULT, &cloud->frequency);
+	err = tpbrt_params_list_get_float(params, FrequencyStr, FrequencyDefault, &cloud->frequency);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, G_STR, G_DEFAULT, &cloud->g);
+	err = tpbrt_params_list_get_float(params, GStr, GDefault, &cloud->g);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_point3(params, P0_STR, P0_DEFAULT, &cloud->p0);
+	err = tpbrt_params_list_get_point3(params, P0Str, P0Default, &cloud->p0);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_point3(params, P1_STR, P1_DEFAULT, &cloud->p1);
+	err = tpbrt_params_list_get_point3(params, P1Str, P1Default, &cloud->p1);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &SIGMA_A_DEFAULT, &cloud->sigma_a);
+	err = tpbrt_params_list_get_spectrum(params, SigmaAStr, &SigmaADefault, &cloud->sigma_a);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &SIGMA_S_DEFAULT, &cloud->sigma_s);
+	err = tpbrt_params_list_get_spectrum(params, SigmaSStr, &SigmaSDefault, &cloud->sigma_s);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_float(params, WISPINESS_STR, WISPINESS_DEFAULT, &cloud->wispiness);
+	return tpbrt_params_list_get_float(params, WispinessStr, WispinessDefault, &cloud->wispiness);
 }
 
 /**
@@ -144,29 +144,29 @@ static tpbrt_error_t tpbrt_media_read_homogeneous(tpbrt_media_homogeneous_params
   const tpbrt_params_list_t* const params) {
 		if (homogeneous == TPBRT_NULL || params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t G_STR			= TPBRT_STRING_INIT("g");
-	static const tpbrt_string_t LE_STR			= TPBRT_STRING_INIT("Le");
-	static const tpbrt_string_t LE_SCALE_STR	= TPBRT_STRING_INIT("Lescale");
-	static const tpbrt_string_t SCALE_STR		= TPBRT_STRING_INIT("scale");
+	static const tpbrt_string_t GStr		  = TPBRT_STRING_INIT("g");
+	static const tpbrt_string_t LeStr		  = TPBRT_STRING_INIT("Le");
+	static const tpbrt_string_t LeScaleStr	  = TPBRT_STRING_INIT("Lescale");
+	static const tpbrt_string_t ScaleStr	  = TPBRT_STRING_INIT("scale");
 
-	static const tpbrt_float_t G_DEFAULT		= 0.0f;
-	static const tpbrt_spectrum_t LE_DEFAULT	= TPBRT_SPECTRUM_CONSTANT_INIT(0.0f);
-	static const tpbrt_float_t LE_SCALE_DEFAULT = 1.0f;
-	static const tpbrt_float_t SCALE_DEFAULT	= 1.0f;
+	static const tpbrt_float_t GDefault		  = 0.0f;
+	static const tpbrt_spectrum_t LeDefault	  = TPBRT_SPECTRUM_CONSTANT_INIT(0.0f);
+	static const tpbrt_float_t LeScaleDefault = 1.0f;
+	static const tpbrt_float_t ScaleDefault	  = 1.0f;
 
-	tpbrt_error_t err							= tpbrt_params_list_get_float(params, G_STR, G_DEFAULT, &homogeneous->g);
+	tpbrt_error_t err						  = tpbrt_params_list_get_float(params, GStr, GDefault, &homogeneous->g);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_spectrum(params, LE_STR, &LE_DEFAULT, &homogeneous->le);
+	err = tpbrt_params_list_get_spectrum(params, LeStr, &LeDefault, &homogeneous->le);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, LE_SCALE_STR, LE_SCALE_DEFAULT, &homogeneous->le_scale);
+	err = tpbrt_params_list_get_float(params, LeScaleStr, LeScaleDefault, &homogeneous->le_scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	err = tpbrt_media_read_scattering(&homogeneous->scattering, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &homogeneous->scale);
+	return tpbrt_params_list_get_float(params, ScaleStr, ScaleDefault, &homogeneous->scale);
 }
 
 /**
@@ -180,46 +180,46 @@ static tpbrt_error_t tpbrt_media_read_nano_vdb(tpbrt_media_nano_vdb_params_t* co
   const tpbrt_params_list_t* const params) {
 		if (nano_vdb == TPBRT_NULL || params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t G_STR					  = TPBRT_STRING_INIT("g");
-	static const tpbrt_string_t LE_SCALE_STR			  = TPBRT_STRING_INIT("Lescale");
-	static const tpbrt_string_t SIGMA_A_STR				  = TPBRT_STRING_INIT("sigma_a");
-	static const tpbrt_string_t SIGMA_S_STR				  = TPBRT_STRING_INIT("sigma_s");
-	static const tpbrt_string_t SCALE_STR				  = TPBRT_STRING_INIT("scale");
-	static const tpbrt_string_t FILE_NAME_STR			  = TPBRT_STRING_INIT("filename");
-	static const tpbrt_string_t TEMPERATURE_OFFSET_STR	  = TPBRT_STRING_INIT("temperatureoffset");
-	static const tpbrt_string_t TEMPERATURE_SCALE_STR	  = TPBRT_STRING_INIT("temperaturescale");
+	static const tpbrt_string_t GStr					= TPBRT_STRING_INIT("g");
+	static const tpbrt_string_t LeScaleStr				= TPBRT_STRING_INIT("Lescale");
+	static const tpbrt_string_t SigmaAStr				= TPBRT_STRING_INIT("sigma_a");
+	static const tpbrt_string_t SigmaSStr				= TPBRT_STRING_INIT("sigma_s");
+	static const tpbrt_string_t ScaleStr				= TPBRT_STRING_INIT("scale");
+	static const tpbrt_string_t FileNameStr				= TPBRT_STRING_INIT("filename");
+	static const tpbrt_string_t TemperatureOffsetStr	= TPBRT_STRING_INIT("temperatureoffset");
+	static const tpbrt_string_t TemperatureScaleStr		= TPBRT_STRING_INIT("temperaturescale");
 
-	static const tpbrt_float_t G_DEFAULT				  = 0.0f;
-	static const tpbrt_float_t LE_SCALE_DEFAULT			  = 1.0f;
-	static const tpbrt_spectrum_t SIGMA_A_DEFAULT		  = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
-	static const tpbrt_spectrum_t SIGMA_S_DEFAULT		  = TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
-	static const tpbrt_float_t SCALE_DEFAULT			  = 1.0f;
-	static const tpbrt_string_t FILE_NAME_DEFAULT		  = TPBRT_EMPTY_STRING_INIT;
-	static const tpbrt_float_t TEMPERATURE_OFFSET_DEFAULT = 0.0f;
-	static const tpbrt_float_t TEMPERATURE_SCALE_DEFAULT  = 1.0f;
+	static const tpbrt_float_t GDefault					= 0.0f;
+	static const tpbrt_float_t LeScaleDefault			= 1.0f;
+	static const tpbrt_spectrum_t SigmaADefault			= TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
+	static const tpbrt_spectrum_t SigmaSDefault			= TPBRT_SPECTRUM_CONSTANT_INIT(1.0f);
+	static const tpbrt_float_t ScaleDefault				= 1.0f;
+	static const tpbrt_string_t FileNameDefault			= TPBRT_EMPTY_STRING_INIT;
+	static const tpbrt_float_t TemperatureOffsetDefault = 0.0f;
+	static const tpbrt_float_t TemperatureScaleDefault	= 1.0f;
 
-	tpbrt_error_t err									  = tpbrt_params_list_get_float(params, G_STR, G_DEFAULT, &nano_vdb->g);
+	tpbrt_error_t err									= tpbrt_params_list_get_float(params, GStr, GDefault, &nano_vdb->g);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, LE_SCALE_STR, LE_SCALE_DEFAULT, &nano_vdb->le_scale);
+	err = tpbrt_params_list_get_float(params, LeScaleStr, LeScaleDefault, &nano_vdb->le_scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_spectrum(params, SIGMA_A_STR, &SIGMA_A_DEFAULT, &nano_vdb->sigma_a);
+	err = tpbrt_params_list_get_spectrum(params, SigmaAStr, &SigmaADefault, &nano_vdb->sigma_a);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_spectrum(params, SIGMA_S_STR, &SIGMA_S_DEFAULT, &nano_vdb->sigma_s);
+	err = tpbrt_params_list_get_spectrum(params, SigmaSStr, &SigmaSDefault, &nano_vdb->sigma_s);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &nano_vdb->scale);
+	err = tpbrt_params_list_get_float(params, ScaleStr, ScaleDefault, &nano_vdb->scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_string(params, FILE_NAME_STR, FILE_NAME_DEFAULT, &nano_vdb->file_name);
+	err = tpbrt_params_list_get_string(params, FileNameStr, FileNameDefault, &nano_vdb->file_name);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, TEMPERATURE_OFFSET_STR, TEMPERATURE_OFFSET_DEFAULT, &nano_vdb->temperature_offset);
+	err = tpbrt_params_list_get_float(params, TemperatureOffsetStr, TemperatureOffsetDefault, &nano_vdb->temperature_offset);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_float(params, TEMPERATURE_SCALE_STR, TEMPERATURE_SCALE_DEFAULT, &nano_vdb->temperature_scale);
+	return tpbrt_params_list_get_float(params, TemperatureScaleStr, TemperatureScaleDefault, &nano_vdb->temperature_scale);
 }
 
 /**
@@ -233,58 +233,58 @@ static tpbrt_error_t tpbrt_media_read_rgb_grid(tpbrt_media_rgb_grid_params_t* co
   const tpbrt_params_list_t* const params) {
 		if (rgb_grid == TPBRT_NULL || params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t G_STR			= TPBRT_STRING_INIT("g");
-	static const tpbrt_string_t LE_STR			= TPBRT_STRING_INIT("Le");
-	static const tpbrt_string_t LE_SCALE_STR	= TPBRT_STRING_INIT("Lescale");
-	static const tpbrt_string_t P0_STR			= TPBRT_STRING_INIT("p0");
-	static const tpbrt_string_t P1_STR			= TPBRT_STRING_INIT("p1");
-	static const tpbrt_string_t SIGMA_A_STR		= TPBRT_STRING_INIT("sigma_a");
-	static const tpbrt_string_t SIGMA_S_STR		= TPBRT_STRING_INIT("sigma_s");
-	static const tpbrt_string_t SCALE_STR		= TPBRT_STRING_INIT("scale");
-	static const tpbrt_string_t NX_STR			= TPBRT_STRING_INIT("nx");
-	static const tpbrt_string_t NY_STR			= TPBRT_STRING_INIT("ny");
-	static const tpbrt_string_t NZ_STR			= TPBRT_STRING_INIT("nz");
+	static const tpbrt_string_t GStr		  = TPBRT_STRING_INIT("g");
+	static const tpbrt_string_t LeStr		  = TPBRT_STRING_INIT("Le");
+	static const tpbrt_string_t LeScaleStr	  = TPBRT_STRING_INIT("Lescale");
+	static const tpbrt_string_t P0Str		  = TPBRT_STRING_INIT("p0");
+	static const tpbrt_string_t P1Str		  = TPBRT_STRING_INIT("p1");
+	static const tpbrt_string_t SigmaAStr	  = TPBRT_STRING_INIT("sigma_a");
+	static const tpbrt_string_t SigmaSStr	  = TPBRT_STRING_INIT("sigma_s");
+	static const tpbrt_string_t ScaleStr	  = TPBRT_STRING_INIT("scale");
+	static const tpbrt_string_t NXStr		  = TPBRT_STRING_INIT("nx");
+	static const tpbrt_string_t NYStr		  = TPBRT_STRING_INIT("ny");
+	static const tpbrt_string_t NZStr		  = TPBRT_STRING_INIT("nz");
 
-	static const tpbrt_float_t G_DEFAULT		= 0.0f;
-	static const tpbrt_float_t LE_SCALE_DEFAULT = 1.0f;
-	static const tpbrt_vec3_t P0_DEFAULT		= TPBRT_VEC3_INIT(0.0f, 0.0f, 0.0f);
-	static const tpbrt_vec3_t P1_DEFAULT		= TPBRT_VEC3_INIT(1.0f, 1.0f, 1.0f);
-	static const tpbrt_float_t SCALE_DEFAULT	= 1.0f;
-	static const tpbrt_uint_t NX_DEFAULT		= 1u;
-	static const tpbrt_uint_t NY_DEFAULT		= 1u;
-	static const tpbrt_uint_t NZ_DEFAULT		= 1u;
+	static const tpbrt_float_t GDefault		  = 0.0f;
+	static const tpbrt_float_t LeScaleDefault = 1.0f;
+	static const tpbrt_vec3_t P0Default		  = TPBRT_VEC3_INIT(0.0f, 0.0f, 0.0f);
+	static const tpbrt_vec3_t P1Default		  = TPBRT_VEC3_INIT(1.0f, 1.0f, 1.0f);
+	static const tpbrt_float_t ScaleDefault	  = 1.0f;
+	static const tpbrt_uint_t NXDefault		  = 1u;
+	static const tpbrt_uint_t NYDefault		  = 1u;
+	static const tpbrt_uint_t NZDefault		  = 1u;
 
-	tpbrt_error_t err							= tpbrt_params_list_get_float(params, G_STR, G_DEFAULT, &rgb_grid->g);
+	tpbrt_error_t err						  = tpbrt_params_list_get_float(params, GStr, GDefault, &rgb_grid->g);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_rgbs(params, LE_STR, &rgb_grid->le);
+	err = tpbrt_params_list_get_rgbs(params, LeStr, &rgb_grid->le);
 		if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-	err = tpbrt_params_list_get_float(params, LE_SCALE_STR, LE_SCALE_DEFAULT, &rgb_grid->le_scale);
+	err = tpbrt_params_list_get_float(params, LeScaleStr, LeScaleDefault, &rgb_grid->le_scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_point3(params, P0_STR, P0_DEFAULT, &rgb_grid->p0);
+	err = tpbrt_params_list_get_point3(params, P0Str, P0Default, &rgb_grid->p0);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_point3(params, P1_STR, P1_DEFAULT, &rgb_grid->p1);
+	err = tpbrt_params_list_get_point3(params, P1Str, P1Default, &rgb_grid->p1);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_rgbs(params, SIGMA_A_STR, &rgb_grid->sigma_a);
+	err = tpbrt_params_list_get_rgbs(params, SigmaAStr, &rgb_grid->sigma_a);
 		if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-	err = tpbrt_params_list_get_rgbs(params, SIGMA_S_STR, &rgb_grid->sigma_s);
+	err = tpbrt_params_list_get_rgbs(params, SigmaSStr, &rgb_grid->sigma_s);
 		if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-	err = tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &rgb_grid->scale);
+	err = tpbrt_params_list_get_float(params, ScaleStr, ScaleDefault, &rgb_grid->scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, NX_STR, NX_DEFAULT, &rgb_grid->nx);
+	err = tpbrt_params_list_get_uint(params, NXStr, NXDefault, &rgb_grid->nx);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, NY_STR, NY_DEFAULT, &rgb_grid->ny);
+	err = tpbrt_params_list_get_uint(params, NYStr, NYDefault, &rgb_grid->ny);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, NZ_STR, NZ_DEFAULT, &rgb_grid->nz);
+	err = tpbrt_params_list_get_uint(params, NZStr, NZDefault, &rgb_grid->nz);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	const tpbrt_size_t voxels = (tpbrt_size_t)rgb_grid->nx * rgb_grid->ny * rgb_grid->nz;
@@ -307,73 +307,72 @@ static tpbrt_error_t tpbrt_media_read_uniform_grid(tpbrt_media_uniform_grid_para
   const tpbrt_params_list_t* const params) {
 		if (uniform_grid == TPBRT_NULL || params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t DENSITY_STR				  = TPBRT_STRING_INIT("density");
-	static const tpbrt_string_t G_STR					  = TPBRT_STRING_INIT("g");
-	static const tpbrt_string_t LE_STR					  = TPBRT_STRING_INIT("Le");
-	static const tpbrt_string_t LE_SCALE_STR			  = TPBRT_STRING_INIT("Lescale");
-	static const tpbrt_string_t P0_STR					  = TPBRT_STRING_INIT("p0");
-	static const tpbrt_string_t P1_STR					  = TPBRT_STRING_INIT("p1");
-	static const tpbrt_string_t NX_STR					  = TPBRT_STRING_INIT("nx");
-	static const tpbrt_string_t NY_STR					  = TPBRT_STRING_INIT("ny");
-	static const tpbrt_string_t NZ_STR					  = TPBRT_STRING_INIT("nz");
-	static const tpbrt_string_t SCALE_STR				  = TPBRT_STRING_INIT("scale");
-	static const tpbrt_string_t TEMPERATURE_STR			  = TPBRT_STRING_INIT("temperature");
-	static const tpbrt_string_t TEMPERATURE_OFFSET_STR	  = TPBRT_STRING_INIT("temperatureoffset");
-	static const tpbrt_string_t TEMPERATURE_SCALE_STR	  = TPBRT_STRING_INIT("temperaturescale");
+	static const tpbrt_string_t DensityStr				= TPBRT_STRING_INIT("density");
+	static const tpbrt_string_t GStr					= TPBRT_STRING_INIT("g");
+	static const tpbrt_string_t LeStr					= TPBRT_STRING_INIT("Le");
+	static const tpbrt_string_t LeScaleStr				= TPBRT_STRING_INIT("Lescale");
+	static const tpbrt_string_t P0Str					= TPBRT_STRING_INIT("p0");
+	static const tpbrt_string_t P1Str					= TPBRT_STRING_INIT("p1");
+	static const tpbrt_string_t NXStr					= TPBRT_STRING_INIT("nx");
+	static const tpbrt_string_t NYStr					= TPBRT_STRING_INIT("ny");
+	static const tpbrt_string_t NZStr					= TPBRT_STRING_INIT("nz");
+	static const tpbrt_string_t ScaleStr				= TPBRT_STRING_INIT("scale");
+	static const tpbrt_string_t TemperatureStr			= TPBRT_STRING_INIT("temperature");
+	static const tpbrt_string_t TemperatureOffsetStr	= TPBRT_STRING_INIT("temperatureoffset");
+	static const tpbrt_string_t TemperatureScaleStr		= TPBRT_STRING_INIT("temperaturescale");
 
-	static const tpbrt_float_t G_DEFAULT				  = 0.0f;
-	static const tpbrt_spectrum_t LE_DEFAULT			  = TPBRT_SPECTRUM_CONSTANT_INIT(0.0f);
-	static const tpbrt_float_t LE_SCALE_DEFAULT			  = 1.0f;
-	static const tpbrt_vec3_t P0_DEFAULT				  = TPBRT_VEC3_INIT(0.0f, 0.0f, 0.0f);
-	static const tpbrt_vec3_t P1_DEFAULT				  = TPBRT_VEC3_INIT(1.0f, 1.0f, 1.0f);
-	static const tpbrt_uint_t NX_DEFAULT				  = 1u;
-	static const tpbrt_uint_t NY_DEFAULT				  = 1u;
-	static const tpbrt_uint_t NZ_DEFAULT				  = 1u;
-	static const tpbrt_float_t SCALE_DEFAULT			  = 1.0f;
-	static const tpbrt_float_t TEMPERATURE_OFFSET_DEFAULT = 0.0f;
-	static const tpbrt_float_t TEMPERATURE_SCALE_DEFAULT  = 1.0f;
+	static const tpbrt_float_t GDefault					= 0.0f;
+	static const tpbrt_spectrum_t LeDefault				= TPBRT_SPECTRUM_CONSTANT_INIT(0.0f);
+	static const tpbrt_float_t LeScaleDefault			= 1.0f;
+	static const tpbrt_vec3_t P0Default					= TPBRT_VEC3_INIT(0.0f, 0.0f, 0.0f);
+	static const tpbrt_vec3_t P1Default					= TPBRT_VEC3_INIT(1.0f, 1.0f, 1.0f);
+	static const tpbrt_uint_t NXDefault					= 1u;
+	static const tpbrt_uint_t NYDefault					= 1u;
+	static const tpbrt_uint_t NZDefault					= 1u;
+	static const tpbrt_float_t ScaleDefault				= 1.0f;
+	static const tpbrt_float_t TemperatureOffsetDefault = 0.0f;
+	static const tpbrt_float_t TemperatureScaleDefault	= 1.0f;
 
-	tpbrt_error_t err = tpbrt_params_list_get_floats(params, DENSITY_STR, &uniform_grid->density);
+	tpbrt_error_t err = tpbrt_params_list_get_floats(params, DensityStr, &uniform_grid->density);
 		if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-	err = tpbrt_params_list_get_float(params, G_STR, G_DEFAULT, &uniform_grid->g);
+	err = tpbrt_params_list_get_float(params, GStr, GDefault, &uniform_grid->g);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_spectrum(params, LE_STR, &LE_DEFAULT, &uniform_grid->le);
+	err = tpbrt_params_list_get_spectrum(params, LeStr, &LeDefault, &uniform_grid->le);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, LE_SCALE_STR, LE_SCALE_DEFAULT, &uniform_grid->le_scale);
+	err = tpbrt_params_list_get_float(params, LeScaleStr, LeScaleDefault, &uniform_grid->le_scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_point3(params, P0_STR, P0_DEFAULT, &uniform_grid->p0);
+	err = tpbrt_params_list_get_point3(params, P0Str, P0Default, &uniform_grid->p0);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_point3(params, P1_STR, P1_DEFAULT, &uniform_grid->p1);
+	err = tpbrt_params_list_get_point3(params, P1Str, P1Default, &uniform_grid->p1);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, NX_STR, NX_DEFAULT, &uniform_grid->nx);
+	err = tpbrt_params_list_get_uint(params, NXStr, NXDefault, &uniform_grid->nx);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, NY_STR, NY_DEFAULT, &uniform_grid->ny);
+	err = tpbrt_params_list_get_uint(params, NYStr, NYDefault, &uniform_grid->ny);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, NZ_STR, NZ_DEFAULT, &uniform_grid->nz);
+	err = tpbrt_params_list_get_uint(params, NZStr, NZDefault, &uniform_grid->nz);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	err = tpbrt_media_read_scattering(&uniform_grid->scattering, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, SCALE_STR, SCALE_DEFAULT, &uniform_grid->scale);
+	err = tpbrt_params_list_get_float(params, ScaleStr, ScaleDefault, &uniform_grid->scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_floats(params, TEMPERATURE_STR, &uniform_grid->temperature);
+	err = tpbrt_params_list_get_floats(params, TemperatureStr, &uniform_grid->temperature);
 		if (err != TPBRT_ERROR_NONE && err != TPBRT_ERROR_NOT_FOUND) { return err; }
 
-	err =
-	  tpbrt_params_list_get_float(params, TEMPERATURE_OFFSET_STR, TEMPERATURE_OFFSET_DEFAULT, &uniform_grid->temperature_offset);
+	err = tpbrt_params_list_get_float(params, TemperatureOffsetStr, TemperatureOffsetDefault, &uniform_grid->temperature_offset);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, TEMPERATURE_SCALE_STR, TEMPERATURE_SCALE_DEFAULT, &uniform_grid->temperature_scale);
+	err = tpbrt_params_list_get_float(params, TemperatureScaleStr, TemperatureScaleDefault, &uniform_grid->temperature_scale);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	const tpbrt_size_t voxels = (tpbrt_size_t)uniform_grid->nx * uniform_grid->ny * uniform_grid->nz;
@@ -402,8 +401,8 @@ tpbrt_error_t tpbrt_media_init(const tpbrt_string_t name, const tpbrt_string_t t
 	tpbrt_string_t temp_string	  = type_str;
 	tpbrt_bool_t owns_temp_string = TPBRT_FALSE;
 		if (tpbrt_string_empty(temp_string) == TPBRT_TRUE) {
-			static const tpbrt_string_t TYPE_STR = TPBRT_STRING_INIT("type");
-			err									 = tpbrt_params_list_get_string_required(params, TYPE_STR, &temp_string);
+			static const tpbrt_string_t TypeStr = TPBRT_STRING_INIT("type");
+			err									= tpbrt_params_list_get_string_required(params, TypeStr, &temp_string);
 				if (err != TPBRT_ERROR_NONE) {
 					tpbrt_media_free(media);
 					return err;

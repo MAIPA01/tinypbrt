@@ -6,6 +6,9 @@
 
 #include <tinypbrt/detail/math.h>
 
+#include <float.h>
+#include <math.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,6 +17,43 @@ extern "C" {
 	 * @defgroup math-private Math
 	 * @ingroup tinypbrt-private
 	 */
+
+/**
+ * @brief Infinity.
+ * @ingroup math-private
+ */
+#define TPBRT_INFINITY INFINITY
+/**
+ * @brief PI.
+ * @ingroup math-private
+ */
+#define TPBRT_PI 3.14159265358979323846f
+/**
+ * @brief Epsilon.
+ * @ingroup math-private
+ */
+#define TPBRT_EPSILON 1e-6
+
+/**
+ * @brief Min int value.
+ * @ingroup math-private
+ */
+#define TPBRT_INT_MIN INT32_MIN
+/**
+ * @brief Max int value.
+ * @ingroup math-private
+ */
+#define TPBRT_INT_MAX INT32_MAX
+/**
+ * @brief Max uint value.
+ * @ingroup math-private
+ */
+#define TPBRT_UINT_MAX UINT32_MAX
+/**
+ * @brief Max float value.
+ * @ingroup math-private
+ */
+#define TPBRT_FLT_MAX FLT_MAX
 
 /**
  * @brief Initializes vec2.

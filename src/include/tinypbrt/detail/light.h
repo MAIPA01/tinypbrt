@@ -24,7 +24,7 @@ extern "C" {
 	 * @ingroup light-public
 	 */
 	typedef enum tpbrt_light_source_type_t {
-		/// @brief Distant light source. (Directional)
+		/// @brief Distant (directional) light source.
 		TPBRT_LIGHT_SOURCE_TYPE_DISTANT		= 0,
 		/// @brief Goniometric light source.
 		TPBRT_LIGHT_SOURCE_TYPE_GONIOMETRIC = 1,
@@ -208,17 +208,6 @@ extern "C" {
 		/// @brief Area light index.
 		tpbrt_area_light_idx_t area_light_idx;
 	} tpbrt_area_light_handle_t;
-
-/**
- * @brief Invalid area light handle initialization.
- * @ingroup light-public
- */
-#define TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT { .area_light_idx = TPBRT_AREA_LIGHT_IDX_INVALID }
-/**
- * @brief Invalid area light handle initialization with type conversion.
- * @ingroup light-public
- */
-#define TPBRT_AREA_LIGHT_HANDLE_INVALID (tpbrt_area_light_handle_t) TPBRT_AREA_LIGHT_HANDLE_INVALID_INIT
 
 	/**
 	 * @brief List of light sources.

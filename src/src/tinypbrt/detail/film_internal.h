@@ -19,7 +19,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns film type based on string value.
-	 * @param type_str String which is convertable to film type.
+	 * @param type_str String which is convertible to film type.
 	 * @param type Output film type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_FILM_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup film-private
@@ -28,7 +28,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns film sensor based on string value.
-	 * @param sensor_str String which is convertable to film sensor.
+	 * @param sensor_str String which is convertible to film sensor.
 	 * @param sensor Output film sensor value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_FILM_SENSOR, TPBRT_ERROR_NONE).
 	 * @ingroup film-private

@@ -81,19 +81,19 @@ extern "C" {
 	 * @ingroup color-public
 	 */
 	typedef enum tpbrt_spectrum_builtin_t {
-		/// @brief Index of refraction for BK7 glass
+		/// @brief Index of refraction for BK7 glass.
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BK7	   = 0,
-		/// @brief Index of refraction for BAF10 glass
+		/// @brief Index of refraction for BAF10 glass.
 		TPBRT_SPECTRUM_BUILTIN_GLASS_BAF10	   = 1,
-		/// @brief Index of refraction for FK51A glass
+		/// @brief Index of refraction for FK51A glass.
 		TPBRT_SPECTRUM_BUILTIN_GLASS_FK51A	   = 2,
-		/// @brief Index of refraction for LASF9 glass
+		/// @brief Index of refraction for LASF9 glass.
 		TPBRT_SPECTRUM_BUILTIN_GLASS_LASF9	   = 3,
-		/// @brief Index of refraction for F5 glass
+		/// @brief Index of refraction for F5 glass.
 		TPBRT_SPECTRUM_BUILTIN_GLASS_F5		   = 4,
-		/// @brief Index of refraction for F10 glass
+		/// @brief Index of refraction for F10 glass.
 		TPBRT_SPECTRUM_BUILTIN_GLASS_F10	   = 5,
-		/// @brief Index of refraction for F11 glass
+		/// @brief Index of refraction for F11 glass.
 		TPBRT_SPECTRUM_BUILTIN_GLASS_F11	   = 6,
 		/// @brief Index of refraction for silver.
 		TPBRT_SPECTRUM_BUILTIN_METAL_AG_ETA	   = 7,

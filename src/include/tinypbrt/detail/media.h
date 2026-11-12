@@ -131,7 +131,7 @@ extern "C" {
 		tpbrt_string_t file_name;
 		/// @brief Offset value that is added to the emission temperature, if present.
 		tpbrt_float_t temperature_offset;
-		/// @brief Scale factor applied to the ofsetted emission temperature to get a temperature in degrees kelvin before the blackbody emission is determined.
+		/// @brief Scale factor applied to the offset emission temperature to get a temperature in kelvin before the blackbody emission is determined.
 		tpbrt_float_t temperature_scale;
 		/// @brief Additional scale factor applied to the absorption and scattering cross sections.
 		tpbrt_float_t scale;
@@ -197,7 +197,7 @@ extern "C" {
 		tpbrt_float_array_t temperature;
 		/// @brief Offset value that is added to the emission temperature, if present.
 		tpbrt_float_t temperature_offset;
-		/// @brief Scale factor applied to the ofsetted emission temperature to get a temperature in degrees kelvin before the blackbody emission is determined.
+		/// @brief Scale factor applied to the offset emission temperature to get a temperature in kelvin before the blackbody emission is determined.
 		tpbrt_float_t temperature_scale;
 	} tpbrt_media_uniform_grid_params_t;
 
@@ -239,17 +239,6 @@ extern "C" {
 		/// @brief Media index.
 		tpbrt_media_idx_t media_idx;
 	} tpbrt_media_handle_t;
-
-/**
- * @brief Invalid media handle initialization.
- * @ingroup media-public
- */
-#define TPBRT_MEDIA_HANDLE_INVALID_INIT { .media_idx = TPBRT_MEDIA_IDX_INVALID }
-/**
- * @brief Invalid media handle initialization with type conversion.
- * @ingroup media-public
- */
-#define TPBRT_MEDIA_HANDLE_INVALID (tpbrt_media_handle_t) TPBRT_MEDIA_HANDLE_INVALID_INIT
 
 	/**
 	 * @brief Medias list.

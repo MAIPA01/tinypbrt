@@ -60,39 +60,39 @@ extern "C" {
 	typedef enum tpbrt_film_sensor_t {
 		/// @brief The CIE 1931 spectral response curves.
 		TPBRT_FILM_SENSOR_CIE_1931			  = 0,
-		/// @brief Canon EOS 100D
+		/// @brief Canon EOS 100D sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_100D	  = 1,
-		/// @brief Canon EOS 1DX MK II
+		/// @brief Canon EOS 1DX MK II sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_1DX_MKII  = 2,
-		/// @brief Canon EOS 200D
+		/// @brief Canon EOS 200D sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_200D	  = 3,
-		/// @brief Canon EOS 200D MK II
+		/// @brief Canon EOS 200D MK II sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_200D_MKII = 4,
-		/// @brief Canon EOS 5D
+		/// @brief Canon EOS 5D sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_5D		  = 5,
-		/// @brief Canon EOS 5D MK II
+		/// @brief Canon EOS 5D MK II sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_5D_MKII	  = 6,
-		/// @brief Canon EOS 5D MK III
+		/// @brief Canon EOS 5D MK III sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIII  = 7,
-		/// @brief Canon EOS 5D MK IV
+		/// @brief Canon EOS 5D MK IV sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_5D_MKIV	  = 8,
-		/// @brief Canon EOS 5DS
+		/// @brief Canon EOS 5DS sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_5DS		  = 9,
-		/// @brief Canon EOS M
+		/// @brief Canon EOS M sensor.
 		TPBRT_FILM_SENSOR_CANON_EOS_M		  = 10,
-		/// @brief Hasselblad L1D 20C
+		/// @brief Hasselblad L1D 20C sensor.
 		TPBRT_FILM_SENSOR_HASSELBLAD_L1D_20C  = 11,
-		/// @brief Nikon D810
+		/// @brief Nikon D810 sensor.
 		TPBRT_FILM_SENSOR_NIKON_D810		  = 12,
-		/// @brief Nikon D850
+		/// @brief Nikon D850 sensor.
 		TPBRT_FILM_SENSOR_NIKON_D850		  = 13,
-		/// @brief Sony ILCE 6400
+		/// @brief Sony ILCE 6400 sensor.
 		TPBRT_FILM_SENSOR_SONY_ILCE_6400	  = 14,
-		/// @brief Sony ILCE 7M3
+		/// @brief Sony ILCE 7M3 sensor.
 		TPBRT_FILM_SENSOR_SONY_ILCE_7M3		  = 15,
-		/// @brief Sony ILCE 7RM3
+		/// @brief Sony ILCE 7RM3 sensor.
 		TPBRT_FILM_SENSOR_SONY_ILCE_7RM3	  = 16,
-		/// @brief Sony ILCE 9
+		/// @brief Sony ILCE 9 sensor.
 		TPBRT_FILM_SENSOR_SONY_ILCE_9		  = 17,
 		/// @brief Count of available film sensor types.
 		TPBRT_FILM_SENSOR_MAX_NUM			  = 18,
@@ -117,7 +117,7 @@ extern "C" {
 		tpbrt_float_t diagonal;
 		/// @brief Film sensitivity to light; final pixel values are scaled by the "iso" value divided by 100.
 		tpbrt_float_t iso;
-		/// @brief If non-zero, this gives a temperature in degrees kelvin that is used as the reference color temperature used for whitebalancing.
+		/// @brief If non-zero, this gives a temperature in kelvin that is used as the reference color temperature used for white balancing.
 		tpbrt_float_t white_balance;
 		/// @brief Image sample values with luminance greater than this value are clamped to have this luminance. (This is a hack, but can be useful for eliminating large variance spikes in scenes with difficult light transport.)
 		tpbrt_float_t max_component_value;

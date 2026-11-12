@@ -18,9 +18,20 @@ extern "C" {
 	 */
 
 #pragma region MATERIAL
+/**
+ * @brief Invalid material handle initialization.
+ * @ingroup material-private
+ */
+#define TPBRT_MATERIAL_HANDLE_INVALID_INIT { .material_idx = TPBRT_MATERIAL_IDX_INVALID }
+/**
+ * @brief Invalid material handle initialization with type conversion.
+ * @ingroup material-private
+ */
+#define TPBRT_MATERIAL_HANDLE_INVALID (tpbrt_material_handle_t) TPBRT_MATERIAL_HANDLE_INVALID_INIT
+
 	/**
 	 * @brief Returns material type based on string value.
-	 * @param type_str String which is convertable to material type.
+	 * @param type_str String which is convertible to material type.
 	 * @param type Output material type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_MATERIAL_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup material-private

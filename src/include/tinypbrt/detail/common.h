@@ -14,7 +14,7 @@ extern "C" {
 	 */
 
 	/**
-	 * @brief Simple string representation (not always ends with '\0', size determines final length of string)
+	 * @brief Simple string representation (not always terminated with '\0', the size determines the length of the string).
 	 * @ingroup common-public
 	 */
 	typedef struct tpbrt_string_t {
@@ -25,7 +25,7 @@ extern "C" {
 	} tpbrt_string_t;
 
 	/**
-	 * @brief Array of strings
+	 * @brief Array of strings.
 	 * @ingroup common-public
 	 */
 	typedef struct tpbrt_string_array_t {

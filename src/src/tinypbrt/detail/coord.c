@@ -12,7 +12,7 @@
 #define TPBRT_EMPTY_COORD_SYSTEM_MAP (tpbrt_coord_system_map_t) { .entries = TPBRT_NULL, .count = 0, .capacity = 0 }
 
 tpbrt_error_t tpbrt_coord_system_type_from_string(const tpbrt_string_t coord_str, tpbrt_coord_system_type_t* const coord) {
-	static const tpbrt_string_t COORDS_STRS[TPBRT_COORD_SYSTEM_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t CoordsStrs[TPBRT_COORD_SYSTEM_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("cameraworld"),
 		TPBRT_STRING_INIT("camera"),
 		TPBRT_STRING_INIT("world"),
@@ -23,7 +23,7 @@ tpbrt_error_t tpbrt_coord_system_type_from_string(const tpbrt_string_t coord_str
 		if (tpbrt_string_empty(coord_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_COORD_SYSTEM_TYPE; }
 
 		for (tpbrt_coord_system_type_t c = 0; c < TPBRT_COORD_SYSTEM_TYPE_MAX_NUM; ++c) {
-				if (tpbrt_string_equals(coord_str, COORDS_STRS[c]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(coord_str, CoordsStrs[c]) == TPBRT_TRUE) {
 					*coord = c;
 					return TPBRT_ERROR_NONE;
 				}
@@ -53,8 +53,8 @@ tpbrt_error_t tpbrt_coord_system_map_insert(tpbrt_coord_system_map_t* const map,
 		}
 
 		if (map->count >= map->capacity) {
-			static const tpbrt_uint_t DEFAULT_MIN_CAPACITY = 8u;
-			const tpbrt_uint_t new_capacity				   = map->capacity == 0 ? DEFAULT_MIN_CAPACITY : map->capacity * 2u;
+			static const tpbrt_uint_t DefaultMinCapacity = 8u;
+			const tpbrt_uint_t new_capacity				 = map->capacity == 0 ? DefaultMinCapacity : map->capacity * 2u;
 			tpbrt_coord_system_map_entry_t* const new_entries =
 			  realloc(map->entries, new_capacity * sizeof(tpbrt_coord_system_map_entry_t));
 				if (new_entries == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }

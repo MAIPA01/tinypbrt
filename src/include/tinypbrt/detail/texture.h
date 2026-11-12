@@ -49,18 +49,6 @@ extern "C" {
 		tpbrt_texture_handle_value_type_t value_type : 3;
 	} tpbrt_texture_handle_t;
 
-/**
- * @brief Invalid texture handle initialization.
- * @ingroup texture-public
- */
-#define TPBRT_TEXTURE_HANDLE_INVALID_INIT                                                                      \
-	{ .as.texture_idx = TPBRT_TEXTURE_IDX_INVALID, .value_type = TPBRT_TEXTURE_HANDLE_VALUE_TYPE_TEXTURE_IDX }
-/**
- * @brief Invalid texture handle initialization with type conversion.
- * @ingroup texture-public
- */
-#define TPBRT_TEXTURE_HANDLE_INVALID (tpbrt_texture_handle_t) TPBRT_TEXTURE_HANDLE_INVALID_INIT
-
 	/**
 	 * @brief Textures types.
 	 * @ingroup texture-public
@@ -363,10 +351,7 @@ extern "C" {
 	 * @brief Cylindrical texture mapping parameters.
 	 * @ingroup texture-public
 	 */
-	typedef struct tpbrt_texture_mapping_cylindrical_params_t {
-		/// @brief The current transformation matrix when the associated texture is specified gives the rendering space from texture space transformation.
-		tpbrt_transform_handle_t transform;
-	} tpbrt_texture_mapping_cylindrical_params_t;
+	typedef tpbrt_texture_mapping_spherical_params_t tpbrt_texture_mapping_cylindrical_params_t;
 
 	/**
 	 * @brief Planar texture mapping parameters.

@@ -54,7 +54,7 @@ static const tpbrt_film_sensor_t tpbrt_film_sensor_default		  = TPBRT_FILM_SENSO
 static const tpbrt_float_t tpbrt_film_max_component_value_default = INFINITY;
 
 tpbrt_error_t tpbrt_film_type_from_string(const tpbrt_string_t type_str, tpbrt_film_type_t* const type) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_FILM_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_FILM_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("rgb"),
 		TPBRT_STRING_INIT("gbuffer"),
 		TPBRT_STRING_INIT("spectral"),
@@ -65,7 +65,7 @@ tpbrt_error_t tpbrt_film_type_from_string(const tpbrt_string_t type_str, tpbrt_f
 		if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_FILM_TYPE; }
 
 		for (tpbrt_film_type_t t = 0; t < TPBRT_FILM_TYPE_MAX_NUM; ++t) {
-				if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(type_str, TypesStrs[t]) == TPBRT_TRUE) {
 					*type = t;
 					return TPBRT_ERROR_NONE;
 				}
@@ -75,7 +75,7 @@ tpbrt_error_t tpbrt_film_type_from_string(const tpbrt_string_t type_str, tpbrt_f
 }
 
 tpbrt_error_t tpbrt_film_sensor_from_string(const tpbrt_string_t sensor_str, tpbrt_film_sensor_t* const sensor) {
-	static const tpbrt_string_t SENSORS_STRS[TPBRT_FILM_SENSOR_MAX_NUM] = {
+	static const tpbrt_string_t SensorsStrs[TPBRT_FILM_SENSOR_MAX_NUM] = {
 		TPBRT_STRING_INIT("cie1931"),
 		TPBRT_STRING_INIT("canon_eos_100d"),
 		TPBRT_STRING_INIT("canon_eos_1dx_mkii"),
@@ -101,7 +101,7 @@ tpbrt_error_t tpbrt_film_sensor_from_string(const tpbrt_string_t sensor_str, tpb
 		if (tpbrt_string_empty(sensor_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_FILM_SENSOR; }
 
 		for (tpbrt_film_sensor_t s = 0; s < TPBRT_FILM_SENSOR_MAX_NUM; ++s) {
-				if (tpbrt_string_equals(sensor_str, SENSORS_STRS[s]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(sensor_str, SensorsStrs[s]) == TPBRT_TRUE) {
 					*sensor = s;
 					return TPBRT_ERROR_NONE;
 				}
@@ -148,17 +148,17 @@ static tpbrt_error_t tpbrt_film_read_gbuffer(tpbrt_film_gbuffer_params_t* const 
   const tpbrt_params_list_t* const params) {
 		if (gbuffer == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t COORD_SYS_STR				 = TPBRT_STRING_INIT("coordinatesystem");
+	static const tpbrt_string_t CoordSysStr				   = TPBRT_STRING_INIT("coordinatesystem");
 
-	static const tpbrt_string_t COORD_SYS_DEFAULT_STR		 = TPBRT_EMPTY_STRING_INIT;
-	static const tpbrt_coord_system_type_t COORD_SYS_DEFAULT = TPBRT_COORD_SYSTEM_TYPE_CAMERA;
+	static const tpbrt_string_t CoordSysDefaultStr		   = TPBRT_EMPTY_STRING_INIT;
+	static const tpbrt_coord_system_type_t CoordSysDefault = TPBRT_COORD_SYSTEM_TYPE_CAMERA;
 
 	tpbrt_string_t coordinate_system_str;
-	tpbrt_error_t err = tpbrt_params_list_get_string(params, COORD_SYS_STR, COORD_SYS_DEFAULT_STR, &coordinate_system_str);
+	tpbrt_error_t err = tpbrt_params_list_get_string(params, CoordSysStr, CoordSysDefaultStr, &coordinate_system_str);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 		if (tpbrt_string_empty(coordinate_system_str) == TPBRT_TRUE) {
-			gbuffer->coordinate_system = COORD_SYS_DEFAULT;
+			gbuffer->coordinate_system = CoordSysDefault;
 			return TPBRT_ERROR_NONE;
 		}
 
@@ -181,21 +181,21 @@ static tpbrt_error_t tpbrt_film_read_spectral(tpbrt_film_spectral_params_t* cons
   const tpbrt_params_list_t* const params) {
 		if (spectral == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t N_BUCKETS_STR	  = TPBRT_STRING_INIT("nbuckets");
-	static const tpbrt_string_t LAMBDA_MIN_STR	  = TPBRT_STRING_INIT("lambdamin");
-	static const tpbrt_string_t LAMBDA_MAX_STR	  = TPBRT_STRING_INIT("lambdamax");
+	static const tpbrt_string_t NBucketsStr		= TPBRT_STRING_INIT("nbuckets");
+	static const tpbrt_string_t LambdaMinStr	= TPBRT_STRING_INIT("lambdamin");
+	static const tpbrt_string_t LambdaMaxStr	= TPBRT_STRING_INIT("lambdamax");
 
-	static const tpbrt_uint_t N_BUCKETS_DEFAULT	  = 16u;
-	static const tpbrt_float_t LAMBDA_MIN_DEFAULT = 360.0f;
-	static const tpbrt_float_t LAMBDA_MAX_DEFAULT = 830.0f;
+	static const tpbrt_uint_t NBucketsDefault	= 16u;
+	static const tpbrt_float_t LambdaMinDefault = 360.0f;
+	static const tpbrt_float_t LambdaMaxDefault = 830.0f;
 
-	tpbrt_error_t err = tpbrt_params_list_get_uint(params, N_BUCKETS_STR, N_BUCKETS_DEFAULT, &spectral->nbuckets);
+	tpbrt_error_t err = tpbrt_params_list_get_uint(params, NBucketsStr, NBucketsDefault, &spectral->nbuckets);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, LAMBDA_MIN_STR, LAMBDA_MIN_DEFAULT, &spectral->lambda_min);
+	err = tpbrt_params_list_get_float(params, LambdaMinStr, LambdaMinDefault, &spectral->lambda_min);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_float(params, LAMBDA_MAX_STR, LAMBDA_MAX_DEFAULT, &spectral->lambda_max);
+	return tpbrt_params_list_get_float(params, LambdaMaxStr, LambdaMaxDefault, &spectral->lambda_max);
 }
 
 tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_list_t* const params, tpbrt_film_t* const film) {
@@ -203,20 +203,20 @@ tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_
 
 		if (memset(film, 0, sizeof(tpbrt_film_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t TPBRT_FILM_X_RESOULUTION_STR	   = TPBRT_STRING_INIT("xresolution");
-	static const tpbrt_string_t TPBRT_FILM_Y_RESOULUTION_STR	   = TPBRT_STRING_INIT("yresolution");
-	static const tpbrt_string_t TPBRT_FILM_CROP_WINDOW_STR		   = TPBRT_STRING_INIT("cropwindow");
-	static const tpbrt_string_t TPBRT_FILM_PIXEL_BOUNDS_STR		   = TPBRT_STRING_INIT("pixelbounds");
-	static const tpbrt_string_t TPBRT_FILM_DIAGONAL_STR			   = TPBRT_STRING_INIT("diagonal");
-	static const tpbrt_string_t TPBRT_FILM_FILE_NAME_STR		   = TPBRT_STRING_INIT("filename");
-	static const tpbrt_string_t TPBRT_FILM_SAVE_FP16_STR		   = TPBRT_STRING_INIT("savefp16");
-	static const tpbrt_string_t TPBRT_FILM_ISO_STR				   = TPBRT_STRING_INIT("iso");
-	static const tpbrt_string_t TPBRT_FILM_WHITE_BALANCE_STR	   = TPBRT_STRING_INIT("whitebalance");
-	static const tpbrt_string_t TPBRT_FILM_SENSOR_STR			   = TPBRT_STRING_INIT("sensor");
-	static const tpbrt_string_t TPBRT_FILM_MAX_COMPONENT_VALUE_STR = TPBRT_STRING_INIT("maxcomponentvalue");
+	static const tpbrt_string_t XResolutionStr		 = TPBRT_STRING_INIT("xresolution");
+	static const tpbrt_string_t YResolutionStr		 = TPBRT_STRING_INIT("yresolution");
+	static const tpbrt_string_t CropWindowStr		 = TPBRT_STRING_INIT("cropwindow");
+	static const tpbrt_string_t PixelBoundsStr		 = TPBRT_STRING_INIT("pixelbounds");
+	static const tpbrt_string_t DiagonalStr			 = TPBRT_STRING_INIT("diagonal");
+	static const tpbrt_string_t FileNameStr			 = TPBRT_STRING_INIT("filename");
+	static const tpbrt_string_t SaveFp16Str			 = TPBRT_STRING_INIT("savefp16");
+	static const tpbrt_string_t IsoStr				 = TPBRT_STRING_INIT("iso");
+	static const tpbrt_string_t WhiteBalanceStr		 = TPBRT_STRING_INIT("whitebalance");
+	static const tpbrt_string_t SensorStr			 = TPBRT_STRING_INIT("sensor");
+	static const tpbrt_string_t MaxComponentValueStr = TPBRT_STRING_INIT("maxcomponentvalue");
 
-	tpbrt_error_t err											   = TPBRT_ERROR_NONE;
-	film->type													   = TPBRT_FILM_TYPE_RGB;
+	tpbrt_error_t err								 = TPBRT_ERROR_NONE;
+	film->type										 = TPBRT_FILM_TYPE_RGB;
 		if (tpbrt_string_empty(type_str) == TPBRT_FALSE) {
 			tpbrt_film_type_t type = TPBRT_FILM_TYPE_MAX_NUM;
 			err					   = tpbrt_film_type_from_string(type_str, &type);
@@ -248,20 +248,20 @@ tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_
 			return err;
 		}
 
-	err = tpbrt_params_list_get_uint(params, TPBRT_FILM_X_RESOULUTION_STR, tpbrt_film_x_res_default, &film->x_resolution);
+	err = tpbrt_params_list_get_uint(params, XResolutionStr, tpbrt_film_x_res_default, &film->x_resolution);
 		if (err != TPBRT_ERROR_NONE) {
 			tpbrt_film_free(film);
 			return err;
 		}
 
-	err = tpbrt_params_list_get_uint(params, TPBRT_FILM_Y_RESOULUTION_STR, tpbrt_film_y_res_default, &film->y_resolution);
+	err = tpbrt_params_list_get_uint(params, YResolutionStr, tpbrt_film_y_res_default, &film->y_resolution);
 		if (err != TPBRT_ERROR_NONE) {
 			tpbrt_film_free(film);
 			return err;
 		}
 
 	tpbrt_float_array_t crop_window;
-	err = tpbrt_params_list_get_floats_of_size(params, TPBRT_FILM_CROP_WINDOW_STR, 4u, &crop_window);
+	err = tpbrt_params_list_get_floats_of_size(params, CropWindowStr, 4u, &crop_window);
 
 		if (err == TPBRT_ERROR_NOT_FOUND) {
 			film->crop_window[0] = 0.0f;
@@ -279,7 +279,7 @@ tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_
 		}
 
 	tpbrt_uint_array_t pixel_bounds;
-	err = tpbrt_params_list_get_uints_of_size(params, TPBRT_FILM_PIXEL_BOUNDS_STR, 4u, &pixel_bounds);
+	err = tpbrt_params_list_get_uints_of_size(params, PixelBoundsStr, 4u, &pixel_bounds);
 
 		if (err == TPBRT_ERROR_NOT_FOUND) {
 			film->pixel_bounds[0] = 0.0f;
@@ -296,13 +296,13 @@ tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_
 			return err;
 		}
 
-	err = tpbrt_params_list_get_float(params, TPBRT_FILM_DIAGONAL_STR, tpbrt_film_diagonal_default, &film->diagonal);
+	err = tpbrt_params_list_get_float(params, DiagonalStr, tpbrt_film_diagonal_default, &film->diagonal);
 		if (err != TPBRT_ERROR_NONE) {
 			tpbrt_film_free(film);
 			return err;
 		}
 
-	err = tpbrt_params_list_get_string(params, TPBRT_FILM_FILE_NAME_STR, TPBRT_EMPTY_STRING, &film->file_name);
+	err = tpbrt_params_list_get_string(params, FileNameStr, TPBRT_EMPTY_STRING, &film->file_name);
 		if (err == TPBRT_ERROR_NONE && tpbrt_string_empty(film->file_name) == TPBRT_TRUE) {
 			err = tpbrt_string_copy(&film->file_name, tpbrt_film_file_name_default);
 		}
@@ -313,28 +313,27 @@ tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_
 		}
 
 	tpbrt_bool_t save_fp16;
-	err = tpbrt_params_list_get_bool(params, TPBRT_FILM_SAVE_FP16_STR, tpbrt_film_save_fp16_default, &save_fp16);
+	err = tpbrt_params_list_get_bool(params, SaveFp16Str, tpbrt_film_save_fp16_default, &save_fp16);
 		if (err != TPBRT_ERROR_NONE) {
 			tpbrt_film_free(film);
 			return err;
 		}
 	film->save_fp16 = save_fp16;
 
-	err				= tpbrt_params_list_get_float(params, TPBRT_FILM_ISO_STR, tpbrt_film_iso_default, &film->iso);
+	err				= tpbrt_params_list_get_float(params, IsoStr, tpbrt_film_iso_default, &film->iso);
 		if (err != TPBRT_ERROR_NONE) {
 			tpbrt_film_free(film);
 			return err;
 		}
 
-	err =
-	  tpbrt_params_list_get_float(params, TPBRT_FILM_WHITE_BALANCE_STR, tpbrt_film_white_balance_default, &film->white_balance);
+	err = tpbrt_params_list_get_float(params, WhiteBalanceStr, tpbrt_film_white_balance_default, &film->white_balance);
 		if (err != TPBRT_ERROR_NONE) {
 			tpbrt_film_free(film);
 			return err;
 		}
 
 	tpbrt_string_t sensor_str;
-	err = tpbrt_params_list_get_string(params, TPBRT_FILM_SENSOR_STR, TPBRT_EMPTY_STRING, &sensor_str);
+	err = tpbrt_params_list_get_string(params, SensorStr, TPBRT_EMPTY_STRING, &sensor_str);
 		if (tpbrt_string_empty(sensor_str) == TPBRT_TRUE) { film->sensor = tpbrt_film_sensor_default; }
 		else if (err == TPBRT_ERROR_NONE) {
 			tpbrt_film_sensor_t sensor = TPBRT_FILM_SENSOR_MAX_NUM;
@@ -348,7 +347,7 @@ tpbrt_error_t tpbrt_film_init(const tpbrt_string_t type_str, const tpbrt_params_
 			return err;
 		}
 
-	err = tpbrt_params_list_get_float(params, TPBRT_FILM_MAX_COMPONENT_VALUE_STR, tpbrt_film_max_component_value_default,
+	err = tpbrt_params_list_get_float(params, MaxComponentValueStr, tpbrt_film_max_component_value_default,
 	  &film->max_component_value);
 		if (err != TPBRT_ERROR_NONE) {
 			tpbrt_film_free(film);

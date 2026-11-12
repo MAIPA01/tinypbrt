@@ -4,8 +4,10 @@
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://maipa01.github.io/tinypbrt/)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fmaipa01.github.io%2Ftinypbrt%2Fcoverage%2Fbadge.json)](https://maipa01.github.io/tinypbrt/coverage/)
 [![C11](https://img.shields.io/badge/language-C11-blue)](https://en.cppreference.com/w/c/11)
+[![C++20](https://img.shields.io/badge/wrapper-C%2B%2B20-blue)](https://en.cppreference.com/w/cpp/20)
 
-Tiny but powerful [pbrt-v4](https://pbrt.org/fileformat-v4) scene file loader written in C11.
+Tiny but powerful [pbrt-v4](https://pbrt.org/fileformat-v4) scene file loader written in C11, with an optional
+header-only C++20 wrapper.
 
 tinypbrt parses `.pbrt` scene descriptions (cameras, film, samplers, integrators, shapes, materials, textures, lights,
 participating media, object instancing, animated transforms, `Include`/`Import`)
@@ -17,6 +19,14 @@ tpbrt_scene_t scene;
 if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
     printf("%zu shapes\n", scene.shapes.count);
     tpbrt_scene_free(&scene);
+}
+```
+
+The same in C++ ([C++ wrapper](#c-wrapper)) - the scene frees itself and tagged unions become `std::variant`:
+
+```cpp
+if (const auto scene = tpbrt::load_scene_from_file("scene.pbrt")) {
+    std::printf("%zu shapes\n", scene->shapes().size());
 }
 ```
 
@@ -33,6 +43,7 @@ if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
 - [Quick start](#quick-start)
 - [Using the scene](#using-the-scene)
 - [Error handling](#error-handling)
+- [C++ wrapper](#c-wrapper)
 - [CMake options](#cmake-options)
 - [Examples](#examples)
 - [Building and testing tinypbrt](#building-and-testing-tinypbrt)
@@ -65,6 +76,9 @@ if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
 - **Validation**: unknown types, wrong parameter types, out-of-range mesh indices, mismatched
   `AttributeBegin`/`ObjectBegin` nesting, include cycles - every problem is reported as an error code
 - **Compact output**: identical matrices are stored once and referenced by handles
+- **C++20 wrapper** (`tinypbrt::tinypbrt_cpp`, header-only): RAII scene, zero-copy views, `std::variant` for every
+  tagged union, ranges-compatible lists and `tpbrt::result<T>` instead of output parameters - with the same performance
+  as the C API
 
 | Category     | Supported types                                                                                                                                                         |
 |--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -86,11 +100,13 @@ if (tpbrt_scene_load_from_file("scene.pbrt", &scene) == TPBRT_ERROR_NONE) {
   presets use Clang)
 - CMake 3.30 or newer
 - no runtime dependencies (only the C standard library; `libm` is linked automatically where needed)
+- for the optional C++ wrapper: a C++20 compiler (tested with GCC 13 and Clang 18)
 
 ## Adding tinypbrt to your project
 
-The CMake target is **`tinypbrt::tinypbrt`**. Tests, benchmarks, documentation and examples are built only when tinypbrt
-is the top-level project, so adding it as a dependency builds just the library.
+The CMake target is **`tinypbrt::tinypbrt`** for C and **`tinypbrt::tinypbrt_cpp`** for the C++20 wrapper (it links the C
+library for you; disable it with `TINYPBRT_BUILD_CPP_WRAPPER=OFF`). Tests, benchmarks, documentation and examples are
+built only when tinypbrt is the top-level project, so adding it as a dependency builds just the library.
 
 ### CPM.cmake (recommended)
 
@@ -103,13 +119,17 @@ project(my_renderer LANGUAGES C)
 # https://github.com/cpm-cmake/CPM.cmake#adding-cpm
 include(cmake/CPM.cmake)
 
-CPMAddPackage("gh:MAIPA01/tinypbrt@v1.0.0")
+CPMAddPackage("gh:MAIPA01/tinypbrt@v1.1.1")
 
 add_executable(my_renderer main.c)
 target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
+
+# or, for C++20:
+# add_executable(my_renderer main.cpp)
+# target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt_cpp)
 ```
 
-`gh:MAIPA01/tinypbrt@v1.0.0` fetches the git tag `v1.0.0`. To follow a branch or pin a commit, or to pass options, use
+`gh:MAIPA01/tinypbrt@v1.1.1` fetches the git tag `v1.1.1`. To follow a branch or pin a commit, or to pass options, use
 the long form:
 
 ```cmake
@@ -141,7 +161,7 @@ projects.
 include(FetchContent)
 FetchContent_Declare(tinypbrt
         GIT_REPOSITORY https://github.com/MAIPA01/tinypbrt.git
-        GIT_TAG v1.0.0
+        GIT_TAG v1.1.1
 )
 FetchContent_MakeAvailable(tinypbrt)
 
@@ -164,8 +184,12 @@ cmake --install build --prefix /opt/tinypbrt
 ```
 
 ```cmake
-find_package(tinypbrt 1.0 REQUIRED CONFIG)   # -DCMAKE_PREFIX_PATH=/opt/tinypbrt
+find_package(tinypbrt 1.1 REQUIRED CONFIG)   # -DCMAKE_PREFIX_PATH=/opt/tinypbrt
 target_link_libraries(my_renderer PRIVATE tinypbrt::tinypbrt)
+
+# C++ wrapper (finds tinypbrt by itself)
+find_package(tinypbrt_cpp 1.1 REQUIRED CONFIG)
+target_link_libraries(my_cpp_renderer PRIVATE tinypbrt::tinypbrt_cpp)
 ```
 
 ### Static or shared library
@@ -318,14 +342,77 @@ independently of the C locale, and a token must be a complete number (`1.5abc` o
 `integer` written as `2.0` is an error). Redefining a named material, medium, object or a texture of the same type is an
 error (`TPBRT_ERROR_DUPLICATE_*`), like in pbrt-v4; `float` and `spectrum` textures have separate namespaces.
 
+## C++ wrapper
+
+`#include <tinypbrt/tinypbrt.hpp>` and link `tinypbrt::tinypbrt_cpp` (C++20). The wrapper is header-only and adds no
+copies: every type is a small view over the C structure, so it is as fast as the C API (see
+[Benchmarks](#benchmarks)).
+
+```cpp
+#include <tinypbrt/tinypbrt.hpp>
+
+#include <cstdio>
+#include <utility>
+
+template<class... Fs> struct overloaded : Fs... { using Fs::operator()...; };
+
+int main(int argc, char** argv) {
+	if (argc < 2) { return 1; }
+	auto loaded = tpbrt::load_scene_from_file(argv[1]);   // tpbrt::result<tpbrt::scene>
+	if (!loaded) {
+		std::fprintf(stderr, "%s\n", tpbrt::to_string(loaded.get_error()).c_str());
+		return 1;
+	}
+	const tpbrt::scene scene = std::move(*loaded);          // owns the C scene, frees it in the destructor
+
+	for (const tpbrt::shape shape : scene.shapes()) {
+		shape.visit(overloaded {
+		  [](const tpbrt::shape_sphere_params& sphere) { std::printf("sphere r=%g\n", sphere.radius()); },
+		  [](const tpbrt::shape_triangle_mesh_params& mesh) { std::printf("%zu vertices\n", mesh.p().size()); },
+		  [](const auto&) {},
+		});
+
+		if (const auto material = scene.materials().at(shape.material())) {   // handle -> tpbrt::result<material>
+			std::printf("  material %s\n", tpbrt::to_string(material->type()).data());
+		}
+	}
+	if (const auto gold = scene.materials().at("gold"); gold && gold->is_conductor()) { /* lookup by name */ }
+}
+```
+
+| C                                           | C++                                                                                    |
+|---------------------------------------------|----------------------------------------------------------------------------------------|
+| `tpbrt_scene_t` + `tpbrt_scene_free`        | `tpbrt::scene` (RAII, move-only) or `tpbrt::scene_view` over a scene you own           |
+| `tpbrt_error_t` + output parameter          | `tpbrt::result<T>` (`if (r)`, `*r`, `r->`, `get_error()`, `value_or()`, `visit()`)     |
+| `tpbrt_string_t`                            | `tpbrt::string` (`std::string_view`-like, comparable with strings)                     |
+| `{ data, count }` arrays and lists          | `tpbrt::array<...>`: `size()`, `[]`, `at()`, iterators, `std::ranges` algorithms/views |
+| `type` + `as` union                         | `type()`, `is_xxx()`, `as_xxx()` → `std::optional`, `visit()`, `as<T>()`, `holds<T>()` |
+| `tpbrt_get_material_by_handle` / `_by_name` | `scene.materials().at(handle)` / `.at("name")` (also textures, media, objects, ...)    |
+| `TPBRT_SHAPE_TYPE_SPHERE`, ...              | `enum class` (`tpbrt::shape_type::SPHERE`) and `tpbrt::to_string(...)`                 |
+
+Things worth knowing:
+
+- **Views.** All wrappers (except `tpbrt::scene`) are non-owning, pointer-sized and cheap to copy - take them by value.
+  They stay valid as long as the scene lives, also after the `tpbrt::scene` object was moved (the C data does not
+  move). `.native()` returns the C structure, so both APIs can be mixed freely.
+- **Variants.** Every alternative of a variant is a distinct type, so `std::visit` always knows what it got: a blackbody
+  temperature is `tpbrt::blackbody`, not a `float` like a constant spectrum, and `fbm`/`wrinkled`/`windy` textures have
+  their own parameter types. `visit` returns `std::optional` with the visitor's result (empty for an unknown type), or
+  nothing for a `void` visitor.
+- **No exceptions, no allocations.** Errors are values (`tpbrt::result`); `operator[]` and `*result` are unchecked like in
+  the standard library, `at()` and `get_value()` check. Only `get_value()` on an error throws
+  (`std::bad_variant_access`).
+- **Comparison.** Views compare by value (`==` and `<=>` compare the contents, not the addresses).
+
 ## CMake options
 
 | Option                         | Default             | Description                                                                            |
 |--------------------------------|---------------------|----------------------------------------------------------------------------------------|
 | `TINYPBRT_BUILD_SHARED`        | `BUILD_SHARED_LIBS` | build tinypbrt as a shared library ([details](#static-or-shared-library))              |
+| `TINYPBRT_BUILD_CPP_WRAPPER`   | `ON`                | provide the C++20 wrapper `tinypbrt::tinypbrt_cpp` ([details](#c-wrapper))             |
 | `BUILD_SHARED_LIBS`            | `OFF`               | CMake's global default for all libraries (also GoogleTest in this repository)          |
-| `TINYPBRT_BUILD_TESTS`         | top-level only      | build the GoogleTest suite and the C API test                                          |
-| `TINYPBRT_BUILD_BENCHMARK`     | top-level only      | build benchmarks                                                                       |
+| `TINYPBRT_BUILD_TESTS`         | top-level only      | build the GoogleTest suites (C library and C++ wrapper) and the C API test             |
+| `TINYPBRT_BUILD_BENCHMARK`     | top-level only      | build benchmarks (C and C++)                                                           |
 | `TINYPBRT_BUILD_EXAMPLES`      | top-level only      | build examples                                                                         |
 | `TINYPBRT_BUILD_DOCUMENTATION` | top-level only      | Doxygen documentation: `docs` target ([details](#documentation))                       |
 | `TINYPBRT_BUILD_COVERAGE`      | top-level only      | LLVM coverage instrumentation and the `coverage` target (Clang) ([details](#coverage)) |
@@ -335,9 +422,20 @@ error (`TPBRT_ERROR_DUPLICATE_*`), like in pbrt-v4; `float` and `spectrum` textu
 | `TINYPBRT_ENABLE_SANITIZERS`   | `OFF`               | build the library and tests with sanitizers                                            |
 | `TINYPBRT_SANITIZERS`          | `address;undefined` | sanitizers to use (`address`, `undefined`, `leak`, `memory`, `thread`)                 |
 | `TINYPBRT_INSTALL`             | top-level only      | generate install rules                                                                 |
+| `TINYPBRT_SYNC_VERSION`        | top-level only      | write the version into README.md and `examples/cpm_project` ([details](#versioning))   |
 
 Compiler warnings and optimization flags used to build tinypbrt are private to the library: they are not added to your
 targets. Link-time optimization and static linking are left to your project (e.g. `CMAKE_INTERPROCEDURAL_OPTIMIZATION`).
+
+### Versioning
+
+The version is set in one place only: `project(tinypbrt VERSION x.y.z ...)` in the main `CMakeLists.txt`. The library
+(`VERSION`/`SOVERSION`), the installed package version files and the Doxygen documentation read it from there, and
+configuring tinypbrt as the top-level project writes it into this README (`@vx.y.z`, `GIT_TAG vx.y.z`,
+`find_package(tinypbrt x.y)`) and into [`examples/cpm_project`](examples/cpm_project)
+([`cmake/version_sync.cmake`](cmake/version_sync.cmake)). With `TINYPBRT_SYNC_VERSION=OFF` run
+`cmake --build build --target tinypbrt-sync-version` instead; the `tinypbrt-version-check` test fails when the files
+are out of date. Push the matching `vx.y.z` git tag when releasing, so the CPM and FetchContent snippets work.
 
 ## Examples
 
@@ -353,9 +451,18 @@ default when tinypbrt is the top-level project), together with two scenes in `ex
 | `lights`           | light sources in world space (`from`/`to` transformed by the light's CTM), area lights on shapes          |
 | `export_obj`       | converting meshes, spheres, cylinders, disks and object instances to a Wavefront OBJ file                 |
 
+The C++20 versions in [`examples/cpp`](examples/cpp) use the wrapper (built when `TINYPBRT_BUILD_CPP_WRAPPER=ON`):
+
+| Example                           | Shows                                                                                    |
+|-----------------------------------|------------------------------------------------------------------------------------------|
+| `tinypbrt-cpp-example-quickstart` | RAII scene, `visit` with overloaded lambdas, handle lookups returning `tpbrt::result`    |
+| `tinypbrt-cpp-example-scene_info` | settings via `tpbrt::to_string`, a generic visitor with `if constexpr`, lights, textures |
+| `tinypbrt-cpp-example-materials`  | `std::views::filter` / `std::ranges::count_if` on lists, lookup by name, texture handles |
+
 ```sh
 ./build/examples/tinypbrt-example-scene_info examples/scenes/forest.pbrt
 ./build/examples/tinypbrt-example-export_obj examples/scenes/forest.pbrt forest.obj
+./build/examples/tinypbrt-cpp-example-materials examples/scenes/cornell_box.pbrt gold
 ```
 
 [`examples/cpm_project`](examples/cpm_project) is a standalone CMake project that pulls tinypbrt with CPM, exactly as
@@ -396,7 +503,10 @@ ctest --test-dir build --output-on-failure
 
 The test suite (`tinypbrt-tests`, GoogleTest, C++17) covers the parser, parameter handling, every directive and object
 type, error paths and memory safety under the sanitizers; `tinypbrt-c-api-tests`
-checks that the public headers compile and work as strict C11.
+checks that the public headers compile and work as strict C11. `tinypbrt-cpp-tests` (GoogleTest, C++20) tests the
+wrapper: every variant alternative, `to_string` of every enum value against the C parser, lookups, `tpbrt::result`,
+moves of `tpbrt::scene`, and that whole example scenes read through the wrapper give the same values as the C API. The
+`tinypbrt_cpp_header_check` target compiles every C++ header on its own.
 
 ## Benchmarks
 
@@ -418,6 +528,17 @@ cmake --build build/linux-release
 `bytes_per_second` is the parser throughput, `items_per_second` the number of scene elements (shapes, vertices,
 instances...) per second. Compare two JSON runs with
 [`tools/compare.py`](https://github.com/google/benchmark/blob/main/docs/tools.md) from Google Benchmark.
+
+`tinypbrt-cpp-benchmark` measures the cost of the C++ wrapper: every `bm_cpp_*` benchmark has a `bm_c_*` twin doing the
+same work with the C API (loading, iterating shapes with `visit`/`as_xxx()`, iterating a 1M-vertex mesh, lookup by
+name). Example results (GCC 13, Release):
+
+| Benchmark                        | C       | C++                                      |
+|----------------------------------|---------|------------------------------------------|
+| load 100k spheres                | 98.9 ms | 97.0 ms                                  |
+| sum radii of 100k spheres        | 390 µs  | 402 µs (`visit`), 384 µs (`as_sphere()`) |
+| max x of a 1M-vertex mesh        | 1.45 ms | 1.47 ms                                  |
+| material by name (10k materials) | 49.7 ns | 48.3 ns                                  |
 
 ## Coverage
 

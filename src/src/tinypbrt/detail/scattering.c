@@ -5,7 +5,7 @@
 #include <tinypbrt/detail/common_internal.h>
 
 tpbrt_error_t tpbrt_scattering_builtin_from_string(const tpbrt_string_t builtin_str, tpbrt_scattering_builtin_t* const builtin) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_SCATTERING_BUILTIN_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_SCATTERING_BUILTIN_MAX_NUM] = {
 		TPBRT_STRING_INIT("Apple"),
 		TPBRT_STRING_INIT("Chicken1"),
 		TPBRT_STRING_INIT("Chicken2"),
@@ -60,7 +60,7 @@ tpbrt_error_t tpbrt_scattering_builtin_from_string(const tpbrt_string_t builtin_
 		if (tpbrt_string_empty(builtin_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SCATTERING_BUILTIN; }
 
 		for (tpbrt_scattering_builtin_t p = 0; p < TPBRT_SCATTERING_BUILTIN_MAX_NUM; ++p) {
-				if (tpbrt_string_equals(builtin_str, TYPES_STRS[p]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(builtin_str, TypesStrs[p]) == TPBRT_TRUE) {
 					*builtin = p;
 					return TPBRT_ERROR_NONE;
 				}

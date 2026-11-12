@@ -5,7 +5,7 @@
 #include <tinypbrt/detail/common_internal.h>
 
 tpbrt_size_t tpbrt_get_error_message(const tpbrt_error_t error, tpbrt_char_t* const buffer, const tpbrt_size_t buffer_size) {
-	static const tpbrt_string_t TPBRT_ERROR_MSGS[TPBRT_ERROR_MAX_NUM + 1] = {
+	static const tpbrt_string_t ErrorMsgs[TPBRT_ERROR_MAX_NUM + 1] = {
 		TPBRT_STRING_INIT("No error"),						  // TPBRT_ERROR_NONE
 		TPBRT_STRING_INIT("No tokens"),						  // TPBRT_ERROR_END_OF_FILE
 		TPBRT_STRING_INIT("Invalid token"),					  // TPBRT_ERROR_INVALID_TOKEN
@@ -83,6 +83,6 @@ tpbrt_size_t tpbrt_get_error_message(const tpbrt_error_t error, tpbrt_char_t* co
 
 	const tpbrt_size_t error_idx = TPBRT_MIN(error, TPBRT_ERROR_MAX_NUM);
 	tpbrt_size_t size			 = 0;
-	const tpbrt_error_t err		 = tpbrt_string_copy_to(TPBRT_ERROR_MSGS[error_idx], buffer, buffer_size, &size);
+	const tpbrt_error_t err		 = tpbrt_string_copy_to(ErrorMsgs[error_idx], buffer, buffer_size, &size);
 	return err == TPBRT_ERROR_NONE ? size : 0;
 }
