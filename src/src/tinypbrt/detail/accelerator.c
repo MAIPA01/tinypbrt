@@ -8,7 +8,7 @@
 #include <tinypbrt/detail/param_internal.h>
 
 tpbrt_error_t tpbrt_accelerator_type_from_string(const tpbrt_string_t type_str, tpbrt_accelerator_type_t* const type) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_ACCELERATOR_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_ACCELERATOR_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("bvh"),
 		TPBRT_STRING_INIT("kdtree"),
 	};
@@ -18,7 +18,7 @@ tpbrt_error_t tpbrt_accelerator_type_from_string(const tpbrt_string_t type_str, 
 		if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_ACCELERATOR_TYPE; }
 
 		for (tpbrt_accelerator_type_t t = 0; t < TPBRT_ACCELERATOR_TYPE_MAX_NUM; ++t) {
-				if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(type_str, TypesStrs[t]) == TPBRT_TRUE) {
 					*type = t;
 					return TPBRT_ERROR_NONE;
 				}
@@ -29,7 +29,7 @@ tpbrt_error_t tpbrt_accelerator_type_from_string(const tpbrt_string_t type_str, 
 
 tpbrt_error_t tpbrt_accelerator_bvh_split_method_from_string(const tpbrt_string_t method_str,
   tpbrt_accelerator_bvh_split_method_t* const method) {
-	static const tpbrt_string_t METHODS_STRS[TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM] = {
+	static const tpbrt_string_t MethodsStrs[TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM] = {
 		TPBRT_STRING_INIT("sah"),
 		TPBRT_STRING_INIT("middle"),
 		TPBRT_STRING_INIT("equal"),
@@ -41,7 +41,7 @@ tpbrt_error_t tpbrt_accelerator_bvh_split_method_from_string(const tpbrt_string_
 		if (tpbrt_string_empty(method_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_ACCELERATOR_BVH_SPLIT_METHOD; }
 
 		for (tpbrt_accelerator_bvh_split_method_t m = 0; m < TPBRT_ACCELERATOR_BVH_SPLIT_METHOD_MAX_NUM; ++m) {
-				if (tpbrt_string_equals(method_str, METHODS_STRS[m]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(method_str, MethodsStrs[m]) == TPBRT_TRUE) {
 					*method = m;
 					return TPBRT_ERROR_NONE;
 				}
@@ -61,18 +61,17 @@ static tpbrt_error_t tpbrt_accelerator_read_bvh(tpbrt_accelerator_bvh_params_t* 
   const tpbrt_params_list_t* const params) {
 		if (bvh_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t MAX_NODES_PRIMS_STR	  = TPBRT_STRING_INIT("maxnodeprims");
-	static const tpbrt_string_t SPLIT_METHOD_STR	  = TPBRT_STRING_INIT("splitmethod");
+	static const tpbrt_string_t MaxNodesPrimsStr   = TPBRT_STRING_INIT("maxnodeprims");
+	static const tpbrt_string_t SplitMethodStr	   = TPBRT_STRING_INIT("splitmethod");
 
-	static const tpbrt_uint_t MAX_NODES_PRIMS_DEFAULT = 4u;
-	static const tpbrt_string_t SPLIT_METHOD_DEFAULT  = TPBRT_EMPTY_STRING_INIT;
+	static const tpbrt_uint_t MaxNodesPrimsDefault = 4u;
+	static const tpbrt_string_t SplitMethodDefault = TPBRT_EMPTY_STRING_INIT;
 
-	tpbrt_error_t err =
-	  tpbrt_params_list_get_uint(params, MAX_NODES_PRIMS_STR, MAX_NODES_PRIMS_DEFAULT, &bvh_params->max_node_prims);
+	tpbrt_error_t err = tpbrt_params_list_get_uint(params, MaxNodesPrimsStr, MaxNodesPrimsDefault, &bvh_params->max_node_prims);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	tpbrt_string_t method_str;
-	err = tpbrt_params_list_get_string(params, SPLIT_METHOD_STR, SPLIT_METHOD_DEFAULT, &method_str);
+	err = tpbrt_params_list_get_string(params, SplitMethodStr, SplitMethodDefault, &method_str);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 		if (tpbrt_string_empty(method_str) == TPBRT_TRUE) {
@@ -99,33 +98,33 @@ static tpbrt_error_t tpbrt_accelerator_read_kd_tree(tpbrt_accelerator_kd_tree_pa
   const tpbrt_params_list_t* const params) {
 		if (kd_tree_params == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t INTERSECT_COST_STR	 = TPBRT_STRING_INIT("intersectcost");
-	static const tpbrt_string_t TRAVERSAL_COST_STR	 = TPBRT_STRING_INIT("traversalcost");
-	static const tpbrt_string_t EMPTY_BONUS_STR		 = TPBRT_STRING_INIT("emptybonus");
-	static const tpbrt_string_t MAX_PRIMS_STR		 = TPBRT_STRING_INIT("maxprims");
-	static const tpbrt_string_t MAX_DEPTH_STR		 = TPBRT_STRING_INIT("maxdepth");
+	static const tpbrt_string_t IntersectCostStr   = TPBRT_STRING_INIT("intersectcost");
+	static const tpbrt_string_t TraversalCostStr   = TPBRT_STRING_INIT("traversalcost");
+	static const tpbrt_string_t EmptyBonusStr	   = TPBRT_STRING_INIT("emptybonus");
+	static const tpbrt_string_t MaxPrimsStr		   = TPBRT_STRING_INIT("maxprims");
+	static const tpbrt_string_t MaxDepthStr		   = TPBRT_STRING_INIT("maxdepth");
 
-	static const tpbrt_uint_t INTERSECT_COST_DEFAULT = 5u;
-	static const tpbrt_uint_t TRAVERSAL_COST_DEFAULT = 1u;
-	static const tpbrt_float_t EMPTY_BONUS_DEFAULT	 = 0.5f;
-	static const tpbrt_uint_t MAX_PRIMS_DEFAULT		 = 1u;
-	static const tpbrt_int_t MAX_DEPTH_DEFAULT		 = -1;
+	static const tpbrt_uint_t IntersectCostDefault = 5u;
+	static const tpbrt_uint_t TraversalCostDefault = 1u;
+	static const tpbrt_float_t EmptyBonusDefault   = 0.5f;
+	static const tpbrt_uint_t MaxPrimsDefault	   = 1u;
+	static const tpbrt_int_t MaxDepthDefault	   = -1;
 
 	tpbrt_error_t err =
-	  tpbrt_params_list_get_uint(params, INTERSECT_COST_STR, INTERSECT_COST_DEFAULT, &kd_tree_params->intersect_cost);
+	  tpbrt_params_list_get_uint(params, IntersectCostStr, IntersectCostDefault, &kd_tree_params->intersect_cost);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, TRAVERSAL_COST_STR, TRAVERSAL_COST_DEFAULT, &kd_tree_params->traversal_cost);
+	err = tpbrt_params_list_get_uint(params, TraversalCostStr, TraversalCostDefault, &kd_tree_params->traversal_cost);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 
-	err = tpbrt_params_list_get_float(params, EMPTY_BONUS_STR, EMPTY_BONUS_DEFAULT, &kd_tree_params->empty_bonus);
+	err = tpbrt_params_list_get_float(params, EmptyBonusStr, EmptyBonusDefault, &kd_tree_params->empty_bonus);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, MAX_PRIMS_STR, MAX_PRIMS_DEFAULT, &kd_tree_params->max_prims);
+	err = tpbrt_params_list_get_uint(params, MaxPrimsStr, MaxPrimsDefault, &kd_tree_params->max_prims);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_int(params, MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, &kd_tree_params->max_depth);
+	return tpbrt_params_list_get_int(params, MaxDepthStr, MaxDepthDefault, &kd_tree_params->max_depth);
 }
 
 tpbrt_error_t tpbrt_accelerator_init_default(tpbrt_accelerator_t* const accelerator) {

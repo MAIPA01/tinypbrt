@@ -14,7 +14,7 @@ extern "C" {
 	 */
 
 	/**
-	 * @brief Error type (used as result type where success = TPBRT_ERROR_NONE = 0)
+	 * @brief Error type (used as result type where success = TPBRT_ERROR_NONE = 0).
 	 * @ingroup error-public
 	 */
 	typedef enum tpbrt_error_t {

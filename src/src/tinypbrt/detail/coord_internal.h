@@ -22,7 +22,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns coordinate system type based on string value.
-	 * @param coord_str String which is convertable to coordinate system type.
+	 * @param coord_str String which is convertible to coordinate system type.
 	 * @param coord Output coordinate system type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_COORD_SYSTEM_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup coord-private

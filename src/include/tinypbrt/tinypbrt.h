@@ -5,7 +5,7 @@
 /**
  * @defgroup tinypbrt-public tinypbrt
  * @brief Library for parsing pbrt-v4 files.
- * More info about pbrt-v4 file format you can find here: https://pbrt.org/fileformat-v4
+ * More information about the pbrt-v4 file format can be found at https://pbrt.org/fileformat-v4.
  */
 
 #include <tinypbrt/detail/fwd.h>

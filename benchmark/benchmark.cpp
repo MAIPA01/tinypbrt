@@ -14,9 +14,9 @@
 namespace {
 
 	void fail(benchmark::State& state, const tpbrt_error_t err) {
-		static constexpr uint8_t MESSAGE_SIZE = 128u;
+		static constexpr uint8_t MessageSize = 128u;
 
-		char message[MESSAGE_SIZE]			  = {};
+		char message[MessageSize]			  = {};
 		tpbrt_get_error_message(err, message, sizeof(message));
 		state.SkipWithError(message);
 	}
@@ -33,11 +33,11 @@ namespace {
 				tpbrt_scene_free(&scene);
 			}
 
-		static constexpr double ONE_KB = 1024.0;
+		static constexpr double OneKb = 1024.0;
 
 		state.SetBytesProcessed(state.iterations() * static_cast<std::int64_t>(source.size()));
 		state.SetItemsProcessed(state.iterations() * items);
-		state.counters["scene_MiB"] = static_cast<double>(source.size()) / (ONE_KB * ONE_KB);
+		state.counters["scene_MiB"] = static_cast<double>(source.size()) / (OneKb * OneKb);
 	}
 
 	void bm_load_spheres(benchmark::State& state) {

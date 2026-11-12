@@ -2,7 +2,7 @@
 # @ZMIENNE@ są zastępowane przy konfiguracji. Pełna lista opcji: doxygen -g
 PROJECT_NAME           = "tinypbrt"
 PROJECT_NUMBER         = @PROJECT_VERSION@
-PROJECT_BRIEF          = "pbrt-v4 scene file parser for C11"
+PROJECT_BRIEF          = "pbrt-v4 scene file parser for C11 with a header-only C++20 wrapper"
 OUTPUT_DIRECTORY       = "@TINYPBRT_DOCUMENTATION_OUTPUT_DIR@"
 OUTPUT_LANGUAGE        = English
 MARKDOWN_SUPPORT       = YES
@@ -15,7 +15,7 @@ MARKDOWN_ID_STYLE      = GITHUB
 INPUT                  = "@PROJECT_SOURCE_DIR@/README.md" \
                          "@PROJECT_SOURCE_DIR@/docs/pages" \
                          "@PROJECT_SOURCE_DIR@/src/include"
-FILE_PATTERNS          = *.h *.md
+FILE_PATTERNS          = *.h *.hpp *.md
 RECURSIVE              = YES
 USE_MDFILE_AS_MAINPAGE = "@PROJECT_SOURCE_DIR@/README.md"
 EXAMPLE_PATH           = "@PROJECT_SOURCE_DIR@/examples"
@@ -39,6 +39,9 @@ MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
 # makra eksportu i bloki extern "C" nie są częścią dokumentacji
 PREDEFINED             = TPBRT_API= __cplusplus_DOXYGEN_SKIP
+# --- C++ wrapper: implementation helpers from tpbrt::detail are not part of the public API
+EXCLUDE_SYMBOLS        = tpbrt::detail tpbrt::detail::*
+BUILTIN_STL_SUPPORT    = YES
 
 # --- ostrzeżenia (TINYPBRT_DOCUMENTATION_WARN_UNDOCUMENTED=ON gdy API będzie już opisane)
 QUIET                  = YES

@@ -154,7 +154,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns texture type based on string value.
-	 * @param type_str String which is convertable to texture type.
+	 * @param type_str String which is convertible to texture type.
 	 * @param type_out Output texture type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_TEXTURE_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup texture-private
@@ -163,7 +163,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns texture class based on string value.
-	 * @param class_str String which is convertable to texture class.
+	 * @param class_str String which is convertible to texture class.
 	 * @param class_out Output texture class value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_TEXTURE_CLASS, TPBRT_ERROR_NONE).
 	 * @ingroup texture-private
@@ -172,7 +172,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns texture wrap based on string value.
-	 * @param wrap_str String which is convertable to texture wrap.
+	 * @param wrap_str String which is convertible to texture wrap.
 	 * @param wrap_out Output texture wrap value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_TEXTURE_WRAP, TPBRT_ERROR_NONE).
 	 * @ingroup texture-private
@@ -181,7 +181,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns texture filter based on string value.
-	 * @param filter_str String which is convertable to texture filter.
+	 * @param filter_str String which is convertible to texture filter.
 	 * @param filter_out Output texture filter value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_TEXTURE_FILTER, TPBRT_ERROR_NONE).
 	 * @ingroup texture-private
@@ -190,7 +190,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns texture encoding based on string value.
-	 * @param encoding_str String which is convertable to texture encoding.
+	 * @param encoding_str String which is convertible to texture encoding.
 	 * @param encoding_out Output texture encoding value.
 	 * @param gamma_val_out Possible gamma value if encoding is (gamma val).
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_TEXTURE_ENCODING, TPBRT_ERROR_NONE).
@@ -201,7 +201,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns texture mapping based on string value.
-	 * @param mapping_str String which is convertable to texture mapping.
+	 * @param mapping_str String which is convertible to texture mapping.
 	 * @param mapping_out Output texture mapping value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_TEXTURE_MAPPING, TPBRT_ERROR_NONE).
 	 * @ingroup texture-private

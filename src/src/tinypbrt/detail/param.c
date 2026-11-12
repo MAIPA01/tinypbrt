@@ -10,7 +10,7 @@
 #pragma region PARAM
 
 tpbrt_error_t tpbrt_param_type_from_string(const tpbrt_string_t type_str, tpbrt_param_type_t* const type_out) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_PARAM_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_PARAM_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("integer"),
 		TPBRT_STRING_INIT("float"),
 		TPBRT_STRING_INIT("point2"),
@@ -34,7 +34,7 @@ tpbrt_error_t tpbrt_param_type_from_string(const tpbrt_string_t type_str, tpbrt_
 		if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_PARAM_TYPE; }
 
 		for (tpbrt_param_type_t t = 0; t < TPBRT_PARAM_TYPE_MAX_NUM; ++t) {
-				if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(type_str, TypesStrs[t]) == TPBRT_TRUE) {
 					*type_out = t;
 					return TPBRT_ERROR_NONE;
 				}

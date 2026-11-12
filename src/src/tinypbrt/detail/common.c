@@ -3,6 +3,7 @@
 #include <tinypbrt/detail/common_internal.h>
 
 #include <tinypbrt/detail/error.h>
+#include <tinypbrt/detail/math_internal.h>
 
 #pragma region PARSING
 
@@ -68,17 +69,17 @@ tpbrt_bool_t tpbrt_read_string_value(const tpbrt_string_t value_str, tpbrt_strin
 }
 
 tpbrt_bool_t tpbrt_read_bool_value(const tpbrt_string_t value_str, tpbrt_bool_t* const out_val) {
-	static const tpbrt_string_t TRUE_STR  = TPBRT_STRING_INIT("true");
-	static const tpbrt_string_t FALSE_STR = TPBRT_STRING_INIT("false");
+	static const tpbrt_string_t TrueStr	 = TPBRT_STRING_INIT("true");
+	static const tpbrt_string_t FalseStr = TPBRT_STRING_INIT("false");
 
 		if (tpbrt_string_empty(value_str) == TPBRT_TRUE || value_str.size < 4u || out_val == TPBRT_NULL) { return TPBRT_FALSE; }
 
-		if (tpbrt_string_equals(value_str, TRUE_STR) == TPBRT_TRUE) {
+		if (tpbrt_string_equals(value_str, TrueStr) == TPBRT_TRUE) {
 			*out_val = TPBRT_TRUE;
 			return TPBRT_TRUE;
 		}
 
-		if (tpbrt_string_equals(value_str, FALSE_STR) == TPBRT_TRUE) {
+		if (tpbrt_string_equals(value_str, FalseStr) == TPBRT_TRUE) {
 			*out_val = TPBRT_FALSE;
 			return TPBRT_TRUE;
 		}
@@ -144,7 +145,7 @@ static void tpbrt_decimal_push_digit(tpbrt_decimal_t* const decimal, const tpbrt
  * @param cursor Current character.
  * @param end End character.
  * @param exponent Output exponent.
- * @return TPBRT_TRUE if successfull else TPBRT_FALSE.
+ * @return TPBRT_TRUE if successful, else TPBRT_FALSE.
  * @ingroup common-private
  */
 static tpbrt_bool_t tpbrt_decimal_read_exponent(const tpbrt_char_t** const cursor, const tpbrt_char_t* const end,
@@ -359,9 +360,9 @@ tpbrt_error_t tpbrt_string_copy(tpbrt_string_t* const dst, const tpbrt_string_t 
 	dst->data = malloc(sizeof(tpbrt_char_t) * (src.size + 1));
 		if (dst->data == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 
-	static const tpbrt_char_t NULL_TERMINATOR = '\0';
+	static const tpbrt_char_t NullTerminator = '\0';
 	memcpy((tpbrt_char_t*)dst->data, src.data, sizeof(tpbrt_char_t) * src.size);
-	memcpy((tpbrt_char_t*)(dst->data + src.size), &NULL_TERMINATOR, sizeof(tpbrt_char_t));
+	memcpy((tpbrt_char_t*)(dst->data + src.size), &NullTerminator, sizeof(tpbrt_char_t));
 	dst->size = src.size;
 
 	return TPBRT_ERROR_NONE;

@@ -6,6 +6,8 @@
 
 #include <tinypbrt/detail/coord.h>
 
+#include <string_view>
+
 namespace tpbrt {
 	/**
 	 * @defgroup coord-cpp-public Coordinates
@@ -16,7 +18,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_coord_system_type_t
 	 * @ingroup coord-cpp-public
 	 */
-	enum class coord_system_type : char_t {
+	enum class coord_system_type : uchar_t {
 		/// @copybrief TPBRT_COORD_SYSTEM_TYPE_CAMERA_WORLD
 		CAMERA_WORLD = TPBRT_COORD_SYSTEM_TYPE_CAMERA_WORLD,
 		/// @copybrief TPBRT_COORD_SYSTEM_TYPE_CAMERA

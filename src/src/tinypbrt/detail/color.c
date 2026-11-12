@@ -6,7 +6,7 @@
 #include <tinypbrt/detail/math_internal.h>
 
 tpbrt_error_t tpbrt_color_space_from_string(const tpbrt_string_t color_space_str, tpbrt_color_space_t* const color_space_out) {
-	static const tpbrt_string_t COLOR_SPACES_STRS[TPBRT_COLOR_SPACE_MAX_NUM] = {
+	static const tpbrt_string_t ColorSpacesStrs[TPBRT_COLOR_SPACE_MAX_NUM] = {
 		TPBRT_STRING_INIT("aces2065-1"),
 		TPBRT_STRING_INIT("rec2020"),
 		TPBRT_STRING_INIT("dci-p3"),
@@ -18,7 +18,7 @@ tpbrt_error_t tpbrt_color_space_from_string(const tpbrt_string_t color_space_str
 		if (tpbrt_string_empty(color_space_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_COLOR_SPACE; }
 
 		for (tpbrt_color_space_t cs = 0; cs < TPBRT_COLOR_SPACE_MAX_NUM; ++cs) {
-				if (tpbrt_string_equals(color_space_str, COLOR_SPACES_STRS[cs]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(color_space_str, ColorSpacesStrs[cs]) == TPBRT_TRUE) {
 					*color_space_out = cs;
 					return TPBRT_ERROR_NONE;
 				}
@@ -28,7 +28,7 @@ tpbrt_error_t tpbrt_color_space_from_string(const tpbrt_string_t color_space_str
 }
 
 tpbrt_error_t tpbrt_spectrum_builtin_from_string(const tpbrt_string_t builtin_str, tpbrt_spectrum_builtin_t* const builtin_out) {
-	static const tpbrt_string_t BUILTINS_STRS[TPBRT_SPECTRUM_BUILTIN_MAX_NUM] = {
+	static const tpbrt_string_t BuiltinsStrs[TPBRT_SPECTRUM_BUILTIN_MAX_NUM] = {
 		TPBRT_STRING_INIT("glass-BK7"),
 		TPBRT_STRING_INIT("glass-BAF10"),
 		TPBRT_STRING_INIT("glass-FK51A"),
@@ -73,7 +73,7 @@ tpbrt_error_t tpbrt_spectrum_builtin_from_string(const tpbrt_string_t builtin_st
 		if (tpbrt_string_empty(builtin_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_SPECTRUM_BUILTIN; }
 
 		for (tpbrt_spectrum_builtin_t b = 0; b < TPBRT_SPECTRUM_BUILTIN_MAX_NUM; ++b) {
-				if (tpbrt_string_equals(builtin_str, BUILTINS_STRS[b]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(builtin_str, BuiltinsStrs[b]) == TPBRT_TRUE) {
 					*builtin_out = b;
 					return TPBRT_ERROR_NONE;
 				}

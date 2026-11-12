@@ -172,7 +172,7 @@ extern "C" {
 				tpbrt_spectrum_t k;
 			} conductor;
 
-			/// @brief As an alternative to specifying the conductor's index of refraction and extinction coefficient, its average spectral reflectance can be specified instead; in this case plausible values for the index of refraction and extinction cofficient are found for rendering.
+			/// @brief As an alternative to specifying the conductor's index of refraction and extinction coefficient, its average spectral reflectance can be specified instead; in this case plausible values for the index of refraction and extinction coefficient are found for rendering.
 			tpbrt_spectrum_t reflectance;
 		} as;
 
@@ -239,7 +239,7 @@ extern "C" {
 	} tpbrt_material_diffuse_params_t;
 
 	/**
-	 * @brief Diffuse transmission material parameters
+	 * @brief Diffuse transmission material parameters.
 	 * @ingroup material-public
 	 */
 	typedef struct tpbrt_material_diffuse_transmission_params_t {

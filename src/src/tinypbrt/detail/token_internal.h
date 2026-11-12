@@ -148,7 +148,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns directive based on string value.
-	 * @param directive_str String which is convertable to directive.
+	 * @param directive_str String which is convertible to directive.
 	 * @param directive_out Output directive value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_DIRECTIVE, TPBRT_ERROR_NONE).
 	 * @ingroup token-private

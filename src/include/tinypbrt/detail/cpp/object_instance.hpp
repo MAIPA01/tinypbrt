@@ -18,21 +18,28 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_object_instance_t.
 	 * @ingroup object-instance-cpp-public
 	 */
-	struct object_instance : wrapper<object_instance, tpbrt_object_instance_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<object_handle, transform_animated>;
-
+	struct object_instance : detail::wrapper<object_instance, tpbrt_object_instance_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns object value.
-		[[nodiscard]] constexpr object_handle object() const noexcept { return _native.object; }
+		[[nodiscard]] constexpr object_handle object() const noexcept { return _native->object; }
 
 		/// @brief Returns transform value.
-		[[nodiscard]] constexpr transform_animated transform() const noexcept { return _native.transform; }
+		[[nodiscard]] constexpr transform_animated transform() const noexcept { return _native->transform; }
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(object(), transform()); }
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(object(), transform()); }
+	};
+
+	/**
+	 * @brief C++ wrapper for tpbrt_objects_instances_list_t.
+	 * @ingroup object-instance-cpp-public
+	 */
+	struct objects_instances_list
+		: array<tpbrt_objects_instances_list_t, object_instance, &tpbrt_objects_instances_list_t::instances> {
+		/// @brief Default array constructor.
+		using array::array;
 	};
 } // namespace tpbrt
 #endif // _TINYPBRT_OBJECT_INSTANCE_HPP_

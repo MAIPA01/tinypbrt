@@ -31,7 +31,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns material type based on string value.
-	 * @param type_str String which is convertable to material type.
+	 * @param type_str String which is convertible to material type.
 	 * @param type Output material type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_MATERIAL_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup material-private

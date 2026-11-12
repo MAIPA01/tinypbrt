@@ -131,7 +131,7 @@ extern "C" {
 		tpbrt_string_t file_name;
 		/// @brief Offset value that is added to the emission temperature, if present.
 		tpbrt_float_t temperature_offset;
-		/// @brief Scale factor applied to the ofsetted emission temperature to get a temperature in degrees kelvin before the blackbody emission is determined.
+		/// @brief Scale factor applied to the offset emission temperature to get a temperature in kelvin before the blackbody emission is determined.
 		tpbrt_float_t temperature_scale;
 		/// @brief Additional scale factor applied to the absorption and scattering cross sections.
 		tpbrt_float_t scale;
@@ -197,7 +197,7 @@ extern "C" {
 		tpbrt_float_array_t temperature;
 		/// @brief Offset value that is added to the emission temperature, if present.
 		tpbrt_float_t temperature_offset;
-		/// @brief Scale factor applied to the ofsetted emission temperature to get a temperature in degrees kelvin before the blackbody emission is determined.
+		/// @brief Scale factor applied to the offset emission temperature to get a temperature in kelvin before the blackbody emission is determined.
 		tpbrt_float_t temperature_scale;
 	} tpbrt_media_uniform_grid_params_t;
 

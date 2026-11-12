@@ -4,11 +4,7 @@
 
 #include <tinypbrt/detail/fwd.h>
 
-#include <tinypbrt/detail/object_instance.h>
-#include <tinypbrt/detail/shape.h>
-
-#include <optional>
-#include <variant>
+#include <cstdint>
 
 namespace tpbrt {
 #pragma region COMMON_DEFINES
@@ -16,53 +12,12 @@ namespace tpbrt {
 	 * @copybrief TPBRT_FALSE
 	 * @ingroup tinypbrt-cpp-public
 	 */
-	static constexpr auto False = TPBRT_FALSE;
+	inline constexpr auto False = TPBRT_FALSE;
 	/**
 	 * @copybrief TPBRT_TRUE
 	 * @ingroup tinypbrt-cpp-public
 	 */
-	static constexpr auto True	= TPBRT_TRUE;
-
-	namespace detail {
-		template<class T, class... Us>
-		constexpr bool is_type_in_v = (std::is_same_v<std::decay_t<T>, std::decay_t<Us>> || ...); // NOLINT
-
-		template<class TupleIn, class TupleOut>
-		struct _unique_types_impl;
-
-		template<class... Us>
-		struct _unique_types_impl<std::tuple<>, std::tuple<Us...>> {
-			using type = std::tuple<Us...>;
-		};
-
-		template<class T, class... Ts, class... Us>
-		struct _unique_types_impl<std::tuple<T, Ts...>, std::tuple<Us...>>
-			: _unique_types_impl<std::tuple<Ts...>,
-				std::conditional_t<is_type_in_v<T, Us...>, std::tuple<Us...>, std::tuple<Us..., std::decay_t<T>>>> {};
-
-		template<class T, class... Ts>
-		struct _unique_types_impl<std::tuple<T, Ts...>, std::tuple<>>
-			: _unique_types_impl<std::tuple<Ts...>, std::tuple<std::decay_t<T>>> {};
-
-		template<class... Ts>
-		using unique_types_t = _unique_types_impl<std::tuple<Ts...>, std::tuple<>>::type;
-
-		template<class T>
-		struct _optional_variant;
-
-		template<class... Ts>
-		struct _optional_variant<std::tuple<Ts...>> {
-			using type = std::optional<std::variant<Ts...>>;
-		};
-
-		/**
-		 * @brief Optional variant.
-		 * @tparam Ts Variant types.
-		 * @ingroup tinypbrt-cpp-public
-		 */
-		template<class... Ts>
-		using optional_variant = _optional_variant<unique_types_t<Ts...>>::type;
-	} // namespace detail
+	inline constexpr auto True	= TPBRT_TRUE;
 
 #pragma endregion
 
@@ -78,33 +33,45 @@ namespace tpbrt {
 	 */
 	using uchar_t = tpbrt_uchar_t;
 
-	/**
-	 * @brief Base wrapper struct.
-	 * @tparam Derived Derived C++ wrapper type.
-	 * @tparam Native Native C library type.
-	 * @ingroup common-cpp-public
-	 */
-	template<class Derived, class Native>
-	struct wrapper;
+	namespace detail {
+		/**
+		 * @brief Base of every C++ wrapper: a non owning view on a C struct (stores a pointer, so it is cheap to copy).
+		 * @tparam Derived Derived C++ wrapper type.
+		 * @tparam Native Native C library type.
+		 */
+		template<class Derived, class Native>
+		class wrapper;
 
-	/**
-	 * @brief Adds variant visitor and type.
-	 * @tparam Derived Derived C++ wrapper.
-	 * @tparam Ts Variant types.
-	 * @ingroup common-cpp-public
-	 */
-	template<class Derived, class... Ts>
-	struct with_variant;
+		/**
+		 * @brief Adds variant visitor and type.
+		 * @tparam Derived Derived C++ wrapper.
+		 * @tparam Ts Variant types (must be distinct).
+		 */
+		template<class Derived, class... Ts>
+		struct with_variant;
+
+		/**
+		 * @brief Base to all generic C++ array traits.
+		 * @tparam Native Type of C library native array type.
+		 * @tparam DataField Pointer to data field of array.
+		 */
+		template<class Native, auto DataField = nullptr>
+		struct array_traits;
+	} // namespace detail
 
 	/**
 	 * @brief Generic C++ array view with type conversion.
 	 * @tparam Native Type of C library native array type.
-	 * @tparam Element Desired array element type. (If not the same as NativeElement transformation will be performed).
+	 * @tparam Element Desired array element type (if not the same as the native element type, transformation is performed).
 	 * @tparam DataField Pointer to field with data.
 	 * @ingroup common-cpp-public
 	 */
 	template<class Native, class Element = void, auto DataField = nullptr>
 	struct array;
+
+	struct string;
+
+	struct string_array;
 #pragma endregion
 
 #pragma region MATH
@@ -168,42 +135,89 @@ namespace tpbrt {
 	 * @copybrief TPBRT_IDX_INVALID
 	 * @ingroup math-cpp-public
 	 */
-	static constexpr auto InvalidIdx = TPBRT_IDX_INVALID;
+	inline constexpr auto InvalidIdx = TPBRT_IDX_INVALID;
+
+
+	struct bool_array;
+
+	struct int_array;
+
+	struct uint_array;
+
+	struct float_array;
 
 
 	struct vec2;
 	/**
-	 * @brief C++ wrapper for tpbrt_point2_t
+	 * @brief C++ wrapper for tpbrt_point2_t.
 	 * @ingroup math-cpp-public
 	 */
 	using point2 = vec2;
 
 	struct vec3;
 	/**
-	 * @brief C++ wrapper for tpbrt_vec_t
+	 * @brief C++ wrapper for tpbrt_vec_t.
 	 * @ingroup math-cpp-public
 	 */
 	using vec	  = vec3;
 	/**
-	 * @brief C++ wrapper for tpbrt_point3_t
+	 * @brief C++ wrapper for tpbrt_point3_t.
 	 * @ingroup math-cpp-public
 	 */
 	using point3  = vec3;
 	/**
-	 * @brief C++ wrapper for tpbrt_point_t
+	 * @brief C++ wrapper for tpbrt_point_t.
 	 * @ingroup math-cpp-public
 	 */
 	using point	  = point3;
 	/**
-	 * @brief C++ wrapper for tpbrt_normal3_t
+	 * @brief C++ wrapper for tpbrt_normal3_t.
 	 * @ingroup math-cpp-public
 	 */
 	using normal3 = vec3;
 	/**
-	 * @brief C++ wrapper for tpbrt_normal_t
+	 * @brief C++ wrapper for tpbrt_normal_t.
 	 * @ingroup math-cpp-public
 	 */
 	using normal  = normal3;
+
+
+	struct vec2_array;
+
+	/**
+	 * @brief C++ wrapper for tpbrt_point2_array_t.
+	 * @ingroup math-cpp-public
+	 */
+	using point2_array = vec2_array;
+
+
+	struct vec3_array;
+
+	/**
+	 * @brief C++ wrapper for tpbrt_vec_array_t.
+	 * @ingroup math-cpp-public
+	 */
+	using vec_array		= vec3_array;
+	/**
+	 * @brief C++ wrapper for tpbrt_point3_array_t.
+	 * @ingroup math-cpp-public
+	 */
+	using point3_array	= vec3_array;
+	/**
+	 * @brief C++ wrapper for tpbrt_point_array_t.
+	 * @ingroup math-cpp-public
+	 */
+	using point_array	= point3_array;
+	/**
+	 * @brief C++ wrapper for tpbrt_normal3_array_t.
+	 * @ingroup math-cpp-public
+	 */
+	using normal3_array = vec3_array;
+	/**
+	 * @brief C++ wrapper for tpbrt_normal_array_t.
+	 * @ingroup math-cpp-public
+	 */
+	using normal_array	= normal3_array;
 
 
 	struct vec4;
@@ -223,7 +237,7 @@ namespace tpbrt {
 	 * @copybrief TPBRT_TRANSFORM_IDX_INVALID.
 	 * @ingroup transform-cpp-public
 	 */
-	static constexpr auto TransformInvalidIdx = TPBRT_TRANSFORM_IDX_INVALID;
+	inline constexpr auto TransformInvalidIdx = TPBRT_TRANSFORM_IDX_INVALID;
 
 	struct transforms_list;
 
@@ -242,7 +256,7 @@ namespace tpbrt {
 	 * @copybrief TPBRT_TEXTURE_IDX_INVALID
 	 * @ingroup texture-cpp-public
 	 */
-	static constexpr auto TextureInvalidIdx = TPBRT_TEXTURE_IDX_INVALID;
+	inline constexpr auto TextureInvalidIdx = TPBRT_TEXTURE_IDX_INVALID;
 
 	struct texture_handle;
 
@@ -254,15 +268,13 @@ namespace tpbrt {
 #pragma region SHAPE
 	struct shape;
 
-	/**
-	 * @brief C++ wrapper for tpbrt_shapes_list_t.
-	 * @ingroup shape-cpp-public
-	 */
-	using shapes_list = array<tpbrt_shapes_list_t, shape, &tpbrt_shapes_list_t::shapes>;
+	struct shapes_list;
 #pragma endregion
 
 #pragma region SCENE
-	struct scene;
+	struct scene_view;
+
+	class scene;
 #pragma endregion
 
 #pragma region SAMPLER
@@ -283,7 +295,7 @@ namespace tpbrt {
 	 * @copybrief TPBRT_OBJECT_IDX_INVALID
 	 * @ingroup object-cpp-public
 	 */
-	static constexpr auto ObjectInvalidIdx = TPBRT_OBJECT_IDX_INVALID;
+	inline constexpr auto ObjectInvalidIdx = TPBRT_OBJECT_IDX_INVALID;
 
 	struct object_handle;
 
@@ -295,12 +307,7 @@ namespace tpbrt {
 #pragma region OBJECT_INSTANCE
 	struct object_instance;
 
-	/**
-	 * @brief C++ wrapper for tpbrt_objects_instances_list_t.
-	 * @ingroup object-instance-cpp-public
-	 */
-	using objects_instances_list =
-	  array<tpbrt_objects_instances_list_t, object_instance, &tpbrt_objects_instances_list_t::instances>;
+	struct objects_instances_list;
 #pragma endregion
 
 #pragma region MEDIA
@@ -313,7 +320,7 @@ namespace tpbrt {
 	 * @copybrief TPBRT_MEDIA_IDX_INVALID
 	 * @ingroup media-cpp-public
 	 */
-	static constexpr auto MediaInvalidIdx = TPBRT_MEDIA_IDX_INVALID;
+	inline constexpr auto MediaInvalidIdx = TPBRT_MEDIA_IDX_INVALID;
 
 	struct medias_list;
 
@@ -332,7 +339,7 @@ namespace tpbrt {
 	 * @copybrief TPBRT_MATERIAL_IDX_INVALID
 	 * @ingroup material-cpp-public
 	 */
-	static constexpr auto MaterialInvalidIdx = TPBRT_MATERIAL_IDX_INVALID;
+	inline constexpr auto MaterialInvalidIdx = TPBRT_MATERIAL_IDX_INVALID;
 
 	struct material_handle;
 
@@ -353,7 +360,7 @@ namespace tpbrt {
 	 * @copybrief TPBRT_AREA_LIGHT_IDX_INVALID
 	 * @ingroup light-cpp-public
 	 */
-	static constexpr auto AreaLightInvalidIdx = TPBRT_AREA_LIGHT_IDX_INVALID;
+	inline constexpr auto AreaLightInvalidIdx = TPBRT_AREA_LIGHT_IDX_INVALID;
 
 
 	struct area_light_handle;
@@ -380,17 +387,13 @@ namespace tpbrt {
 #pragma region COLOR
 	struct wavelength;
 
-	/**
-	 * @copybrief tpbrt_blackbody_t
-	 * @ingroup color-cpp-public
-	 */
-	using blackbody = tpbrt_blackbody_t;
+	struct blackbody;
 
 	/**
-	 * @brief C++ wrapper for tpbrt_rgb_t
+	 * @brief C++ wrapper for tpbrt_rgb_t.
 	 * @ingroup color-cpp-public
 	 */
-	using rgb		= vec3;
+	using rgb = vec3;
 
 	struct spectrum;
 
@@ -401,7 +404,7 @@ namespace tpbrt {
 	using wavelength_array = array<tpbrt_wavelength_array_t, wavelength>;
 
 	/**
-	 * @brief C++ wrapper for tpbrt_rgb_array_t
+	 * @brief C++ wrapper for tpbrt_rgb_array_t.
 	 * @ingroup color-cpp-public
 	 */
 	using rgb_array		   = array<tpbrt_rgb_array_t, rgb>;

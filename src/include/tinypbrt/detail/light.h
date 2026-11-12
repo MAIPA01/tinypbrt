@@ -24,7 +24,7 @@ extern "C" {
 	 * @ingroup light-public
 	 */
 	typedef enum tpbrt_light_source_type_t {
-		/// @brief Distant light source. (Directional)
+		/// @brief Distant (directional) light source.
 		TPBRT_LIGHT_SOURCE_TYPE_DISTANT		= 0,
 		/// @brief Goniometric light source.
 		TPBRT_LIGHT_SOURCE_TYPE_GONIOMETRIC = 1,

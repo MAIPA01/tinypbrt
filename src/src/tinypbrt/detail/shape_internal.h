@@ -19,7 +19,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns shape type based on string value.
-	 * @param type_str String which is convertable to shape type.
+	 * @param type_str String which is convertible to shape type.
 	 * @param type Output shape type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_SHAPE_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup shape-private
@@ -28,7 +28,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns shape curve basis based on string value.
-	 * @param basis_str String which is convertable to shape curve basis.
+	 * @param basis_str String which is convertible to shape curve basis.
 	 * @param basis Output shape curve basis value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_SHAPE_CURVE_BASIS, TPBRT_ERROR_NONE).
 	 * @ingroup shape-private
@@ -37,7 +37,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns shape curve type based on string value.
-	 * @param type_str String which is convertable to shape curve type.
+	 * @param type_str String which is convertible to shape curve type.
 	 * @param type Output shape curve type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_SHAPE_CURVE_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup shape-private

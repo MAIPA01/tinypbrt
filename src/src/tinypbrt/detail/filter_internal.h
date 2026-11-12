@@ -19,7 +19,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns filter type based on string value.
-	 * @param type_str String which is convertable to filter type.
+	 * @param type_str String which is convertible to filter type.
 	 * @param type Output filter type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_FILTER_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup filter-private

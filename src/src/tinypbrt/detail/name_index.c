@@ -2,6 +2,8 @@
 
 #include <tinypbrt/detail/name_index_internal.h>
 
+#include <tinypbrt/detail/math_internal.h>
+
 #pragma region NAME_INDEX
 
 /**
@@ -32,14 +34,14 @@ static const tpbrt_string_t* tpbrt_name_index_name_at(const tpbrt_name_index_vie
  */
 static tpbrt_uint_t tpbrt_name_index_hash(const tpbrt_string_t name) {
 	// clang-format off
-		static const tpbrt_uint_t TPBRT_FNV1A_32_OFFSET_BASIS = 2166136261u;
-		static const tpbrt_uint_t TPBRT_FNV1A_32_PRIME		  = 16777619u;
+		static const tpbrt_uint_t FNV1A32OffsetBasis = 2166136261u;
+		static const tpbrt_uint_t FNV1A32Prime		  = 16777619u;
 	// clang-format on
 
-	tpbrt_uint_t hash = TPBRT_FNV1A_32_OFFSET_BASIS;
+	tpbrt_uint_t hash = FNV1A32OffsetBasis;
 		for (tpbrt_size_t i = 0u; i < name.size; ++i) {
 			hash ^= (tpbrt_uint_t)(tpbrt_uchar_t)name.data[i];
-			hash *= TPBRT_FNV1A_32_PRIME;
+			hash *= FNV1A32Prime;
 		}
 	return hash;
 }

@@ -6,7 +6,7 @@
 #include <tinypbrt/detail/param_internal.h>
 
 tpbrt_error_t tpbrt_filter_type_from_string(const tpbrt_string_t type_str, tpbrt_filter_type_t* const type) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_FILTER_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_FILTER_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("box"),
 		TPBRT_STRING_INIT("gaussian"),
 		TPBRT_STRING_INIT("mitchell"),
@@ -19,7 +19,7 @@ tpbrt_error_t tpbrt_filter_type_from_string(const tpbrt_string_t type_str, tpbrt
 		if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_FILTER_TYPE; }
 
 		for (tpbrt_filter_type_t t = 0; t < TPBRT_FILTER_TYPE_MAX_NUM; ++t) {
-				if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(type_str, TypesStrs[t]) == TPBRT_TRUE) {
 					*type = t;
 					return TPBRT_ERROR_NONE;
 				}
@@ -31,15 +31,15 @@ tpbrt_error_t tpbrt_filter_type_from_string(const tpbrt_string_t type_str, tpbrt
 tpbrt_error_t tpbrt_filter_init_default(tpbrt_filter_t* const filter) {
 		if (filter == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_float_t X_RADIUS_DEFAULT = 1.5f;
-	static const tpbrt_float_t Y_RADIUS_DEFAULT = 1.5f;
-	static const tpbrt_float_t SIGMA_DEFAULT	= 0.5f;
+	static const tpbrt_float_t XRadiusDefault = 1.5f;
+	static const tpbrt_float_t YRadiusDefault = 1.5f;
+	static const tpbrt_float_t SigmaDefault	  = 0.5f;
 
-	*filter										= (tpbrt_filter_t) {
+	*filter									  = (tpbrt_filter_t) {
 		.type			   = TPBRT_FILTER_TYPE_GAUSSIAN,
-		.x_radius		   = X_RADIUS_DEFAULT,
-		.y_radius		   = Y_RADIUS_DEFAULT,
-		.as.gaussian.sigma = SIGMA_DEFAULT,
+		.x_radius		   = XRadiusDefault,
+		.y_radius		   = YRadiusDefault,
+		.as.gaussian.sigma = SigmaDefault,
 	};
 	return TPBRT_ERROR_NONE;
 }
@@ -53,9 +53,9 @@ tpbrt_error_t tpbrt_filter_init_default(tpbrt_filter_t* const filter) {
 static tpbrt_error_t tpbrt_filter_read_box(tpbrt_float_t* const default_radius) {
 		if (default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_float_t BOX_RADIUS = 0.5f;
+	static const tpbrt_float_t BoxRadius = 0.5f;
 
-	*default_radius						  = BOX_RADIUS;
+	*default_radius						 = BoxRadius;
 	return TPBRT_ERROR_NONE;
 }
 
@@ -71,14 +71,14 @@ static tpbrt_error_t tpbrt_filter_read_gaussian(tpbrt_filter_gaussian_params_t* 
   const tpbrt_params_list_t* const params, tpbrt_float_t* const default_radius) {
 		if (gaussian == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t SIGMA_STR	   = TPBRT_STRING_INIT("sigma");
+	static const tpbrt_string_t SigmaStr	  = TPBRT_STRING_INIT("sigma");
 
-	static const tpbrt_float_t GAUSSIAN_RADIUS = 1.5f;
-	static const tpbrt_float_t SIGMA_DEFAULT   = 0.5f;
+	static const tpbrt_float_t GaussianRadius = 1.5f;
+	static const tpbrt_float_t SigmaDefault	  = 0.5f;
 
-	*default_radius							   = GAUSSIAN_RADIUS;
+	*default_radius							  = GaussianRadius;
 
-	return tpbrt_params_list_get_float(params, SIGMA_STR, SIGMA_DEFAULT, &gaussian->sigma);
+	return tpbrt_params_list_get_float(params, SigmaStr, SigmaDefault, &gaussian->sigma);
 }
 
 /**
@@ -93,19 +93,19 @@ static tpbrt_error_t tpbrt_filter_read_mitchell(tpbrt_filter_mitchell_params_t* 
   const tpbrt_params_list_t* const params, tpbrt_float_t* const default_radius) {
 		if (mitchell == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t B_STR		   = TPBRT_STRING_INIT("B");
-	static const tpbrt_string_t C_STR		   = TPBRT_STRING_INIT("C");
+	static const tpbrt_string_t BStr		  = TPBRT_STRING_INIT("B");
+	static const tpbrt_string_t CStr		  = TPBRT_STRING_INIT("C");
 
-	static const tpbrt_float_t MITCHELL_RADIUS = 2.f;
-	static const tpbrt_float_t B_DEFAULT	   = 1.f / 3.f;
-	static const tpbrt_float_t C_DEFAULT	   = 1.f / 3.f;
+	static const tpbrt_float_t MitchellRadius = 2.f;
+	static const tpbrt_float_t BDefault		  = 1.f / 3.f;
+	static const tpbrt_float_t CDefault		  = 1.f / 3.f;
 
-	*default_radius							   = MITCHELL_RADIUS;
+	*default_radius							  = MitchellRadius;
 
-	const tpbrt_error_t err					   = tpbrt_params_list_get_float(params, B_STR, B_DEFAULT, &mitchell->b);
+	const tpbrt_error_t err					  = tpbrt_params_list_get_float(params, BStr, BDefault, &mitchell->b);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_float(params, C_STR, C_DEFAULT, &mitchell->c);
+	return tpbrt_params_list_get_float(params, CStr, CDefault, &mitchell->c);
 }
 
 /**
@@ -120,14 +120,14 @@ static tpbrt_error_t tpbrt_filter_read_sinc(tpbrt_filter_sinc_params_t* const si
   tpbrt_float_t* const default_radius) {
 		if (sinc == TPBRT_NULL || default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t TAU_STR	   = TPBRT_STRING_INIT("tau");
+	static const tpbrt_string_t TauStr	  = TPBRT_STRING_INIT("tau");
 
-	static const tpbrt_float_t SINC_RADIUS = 4.f;
-	static const tpbrt_float_t TAU_DEFAULT = 3.f;
+	static const tpbrt_float_t SincRadius = 4.f;
+	static const tpbrt_float_t TauDefault = 3.f;
 
-	*default_radius						   = SINC_RADIUS;
+	*default_radius						  = SincRadius;
 
-	return tpbrt_params_list_get_float(params, TAU_STR, TAU_DEFAULT, &sinc->tau);
+	return tpbrt_params_list_get_float(params, TauStr, TauDefault, &sinc->tau);
 }
 
 /**
@@ -139,9 +139,9 @@ static tpbrt_error_t tpbrt_filter_read_sinc(tpbrt_filter_sinc_params_t* const si
 static tpbrt_error_t tpbrt_filter_read_triangle(tpbrt_float_t* const default_radius) {
 		if (default_radius == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_float_t TRIANGLE_RADIUS = 2.f;
+	static const tpbrt_float_t TriangleRadius = 2.f;
 
-	*default_radius							   = TRIANGLE_RADIUS;
+	*default_radius							  = TriangleRadius;
 	return TPBRT_ERROR_NONE;
 }
 
@@ -151,8 +151,8 @@ tpbrt_error_t tpbrt_filter_init(const tpbrt_string_t type, const tpbrt_params_li
 
 		if (memset(filter, 0, sizeof(tpbrt_filter_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t X_RADIUS_STR = TPBRT_STRING_INIT("xradius");
-	static const tpbrt_string_t Y_RADIUS_STR = TPBRT_STRING_INIT("yradius");
+	static const tpbrt_string_t XRadiusStr = TPBRT_STRING_INIT("xradius");
+	static const tpbrt_string_t YRadiusStr = TPBRT_STRING_INIT("yradius");
 
 	tpbrt_filter_type_t filter_type;
 	tpbrt_error_t err = tpbrt_filter_type_from_string(type, &filter_type);
@@ -186,9 +186,9 @@ tpbrt_error_t tpbrt_filter_init(const tpbrt_string_t type, const tpbrt_params_li
 
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, X_RADIUS_STR, default_radius, &filter->x_radius);
+	err = tpbrt_params_list_get_float(params, XRadiusStr, default_radius, &filter->x_radius);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 
-	return tpbrt_params_list_get_float(params, Y_RADIUS_STR, default_radius, &filter->y_radius);
+	return tpbrt_params_list_get_float(params, YRadiusStr, default_radius, &filter->y_radius);
 }

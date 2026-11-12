@@ -3,10 +3,11 @@
 #include <tinypbrt/detail/integrator_internal.h>
 
 #include <tinypbrt/detail/common_internal.h>
+#include <tinypbrt/detail/math_internal.h>
 #include <tinypbrt/detail/param_internal.h>
 
 tpbrt_error_t tpbrt_integrator_type_from_string(const tpbrt_string_t type_str, tpbrt_integrator_type_t* const type) {
-	static const tpbrt_string_t TYPES_STRS[TPBRT_INTEGRATOR_TYPE_MAX_NUM] = {
+	static const tpbrt_string_t TypesStrs[TPBRT_INTEGRATOR_TYPE_MAX_NUM] = {
 		TPBRT_STRING_INIT("ambientocclusion"),
 		TPBRT_STRING_INIT("bdpt"),
 		TPBRT_STRING_INIT("lightpath"),
@@ -24,7 +25,7 @@ tpbrt_error_t tpbrt_integrator_type_from_string(const tpbrt_string_t type_str, t
 		if (tpbrt_string_empty(type_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_INTEGRATOR_TYPE; }
 
 		for (tpbrt_integrator_type_t t = 0; t < TPBRT_INTEGRATOR_TYPE_MAX_NUM; ++t) {
-				if (tpbrt_string_equals(type_str, TYPES_STRS[t]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(type_str, TypesStrs[t]) == TPBRT_TRUE) {
 					*type = t;
 					return TPBRT_ERROR_NONE;
 				}
@@ -35,7 +36,7 @@ tpbrt_error_t tpbrt_integrator_type_from_string(const tpbrt_string_t type_str, t
 
 tpbrt_error_t tpbrt_integrator_light_sampler_from_string(const tpbrt_string_t sampler_str,
   tpbrt_integrator_light_sampler_t* const sampler) {
-	static const tpbrt_string_t SAMPLERS_STRS[TPBRT_INTEGRATOR_LIGHT_SAMPLER_MAX_NUM] = {
+	static const tpbrt_string_t SamplersStrs[TPBRT_INTEGRATOR_LIGHT_SAMPLER_MAX_NUM] = {
 		TPBRT_STRING_INIT("bvh"),
 		TPBRT_STRING_INIT("uniform"),
 		TPBRT_STRING_INIT("power"),
@@ -46,7 +47,7 @@ tpbrt_error_t tpbrt_integrator_light_sampler_from_string(const tpbrt_string_t sa
 		if (tpbrt_string_empty(sampler_str) == TPBRT_TRUE) { return TPBRT_ERROR_INVALID_INTEGRATOR_LIGHT_SAMPLER; }
 
 		for (tpbrt_integrator_light_sampler_t s = 0; s < TPBRT_INTEGRATOR_LIGHT_SAMPLER_MAX_NUM; ++s) {
-				if (tpbrt_string_equals(sampler_str, SAMPLERS_STRS[s]) == TPBRT_TRUE) {
+				if (tpbrt_string_equals(sampler_str, SamplersStrs[s]) == TPBRT_TRUE) {
 					*sampler = s;
 					return TPBRT_ERROR_NONE;
 				}
@@ -65,11 +66,11 @@ tpbrt_error_t tpbrt_integrator_light_sampler_from_string(const tpbrt_string_t sa
 static tpbrt_error_t tpbrt_integrator_read_max_depth(tpbrt_uint_t* const max_depth, const tpbrt_params_list_t* const params) {
 		if (max_depth == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t MAX_DEPTH_STR	= TPBRT_STRING_INIT("maxdepth");
+	static const tpbrt_string_t MaxDepthStr	  = TPBRT_STRING_INIT("maxdepth");
 
-	static const tpbrt_uint_t MAX_DEPTH_DEFAULT = 5u;
+	static const tpbrt_uint_t MaxDepthDefault = 5u;
 
-	return tpbrt_params_list_get_uint(params, MAX_DEPTH_STR, MAX_DEPTH_DEFAULT, max_depth);
+	return tpbrt_params_list_get_uint(params, MaxDepthStr, MaxDepthDefault, max_depth);
 }
 
 /**
@@ -82,11 +83,11 @@ static tpbrt_error_t tpbrt_integrator_read_max_depth(tpbrt_uint_t* const max_dep
 static tpbrt_error_t tpbrt_integrator_read_regularize(tpbrt_bool_t* const regularize, const tpbrt_params_list_t* const params) {
 		if (regularize == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t REGULARIZE_STR	 = TPBRT_STRING_INIT("regularize");
+	static const tpbrt_string_t RegularizeStr	= TPBRT_STRING_INIT("regularize");
 
-	static const tpbrt_bool_t REGULARIZE_DEFAULT = TPBRT_FALSE;
+	static const tpbrt_bool_t RegularizeDefault = TPBRT_FALSE;
 
-	return tpbrt_params_list_get_bool(params, REGULARIZE_STR, REGULARIZE_DEFAULT, regularize);
+	return tpbrt_params_list_get_bool(params, RegularizeStr, RegularizeDefault, regularize);
 }
 
 /**
@@ -100,12 +101,12 @@ static tpbrt_error_t tpbrt_integrator_read_light_sampler(tpbrt_integrator_light_
   const tpbrt_params_list_t* const params) {
 		if (light_sampler == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t LIGHT_SAMPLER_STR	  = TPBRT_STRING_INIT("lightsampler");
+	static const tpbrt_string_t LightSamplerStr		= TPBRT_STRING_INIT("lightsampler");
 
-	static const tpbrt_string_t LIGHT_SAMPLER_DEFAULT = TPBRT_EMPTY_STRING_INIT;
+	static const tpbrt_string_t LightSamplerDefault = TPBRT_EMPTY_STRING_INIT;
 
 	tpbrt_string_t sampler_str;
-	tpbrt_error_t err = tpbrt_params_list_get_string(params, LIGHT_SAMPLER_STR, LIGHT_SAMPLER_DEFAULT, &sampler_str);
+	tpbrt_error_t err = tpbrt_params_list_get_string(params, LightSamplerStr, LightSamplerDefault, &sampler_str);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 		if (tpbrt_string_empty(sampler_str) == TPBRT_TRUE) {
@@ -120,7 +121,7 @@ static tpbrt_error_t tpbrt_integrator_read_light_sampler(tpbrt_integrator_light_
 
 /**
  * @brief Reads ambient occlusion parameters.
- * @param ambient_occlusion Ambien occlusion data.
+ * @param ambient_occlusion Ambient occlusion data.
  * @param params Parameters list.
  * @return Error code (possible errors TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_NONE).
  * @ingroup integrator-private
@@ -129,18 +130,18 @@ static tpbrt_error_t tpbrt_integrator_read_ambient_occlusion(tpbrt_integrator_am
   const tpbrt_params_list_t* const params) {
 		if (ambient_occlusion == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t COS_SAMPLE_STR		= TPBRT_STRING_INIT("cossample");
-	static const tpbrt_string_t MAX_DISTANCE_STR	= TPBRT_STRING_INIT("maxdistance");
+	static const tpbrt_string_t CosSampleStr	  = TPBRT_STRING_INIT("cossample");
+	static const tpbrt_string_t MaxDistanceStr	  = TPBRT_STRING_INIT("maxdistance");
 
-	static const tpbrt_bool_t COS_SAMPLE_DEFAULT	= TPBRT_TRUE;
-	static const tpbrt_float_t MAX_DISTANCE_DEFAULT = TPBRT_INFINITY;
+	static const tpbrt_bool_t CosSampleDefault	  = TPBRT_TRUE;
+	static const tpbrt_float_t MaxDistanceDefault = TPBRT_INFINITY;
 
 	tpbrt_bool_t cos_sample;
-	const tpbrt_error_t err = tpbrt_params_list_get_bool(params, COS_SAMPLE_STR, COS_SAMPLE_DEFAULT, &cos_sample);
+	const tpbrt_error_t err = tpbrt_params_list_get_bool(params, CosSampleStr, CosSampleDefault, &cos_sample);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	ambient_occlusion->cos_sample = cos_sample;
 
-	return tpbrt_params_list_get_float(params, MAX_DISTANCE_STR, MAX_DISTANCE_DEFAULT, &ambient_occlusion->max_distance);
+	return tpbrt_params_list_get_float(params, MaxDistanceStr, MaxDistanceDefault, &ambient_occlusion->max_distance);
 }
 
 /**
@@ -154,13 +155,13 @@ static tpbrt_error_t tpbrt_integrator_read_bdpt(tpbrt_integrator_bdpt_params_t* 
   const tpbrt_params_list_t* const params) {
 		if (bdpt == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t VISUALIZE_STRATEGIES_STR   = TPBRT_STRING_INIT("visualizestrategies");
-	static const tpbrt_string_t VISUALIZE_WEIGHTS_STR	   = TPBRT_STRING_INIT("visualizeweights");
+	static const tpbrt_string_t VisualizeStrategiesStr	 = TPBRT_STRING_INIT("visualizestrategies");
+	static const tpbrt_string_t VisualizeWeightsStr		 = TPBRT_STRING_INIT("visualizeweights");
 
-	static const tpbrt_bool_t VISUALIZE_STRATEGIES_DEFAULT = TPBRT_FALSE;
-	static const tpbrt_bool_t VISUALIZE_WEIGHTS_DEFAULT	   = TPBRT_FALSE;
+	static const tpbrt_bool_t VisualizeStrategiesDefault = TPBRT_FALSE;
+	static const tpbrt_bool_t VisualizeWeightsDefault	 = TPBRT_FALSE;
 
-	tpbrt_error_t err									   = tpbrt_integrator_read_max_depth(&bdpt->max_depth, params);
+	tpbrt_error_t err									 = tpbrt_integrator_read_max_depth(&bdpt->max_depth, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	tpbrt_bool_t temp;
@@ -168,11 +169,11 @@ static tpbrt_error_t tpbrt_integrator_read_bdpt(tpbrt_integrator_bdpt_params_t* 
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	bdpt->regularize = temp;
 
-	err				 = tpbrt_params_list_get_bool(params, VISUALIZE_STRATEGIES_STR, VISUALIZE_STRATEGIES_DEFAULT, &temp);
+	err				 = tpbrt_params_list_get_bool(params, VisualizeStrategiesStr, VisualizeStrategiesDefault, &temp);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	bdpt->visualize_strategies = temp;
 
-	err						   = tpbrt_params_list_get_bool(params, VISUALIZE_WEIGHTS_STR, VISUALIZE_WEIGHTS_DEFAULT, &temp);
+	err						   = tpbrt_params_list_get_bool(params, VisualizeWeightsStr, VisualizeWeightsDefault, &temp);
 	bdpt->visualize_weights	   = temp;
 
 	return err;
@@ -203,19 +204,19 @@ static tpbrt_error_t tpbrt_integrator_read_mlt(tpbrt_integrator_mlt_params_t* co
   const tpbrt_params_list_t* const params) {
 		if (mlt == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t BOOTSTRAP_SAMPLES_STR		  = TPBRT_STRING_INIT("bootstrapsamples");
-	static const tpbrt_string_t CHAINS_STR					  = TPBRT_STRING_INIT("chains");
-	static const tpbrt_string_t MUTATIONS_PER_PIXEL_STR		  = TPBRT_STRING_INIT("mutationsperpixel");
-	static const tpbrt_string_t LARGE_STEP_PROBABILITY_STR	  = TPBRT_STRING_INIT("largestepprobability");
-	static const tpbrt_string_t SIGMA_STR					  = TPBRT_STRING_INIT("sigma");
+	static const tpbrt_string_t BootstrapSamplesStr		   = TPBRT_STRING_INIT("bootstrapsamples");
+	static const tpbrt_string_t ChainsStr				   = TPBRT_STRING_INIT("chains");
+	static const tpbrt_string_t MutationsPerPixelStr	   = TPBRT_STRING_INIT("mutationsperpixel");
+	static const tpbrt_string_t LargeStepProbabilityStr	   = TPBRT_STRING_INIT("largestepprobability");
+	static const tpbrt_string_t SigmaStr				   = TPBRT_STRING_INIT("sigma");
 
-	static const tpbrt_uint_t BOOTSTRAP_SAMPLES_DEFAULT		  = 100u * 1000u;
-	static const tpbrt_uint_t CHAINS_DEFAULT				  = 1000u;
-	static const tpbrt_uint_t MUTATIONS_PER_PIXEL_DEFAULT	  = 100u;
-	static const tpbrt_float_t LARGE_STEP_PROBABILITY_DEFAULT = 0.3f;
-	static const tpbrt_float_t SIGMA_DEFAULT				  = 0.01f;
+	static const tpbrt_uint_t BootstrapSamplesDefault	   = 100u * 1000u;
+	static const tpbrt_uint_t ChainsDefault				   = 1000u;
+	static const tpbrt_uint_t MutationsPerPixelDefault	   = 100u;
+	static const tpbrt_float_t LargeStepProbabilityDefault = 0.3f;
+	static const tpbrt_float_t SigmaDefault				   = 0.01f;
 
-	tpbrt_error_t err										  = tpbrt_integrator_read_max_depth(&mlt->max_depth, params);
+	tpbrt_error_t err									   = tpbrt_integrator_read_max_depth(&mlt->max_depth, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	tpbrt_bool_t regularize;
@@ -223,20 +224,19 @@ static tpbrt_error_t tpbrt_integrator_read_mlt(tpbrt_integrator_mlt_params_t* co
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	mlt->regularize = regularize;
 
-	err = tpbrt_params_list_get_uint(params, BOOTSTRAP_SAMPLES_STR, BOOTSTRAP_SAMPLES_DEFAULT, &mlt->bootstrap_samples);
+	err				= tpbrt_params_list_get_uint(params, BootstrapSamplesStr, BootstrapSamplesDefault, &mlt->bootstrap_samples);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, CHAINS_STR, CHAINS_DEFAULT, &mlt->chains);
+	err = tpbrt_params_list_get_uint(params, ChainsStr, ChainsDefault, &mlt->chains);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_uint(params, MUTATIONS_PER_PIXEL_STR, MUTATIONS_PER_PIXEL_DEFAULT, &mlt->mutations_per_pixel);
+	err = tpbrt_params_list_get_uint(params, MutationsPerPixelStr, MutationsPerPixelDefault, &mlt->mutations_per_pixel);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, LARGE_STEP_PROBABILITY_STR, LARGE_STEP_PROBABILITY_DEFAULT,
-	  &mlt->large_step_probability);
+	err = tpbrt_params_list_get_float(params, LargeStepProbabilityStr, LargeStepProbabilityDefault, &mlt->large_step_probability);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_float(params, SIGMA_STR, SIGMA_DEFAULT, &mlt->sigma);
+	return tpbrt_params_list_get_float(params, SigmaStr, SigmaDefault, &mlt->sigma);
 }
 
 /**
@@ -291,21 +291,21 @@ static tpbrt_error_t tpbrt_integrator_read_simple_path(tpbrt_integrator_simple_p
   const tpbrt_params_list_t* const params) {
 		if (simple_path == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t SAMPLE_BSDF_STR		= TPBRT_STRING_INIT("samplebsdf");
-	static const tpbrt_string_t SAMPLE_LIGHTS_STR	= TPBRT_STRING_INIT("samplelights");
+	static const tpbrt_string_t SampleBsdfStr	  = TPBRT_STRING_INIT("samplebsdf");
+	static const tpbrt_string_t SampleLightsStr	  = TPBRT_STRING_INIT("samplelights");
 
-	static const tpbrt_bool_t SAMPLE_BSDF_DEFAULT	= TPBRT_TRUE;
-	static const tpbrt_bool_t SAMPLE_LIGHTS_DEFAULT = TPBRT_TRUE;
+	static const tpbrt_bool_t SampleBsdfDefault	  = TPBRT_TRUE;
+	static const tpbrt_bool_t SampleLightsDefault = TPBRT_TRUE;
 
-	tpbrt_error_t err								= tpbrt_integrator_read_max_depth(&simple_path->max_depth, params);
+	tpbrt_error_t err							  = tpbrt_integrator_read_max_depth(&simple_path->max_depth, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
 	tpbrt_bool_t temp;
-	err = tpbrt_params_list_get_bool(params, SAMPLE_BSDF_STR, SAMPLE_BSDF_DEFAULT, &temp);
+	err = tpbrt_params_list_get_bool(params, SampleBsdfStr, SampleBsdfDefault, &temp);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 	simple_path->sample_bsdf   = temp;
 
-	err						   = tpbrt_params_list_get_bool(params, SAMPLE_LIGHTS_STR, SAMPLE_LIGHTS_DEFAULT, &temp);
+	err						   = tpbrt_params_list_get_bool(params, SampleLightsStr, SampleLightsDefault, &temp);
 	simple_path->sample_lights = temp;
 
 	return err;
@@ -336,25 +336,24 @@ static tpbrt_error_t tpbrt_integrator_read_sppm(tpbrt_integrator_sppm_params_t* 
   const tpbrt_params_list_t* const params) {
 		if (sppm == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_string_t PHOTONS_PER_ITERATION_STR  = TPBRT_STRING_INIT("photonsperiteration");
-	static const tpbrt_string_t RADIUS_STR				   = TPBRT_STRING_INIT("radius");
-	static const tpbrt_string_t SEED_STR				   = TPBRT_STRING_INIT("seed");
+	static const tpbrt_string_t PhotonsPerIterationStr	= TPBRT_STRING_INIT("photonsperiteration");
+	static const tpbrt_string_t RadiusStr				= TPBRT_STRING_INIT("radius");
+	static const tpbrt_string_t SeedStr					= TPBRT_STRING_INIT("seed");
 
-	static const tpbrt_int_t PHOTONS_PER_ITERATION_DEFAULT = -1;
-	static const tpbrt_float_t RADIUS_DEFAULT			   = 1.0f;
-	static const tpbrt_int_t SEED_DEFAULT				   = 0;
+	static const tpbrt_int_t PhotonsPerIterationDefault = -1;
+	static const tpbrt_float_t RadiusDefault			= 1.0f;
+	static const tpbrt_int_t SeedDefault				= 0;
 
-	tpbrt_error_t err									   = tpbrt_integrator_read_max_depth(&sppm->max_depth, params);
+	tpbrt_error_t err									= tpbrt_integrator_read_max_depth(&sppm->max_depth, params);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err =
-	  tpbrt_params_list_get_int(params, PHOTONS_PER_ITERATION_STR, PHOTONS_PER_ITERATION_DEFAULT, &sppm->photons_per_iteration);
+	err = tpbrt_params_list_get_int(params, PhotonsPerIterationStr, PhotonsPerIterationDefault, &sppm->photons_per_iteration);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	err = tpbrt_params_list_get_float(params, RADIUS_STR, RADIUS_DEFAULT, &sppm->radius);
+	err = tpbrt_params_list_get_float(params, RadiusStr, RadiusDefault, &sppm->radius);
 		if (err != TPBRT_ERROR_NONE) { return err; }
 
-	return tpbrt_params_list_get_int(params, SEED_STR, SEED_DEFAULT, &sppm->seed);
+	return tpbrt_params_list_get_int(params, SeedStr, SeedDefault, &sppm->seed);
 }
 
 /**
@@ -388,12 +387,12 @@ tpbrt_error_t tpbrt_integrator_init_default(tpbrt_integrator_t* const integrator
 
 		if (memset(integrator, 0, sizeof(tpbrt_integrator_t)) == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_uint_t MAX_DEPTH_DEFAULT = 5u;
+	static const tpbrt_uint_t MaxDepthDefault = 5u;
 
-	integrator->type							= TPBRT_INTEGRATOR_TYPE_VOL_PATH;
+	integrator->type						  = TPBRT_INTEGRATOR_TYPE_VOL_PATH;
 
-	integrator->as.vol_path.max_depth			= MAX_DEPTH_DEFAULT;
-	integrator->as.vol_path.light_sampler		= TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
+	integrator->as.vol_path.max_depth		  = MaxDepthDefault;
+	integrator->as.vol_path.light_sampler	  = TPBRT_INTEGRATOR_LIGHT_SAMPLER_BVH;
 
 	return TPBRT_ERROR_NONE;
 }

@@ -22,7 +22,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_color_space_t
 	 * @ingroup color-cpp-public
 	 */
-	enum class color_space : char_t {
+	enum class color_space : uchar_t {
 		/// @copybrief TPBRT_COLOR_SPACE_ACES_2065_1
 		ACES_2065_1 = TPBRT_COLOR_SPACE_ACES_2065_1,
 		/// @copybrief TPBRT_COLOR_SPACE_REC_2020
@@ -57,7 +57,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_spectrum_type_t
 	 * @ingroup color-cpp-public
 	 */
-	enum class spectrum_type : char_t {
+	enum class spectrum_type : uchar_t {
 		/// @copybrief TPBRT_SPECTRUM_TYPE_WAVELENGTHS
 		WAVELENGTHS = TPBRT_SPECTRUM_TYPE_WAVELENGTHS,
 		/// @copybrief TPBRT_SPECTRUM_TYPE_RGB
@@ -98,28 +98,25 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_wavelength_t.
 	 * @ingroup color-cpp-public
 	 */
-	struct wavelength : wrapper<wavelength, tpbrt_wavelength_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<float_t, float_t>;
-
+	struct wavelength : detail::wrapper<wavelength, tpbrt_wavelength_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns wavelength value.
-		[[nodiscard]] constexpr float_t lambda() const noexcept { return _native.wavelength; }
+		[[nodiscard]] constexpr float_t lambda() const noexcept { return _native->wavelength; }
 
 		/// @brief Returns value value.
-		[[nodiscard]] constexpr float_t value() const noexcept { return _native.value; }
+		[[nodiscard]] constexpr float_t value() const noexcept { return _native->value; }
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(lambda(), value()); }
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(lambda(), value()); }
 	};
 
 	/**
 	 * @copybrief tpbrt_spectrum_builtin_t
 	 * @ingroup color-cpp-public
 	 */
-	enum class spectrum_builtin : char_t {
+	enum class spectrum_builtin : uchar_t {
 		/// @copybrief TPBRT_SPECTRUM_BUILTIN_GLASS_BK7
 		GLASS_BK7		= TPBRT_SPECTRUM_BUILTIN_GLASS_BK7,
 		/// @copybrief TPBRT_SPECTRUM_BUILTIN_GLASS_BAF10
@@ -250,92 +247,108 @@ namespace tpbrt {
 	}
 
 	/**
+	 * @brief C++ wrapper for tpbrt_blackbody_t (a separate type, so a blackbody spectrum is not confused with a constant one
+	 * when visiting the spectrum variant - in C both are tpbrt_float_t).
+	 * @ingroup color-cpp-public
+	 */
+	struct blackbody : detail::wrapper<blackbody, tpbrt_blackbody_t> {
+		/// @brief Default wrapper constructor.
+		using wrapper::wrapper;
+
+		/// @brief Returns blackbody temperature in Kelvin.
+		[[nodiscard]] constexpr float_t temperature() const noexcept { return *_native; }
+
+		/// @brief Conversion to tuple.
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(temperature()); }
+	};
+
+	/**
 	 * @brief C++ wrapper for tpbrt_spectrum_t.
 	 * @ingroup color-cpp-public
 	 */
-	struct spectrum : wrapper<spectrum, tpbrt_spectrum_t>,
-					  with_variant<spectrum, wavelength_array, rgb, blackbody, string, spectrum_builtin, float_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<variant_type, spectrum_type>;
-
+	struct spectrum : detail::wrapper<spectrum, tpbrt_spectrum_t>,
+					  detail::with_variant<spectrum, wavelength_array, rgb, blackbody, string, spectrum_builtin, float_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns type value.
-		[[nodiscard]] constexpr spectrum_type type() const noexcept { return static_cast<spectrum_type>(_native.type); }
+		[[nodiscard]] constexpr spectrum_type type() const noexcept { return static_cast<spectrum_type>(_native->type); }
 
-		/// @brief Returns if type is wavelengths.
+		/// @brief Returns true if type is wavelengths.
 		[[nodiscard]] constexpr bool_t is_wavelengths() const noexcept { return type() == spectrum_type::WAVELENGTHS; }
 
-		/// @brief Returns if type is rgb.
+		/// @brief Returns true if type is rgb.
 		[[nodiscard]] constexpr bool_t is_rgb() const noexcept { return type() == spectrum_type::RGB; }
 
-		/// @brief Returns if type is blackbody.
+		/// @brief Returns true if type is blackbody.
 		[[nodiscard]] constexpr bool_t is_blackbody() const noexcept { return type() == spectrum_type::BLACKBODY; }
 
-		/// @brief Returns if type is file.
+		/// @brief Returns true if type is file.
 		[[nodiscard]] constexpr bool_t is_file() const noexcept { return type() == spectrum_type::FILE; }
 
-		/// @brief Returns if type is builtin.
+		/// @brief Returns true if type is builtin.
 		[[nodiscard]] constexpr bool_t is_builtin() const noexcept { return type() == spectrum_type::BUILTIN; }
 
-		/// @brief Returns if type is constant.
+		/// @brief Returns true if type is constant.
 		[[nodiscard]] constexpr bool_t is_constant() const noexcept { return type() == spectrum_type::CONSTANT; }
 
 		/// @brief Returns spectrum value as wavelengths.
 		[[nodiscard]] constexpr std::optional<wavelength_array> as_wavelengths() const noexcept {
 				if (!is_wavelengths()) { return std::nullopt; }
-			return _native.as.wavelengths;
+			return _native->as.wavelengths;
 		}
 
 		/// @brief Returns spectrum value as rgb.
 		[[nodiscard]] constexpr std::optional<rgb> as_rgb() const noexcept {
 				if (!is_rgb()) { return std::nullopt; }
-			return _native.as.rgb;
+			return _native->as.rgb;
 		}
 
 		/// @brief Returns spectrum value as blackbody.
 		[[nodiscard]] constexpr std::optional<blackbody> as_blackbody() const noexcept {
 				if (!is_blackbody()) { return std::nullopt; }
-			return _native.as.blackbody;
+			return _native->as.blackbody;
 		}
 
 		/// @brief Returns spectrum value as file.
 		[[nodiscard]] constexpr std::optional<string> as_file() const noexcept {
 				if (!is_file()) { return std::nullopt; }
-			return _native.as.file_name;
+			return _native->as.file_name;
 		}
 
 		/// @brief Returns spectrum value as builtin.
 		[[nodiscard]] constexpr std::optional<spectrum_builtin> as_builtin() const noexcept {
 				if (!is_builtin()) { return std::nullopt; }
-			return static_cast<spectrum_builtin>(_native.as.builtin);
+			return static_cast<spectrum_builtin>(_native->as.builtin);
 		}
 
 		/// @brief Returns spectrum value as constant.
 		[[nodiscard]] constexpr std::optional<float_t> as_constant() const noexcept {
 				if (!is_constant()) { return std::nullopt; }
-			return _native.as.constant;
+			return _native->as.constant;
 		}
 
 		/// @brief Conversion to variant.
 		[[nodiscard]] constexpr variant_type to_variant() const noexcept {
 			using enum spectrum_type;
 				switch (type()) {
-				case WAVELENGTHS: return _native.as.wavelengths;
-				case RGB:		  return _native.as.rgb;
-				case BLACKBODY:	  return _native.as.blackbody;
-				case FILE:		  return _native.as.file_name;
-				case BUILTIN:	  return static_cast<spectrum_builtin>(_native.as.builtin);
-				case CONSTANT:	  return _native.as.constant;
-				case MAX_NUM:	  [[fallthrough]];
-				default:		  break;
+				case WAVELENGTHS: return _native->as.wavelengths;
+				case RGB:		  return _native->as.rgb;
+				case BLACKBODY:
+					return blackbody(
+					  _native->as.blackbody
+					); // float in C: without the explicit type the variant would pick float_t
+				case FILE:	   return _native->as.file_name;
+				case BUILTIN:  return static_cast<spectrum_builtin>(_native->as.builtin);
+				case CONSTANT: return _native->as.constant;
+				case MAX_NUM:  [[fallthrough]];
+				default:	   break;
 				}
 			return std::nullopt;
 		}
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(to_variant(), type()); }
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(to_variant(), type()); }
 	};
 } // namespace tpbrt
 #endif // _TINYPBRT_COLOR_HPP_

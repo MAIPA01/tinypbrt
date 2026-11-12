@@ -41,7 +41,7 @@ extern "C" {
 		tpbrt_bool_t force_diffuse				   : 1;
 		/// @brief Write out images after rendering that encode per-pixel statistics including time spent rendering each pixel and any other per-pixel statistics added using STAT_PIXEL_COUNTER or STAT_PIXEL_RATIO in the pbrt source code.
 		tpbrt_bool_t pixel_stats				   : 1;
-		/// @brief Enables the "wavefront" integrator (i.e., the integrator used for GPU rendering, but running on the CPU.)
+		/// @brief Enables the "wavefront" integrator (i.e., the integrator used for GPU rendering, but running on the CPU).
 		tpbrt_bool_t wavefront					   : 1;
 	} tpbrt_options_t;
 

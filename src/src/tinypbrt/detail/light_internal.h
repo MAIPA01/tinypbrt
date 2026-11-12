@@ -18,7 +18,7 @@ extern "C" {
 #pragma region LIGHT_SOURCE
 	/**
 	 * @brief Returns light source type based on string value.
-	 * @param type_str String which is convertable to light source type.
+	 * @param type_str String which is convertible to light source type.
 	 * @param type Output light source type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_LIGHT_SOURCE_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup light-private
@@ -62,7 +62,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns area light type based on string value.
-	 * @param type_str String which is convertable to area light type.
+	 * @param type_str String which is convertible to area light type.
 	 * @param type Output area light type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_AREA_LIGHT_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup light-private

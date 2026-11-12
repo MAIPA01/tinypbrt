@@ -19,7 +19,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns accelerator type based on string value.
-	 * @param type_str String which is convertable to accelerator type.
+	 * @param type_str String which is convertible to accelerator type.
 	 * @param type Output accelerator type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_ACCELERATOR_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup accelerator-private
@@ -28,7 +28,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns bvh split method based on string value.
-	 * @param method_str String which is convertable to bvh split method.
+	 * @param method_str String which is convertible to bvh split method.
 	 * @param method Output bvh split method value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_ACCELERATOR_BVH_SPLIT_METHOD, TPBRT_ERROR_NONE).
 	 * @ingroup accelerator-private

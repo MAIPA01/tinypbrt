@@ -18,7 +18,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_sampler_type_t
 	 * @ingroup sampler-cpp-public
 	 */
-	enum class sampler_type : char_t {
+	enum class sampler_type : uchar_t {
 		/// @copybrief TPBRT_SAMPLER_TYPE_HALTON
 		HALTON		 = TPBRT_SAMPLER_TYPE_HALTON,
 		/// @copybrief TPBRT_SAMPLER_TYPE_INDEPENDENT
@@ -59,7 +59,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_sampler_type_t
 	 * @ingroup sampler-cpp-public
 	 */
-	enum class sampler_random : char_t {
+	enum class sampler_random : uchar_t {
 		/// @copybrief TPBRT_SAMPLER_RANDOM_NONE
 		NONE		   = TPBRT_SAMPLER_RANDOM_NONE,
 		/// @copybrief TPBRT_SAMPLER_RANDOM_PERMUTE_DIGITS
@@ -94,229 +94,198 @@ namespace tpbrt {
 	 * @brief C++ wrapper for tpbrt_sampler_halton_params_t.
 	 * @ingroup sampler-cpp-public
 	 */
-	struct sampler_halton_params : wrapper<sampler_halton_params, tpbrt_sampler_halton_params_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<uint_t, sampler_random>;
-
+	struct sampler_halton_params : detail::wrapper<sampler_halton_params, tpbrt_sampler_halton_params_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns pixel_samples value.
-		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native.pixel_samples; }
+		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native->pixel_samples; }
 
 		/// @brief Returns randomization value.
 		[[nodiscard]] constexpr sampler_random randomization() const noexcept {
-			return static_cast<sampler_random>(_native.randomization);
+			return static_cast<sampler_random>(_native->randomization);
 		}
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-			return std::make_tuple(pixel_samples(), randomization());
-		}
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(pixel_samples(), randomization()); }
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_sampler_independent_params_t.
 	 * @ingroup sampler-cpp-public
 	 */
-	struct sampler_independent_params : wrapper<sampler_independent_params, tpbrt_sampler_independent_params_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<uint_t>;
-
+	struct sampler_independent_params : detail::wrapper<sampler_independent_params, tpbrt_sampler_independent_params_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns pixel_samples value.
-		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native.pixel_samples; }
+		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native->pixel_samples; }
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(pixel_samples()); }
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(pixel_samples()); }
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_sampler_padded_sobol_params_t.
 	 * @ingroup sampler-cpp-public
 	 */
-	struct sampler_padded_sobol_params : wrapper<sampler_padded_sobol_params, tpbrt_sampler_padded_sobol_params_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<uint_t, sampler_random>;
-
+	struct sampler_padded_sobol_params : detail::wrapper<sampler_padded_sobol_params, tpbrt_sampler_padded_sobol_params_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns pixel_samples value.
-		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native.pixel_samples; }
+		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native->pixel_samples; }
 
 		/// @brief Returns randomization value.
 		[[nodiscard]] constexpr sampler_random randomization() const noexcept {
-			return static_cast<sampler_random>(_native.randomization);
+			return static_cast<sampler_random>(_native->randomization);
 		}
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-			return std::make_tuple(pixel_samples(), randomization());
-		}
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(pixel_samples(), randomization()); }
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_sampler_sobol_params_t.
 	 * @ingroup sampler-cpp-public
 	 */
-	struct sampler_sobol_params : wrapper<sampler_sobol_params, tpbrt_sampler_sobol_params_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<uint_t, sampler_random>;
-
+	struct sampler_sobol_params : detail::wrapper<sampler_sobol_params, tpbrt_sampler_sobol_params_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns pixel_samples value.
-		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native.pixel_samples; }
+		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native->pixel_samples; }
 
 		/// @brief Returns randomization value.
 		[[nodiscard]] constexpr sampler_random randomization() const noexcept {
-			return static_cast<sampler_random>(_native.randomization);
+			return static_cast<sampler_random>(_native->randomization);
 		}
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-			return std::make_tuple(pixel_samples(), randomization());
-		}
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(pixel_samples(), randomization()); }
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_sampler_stratified_params_t.
 	 * @ingroup sampler-cpp-public
 	 */
-	struct sampler_stratified_params : wrapper<sampler_stratified_params, tpbrt_sampler_stratified_params_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<uint_t, uint_t, bool_t>;
-
+	struct sampler_stratified_params : detail::wrapper<sampler_stratified_params, tpbrt_sampler_stratified_params_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns x_samples value.
-		[[nodiscard]] constexpr uint_t x_samples() const noexcept { return _native.x_samples; }
+		[[nodiscard]] constexpr uint_t x_samples() const noexcept { return _native->x_samples; }
 
 		/// @brief Returns y_samples value.
-		[[nodiscard]] constexpr uint_t y_samples() const noexcept { return _native.y_samples; }
+		[[nodiscard]] constexpr uint_t y_samples() const noexcept { return _native->y_samples; }
 
 		/// @brief Returns jitter value.
-		[[nodiscard]] constexpr bool_t jitter() const noexcept { return _native.jitter; }
+		[[nodiscard]] constexpr bool_t jitter() const noexcept { return _native->jitter; }
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-			return std::make_tuple(x_samples(), y_samples(), jitter());
-		}
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(x_samples(), y_samples(), jitter()); }
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_sampler_z_sobol_params_t.
 	 * @ingroup sampler-cpp-public
 	 */
-	struct sampler_z_sobol_params : wrapper<sampler_z_sobol_params, tpbrt_sampler_z_sobol_params_t> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<uint_t, sampler_random>;
-
+	struct sampler_z_sobol_params : detail::wrapper<sampler_z_sobol_params, tpbrt_sampler_z_sobol_params_t> {
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns pixel_samples value.
-		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native.pixel_samples; }
+		[[nodiscard]] constexpr uint_t pixel_samples() const noexcept { return _native->pixel_samples; }
 
 		/// @brief Returns randomization value.
 		[[nodiscard]] constexpr sampler_random randomization() const noexcept {
-			return static_cast<sampler_random>(_native.randomization);
+			return static_cast<sampler_random>(_native->randomization);
 		}
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept {
-			return std::make_tuple(pixel_samples(), randomization());
-		}
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(pixel_samples(), randomization()); }
 	};
 
 	/**
 	 * @brief C++ wrapper for tpbrt_sampler_t.
 	 * @ingroup sampler-cpp-public
 	 */
-	struct sampler : wrapper<sampler, tpbrt_sampler_t>,
-					 with_variant<sampler, sampler_halton_params, sampler_independent_params, sampler_padded_sobol_params,
+	struct sampler : detail::wrapper<sampler, tpbrt_sampler_t>,
+					 detail::with_variant<sampler, sampler_halton_params, sampler_independent_params, sampler_padded_sobol_params,
 					   sampler_sobol_params, sampler_stratified_params, sampler_z_sobol_params> {
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<int_t, variant_type, sampler_type>;
-
 		/// @brief Default wrapper constructor.
 		using wrapper::wrapper;
 
 		/// @brief Returns seed value.
-		[[nodiscard]] constexpr int_t seed() const noexcept { return _native.seed; }
+		[[nodiscard]] constexpr int_t seed() const noexcept { return _native->seed; }
 
 		/// @brief Returns type value.
-		[[nodiscard]] constexpr sampler_type type() const noexcept { return static_cast<sampler_type>(_native.type); }
+		[[nodiscard]] constexpr sampler_type type() const noexcept { return static_cast<sampler_type>(_native->type); }
 
-		/// @brief Returns if type is halton.
+		/// @brief Returns true if type is halton.
 		[[nodiscard]] constexpr bool_t is_halton() const noexcept { return type() == sampler_type::HALTON; }
 
-		/// @brief Returns if type is independent.
+		/// @brief Returns true if type is independent.
 		[[nodiscard]] constexpr bool_t is_independent() const noexcept { return type() == sampler_type::INDEPENDENT; }
 
-		/// @brief Returns if type is padded_sobol.
+		/// @brief Returns true if type is padded_sobol.
 		[[nodiscard]] constexpr bool_t is_padded_sobol() const noexcept { return type() == sampler_type::PADDED_SOBOL; }
 
-		/// @brief Returns if type is sobol.
+		/// @brief Returns true if type is sobol.
 		[[nodiscard]] constexpr bool_t is_sobol() const noexcept { return type() == sampler_type::SOBOL; }
 
-		/// @brief Returns if type is stratified.
+		/// @brief Returns true if type is stratified.
 		[[nodiscard]] constexpr bool_t is_stratified() const noexcept { return type() == sampler_type::STRATIFIED; }
 
-		/// @brief Returns if type is z_sobol.
+		/// @brief Returns true if type is z_sobol.
 		[[nodiscard]] constexpr bool_t is_z_sobol() const noexcept { return type() == sampler_type::Z_SOBOL; }
 
 		/// @brief Returns sampler parameters as halton.
 		[[nodiscard]] constexpr std::optional<sampler_halton_params> as_halton() const noexcept {
 				if (!is_halton()) { return std::nullopt; }
-			return _native.as.halton;
+			return _native->as.halton;
 		}
 
 		/// @brief Returns sampler parameters as independent.
 		[[nodiscard]] constexpr std::optional<sampler_independent_params> as_independent() const noexcept {
 				if (!is_independent()) { return std::nullopt; }
-			return _native.as.independent;
+			return _native->as.independent;
 		}
 
 		/// @brief Returns sampler parameters as padded_sobol.
 		[[nodiscard]] constexpr std::optional<sampler_padded_sobol_params> as_padded_sobol() const noexcept {
 				if (!is_padded_sobol()) { return std::nullopt; }
-			return _native.as.padded_sobol;
+			return _native->as.padded_sobol;
 		}
 
 		/// @brief Returns sampler parameters as sobol.
 		[[nodiscard]] constexpr std::optional<sampler_sobol_params> as_sobol() const noexcept {
 				if (!is_sobol()) { return std::nullopt; }
-			return _native.as.sobol;
+			return _native->as.sobol;
 		}
 
 		/// @brief Returns sampler parameters as stratified.
 		[[nodiscard]] constexpr std::optional<sampler_stratified_params> as_stratified() const noexcept {
 				if (!is_stratified()) { return std::nullopt; }
-			return _native.as.stratified;
+			return _native->as.stratified;
 		}
 
 		/// @brief Returns sampler parameters as z_sobol.
 		[[nodiscard]] constexpr std::optional<sampler_z_sobol_params> as_z_sobol() const noexcept {
 				if (!is_z_sobol()) { return std::nullopt; }
-			return _native.as.z_sobol;
+			return _native->as.z_sobol;
 		}
 
 		/// @brief Conversion to variant.
 		[[nodiscard]] constexpr variant_type to_variant() const noexcept {
 			using enum sampler_type;
 				switch (type()) {
-				case HALTON:	   return _native.as.halton;
-				case INDEPENDENT:  return _native.as.independent;
-				case PADDED_SOBOL: return _native.as.padded_sobol;
-				case SOBOL:		   return _native.as.sobol;
-				case STRATIFIED:   return _native.as.stratified;
-				case Z_SOBOL:	   return _native.as.z_sobol;
+				case HALTON:	   return _native->as.halton;
+				case INDEPENDENT:  return _native->as.independent;
+				case PADDED_SOBOL: return _native->as.padded_sobol;
+				case SOBOL:		   return _native->as.sobol;
+				case STRATIFIED:   return _native->as.stratified;
+				case Z_SOBOL:	   return _native->as.z_sobol;
 				case MAX_NUM:	   [[fallthrough]];
 				default:		   break;
 				}
@@ -324,7 +293,7 @@ namespace tpbrt {
 		}
 
 		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(seed(), to_variant(), type()); }
+		[[nodiscard]] constexpr auto reflect() const noexcept { return std::make_tuple(seed(), to_variant(), type()); }
 	};
 } // namespace tpbrt
 #endif // _TINYPBRT_SAMPLERS_HPP_

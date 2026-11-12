@@ -47,9 +47,9 @@ tpbrt_bool_t tpbrt_vec3_equals(const tpbrt_vec3_t a, const tpbrt_vec3_t b) {
 void tpbrt_mat4_identity(tpbrt_mat4_t* const m) {
 		if (m == TPBRT_NULL) { return; }
 
-	static const tpbrt_uint_t STEP_SIZE = 5u;
+	static const tpbrt_uint_t StepSize = 5u;
 	// NOLINTNEXTLINE(readability-magic-numbers)
-		for (tpbrt_uint_t i = 0; i < 16u; ++i) { m->m[i] = i % STEP_SIZE == 0 ? 1.0f : 0.0f; }
+		for (tpbrt_uint_t i = 0; i < 16u; ++i) { m->m[i] = i % StepSize == 0 ? 1.0f : 0.0f; }
 }
 
 // NOLINTNEXTLINE(readability-magic-numbers)
@@ -215,14 +215,14 @@ tpbrt_uint_t tpbrt_mat4_hash(const tpbrt_mat4_t* const m) {
 	const tpbrt_uchar_t* const bytes = (const tpbrt_uchar_t*)m;
 
 	/* clang-format off */
-		static const tpbrt_uint_t HASH_START = 2166136261u;
-		static const tpbrt_uint_t HASH_MULTIPLIER = 16777619u;
+		static const tpbrt_uint_t HashStart = 2166136261u;
+		static const tpbrt_uint_t HashMultiplier = 16777619u;
 	/* clang-format on */
 
-	tpbrt_uint_t hash				 = HASH_START;
+	tpbrt_uint_t hash				 = HashStart;
 		for (tpbrt_size_t i = 0u; i < sizeof(tpbrt_mat4_t); ++i) {
 			hash ^= bytes[i];
-			hash *= HASH_MULTIPLIER;
+			hash *= HashMultiplier;
 		}
 	return hash;
 }

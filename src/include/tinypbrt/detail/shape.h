@@ -230,7 +230,7 @@ extern "C" {
 		tpbrt_media_handle_t exterior_media_handle;
 		/// @brief Shape value type.
 		tpbrt_shape_type_t type			 : 5;
-		/// @brief If true shape orientation is reversed (inside becomes outside)
+		/// @brief If true, shape orientation is reversed (inside becomes outside).
 		tpbrt_bool_t reverse_orientation : 1;
 
 		/// @brief Value dependent on type value.

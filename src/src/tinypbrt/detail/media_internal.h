@@ -31,7 +31,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns media type based on string value.
-	 * @param type_str String which is convertable to media type.
+	 * @param type_str String which is convertible to media type.
 	 * @param type Output media type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_MEDIA_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup media-private

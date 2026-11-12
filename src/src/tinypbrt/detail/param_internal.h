@@ -90,7 +90,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns parameter type based on string value.
-	 * @param type_str String which is convertable to parameter type.
+	 * @param type_str String which is convertible to parameter type.
 	 * @param type_out Output parameter type value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_POINTER, TPBRT_ERROR_INVALID_PARAM_TYPE, TPBRT_ERROR_NONE).
 	 * @ingroup param-private

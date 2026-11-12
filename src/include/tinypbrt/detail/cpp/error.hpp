@@ -6,7 +6,11 @@
 
 #include <tinypbrt/detail/error.h>
 
+#include <concepts>
 #include <string>
+#include <type_traits>
+#include <utility>
+#include <variant>
 
 namespace tpbrt {
 	/**
@@ -18,7 +22,7 @@ namespace tpbrt {
 	 * @copybrief tpbrt_error_t
 	 * @ingroup error-cpp-public
 	 */
-	enum class error : char_t {
+	enum class error : uchar_t {
 		/// @copybrief TPBRT_ERROR_NONE
 		NONE									  = TPBRT_ERROR_NONE,
 		/// @copybrief TPBRT_ERROR_END_OF_FILE
@@ -152,7 +156,8 @@ namespace tpbrt {
 	};
 
 	/**
-	 * @brief Returned result type.
+	 * @brief Result of an operation: either a value or an error code (similar to C++23 std::expected).
+	 * @details A result never holds error::NONE: it is either a value or a real error.
 	 * @tparam T Type of value returned on success.
 	 * @ingroup error-cpp-public
 	 */
@@ -167,69 +172,80 @@ namespace tpbrt {
 		/// @brief Variant type of result.
 		using variant_type = std::variant<value_type, error_type>;
 
-		/// @brief Type used for reflection.
-		using reflect_type = std::tuple<variant_type>;
-
 	private:
 		/// @brief Holds either value or error.
 		variant_type _data;
 
 	public:
-		/// @brief Default constructor.
-		constexpr result() noexcept : _data(error::NONE) {}
-
 		/// @brief Conversion constructor for error.
-		constexpr result(const error_type err) noexcept : _data(err) {} // NOLINT
+		constexpr result(const error_type err) noexcept : _data(std::in_place_type<error_type>, err) {} // NOLINT
 
 		/// @brief Conversion constructor for value.
-		constexpr result(const value_type& val) noexcept : _data(val) {} // NOLINT
+		constexpr result(const value_type& val) : _data(std::in_place_type<value_type>, val) {} // NOLINT
 
 		/// @brief Conversion constructor for r-value value.
-		constexpr result(value_type&& val) noexcept : _data(std::move(val)) {} // NOLINT
+		constexpr result(value_type&& val) noexcept(std::is_nothrow_move_constructible_v<value_type>) // NOLINT
+			: _data(std::in_place_type<value_type>, std::move(val)) {}
 
 		/// @brief Returns true if result has value.
 		[[nodiscard]] constexpr bool_t has_value() const noexcept { return std::holds_alternative<value_type>(_data); }
 
-		/// @brief Returns error code.
+		/// @brief Returns true if result has value.
+		[[nodiscard]] constexpr explicit operator bool() const noexcept { return has_value(); }
+
+		/// @brief Returns error code (error::NONE when result has value).
 		[[nodiscard]] constexpr error_type get_error() const noexcept {
-				if (has_value()) { return error::NONE; }
-			return std::get<error_type>(_data);
+				if (has_value()) { return error_type::NONE; }
+			return *std::get_if<error_type>(&_data);
 		}
 
-		/// @brief Returns value.
-		[[nodiscard]] constexpr const value_type& get_value() const noexcept { return std::get<value_type>(_data); }
+		/// @brief Returns value (throws std::bad_variant_access when result holds an error).
+		[[nodiscard]] constexpr const value_type& get_value() const& { return std::get<value_type>(_data); }
 
-		/// @brief Returns value.
-		[[nodiscard]] constexpr value_type& get_value() noexcept { return std::get<value_type>(_data); }
+		/// @brief Returns value (throws std::bad_variant_access when result holds an error).
+		[[nodiscard]] constexpr value_type& get_value() & { return std::get<value_type>(_data); }
+
+		/// @brief Returns value (throws std::bad_variant_access when result holds an error).
+		[[nodiscard]] constexpr value_type&& get_value() && { return std::get<value_type>(std::move(_data)); }
+
+		/// @brief Returns value or given default value when result holds an error.
+		template<class U>
+		[[nodiscard]] constexpr value_type value_or(U&& default_value) const& {
+			return has_value() ? *std::get_if<value_type>(&_data) : static_cast<value_type>(std::forward<U>(default_value));
+		}
 
 		/// @brief Conversion to variant.
 		[[nodiscard]] constexpr const variant_type& to_variant() const noexcept { return _data; }
 
-		/// @brief Visits camera parameters.
-		constexpr auto visit(const auto& visitor) const noexcept {
-			using return_type = decltype(std::visit(visitor, _data));
-
-				if constexpr (std::is_void_v<return_type>) { std::visit(visitor, _data); }
-				else { return std::visit(visitor, _data); }
+		/// @brief Visits value or error.
+		template<class Visitor>
+		constexpr decltype(auto) visit(Visitor&& visitor) const {
+			return std::visit(std::forward<Visitor>(visitor), _data);
 		}
 
-		/// @brief Conversion to tuple.
-		[[nodiscard]] constexpr reflect_type reflect() const noexcept { return std::make_tuple(_data); }
+		/// @brief Returns value (unchecked, like std::optional).
+		[[nodiscard]] constexpr const value_type& operator*() const& noexcept { return *std::get_if<value_type>(&_data); }
 
-		/// @brief Returns value.
-		[[nodiscard]] constexpr const value_type& operator*() const noexcept { return get_value(); }
+		/// @brief Returns value (unchecked, like std::optional).
+		[[nodiscard]] constexpr value_type& operator*() & noexcept { return *std::get_if<value_type>(&_data); }
 
-		/// @brief Returns value.
-		[[nodiscard]] constexpr value_type& operator*() noexcept { return get_value(); }
+		/// @brief Returns value (unchecked, like std::optional).
+		[[nodiscard]] constexpr value_type&& operator*() && noexcept { return std::move(*std::get_if<value_type>(&_data)); }
 
-		/// @brief Returns pointer to value.
-		[[nodiscard]] constexpr const value_type* operator->() const noexcept { return &get_value(); }
+		/// @brief Returns pointer to value (unchecked, like std::optional).
+		[[nodiscard]] constexpr const value_type* operator->() const noexcept { return std::get_if<value_type>(&_data); }
 
-		/// @brief Space ship operator.
-		[[nodiscard]] constexpr auto operator<=>(const result& rhs) const noexcept { return _data <=> rhs._data; }
+		/// @brief Returns pointer to value (unchecked, like std::optional).
+		[[nodiscard]] constexpr value_type* operator->() noexcept { return std::get_if<value_type>(&_data); }
 
-		/// @brief Equal operator.
-		[[nodiscard]] constexpr bool_t operator==(const result& rhs) const noexcept { return _data == rhs._data; }
+		/// @brief Equality operator.
+		[[nodiscard]] constexpr bool_t operator==(const result& rhs) const requires std::equality_comparable<value_type>
+		{
+			return _data == rhs._data;
+		}
+
+		/// @brief Equality operator (true when result holds given error).
+		[[nodiscard]] constexpr bool_t operator==(const error_type err) const noexcept { return get_error() == err; }
 	};
 
 	/**
@@ -240,7 +256,8 @@ namespace tpbrt {
 	 * @return Size of actual message.
 	 * @ingroup error-cpp-public
 	 */
-	[[nodiscard]] constexpr size_t get_error_message(const error error_code, char_t* const buffer, const size_t buffer_size) {
+	[[nodiscard]] inline size_t get_error_message(const error error_code, char_t* const buffer,
+	  const size_t buffer_size) noexcept {
 		return tpbrt_get_error_message(static_cast<tpbrt_error_t>(error_code), buffer, buffer_size);
 	}
 
@@ -250,8 +267,8 @@ namespace tpbrt {
 	 * @return String with error message.
 	 * @ingroup error-cpp-public
 	 */
-	[[nodiscard]] constexpr std::string to_string(const error error_code) noexcept {
-		constexpr size_t BufferSize = 128;
+	[[nodiscard]] inline std::string to_string(const error error_code) {
+		constexpr size_t BufferSize = 256;
 		char_t buffer[BufferSize];
 
 		const size_t count = get_error_message(error_code, buffer, BufferSize);

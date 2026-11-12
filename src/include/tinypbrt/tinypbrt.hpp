@@ -5,7 +5,7 @@
 /**
  * @defgroup tinypbrt-cpp-public tinypbrt-cpp
  * @brief Cpp wrapper for library for parsing pbrt-v4 files.
- * More info about pbrt-v4 file format you can find here: https://pbrt.org/fileformat-v4
+ * More information about the pbrt-v4 file format can be found at https://pbrt.org/fileformat-v4.
  */
 
 #include <tinypbrt/tinypbrt.h>
@@ -18,7 +18,6 @@
 #include <tinypbrt/detail/cpp/common.hpp>
 #include <tinypbrt/detail/cpp/coord.hpp>
 #include <tinypbrt/detail/cpp/error.hpp>
-#include <tinypbrt/detail/cpp/export.hpp>
 #include <tinypbrt/detail/cpp/film.hpp>
 #include <tinypbrt/detail/cpp/filter.hpp>
 #include <tinypbrt/detail/cpp/integrator.hpp>

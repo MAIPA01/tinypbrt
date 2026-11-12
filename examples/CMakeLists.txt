@@ -53,6 +53,42 @@ if (TINYPBRT_BUILD_TESTS)
     endforeach()
 endif()
 
+# region CPP_EXAMPLES
+# C++20 examples of the header-only wrapper (examples/cpp/<name>/main.cpp)
+set(TINYPBRT_CPP_EXAMPLES quickstart scene_info materials)
+if (TINYPBRT_BUILD_CPP_WRAPPER AND TARGET tinypbrt_cpp)
+    foreach(EXAMPLE ${TINYPBRT_CPP_EXAMPLES})
+        set(EXAMPLE_TARGET ${PROJECT_NAME}-cpp-example-${EXAMPLE})
+        add_executable(${EXAMPLE_TARGET} ${CMAKE_CURRENT_SOURCE_DIR}/cpp/${EXAMPLE}/main.cpp)
+        target_link_libraries(${EXAMPLE_TARGET} PRIVATE tinypbrt::tinypbrt_cpp)
+        target_compile_features(${EXAMPLE_TARGET} PRIVATE cxx_std_20)
+        set_target_properties(${EXAMPLE_TARGET} PROPERTIES CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
+        # warnings, sanitizers and coverage like the rest of the C++ targets
+        tinypbrt_configure_cpp_compile_options(${EXAMPLE_TARGET})
+
+        if (WIN32 AND (TINYPBRT_BUILD_SHARED OR BUILD_SHARED_LIBS))
+            add_custom_command(TARGET ${EXAMPLE_TARGET} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${EXAMPLE_TARGET}> $<TARGET_FILE_DIR:${EXAMPLE_TARGET}>
+                COMMAND_EXPAND_LISTS
+            )
+        endif()
+    endforeach()
+
+    if (TINYPBRT_BUILD_TESTS)
+        set(CPP_EXAMPLE_ARGS_quickstart     ${TINYPBRT_EXAMPLE_SCENES}/cornell_box.pbrt)
+        set(CPP_EXAMPLE_ARGS_scene_info     ${TINYPBRT_EXAMPLE_SCENES}/forest.pbrt)
+        set(CPP_EXAMPLE_ARGS_materials      ${TINYPBRT_EXAMPLE_SCENES}/cornell_box.pbrt gold)
+
+        foreach(EXAMPLE ${TINYPBRT_CPP_EXAMPLES})
+            set(EXAMPLE_TEST ${PROJECT_NAME}-cpp-example-${EXAMPLE}_TEST)
+            add_test(NAME ${EXAMPLE_TEST} COMMAND ${PROJECT_NAME}-cpp-example-${EXAMPLE} ${CPP_EXAMPLE_ARGS_${EXAMPLE}})
+            set_tests_properties(${EXAMPLE_TEST} PROPERTIES LABELS examples)
+            tinypbrt_set_sanitizers_test_environment(${EXAMPLE_TEST})
+        endforeach()
+    endif()
+endif()
+# endregion
+
 # region CLANG_TIDY
 if (TINYPBRT_ENABLE_CLANG_TIDY)
     set(CLANG_TIDY_C_STANDARD c11)

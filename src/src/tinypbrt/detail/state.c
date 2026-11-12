@@ -102,10 +102,10 @@ tpbrt_error_t tpbrt_states_stack_init(tpbrt_states_stack_t* const stack) {
 tpbrt_error_t tpbrt_states_stack_push(tpbrt_states_stack_t* const stack, const tpbrt_state_t* const state) {
 		if (stack == TPBRT_NULL || state == TPBRT_NULL) { return TPBRT_ERROR_INVALID_POINTER; }
 
-	static const tpbrt_uint_t MIN_CAPACITY = 8u;
+	static const tpbrt_uint_t MinCapacity = 8u;
 
 		if (stack->count >= stack->capacity) {
-			const tpbrt_uint_t new_capacity = stack->capacity == 0 ? MIN_CAPACITY : stack->capacity * 2u;
+			const tpbrt_uint_t new_capacity = stack->capacity == 0 ? MinCapacity : stack->capacity * 2u;
 			tpbrt_state_t* const new_states = realloc(stack->states, new_capacity * sizeof(tpbrt_state_t));
 				if (new_states == TPBRT_NULL) { return TPBRT_ERROR_OUT_OF_MEMORY; }
 			stack->states	= new_states;

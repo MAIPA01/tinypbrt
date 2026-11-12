@@ -19,7 +19,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns scattering builtin based on string value.
-	 * @param builtin_str String which is convertable to scattering builtin.
+	 * @param builtin_str String which is convertible to scattering builtin.
 	 * @param builtin Output scattering builtin value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_SCATTERING_BUILTIN, TPBRT_ERROR_NONE).
 	 * @ingroup scattering-private

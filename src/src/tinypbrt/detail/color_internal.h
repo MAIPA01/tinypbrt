@@ -142,7 +142,7 @@ extern "C" {
 
 	/**
 	 * @brief Returns color space based on string value.
-	 * @param color_space_str String which is convertable to color space.
+	 * @param color_space_str String which is convertible to color space.
 	 * @param color_space_out Output color space value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_COLOR_SPACE, TPBRT_ERROR_NONE).
 	 * @ingroup color-private
@@ -150,7 +150,7 @@ extern "C" {
 	tpbrt_error_t tpbrt_color_space_from_string(tpbrt_string_t color_space_str, tpbrt_color_space_t* color_space_out);
 	/**
 	 * @brief Returns spectrum builtin based on string value.
-	 * @param builtin_str String which is convertable to spectrum builtin.
+	 * @param builtin_str String which is convertible to spectrum builtin.
 	 * @param builtin_out Output spectrum builtin value.
 	 * @return Error code (most possible TPBRT_ERROR_INVALID_SPECTRUM_BUILTIN, TPBRT_ERROR_NONE).
 	 * @ingroup color-private
