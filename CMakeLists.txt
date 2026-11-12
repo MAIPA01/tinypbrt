@@ -86,16 +86,36 @@ endif()
 
 if (TINYPBRT_BUILD_COVERAGE AND TARGET tinypbrt-tests)
 	# cmake --build <build> --target coverage  -> <build>/coverage_report/index.html
-	set(TINYPBRT_COVERAGE_EXE_TARGETS tinypbrt-c-api-tests)
-	if (TINYPBRT_BUILD_EXAMPLES)
-		foreach(EXAMPLE quickstart scene_info load_from_memory materials lights export_obj)
-			list(APPEND TINYPBRT_COVERAGE_EXE_TARGETS tinypbrt-example-${EXAMPLE})
+	# The target runs every ctest test, so it has to build every program from tests/, examples/ and benchmark/
+	# (C and C++ tests, C and C++ examples, benchmark smoke tests). The list is collected from the directories,
+	# so new tests and examples are picked up automatically. Instrumented programs also go to llvm-cov.
+	set(TINYPBRT_COVERAGE_EXE_TARGETS)
+	set(TINYPBRT_COVERAGE_DEPENDS)
+	get_property(TINYPBRT_SUBDIRECTORIES DIRECTORY PROPERTY SUBDIRECTORIES)
+	foreach(DIR tests examples benchmark)
+		if (NOT "${CMAKE_CURRENT_SOURCE_DIR}/${DIR}" IN_LIST TINYPBRT_SUBDIRECTORIES)
+			continue()
+		endif()
+		get_property(DIR_TARGETS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${DIR} PROPERTY BUILDSYSTEM_TARGETS)
+		foreach(DIR_TARGET IN LISTS DIR_TARGETS)
+			get_target_property(DIR_TARGET_TYPE ${DIR_TARGET} TYPE)
+			if (NOT DIR_TARGET_TYPE STREQUAL "EXECUTABLE" OR DIR_TARGET STREQUAL "tinypbrt-tests")
+				continue()
+			endif()
+			get_target_property(DIR_TARGET_OPTIONS ${DIR_TARGET} COMPILE_OPTIONS)
+			if ("-fcoverage-mapping" IN_LIST DIR_TARGET_OPTIONS)
+				list(APPEND TINYPBRT_COVERAGE_EXE_TARGETS ${DIR_TARGET})
+			else()
+				list(APPEND TINYPBRT_COVERAGE_DEPENDS ${DIR_TARGET})
+			endif()
 		endforeach()
-	endif()
+	endforeach()
+	message(STATUS "tinypbrt coverage: tinypbrt-tests ${TINYPBRT_COVERAGE_EXE_TARGETS}")
 
 	setup_coverage_report(
 			TEST_TARGET tinypbrt-tests
 			EXE_TARGETS ${TINYPBRT_COVERAGE_EXE_TARGETS}
+			DEPENDS ${TINYPBRT_COVERAGE_DEPENDS}
 			FORMAT html
 			OUTPUT_DIR ${CMAKE_BINARY_DIR}/coverage_report
 			CLEAN_TEMP

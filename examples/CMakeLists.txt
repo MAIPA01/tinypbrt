@@ -65,6 +65,8 @@ if (TINYPBRT_BUILD_CPP_WRAPPER AND TARGET tinypbrt_cpp)
         set_target_properties(${EXAMPLE_TARGET} PROPERTIES CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
         # warnings, sanitizers and coverage like the rest of the C++ targets
         tinypbrt_configure_cpp_compile_options(${EXAMPLE_TARGET})
+        tinypbrt_enable_sanitizers(${EXAMPLE_TARGET})
+        tinypbrt_enable_coverage(${EXAMPLE_TARGET})
 
         if (WIN32 AND (TINYPBRT_BUILD_SHARED OR BUILD_SHARED_LIBS))
             add_custom_command(TARGET ${EXAMPLE_TARGET} POST_BUILD
